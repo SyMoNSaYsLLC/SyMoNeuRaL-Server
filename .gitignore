@@ -33,8 +33,18 @@ venv/
 .ruff_cache/
 .next/
 dist/
-build/
 target/
+
+# `build/` unanchored, which is what stood here, matches ANY directory named build at any
+# depth -- and it silently swallowed tools/build/, all 32 generators. build_progress.py,
+# build_ports.py, build_pages.py and build_component_readmes.py were untracked for the whole
+# life of this tree, so a clone got none of the things that write this repository's records.
+# Found by checking a README somebody said was missing; it was there and ignored.
+#
+# Anchored to the engine trees, which is the only place build output actually lands here.
+/symoneural-*/build/
+/*/build/
+!/tools/build/
 
 # Editor and OS noise.
 .DS_Store
