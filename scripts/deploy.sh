@@ -308,7 +308,18 @@ while read -r ref; do
 # that, every stylesheet and script reference became "MISSING symoneural.css?v=90b254cb57"
 # and the script exited 1 on a deploy that was completely correct -- a verification step
 # that fails on healthy input gets switched off, and then it protects nothing.
-done < <(grep -ohE '(src|href)="/[^"#]+"' "$DST"/*.html \
+#
+# The rollback backups this script writes are excluded. They are snapshots of a
+# previous index.html, so they reference the layout as it was then -- and after
+# the restructure that is the pre-restructure layout, whose files this same run
+# has just pruned. Including them reported "FAILED: 18 referenced asset(s) are
+# not on disk" on a deploy where all 27 live pages and all 80 of their
+# references answered 200. The comment three lines up already says what that
+# costs: a verification step that fails on healthy input gets switched off, and
+# then it protects nothing. A backup cannot be verified against the current
+# layout, because not matching it is the entire reason it is kept.
+done < <(find "$DST" -maxdepth 1 -name '*.html' ! -name 'index.prev-*.html' -print0 \
+         | xargs -0 grep -ohE '(src|href)="/[^"#]+"' \
          | sed 's/.*"\/\(.*\)"/\1/' | sed 's/?.*$//' | sort -u)
 
 echo
