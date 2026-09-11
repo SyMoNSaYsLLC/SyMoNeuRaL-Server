@@ -1,1 +1,46 @@
-/home/google/Symoneural/symoneural-code/bin/symoneural-discovery
+#!/usr/bin/env python3
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
+"""symoneural-discovery -- run the discovery app from anywhere, with no PYTHONPATH.
+
+    symoneural-discovery search "EU AI Act enforcement 2026"
+    symoneural-discovery stats
+
+The whole tool is `backend/apps/studio/plugins/discovery/discovery.py`; this file exists only to
+put `backend/` on `sys.path` so the package's relative imports resolve, and to give the
+command the hyphenated house spelling. A Python module cannot be named
+`symoneural-discovery`, so the package on disk is `symoneuraldiscovery` and the *command* is
+this. `bin/symoneural-cli` is the precedent for a hyphenated entry point over an
+unhyphenated package.
+
+It finds the repo by signature -- `backend/api.py` plus `scripts/gpu-governor.sh`, the same
+pair `api.py` and `discovery.repo_root()` probe for -- walking up from this file. Resolving
+`bin/..` by counting instead would break silently the day the layout moves, and a tool that
+imports a *different* checkout's code than the one it lives in is worse than one that fails.
+A symlink into `/usr/local/bin` still works, because `resolve()` follows it back here first.
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+
+def _backend_dir() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if ((parent / "backend" / "api.py").exists()
+                and (parent / "scripts" / "gpu-governor.sh").exists()):
+            return parent / "backend"
+    raise SystemExit(
+        "symoneural-discovery: could not find the repo from "
+        f"{Path(__file__).resolve()} -- expected backend/api.py and scripts/gpu-governor.sh "
+        "in an ancestor directory."
+    )
+
+
+sys.path.insert(0, str(_backend_dir()))
+
+from apps.studio.plugins.discovery.discovery import main  # noqa: E402
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

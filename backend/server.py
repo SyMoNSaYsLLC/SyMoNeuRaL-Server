@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
-"""SyMoNeuRaL production API -- FastAPI over one consumer GPU.
+"""SyMoNeuRaL API. FastAPI over one consumer GPU, bound to loopback.
 
-Four surfaces, and they are not alike:
+123 routes across 24 components. Each component owns its own router; this file builds the
+app, holds the shared runtime, and mounts them. The five that contend for hardware:
 
-    POST /api/chat    GPU. Proxied to symoneural-llm, streamed token by token.
-    POST /api/image   GPU. Evicts chat, runs symoneural-diffuse, returns a PNG url.
-    POST /api/ravencalc  CPU. RavenCalc, exact symbolic. Never queues behind anything.
-    POST /api/remix   GPU indirectly -- a client of the chat surface, not its own tenant.
-    GET  /api/status  Per-unit state for the rack display on the home page.
+    POST /api/chat        GPU. Proxied to symoneural-llm, streamed token by token.
+    POST /api/image       GPU. Evicts chat, runs symoneural-diffuse, returns a PNG url.
+    POST /api/remix       GPU indirectly -- a client of chat, not its own tenant.
+    POST /api/ravencalc   CPU. Exact symbolic. Never queues behind anything.
+    GET  /api/status      Per-unit state for the rack display.
 
-Binds loopback only; Caddy reverse-proxies to it. Nothing here opens a port to the GPU
-and nothing here trusts the client.
+One GPU job at a time, globally -- not per-IP, not per-surface. The card cannot do two
+things, so the queue is a property of the hardware, not a policy.
 
-**Every bound is enforced on this side.** The browser sends suggestions -- steps, size,
-temperature, token count -- and pydantic clamps each one before it reaches an engine. A
-field arriving out of range is clamped rather than rejected, because arguing with a caller
-about a slider is not worth an error path. The exception is an oversized prompt, which
-hard-fails: truncating someone's input and answering the truncation is worse than refusing.
+Bounds are enforced here, never trusted from the client. Out-of-range fields are clamped
+rather than rejected; an oversized prompt hard-fails, because answering a truncation is
+worse than refusing.
 
-**One GPU job at a time, globally.** Not per-IP, not per-surface. The card genuinely
-cannot do two things, so the queue is a property of the hardware rather than a policy.
+System interpreter, no virtualenv in the serving path.
 
-Runs on the system interpreter -- fastapi, uvicorn and sympy are already present as OS
-packages, so there is no virtualenv anywhere in the serving path.
+Corrected 2026-09-11: this said "four surfaces" above a list of five, and described five
+routes as if they were the whole API.
 """
 from __future__ import annotations
 
@@ -2131,71 +2129,6 @@ def _application_docs_index() -> str:
     )
 
 
-@app.get("/docs", include_in_schema=False)
-async def api_reference() -> HTMLResponse:
-    """The API reference. Ours, rendered from `/openapi.json`.
-
-    This was a third-party documentation UI wearing our palette: 1.6 MB of vendor bundle in
-    the webroot, a FastAPI helper that embedded it, and a page that still carried the
-    vendor's name in three asset URLs a visitor could read. Task #74 item 6 -- the API
-    reference is a visitor-facing page and is now a SyMoNeuRaL surface, rendered by the code
-    above from the schema below it.
-
-    The vendor is named in `LICENSES.md`, which records that we no longer distribute the
-    bundle rather than dropping the entry -- a vanished notice and a stripped one read
-    identically -- and in the commit that made this change. It is deliberately not named
-    here: #74's declared check is a file-wide grep for the name in this file, and a
-    docstring that keeps the word would hold that check red for prose. `LICENSES.md` is
-    where the licence obligation actually lives, and `git log` is where this repo keeps
-    "why is the code like this".
-
-    **Inline, not a file under `site/`.** This page is assembled here at request time, so
-    `build_cachebust.py` never sees it -- a new `/apiref.css` would ship unstamped and
-    therefore cacheable for a week against markup that changes with every route added. It
-    would also be a webroot asset referenced from nowhere in `site/`, which is how nineteen
-    unreferenced PNGs accumulated there before the backend restructure.
-
-    **It has no data of its own.** Everything rendered comes from the schema FastAPI already
-    generates, so the reference cannot drift from the service: if a route is added, it
-    appears; if one is removed, it goes. That is the property the card on the home page
-    claims -- *"generated from the running service. Not a snapshot."* -- and it is now true
-    of our own code rather than of somebody else's.
-    """
-    # Both figures are read from the constants rather than typed into the markup. They had
-    # drifted badly while hardcoded -- the page claimed 6/min and a 1,200-character cap
-    # while the code enforced 120/min and 4,000 -- and this site's whole argument is that
-    # its published numbers are the real ones. A stale honest-looking figure is the same
-    # failure as a decorative LED.
-    per_min, per_hour = LIMITS["chat"]
-    rate = (f'<div class="val">{per_min}<u>/min</u></div>'
-            f'<div class="sub">{per_hour:,}/hour &middot; per address</div>'
-            if per_min else
-            '<div class="val sm">none</div>'
-            '<div class="sub">unmetered &middot; the queue is the only backstop</div>')
-    header = (DOCS_HEADER.replace("@@RATE@@", rate)
-                         .replace("@@CAP@@", f"{MAX_PROMPT_CHARS:,}"))
-
-    return HTMLResponse(
-        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
-        '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        "<title>API Reference &middot; SyMoNeuRaL</title>"
-        '<link rel="icon" href="/favicon-32.png" sizes="32x32">'
-        '<link rel="stylesheet" href="/symoneural.css">'
-        '<link rel="stylesheet" href="/rack-detail.css">'
-        '<meta name="theme-color" content="#0e100f">'
-        f"{API_REFERENCE_STYLE}</head><body>{header}"
-        '<div class="ar-wrap">'
-        f"{_application_docs_index()}"
-        '<p class="ar-note">Every operation below is read from the schema this service '
-        "generates at the moment you loaded the page. Nothing here is written by hand, so "
-        "it cannot describe a route that no longer exists or omit one that was just added. "
-        'The raw document is at <a href="/openapi.json">/openapi.json</a>.</p>'
-        '<div id="ar-root"><p class="ar-count">Reading /openapi.json&hellip;</p></div>'
-        "</div>"
-        f"{API_REFERENCE_SCRIPT}"
-        '<script src="/console.js" defer></script>'
-        "</body></html>"
-    )
 
 
 def external_holder() -> str | None:
@@ -2740,135 +2673,8 @@ async def push_rack() -> None:
         await bus.publish_delta(build_status().model_dump())
 
 
-@app.get("/api/status", response_model=Status, tags=["status"],
-         responses={304: {"description": "Unchanged since the ETag you sent."}})
-async def get_status(request: Request, response: Response) -> Status | Response:
-    """Rack state over plain HTTP, for clients that cannot hold a socket.
-
-    Supports conditional requests. Send back the `ETag` from a previous response as
-    `If-None-Match` and an unchanged rack costs a bare `304` instead of the full body --
-    which is most of the time, since the machine is idle more than it is busy.
-
-    Prefer the WebSocket at `/api/ws` if you can: it costs one handshake and then sends
-    nothing at all until something changes, rather than a request every few seconds to be
-    told the same thing.
-    """
-    # Refresh the card reading OFF the loop before building the rack.
-    #
-    # `smi()` is synchronous and, on a TTL miss, execs nvidia-smi itself with an 8 s timeout.
-    # `telemetry_loop` only refreshes `if bus.listeners` and sleeps 3 s against a 1.0 s TTL --
-    # so with no WebSocket client connected it never runs at all, and every poll of this
-    # endpoint did that exec ON the event loop. Not latent: it is the normal path, on the one
-    # route everything polls, including the watchdog.
-    #
-    # Guarded by the same TTL so this adds no nvidia-smi traffic -- it only moves the exec
-    # that was already happening off the loop. `refresh_telemetry()` is the existing
-    # `to_thread` wrapper; :1216 already used it correctly and this call site did not.
-    if time.monotonic() - telemetry._telemetry_at > telemetry._TELEMETRY_TTL:
-        await telemetry.refresh_telemetry()
-    payload = build_status()
-    body = payload.model_dump()
-    etag = '"' + semantic_etag(body) + '"'
-
-    if request.headers.get("if-none-match") == etag:
-        return Response(status_code=http.HTTP_304_NOT_MODIFIED,
-                        headers={"ETag": etag, "Cache-Control": "no-cache"})
-
-    response.headers["ETag"] = etag
-    # no-cache means "revalidate", not "do not store" -- the client keeps the body and
-    # spends a conditional request instead of a full one.
-    response.headers["Cache-Control"] = "no-cache"
-    return payload
 
 
-@app.websocket("/api/ws")
-async def websocket(ws: WebSocket) -> None:
-    """The three-way channel. See the protocol table in the API description above.
-
-    Handshake: connect, receive `welcome`, then `rack` frames arrive whenever the machine
-    changes. Send `{"t":"chat","prompt":"..."}` to generate over the same socket -- deltas
-    come back as `{"t":"delta"}` and finish with `{"t":"done"}` carrying the measured rate.
-    """
-    await ws.accept()
-    await bus.join(ws)
-    try:
-        await ws.send_text(json.dumps({
-            "t": "welcome", "proto": 1,
-            "caps": ["rack", "chat", "ravencalc", "remix", "ping"],
-            "limits": {"prompt_chars": MAX_PROMPT_CHARS, "per_min": RATE_PER_MIN,
-                       "per_hour": RATE_PER_HOUR, "queue_depth": QUEUE_DEPTH},
-            "note": "One GPU. chat/image/remix take turns; calc never queues.",
-        }, separators=(",", ":")))
-        # One full snapshot, once. Everything after this is a patch against it -- so the
-        # baseline is established here and the wire stays quiet until something moves.
-        snapshot = build_status().model_dump()
-        bus.seed(ws, snapshot)
-        await ws.send_text(json.dumps({"t": "rack", **snapshot}, separators=(",", ":")))
-
-        key = client_key_ws(ws)
-        while True:
-            raw = await ws.receive_text()
-            if len(raw) > 8000:
-                await ws.send_text(json.dumps({"t": "error", "code": 413,
-                                               "error": "Frame too large."}))
-                continue
-            try:
-                msg = json.loads(raw)
-            except json.JSONDecodeError:
-                await ws.send_text(json.dumps({"t": "error", "code": 400,
-                                               "error": "Not JSON."}))
-                continue
-
-            kind = msg.get("t")
-            if kind == "ping":
-                await ws.send_text('{"t":"pong"}')
-                continue
-            if kind == "rack":
-                await ws.send_text(json.dumps({"t": "rack", **build_status().model_dump()},
-                                              separators=(",", ":")))
-                continue
-
-            # The other half of the power switch. `rack_power_gate` covers HTTP; this covers
-            # the socket, and BOTH are required for the button to be honest -- `console.js`
-            # prefers the socket and falls back to polling, so an HTTP-only guard would
-            # leave a "taken offline" unit still serving every client that works properly.
-            #
-            # Above the rate limiter deliberately: a unit that is off should not spend the
-            # caller's token bucket to be told so, and `ping` and `rack` are already handled
-            # and returned, so the operator can still read the rack while a surface is down.
-            off_unit = rackpower.unit_for_frame(kind)
-            if off_unit is not None and rackpower.is_disabled(off_unit):
-                await ws.send_text(json.dumps({
-                    "t": "error", "code": 503,
-                    "error": f"{off_unit} has been taken off the rack by an operator. "
-                             f"It is not faulty; the rack says when it went down."}))
-                continue
-
-            # Everything below spends the GPU or the CPU, so it is rate limited exactly
-            # like the REST routes. Holding a socket open is not a way around the caps.
-            if not await check_rate(kind if kind in LIMITS else "chat", key):
-                per_min, per_hour = LIMITS.get(kind, LIMITS["chat"])
-                await ws.send_text(json.dumps({
-                    "t": "error", "code": 429,
-                    "error": f"Easy -- {kind} is capped at {per_min}/min, "
-                             f"{per_hour}/hour per address."}))
-                continue
-
-            if kind == "chat":
-                await ws_chat(ws, msg)
-            elif kind == "ravencalc":
-                await ws_calc(ws, msg)
-            elif kind == "remix":
-                await ws_remix(ws, msg)
-            else:
-                await ws.send_text(json.dumps({
-                    "t": "error", "code": 400, "error": f"Unknown frame type {kind!r}."}))
-    except WebSocketDisconnect:
-        pass
-    except Exception:
-        log.exception("websocket failed")
-    finally:
-        await bus.leave(ws)
 
 
 def client_key_ws(ws: WebSocket) -> str:
@@ -2941,243 +2747,11 @@ async def ws_remix(ws: WebSocket, msg: dict) -> None:
                                   separators=(",", ":")))
 
 
-@app.post("/api/chat", tags=["surfaces"])
-async def chat(body: ChatRequest, request: Request,
-                _: Annotated[None, Depends(throttled_for("chat"))]) -> StreamingResponse:
-    """Ask the local model. Streams Server-Sent Events as the card produces tokens.
-
-    Each event is `{"delta": "..."}`; the last is
-    `{"done": true, "tokens": N, "seconds": S, "tok_per_s": R, "model": "...", "adapter": bool}`.
-    The rate in that final event is measured, not claimed.
-    """
-    # Kick RavenCalc off first, then take the card. The calculator runs on the CPU and
-    # deliberately never takes the lock, so it does its work inside the time the GPU
-    # surface spends loading -- by the time the model can speak, the exact answer is
-    # already sitting here waiting for it.
-    thinking = asyncio.create_task(anticipate(body.prompt))
-
-    # Take the lease HERE, in the handler, not inside the generator. R-173: a contended
-    # card used to reach the visitor as a bodyless 500, because Starlette sends 200 OK the
-    # moment a StreamingResponse is returned and the HTTPException was not raised until the
-    # generator first ran -- after the status line had gone out, where it can only abort the
-    # connection. Acquiring before the response exists means a full queue is an ordinary
-    # 503 with a readable body.
-    lease = gpu.hold("chat")
-    try:
-        await lease.__aenter__()
-    except BaseException:
-        # RavenCalc was started before the acquire on purpose (above), so an acquire that
-        # raises leaves a task nobody will ever await. Left alone it logs "Task exception
-        # was never retrieved" out of the event loop at collection time -- a stack trace
-        # with no request attached to it, arriving whenever the GC happens to run.
-        thinking.cancel()
-        raise
-
-    # Returning the card is the handler's job as well as the generator's, because a client
-    # that hangs up is not an event the generator ever sees.
-    #
-    # Measured 2026-08-21 on starlette 0.46.1 / uvicorn 0.32.0 against a generator that
-    # cannot finish on its own -- connect, send the request line, close the socket, wait:
-    # the generator keeps being resumed and keeps yielding into a socket nobody is reading,
-    # forever. Its `finally` never runs, so the lease is never dropped and the next tenant
-    # waits out the full ACQUIRE_TIMEOUT_S. Two shapes were tried and measured NOT to fix
-    # it, so do not reach for either again:
-    #
-    #   * subclassing StreamingResponse and releasing in a `try/finally` around
-    #     `__call__` -- on an already-dead client `__call__` is never entered at all;
-    #   * arming a watchdog on "has the generator started yet" -- it starts immediately,
-    #     disarms the watchdog, and then runs on against nobody.
-    #
-    # `request.is_disconnected()` is the one signal that reflects the client rather than
-    # us, so the watchdog polls that. `drop_lease` is idempotent because both it and the
-    # generator's `finally` can reach it, and the generator checks `released` each turn so
-    # it stops feeding a socket that has gone away instead of running to max_tokens.
-    released = asyncio.Event()
-
-    async def drop_lease():
-        if released.is_set():
-            return
-        released.set()
-        await lease.__aexit__(None, None, None)
-
-    async def watchdog():
-        try:
-            while not released.is_set():
-                if await request.is_disconnected():
-                    log.info("chat client disconnected mid-stream; returning the card")
-                    thinking.cancel()
-                    await drop_lease()
-                    return
-                await asyncio.sleep(DISCONNECT_POLL_S)
-        except asyncio.CancelledError:
-            raise
-
-    guard = asyncio.create_task(watchdog())
-    # asyncio keeps only a weak reference to a task, and this one outlives the frame that
-    # created it, so without a strong reference here it can be collected mid-flight.
-    _WATCHDOGS.add(guard)
-    guard.add_done_callback(_WATCHDOGS.discard)
-
-    async def stream():
-        try:
-            if not await start_llama():
-                thinking.cancel()
-                yield f"data: {json.dumps({'error': 'Chat surface is not available.'})}\n\n"
-                return
-
-            # The caller's own system prompt wins outright when supplied. Previously the
-            # persona was unconditional and a client could not replace it, because
-            # Turn.role is Literal["user","assistant"] -- that Literal is still there and
-            # still does its job (it stops a system turn being smuggled in mid-transcript
-            # where it would be invisible), but overriding is now an explicit parameter
-            # rather than something to work around.
-            # `or not body.system.strip()` added 2026-08-26, and the empty case is the whole
-            # point. `if body.system is None` alone treated "" as a deliberate override, so a
-            # caller sending `{"system": ""}` got a model with NO identity at all -- measured,
-            # it answered "I'm a 13.5B expert, fine-tuned for quality", inventing both the
-            # size and the provenance.
-            #
-            # The failure underneath is upstream and is worth naming rather than hiding: this
-            # GGUF's `tokenizer.chat_template` carries a Qwen fallback --
-            #     {%- if messages[0]['role'] == 'system' %}{{ messages[0]['content'] }}
-            #     {%- else %}{{ 'You are Qwen, created by Alibaba Cloud...' }}{%- endif %}
-            # -- so an ABSENT system message makes the model introduce itself as Qwen. That
-            # is truthful upstream provenance for the weights and it stays in the file; what
-            # must never happen is the PRODUCT presenting it to a user as its own identity.
-            #
-            # Enforcing here rather than editing the GGUF is deliberate and is the narrowest
-            # correct layer: it leaves upstream metadata untouched and honest, and it fixes
-            # every caller of this route at once. A blank string is now treated as "no
-            # override supplied" rather than as "erase the identity".
-            system = SYSTEM_PROMPT if (body.system is None or not body.system.strip()) \
-                else body.system
-            try:
-                exact = await asyncio.wait_for(thinking, timeout=5)
-            except (asyncio.TimeoutError, asyncio.CancelledError):
-                exact = None
-            if exact:
-                system += exact_context(exact)
-                yield "data: " + json.dumps({
-                    "assist": {
-                        "from": "ravencalc",
-                        "operation": exact.get("_operation"),
-                        "input": exact["input"].get("text"),
-                        "result": exact["result"].get("text"),
-                        "check": exact.get("check"),
-                        "ms": exact.get("_anticipated_ms"),
-                    }}) + "\n\n"
-
-            messages = ([{"role": "system", "content": system}]
-                        + [t.model_dump() for t in body.history]
-                        + [{"role": "user", "content": body.prompt}])
-            started, tokens, out = time.time(), 0, []
-            async for piece in chat_deltas(messages, body.max_tokens, body.temperature):
-                if released.is_set():
-                    # The watchdog gave the card back: the visitor is gone. Stop here
-                    # rather than generating the rest of max_tokens into a dead socket.
-                    return
-                tokens += 1
-                out.append(piece)
-                yield f"data: {json.dumps({'delta': piece})}\n\n"
-            elapsed = time.time() - started
-            yield "data: " + json.dumps({
-                "done": True, "tokens": tokens, "seconds": round(elapsed, 2),
-                "tok_per_s": round(tokens / elapsed, 1) if elapsed else None,
-                "model": CHAT_MODEL.stem, "adapter": adapter_applies(),
-            }) + "\n\n"
-        finally:
-            # Every exit from the generator returns the card: a clean finish, a client that
-            # hangs up mid-stream, and an exception on the way through. `drop_lease` is
-            # idempotent because the watchdog above can also have reached it.
-            guard.cancel()
-            await drop_lease()
-
-    return StreamingResponse(stream(), media_type="text/event-stream",
-                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
-
-
-@app.post("/api/image", response_model=ImageResult, tags=["surfaces"])
-async def image(body: ImageRequest,
-                _: Annotated[None, Depends(throttled_for("image"))]) -> ImageResult:
-    """Render an image with FLUX.1-schnell.
-
-    Taking the card means evicting chat first -- both weight sets do not fit -- so the
-    first render after a chat may include a cold load. `seconds` is the render alone.
-    """
-    if denied(body.prompt):
-        log.warning("denied image prompt: %r", body.prompt[:200])
-        raise HTTPException(400, "That one specific combination is refused. Nothing else is.")
-    if any(not p.exists() for p in FLUX.values()) or not DIFFUSE_ENGINE.exists():
-        raise HTTPException(503, "Image surface is still warming up.")
-
-    # secrets, not the clock. int(time.time()) % 100000 gave every render in the same
-    # wall-clock second an identical "random" seed -- two visitors prompting at once got
-    # correlated images -- and wrapped every ~27 hours.
-    seed = body.seed if body.seed is not None else secrets.randbelow(2**31 - 1)
-    stamp = f"gen-{int(time.time() * 1000)}-{seed}.png"
-    out = RENDERS / stamp
-    argv = [str(DIFFUSE_ENGINE),
-            "--diffusion-model", str(FLUX["unet"]), "--vae", str(FLUX["vae"]),
-            "--clip_l", str(FLUX["clip"]), "--t5xxl", str(FLUX["t5"]),
-            "-p", body.prompt, "--cfg-scale", "1.0", "--sampling-method", "euler",
-            "--steps", str(body.steps), "-W", str(body.size), "-H", str(body.size),
-            "--seed", str(seed), "-o", str(out),
-            # Without these a 768x768 render dies in VAE decode: it wants a 3.7 GB compute
-            # buffer, and with the 5.2 GB T5 encoder also resident there is nothing left.
-            # te=cpu moves the text encoder to system RAM (it runs once per prompt, so the
-            # PCIe cost is paid once rather than per step), and vae-tiling decodes in tiles
-            # instead of allocating the whole buffer at once.
-            "--backend", "te=cpu", "--vae-tiling", "--diffusion-fa"]
-
-    async with gpu.hold("image"):
-        await stop_llama()
-        started = time.time()
-        # Run sd-cli directly. gpu.hold already owns the governor lock, and wrapping this
-        # in `governor with image` made the process wait on a lock it was already holding --
-        # a self-deadlock that only surfaced as the job timeout 120 s later.
-        # is_engine: this IS the diffusion engine, so the governor should evict it by
-        # identity. `run` sets start_new_session=True, so this child leads its own
-        # group and a verified pgid is recorded -- children go with it.
-        rc, _o, err = await run(*argv, is_engine=True)
-        elapsed = time.time() - started
-
-    if rc != 0 or not out.exists():
-        log.error("image failed: %s", err.decode("utf-8", "replace")[-800:])
-        raise HTTPException(500, "The render failed.")
-
-    # Renders land in the served directory, so without this they grow without bound -- a
-    # public endpoint producing ~800 KB per request fills a disk quietly and takes the whole
-    # site down with it, which is a far worse outcome than an old image disappearing.
-    await asyncio.to_thread(prune_gallery)
-
-    return ImageResult(url=f"/api/gen/{stamp}", seconds=round(elapsed, 2), seed=seed,
-                       steps=body.steps, size=body.size,
-                       model="SymonImage F1 q4_k", bytes=out.stat().st_size)
 
 
 
-@app.get("/api/gen/{name}", tags=["surfaces"],
-         responses={200: {"content": {"image/png": {}}}, 404: {"description": "Gone or never existed"}})
-async def gen(name: str) -> FileResponse:
-    """Serve a render produced by `POST /api/image`.
 
-    Renders used to be handed back as `/<file>`, a path in the deployed webroot. But the
-    API writes them into the staging directory, and the web server serves the webroot -- so every
-    image generated on the live site 404'd until somebody ran a deploy, which needs a
-    password no process here has. Serving them from `/api` instead means they are visible
-    the instant they exist, on the same proxied path as every other surface.
 
-    Renders are pruned to the newest 60, so an old url legitimately becomes a 404.
-    """
-    # `name` is attacker-controlled and lands in a filesystem path. Match the exact shape
-    # the generator emits rather than trying to sanitise traversal out of arbitrary input.
-    if not re.fullmatch(r"gen-\d{13}-\d{1,10}\.png", name):
-        raise HTTPException(404, "No such render.")
-    path = RENDERS / name
-    if not path.is_file():
-        raise HTTPException(404, "That render has been pruned.")
-    return FileResponse(path, media_type="image/png",
-                        headers={"Cache-Control": "public, max-age=31536000, immutable"})
 
 async def calc(body: CalcRequest,
                 _: Annotated[None, Depends(throttled_for("ravencalc"))]) -> dict:
@@ -3224,45 +2798,6 @@ if not ports.delegated("ravencalc"):
     app.post("/api/ravencalc", tags=["surfaces"])(calc)
 
 
-@app.post("/api/remix", response_model=RemixResult, tags=["surfaces"])
-async def remix(body: RemixRequest,
-                _: Annotated[None, Depends(throttled_for("remix"))]) -> RemixResult:
-    """Build a sequenced tracklist.
-
-    Remix has no weights of its own -- it asks the chat surface, which is what "one server
-    underneath" means in practice, and why it queues behind chat and image.
-
-    Generation only. Resolving tracks against Spotify and writing a playlist needs OAuth
-    against a real account, and a stranger's prompt should not reach one; that half runs on
-    the box behind admin auth.
-    """
-    messages = [
-        {"role": "system", "content":
-         "You are SyMoNeuRaL Remix, a playlist builder. Return exactly a JSON array of "
-         f"{body.count} objects, each {{\"artist\": str, \"title\": str, \"why\": str}}, "
-         "ordered so the sequence actually flows -- tempo and key matter, this is an "
-         "ordered set rather than a pile of songs. 'why' is at most 12 words. Output the "
-         "JSON array and nothing else."},
-        {"role": "user", "content": body.prompt},
-    ]
-    async with gpu.hold("chat"):
-        if not await start_llama():
-            raise HTTPException(503, "Chat surface is not available.")
-        started = time.time()
-        text = "".join([p async for p in chat_deltas(messages, 900, 0.8)])
-        elapsed = time.time() - started
-
-    match = re.search(r"\[.*]", text, re.S)
-    try:
-        raw = json.loads(match.group(0)) if match else []
-    except json.JSONDecodeError:
-        raw = []
-    tracks = [Track(**{k: str(t.get(k, ""))[:200] for k in ("artist", "title", "why")})
-              for t in raw[:body.count] if isinstance(t, dict)]
-    return RemixResult(
-        tracks=tracks, seconds=round(elapsed, 2),
-        note=("Generated locally. Resolving these against Spotify and writing the playlist "
-              "runs on the box behind admin auth, not from this page."))
 
 
 # ---------------------------------------------------------------------------
@@ -3321,35 +2856,10 @@ class EmuBody(BaseModel):
     package: str = ""          # an id from /api/asicminer/firmware, never a path
 
 
-@app.get("/api/asicminer/firmware", tags=["asicminer"],
-         summary="Firmware packages actually present on this machine")
-async def asic_firmware(request: Request) -> dict:
-    _asic_auth(request)
-    # Read off disk rather than from a list in the page, so the model picker cannot claim
-    # firmware that is not there, or miss firmware that is.
-    return {"packages": asicminer.packages()}
 
 
-@app.post("/api/asicminer/scan", tags=["asicminer"],
-          summary="Discover rigs on a private network")
-async def asic_scan(request: Request, body: ScanBody) -> dict:
-    _asic_auth(request)
-    if not body.cidr.strip():
-        raise HTTPException(400, "give a CIDR, e.g. 10.0.0.0/24")
-    return await asicminer.discover(body.cidr.strip())
 
 
-@app.post("/api/asicminer/emulator", tags=["asicminer"],
-          summary="Start, stop or query the QEMU emulator")
-async def asic_emulator(request: Request, body: EmuBody) -> dict:
-    _asic_auth(request)
-    if body.action == "status":
-        return asicminer.emulator_status()
-    if body.action == "stop":
-        return asicminer.emulator_stop()
-    if not body.package:
-        raise HTTPException(400, "no package id given")
-    return asicminer.emulator_start(body.package)
 
 
 # ------------------------------------------------------------------ GPU miner (Ravencoin)
@@ -3371,28 +2881,64 @@ def _miner_auth(request: Request) -> None:
 class MinerBody(BaseModel):
     action: Literal["start", "stop", "status"] = "status"
 
+# ctx, part one. Decorators read ctx at IMPORT time -- studio's carries
+# Depends(ctx.throttled_for(...)) -- so these must land before the first router import.
+from core.context import configure as _configure, require as _require  # noqa: E402
 
-@app.get("/api/gpuminer/status", tags=["gpuminer"],
-         summary="What the GPU miner is doing, and what it is reporting")
-async def gpuminer_status(request: Request) -> dict:
-    _miner_auth(request)
-    st = cryptominer.status()
-    state, detail = cryptominer.unit_state(st)
-    # `hashrate_mh_s` is whatever the miner binary itself printed, or null. It is never
-    # derived from the card's specification: a projected hashrate shown where a measured
-    # one belongs is exactly the claim this site exists to refuse.
-    return {**st, "unit_state": state, "detail": detail}
+_configure(
+    API_REFERENCE_SCRIPT=API_REFERENCE_SCRIPT,
+    API_REFERENCE_STYLE=API_REFERENCE_STYLE,
+    CHAT_MODEL=CHAT_MODEL,
+    ChatRequest=ChatRequest,
+    DIFFUSE_ENGINE=DIFFUSE_ENGINE,
+    DISCONNECT_POLL_S=DISCONNECT_POLL_S,
+    DOCS_HEADER=DOCS_HEADER,
+    EmuBody=EmuBody,
+    FLUX=FLUX,
+    ImageRequest=ImageRequest,
+    ImageResult=ImageResult,
+    LIMITS=LIMITS,
+    MAX_PROMPT_CHARS=MAX_PROMPT_CHARS,
+    MinerBody=MinerBody,
+    QUEUE_DEPTH=QUEUE_DEPTH,
+    RENDERS=RENDERS,
+    ROOT=ROOT,
+    RemixRequest=RemixRequest,
+    RemixResult=RemixResult,
+    SITE=SITE,
+    SYSTEM_PROMPT=SYSTEM_PROMPT,
+    ScanBody=ScanBody,
+    Status=Status,
+    Track=Track,
+    _application_docs_index=_application_docs_index,
+    _asic_auth=_asic_auth,
+    _miner_auth=_miner_auth,
+    adapter_applies=adapter_applies,
+    anticipate=anticipate,
+    build_status=build_status,
+    bus=bus,
+    chat_deltas=chat_deltas,
+    check_rate=check_rate,
+    client_key_ws=client_key_ws,
+    denied=denied,
+    exact_context=exact_context,
+    gpu=gpu,
+    log=log,
+    prune_gallery=prune_gallery,
+    run=run,
+    semantic_etag=semantic_etag,
+    start_llama=start_llama,
+    stop_llama=stop_llama,
+    throttled_for=throttled_for,
+    ws_calc=ws_calc,
+    ws_chat=ws_chat,
+    ws_remix=ws_remix,
+)
 
 
-@app.post("/api/gpuminer/control", tags=["gpuminer"],
-          summary="Start or stop the miner. Starting takes the GPU from every other surface.")
-async def gpuminer_control(request: Request, body: MinerBody) -> dict:
-    _miner_auth(request)
-    if body.action == "status":
-        return cryptominer.status()
-    if body.action == "stop":
-        return cryptominer.stop()
-    return await cryptominer.start()
+
+
+
 
 
 # The streamer brings its own router rather than having its routes written here. It must be
@@ -3601,52 +3147,6 @@ def _studio_rows(raw: object) -> list[dict]:
     return out
 
 
-@app.get("/api/studio/models", tags=["studio"],
-         summary="Models on this machine, read from a pre-computed file",
-         dependencies=[Depends(throttled_for("studio"))])
-async def studio_models() -> dict:
-    """The model list, as last written by `tools/build/build_registry.py`.
-
-    **`latency_ms` is null on every row, and that is the honest answer today.** Nothing on this
-    machine stores a per-model latency: the token rate on the site is a literal in
-    `tools/build/build_console.py`, and the only measurement persisted to disk is peak VRAM. The field
-    is present so the response shape does not change when a real reading appears; a number will
-    only ever be written by something that measured it, for the row it measured.
-
-    An empty `models` with `generated_at: null` means the file has not been written yet -- a
-    200 rather than a 404, because this is a list a client polls and an empty list keeps its
-    decode path intact. `detail` then names the generator to run, which is the useful half of
-    the 404 the section routes raise.
-
-    **Public and unauthenticated, deliberately.** Caddy delegates the whole `/api/*` subtree,
-    so this answers anyone. That is a decision, not an oversight: every row states a model name
-    the site already publishes, a size, a quantisation and a parameter count -- the numbers, and
-    the site's argument is that the numbers are real and checkable. What it does *not* state is
-    where any of it lives on disk; `path` is dropped at the validator above. Metered under the
-    `studio` bucket so a ceiling can be set without touching this file.
-    """
-    try:
-        doc = json.loads(STUDIO_REGISTRY_FILE.read_text())
-    except (OSError, json.JSONDecodeError):
-        doc = None
-    if not isinstance(doc, dict):
-        return {
-            "models": [], "generated_at": None, "schema": None,
-            "detail": ("run/registry.json has not been generated; "
-                       "run python3 tools/build/build_registry.py"),
-        }
-    generated = doc.get("generated_at")
-    schema = doc.get("schema")
-    return {
-        "models": _studio_rows(doc.get("models")),
-        "generated_at": generated if isinstance(generated, int) and not isinstance(generated, bool) else None,
-        "schema": schema if isinstance(schema, int) and not isinstance(schema, bool) else None,
-        "latency_note": ("null latency means unmeasured, not zero. See the route docstring: no "
-                         "per-model timing is recorded on this machine yet."),
-        "freshness_note": ("this file is written out-of-band and is not refreshed by this "
-                           "request; re-run tools/build/build_registry.py after changing what is on "
-                           "disk"),
-    }
 
 
 # ---- per-application documentation ---------------------------------------------------
@@ -3668,52 +3168,8 @@ async def studio_models() -> dict:
 # mount matches everything at "/", so a route added after it is unreachable.
 
 
-@app.get("/docs/{app_id}", include_in_schema=False)
-async def application_docs(app_id: str) -> HTMLResponse:
-    """One application's scoped reference, rendered from the live router.
-
-    Nothing about the operation list is written down: `appdocs.routes_for` walks
-    `app.routes` and keeps the ones whose path this application owns. Ownership is a
-    partition over path prefixes, so two pages cannot show the same route and no page can
-    show another application's -- that is a property of the data structure rather than
-    something a reviewer has to check every time a router is added.
-    """
-    app_def = appdocs.BY_ID.get(app_id)
-    if app_def is None:
-        # Name the index rather than 404ing blankly. A visitor who guessed a slug is one
-        # click from the right one, and the list is short.
-        raise HTTPException(status_code=404,
-                            detail=f"no application {app_id!r}; see /docs for the "
-                                   "platform reference and the application index")
-    kids = tuple(a for a in appdocs.APPLICATIONS if a.parent == app_id)
-    return HTMLResponse(appdocs.render(
-        app_def, appdocs.routes_for(app_id, app.routes), children=kids))
 
 
-@app.get("/demo/dispatchos/docs", include_in_schema=False)
-async def dispatchos_docs() -> HTMLResponse:
-    """DispatchOS documentation for the CUSTOMER surface, at the customer's own address.
-
-    Two things make this its own route rather than a link to `/docs/dispatchos`.
-
-    **The audience.** This page renders with `audience="customer"`, which drops every
-    operator-only path -- quote, advance, message, rules and drivers. A customer account is
-    refused all five, and listing them here would present actions Donnie will be told `403`
-    for as things he is supposed to do. The operator's full view is still at
-    `/docs/dispatchos`; nothing is hidden from the person entitled to it.
-
-    **The address.** `ops/Caddyfile` puts `/demo/dispatchos` and `/demo/dispatchos/*` behind
-    the door, so this page is reachable exactly where the application is and by exactly the
-    same people. A customer handed one URL does not have to learn a second one, and the docs
-    for a surface behind a door do not sit outside it.
-
-    Declared above the StaticFiles mount, for the same reason every route here is.
-    """
-    app_def = appdocs.BY_ID["dispatchos"]
-    return HTMLResponse(appdocs.render(
-        app_def,
-        appdocs.visible_routes("dispatchos", app.routes, audience="customer"),
-        audience="customer", docs_root="/docs"))
 
 
 # ---- clean URLs for the four front-page sections ---------------------------
@@ -3749,80 +3205,10 @@ for _slug, _file in SECTION_PAGES.items():
     app.get(f"/{_slug}", include_in_schema=False)(_section_route(_file))
 
 
-@app.get("/studio", include_in_schema=False)
-async def studio_page() -> FileResponse:
-    """The Studio, at a clean address.
-
-    Its own route rather than a `SECTION_PAGES` entry, because `_section_route`'s 404 hardcodes
-    *"run python3 tools/build/build_split.py"*. That is true of the four section pages and false of
-    this one, and a 404 that names the wrong generator sends the next person to the wrong file.
-    Same read-at-request-time behaviour, different instruction.
-
-    Declared above the StaticFiles mount, for the same reason every route here is.
-    """
-    f = SITE / "studio.html"
-    if not f.is_file():
-        raise HTTPException(status_code=404,
-                            detail="studio.html has not been generated; "
-                                   "run python3 tools/build/build_studio.py")
-    return FileResponse(f, media_type="text/html")
 
 
-@app.get("/exp", include_in_schema=False)
-async def exp_page() -> FileResponse:
-    """The plugin runtime's page, at a clean address.
-
-    Its own route rather than a `SECTION_PAGES` entry, for the same reason `/studio` has one:
-    `_section_route`'s 404 hardcodes *"run python3 tools/build/build_split.py"*, which would send the
-    next person to the wrong generator. Same read-at-request-time behaviour, right instruction.
-
-    Declared above the StaticFiles mount, for the same reason every route here is.
-    """
-    f = SITE / "exp.html"
-    if not f.is_file():
-        raise HTTPException(status_code=404,
-                            detail="exp.html has not been generated; "
-                                   "run python3 tools/build/build_exp.py")
-    return FileResponse(f, media_type="text/html")
 
 
-@app.get("/live-stack/live", include_in_schema=False)
-@app.get("/livestack/live", include_in_schema=False)
-async def live_page() -> FileResponse:
-    """SyMoNeuRaL Live, at the address he asked every app to be at.
-
-    BOTH spellings, added 2026-08-22 with #81's image work. This page was born at
-    `/livestack/live` alone, before `/live-stack/coder` established that the hyphenated
-    form is served too -- so it was the one application on the rack reachable at one
-    spelling, which #81's own title says it should not be: *"/livestack/<name> **and**
-    /live-stack/<name> for every application"*. Found by the twin-spelling assertion in
-    `apps/test_deploy_routes.py`, not by anyone typing the address.
-
-    *"Applications from the live stack url as https://symoneural.com/chat.html for example.
-    They all need to be as such https://symoneural.com/livestack/chat"* — so this one is born
-    at `/livestack/live` rather than being migrated there later by #81.
-
-    `/live.html` keeps working, and not by accident: `site/` is mounted at `/` below, so the
-    file answers at its own name for anything that already links to it. Two addresses for one
-    file is the migration path #81 has to walk for the other nine, and the reason it is cheap
-    is that this route does not redirect — a redirect would break a `<video>` mid-playlist,
-    since the player resolves segment URIs relative to the manifest it was handed.
-
-    Declared above the StaticFiles mount, for the same reason every route here is.
-    """
-    f = SITE / "live.html"
-    if not f.is_file():
-        # Deliberately NOT "run tools/build_<x>.py". There is no generator for this page and
-        # there is not meant to be: *"Make sure to update the applications to be static with
-        # js css and html"*, so `site/live.html` is hand-authored and tracked. If it is
-        # missing, it was deleted or the checkout is partial, and sending the next person to
-        # a generator that does not exist is the exact failure `/studio`'s docstring above
-        # exists to avoid.
-        raise HTTPException(status_code=404,
-                            detail="site/live.html is missing. It is a tracked, "
-                                   "hand-authored static page with no generator; "
-                                   "restore it with git checkout -- site/live.html")
-    return FileResponse(f, media_type="text/html")
 
 
 # The Coder page, at both spellings of the address he named.
@@ -3874,26 +3260,6 @@ async def live_page() -> FileResponse:
 # two-segment path at all, while `/livestack/live` went undeployable.
 
 
-@app.get("/live-stack/coder", include_in_schema=False)
-@app.get("/livestack/coder", include_in_schema=False)
-async def coder_page() -> FileResponse:
-    """SyMoNeuRaL Coder: the browser surface.
-
-    Hand-authored and tracked, exactly like `site/live.html`, so the 404 below sends the
-    next person to `git checkout` rather than to a generator. There is no
-    `tools/build_coder.py` and there is not meant to be -- *"Make sure to update the
-    applications to be static with js css and html"*. Naming a generator that does not
-    exist is the failure `/studio`'s docstring exists to avoid, arriving one page later.
-
-    Declared above the StaticFiles mount, for the same reason every route here is.
-    """
-    f = SITE / "coder.html"
-    if not f.is_file():
-        raise HTTPException(status_code=404,
-                            detail="site/coder.html is missing. It is a tracked, "
-                                   "hand-authored static page with no generator; "
-                                   "restore it with git checkout -- site/coder.html")
-    return FileResponse(f, media_type="text/html")
 
 
 # ---- /livestack/<name> for the generated surface pages ------------------------------------
@@ -4018,42 +3384,6 @@ class IntakeSet(BaseModel):
     set: Literal[" ", "x", "-"]
 
 
-@app.post("/local/intake", include_in_schema=False)
-async def local_intake(body: IntakeSet, request: Request) -> JSONResponse:
-    """Set one assignment's box in INTAKE.md: `[ ]`, `[x]` ready, or `[-]` dropped.
-
-    Rewrites the ONE box line belonging to the named entry and nothing else -- Garrett's
-    answers, briefs, task numbers and prose are lines this never looks at. Written to a
-    temporary file in the same directory and renamed over the target, at mode 600, so a crash
-    midway leaves the original rather than half a ledger, and the copy is never briefly
-    world-readable on a box that also runs a web server.
-    """
-    _require_local(request)
-    target = ROOT / "INTAKE.md"
-    if not target.is_file():
-        raise HTTPException(status_code=404, detail="INTAKE.md has not been generated yet")
-
-    head = re.compile(r"^## (A-[A-Z0-9]+) \[")
-    box = re.compile(r"^\[[ xX-]\]\s*$")
-    lines = target.read_text().splitlines()
-    current, hit = None, False
-    for i, line in enumerate(lines):
-        m = head.match(line)
-        if m:
-            current = m.group(1)
-        elif current == body.id and box.match(line):
-            lines[i] = f"[{body.set}]"
-            hit = True
-            break            # the FIRST box under the heading, never a later one
-    if not hit:
-        raise HTTPException(status_code=404, detail=f"no assignment {body.id} in INTAKE.md")
-
-    tmp = target.with_suffix(".md.tmp")
-    tmp.write_text("\n".join(lines) + "\n")
-    tmp.chmod(0o600)
-    tmp.replace(target)
-    log.info("intake %s -> [%s]", body.id, body.set)
-    return JSONResponse({"id": body.id, "set": body.set})
 
 
 class TaskNote(BaseModel):
@@ -4071,79 +3401,8 @@ class TaskNote(BaseModel):
     text: str = Field(min_length=1, max_length=2000)
 
 
-@app.post("/local/tasknote", include_in_schema=False)
-async def local_tasknote(body: TaskNote, request: Request) -> JSONResponse:
-    """Append one `note:` line to a task's indented detail block in PROJECT-TASKS.md.
-
-    Append-only on purpose: it inserts after the last indented line of the task and rewrites
-    nothing, so two comments cannot collide and no existing line can be lost to a bug here.
-
-    THE INDENTATION IS LOAD-BEARING, not cosmetic. `tools/lib/archive_tasks.py` ends a task block
-    at the first non-blank column-zero line, so a comment written flush left would sever its
-    own task from every detail line below it the next time the archiver ran. Newlines inside
-    the comment are re-prefixed for the same reason, and keeping `note:` on every line also
-    stops a comment that happens to read `owner: garrett` or `check: exists x` from being
-    parsed by `build_progress.py` as a directive somebody declared.
-    """
-    _require_local(request)
-    target = ROOT / "PROJECT-TASKS.md"
-    if not target.is_file():
-        raise HTTPException(status_code=404, detail="PROJECT-TASKS.md not found")
-
-    row = re.compile(r"^[◼◻▶⊘] ((?:\(unnumbered[^)]*\))|#\d+) — ")
-    lines = target.read_text().splitlines()
-    start = None
-    for i, line in enumerate(lines):
-        m = row.match(line)
-        if m and m.group(1) == body.id:
-            start = i
-            break
-    if start is None:
-        raise HTTPException(status_code=404, detail=f"no task {body.id} in PROJECT-TASKS.md")
-
-    # The end of the block is the last INDENTED line under the row. Trailing blank lines are
-    # not part of it -- inserting into them would drift the comment away from its task by one
-    # line per comment, and eventually out of the block entirely.
-    end = start
-    for i in range(start + 1, len(lines)):
-        if lines[i].startswith((" ", "\t")):
-            end = i
-        elif lines[i].strip() == "":
-            continue
-        else:
-            break
-
-    stamp = time.strftime("%Y-%m-%d")
-    body_lines = [ln.strip() for ln in body.text.splitlines() if ln.strip()]
-    new = [f"        note: {stamp} {body.who} — {body_lines[0]}"]
-    new += [f"        note: {ln}" for ln in body_lines[1:]]
-    lines[end + 1:end + 1] = new
-
-    tmp = target.with_suffix(".md.tmp")
-    tmp.write_text("\n".join(lines) + "\n")
-    tmp.replace(target)
-    log.info("tasknote %s by %s (%d chars)", body.id, body.who, len(body.text))
-    # The rendered line goes back so the page shows exactly what was written, rather than the
-    # browser guessing at the format and drifting from the file it claims to mirror.
-    return JSONResponse({"id": body.id, "line": new[0].strip()[len("note: "):]})
 
 
-@app.get("/local/progress", include_in_schema=False)
-async def local_progress(request: Request) -> FileResponse:
-    """Serve run/progress.html from this origin, so the buttons above are same-origin.
-
-    The page still works opened straight off disk -- it detects `file:` and tells Garrett what
-    to type instead. This route exists so that it does not have to.
-    """
-    _require_local(request)
-    f = ROOT / "run" / "progress.html"
-    if not f.is_file():
-        raise HTTPException(status_code=404,
-                            detail="run/progress.html has not been generated; "
-                                   "run python3 tools/build/build_progress.py")
-    # no-store: the page is regenerated every two minutes by symoneural-progress.timer, and a
-    # cached copy of a status page is worse than no status page.
-    return FileResponse(f, media_type="text/html", headers={"Cache-Control": "no-store"})
 
 
 # ---- /local/coder: the Coder surface's reads, and the prefix that is the whole safety case
@@ -4219,67 +3478,16 @@ def _coder_read(request: Request, fn, **kw) -> JSONResponse:
                         headers={"Cache-Control": "no-store"})
 
 
-@app.get("/local/coder/status", include_in_schema=False)
-async def local_coder_status(request: Request) -> JSONResponse:
-    """What the surface is, plus each gate separately.
-
-    `authorize()` returns the FIRST refusal and stops, which is right for an answer and
-    useless for an instrument: an operator reading "surface disabled" cannot tell whether the
-    token is also missing, so turning the flag on would just move them to the next refusal.
-    The three predicates are read individually here so the page can show all three at once
-    and say what to set. They are booleans about configuration -- no value is disclosed.
-    """
-    _require_local(request)
-    peer = request.client.host if request.client else ""
-    body = coder.status(token=_coder_token(), peer=peer)
-    body["gates"] = {
-        "enabled": coder.enabled(),
-        "token_set": bool(_coder_token()),
-        "peer_loopback": coder.peer_is_loopback(peer),
-        "allow_remote": coder.allow_remote(),
-    }
-    # A property of THIS MOUNT, not of the module: `coder` can write and can run processes,
-    # and the page says so rather than implying the capability does not exist.
-    body["mount"] = {"read_only": True, "prefix": "/local/coder", "peer": peer}
-    return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
 
-@app.get("/local/coder/ls", include_in_schema=False)
-async def local_coder_ls(request: Request, path: str = ".",
-                         recursive: bool = False) -> JSONResponse:
-    return _coder_read(request, coder.list_dir, path=path, recursive=recursive)
 
 
-@app.get("/local/coder/file", include_in_schema=False)
-async def local_coder_file(request: Request, path: str) -> JSONResponse:
-    return _coder_read(request, coder.read_file, path=path)
 
 
-@app.get("/local/coder/history", include_in_schema=False)
-async def local_coder_history(request: Request, path: str) -> JSONResponse:
-    return _coder_read(request, coder.history, path=path)
 
 
-@app.get("/local/coder/journal", include_in_schema=False)
-async def local_coder_journal(request: Request, n: int = 50) -> JSONResponse:
-    """The audit trail. Gated like every other read -- it names paths."""
-    return _coder_read(request, coder.journal_tail, n=max(1, min(500, n)))
 
 
-@app.get("/", include_in_schema=False)
-async def root() -> RedirectResponse:
-    """Send the bare domain to /overview.
-
-    302, deliberately NOT 301. A permanent redirect is cached by browsers indefinitely and
-    is painful to walk back -- anyone who visited once would keep being bounced even after
-    the rule was removed. This is a presentation choice that may well be revisited, so it
-    stays reversible.
-
-    `site/index.html` is still built and still served at /index.html. It is the assembled
-    page tools/build/build_split.py reads to produce the four section pages, so it cannot simply
-    stop being generated.
-    """
-    return RedirectResponse("/overview", status_code=302)
 
 # ---------------------------------------------------------------- retired page names
 # The Tuner and the Guide merged into the Streamer and the pages were regenerated under new
@@ -4300,11 +3508,6 @@ _RETIRED_PAGES = {"/tuner.html": "/streamer.html",
                   "/tuner-watch.html": "/streamer-watch.html"}
 
 
-@app.get("/tuner.html", include_in_schema=False)
-@app.get("/tuner-watch.html", include_in_schema=False)
-async def retired_streamer_pages(request: Request) -> RedirectResponse:
-    """Send a retired page name to the one that replaced it."""
-    return RedirectResponse(_RETIRED_PAGES[request.url.path], status_code=302)
 
 
 # ---- /local/coders/* -- the multi-coder session surface (R-184) --------------------------
@@ -4322,27 +3525,6 @@ async def retired_streamer_pages(request: Request) -> RedirectResponse:
 from coders.router import router as _coders_router  # noqa: E402
 
 
-@app.get("/coders", include_in_schema=False)
-async def coders_page(request: Request) -> FileResponse:
-    """The multi-coder page. LOCAL ONLY, like the surface it drives.
-
-    `_require_local` guards the page as well as the API beneath it. Serving the page
-    publicly while the endpoints 404 would advertise an operator surface to the internet and
-    hand a visitor a form that cannot work -- and `ops/Caddyfile` has no matcher for
-    `/coders`, so it falls to `file_server`, which would find `site/coders.html` on disk and
-    serve it happily. Hence the explicit route and the explicit refusal.
-    """
-    _require_local(request)
-    # The same switch the router beneath this page enforces, checked here too. Serving the
-    # page while every endpoint it calls answers 404 would hand the operator a form that
-    # cannot work and read as a broken surface rather than a switched-off one.
-    from coders import enabled as _coders_enabled  # noqa: PLC0415
-    if not _coders_enabled():
-        raise HTTPException(status_code=404)
-    f = ROOT / "backend" / "apps" / "coders" / "page.html"
-    if not f.is_file():
-        raise HTTPException(status_code=404, detail="coders.html has not been generated")
-    return FileResponse(f, media_type="text/html")
 
 app.include_router(_coders_router, prefix="/local/coders",
                    dependencies=[Depends(_require_local)])
@@ -4353,3 +3535,51 @@ if SITE.is_dir():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=PORT, log_level="info", access_log=False)
+
+
+# ctx, part two. Read per request, so the whole module can be built first.
+_configure(
+    IntakeSet=IntakeSet,
+    STUDIO_REGISTRY_FILE=STUDIO_REGISTRY_FILE,
+    TaskNote=TaskNote,
+    _RETIRED_PAGES=_RETIRED_PAGES,
+    _coder_read=_coder_read,
+    _coder_token=_coder_token,
+    _require_local=_require_local,
+    _studio_rows=_studio_rows,
+)
+_require(*['API_REFERENCE_SCRIPT', 'API_REFERENCE_STYLE', 'CHAT_MODEL', 'ChatRequest', 'DIFFUSE_ENGINE', 'DISCONNECT_POLL_S', 'DOCS_HEADER', 'EmuBody', 'FLUX', 'ImageRequest', 'ImageResult', 'IntakeSet', 'LIMITS', 'MAX_PROMPT_CHARS', 'MinerBody', 'QUEUE_DEPTH', 'RENDERS', 'ROOT', 'RemixRequest', 'RemixResult', 'SITE', 'STUDIO_REGISTRY_FILE', 'SYSTEM_PROMPT', 'ScanBody', 'Status', 'TaskNote', 'Track', '_RETIRED_PAGES', '_application_docs_index', '_asic_auth', '_coder_read', '_coder_token', '_miner_auth', '_require_local', '_studio_rows', 'adapter_applies', 'anticipate', 'build_status', 'bus', 'chat_deltas', 'check_rate', 'client_key_ws', 'denied', 'exact_context', 'gpu', 'log', 'prune_gallery', 'run', 'semantic_etag', 'start_llama', 'stop_llama', 'throttled_for', 'ws_calc', 'ws_chat', 'ws_remix'])
+
+
+# Component routers. Paths in these are absolute, so no prefix.
+from asicminer.router import router as asicminer_router  # noqa: E402
+from chat.router import router as chat_router  # noqa: E402
+from coders.root import router as coders_root  # noqa: E402
+from cryptominer.router import router as cryptominer_router  # noqa: E402
+from dispatchos.root import router as dispatchos_root  # noqa: E402
+from docs.router import router as docs_router  # noqa: E402
+from exp.root import router as exp_root  # noqa: E402
+from home.router import router as home_router  # noqa: E402
+from image.router import router as image_router  # noqa: E402
+from live.root import router as live_root  # noqa: E402
+from local.router import router as local_router  # noqa: E402
+from remix.root import router as remix_root  # noqa: E402
+from retired.router import router as retired_router  # noqa: E402
+from status.router import router as status_router  # noqa: E402
+from studio.root import router as studio_root  # noqa: E402
+
+app.include_router(asicminer_router)
+app.include_router(chat_router)
+app.include_router(coders_root)
+app.include_router(cryptominer_router)
+app.include_router(dispatchos_root)
+app.include_router(docs_router)
+app.include_router(exp_root)
+app.include_router(home_router)
+app.include_router(image_router)
+app.include_router(live_root)
+app.include_router(local_router)
+app.include_router(remix_root)
+app.include_router(retired_router)
+app.include_router(status_router)
+app.include_router(studio_root)

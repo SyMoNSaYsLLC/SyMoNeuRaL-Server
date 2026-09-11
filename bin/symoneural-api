@@ -1,1 +1,69 @@
-/home/google/Symoneural/symoneural-api/bin/symoneural-api
+#!/usr/bin/env python3
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
+"""symoneural-api -- the entry point for the API and orchestration runtime.
+
+`docs/architecture/COMPONENT-MAP.tsv` has recorded this as a component since before this
+file existed: `symoneural-api  SERVICE_API  IMPLEMENTED  PRODUCTION  backend/api.py  Python
+... API/orchestration :8800`. It is real, it is in production, and until 2026-09-08 it was
+the only runtime with no folder of its own -- the unit ran `python3 backend/api.py` directly.
+
+Owner's reasoning for giving it one, and it is correct: the API is not the web runtime and
+not the language runtime. It can be used without either. A runtime that can be used
+independently deserves to be addressable independently.
+
+**This launches; it does not reimplement.** The application lives in `backend/api.py` and
+`backend/apps/`, which is where 15,697 tracked files expect it, and moving 4,097 lines of a
+live production service to gain a tidier path would be a large change with no functional
+gain. What this adds is a first-party, licensed, documented entry point that resolves the
+repo root the way the auditor recommends -- so the runtime can be started by name from
+anywhere, and the unit can name a runtime rather than a script inside another component.
+
+    symoneural-api                 # start it in the foreground
+    symoneural-api --check         # resolve and report, start nothing
+
+The live unit still runs `backend/api.py` directly. Repointing it at this entry point is a
+one-line systemd drop-in and needs root, so it is the owner's to apply -- see the README
+beside this file. Nothing here changes a running service.
+"""
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+MARKER = Path("backend") / "api.py"
+
+
+def find_root(start: Path) -> Path:
+    """Walk up for the marker. Never count parents -- see symoneural-audit/README.md.
+
+    This entry point exists one directory deeper than the script it launches, which is
+    exactly the arrangement that broke `symoneural-cli` on the day the runtimes were
+    promoted. Written this way from the first line so it cannot repeat that.
+    """
+    for cand in (start, *start.parents):
+        if (cand / MARKER).is_file():
+            return cand
+    raise SystemExit(f"symoneural-api: no repo root above {start} contains {MARKER}")
+
+
+def main(argv: list[str]) -> int:
+    root = find_root(Path(__file__).resolve().parent)
+    target = root / MARKER
+
+    if "--check" in argv:
+        print(f"root    {root}")
+        print(f"target  {target}  ({'present' if target.is_file() else 'MISSING'})")
+        print(f"port    {os.environ.get('SYMONEURAL_PORT', '8800 (default)')}")
+        return 0 if target.is_file() else 1
+
+    # exec rather than spawn: one process, so systemd's Type=exec still supervises the
+    # thing it started and signals are not forwarded through a middleman.
+    os.chdir(root)
+    os.execv(sys.executable, [sys.executable, str(target), *argv[1:]])
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

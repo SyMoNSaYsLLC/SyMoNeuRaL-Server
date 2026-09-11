@@ -1,1 +1,248 @@
-/home/google/Symoneural/symoneural-audit/bin/symoneural-audit
+#!/usr/bin/env python3
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
+"""symoneural-audit -- find code that breaks when a directory moves.
+
+## Why this exists
+
+On 2026-09-08 the five runtimes were promoted out of `engines/` to their own top-level
+directories, and the interactive client was promoted out of `bin/`. The client broke
+instantly:
+
+    ROOT = HERE.parent
+    assert (ROOT / "backend" / "api.py").is_file()
+    AssertionError: repo root not found at /home/google/Symoneural/symoneural-code
+
+`HERE.parent` encodes the file's **depth in the tree**. Every move is therefore a breaking
+change, and the breakage is usually silent, because the wrong parent is normally a directory
+that happens to exist. That file's own comment already read *"this calculation has been
+wrong four times in this repo"*. The promotion made it five, and it was only a two-minute
+fix because somebody had put an assert under it.
+
+Meanwhile `bin/symoneural-discovery` had been walking up to find `backend/api.py` the whole
+time. The correct pattern was one file away from the one that broke, and nothing in the repo
+could tell you which files used which.
+
+So this is that thing. It is the difference between "we fixed the one we tripped over" and
+"we know how many are left".
+
+## What it reports
+
+  * **`depth-root`** -- a repo/project root computed by counting parents (`parents[N]`,
+    `HERE.parent`, `dirname $(dirname ...)`) with **no marker assertion** anywhere in the
+    file. This is the class that broke the client. A file that counts parents *and* asserts
+    a marker is reported at lower confidence: it still breaks on a move, but it breaks
+    loudly, which is a different and much cheaper problem.
+
+  * **`absolute-repo-path`** -- a hardcoded `/home/google/Symoneural/...` inside executable
+    code. Works on exactly one machine, in exactly one checkout location. The repo has
+    already been burned by this: a deny-list of absolute paths silently stopped guarding
+    anything the moment a checkout moved, which is recorded in `.claude/settings.local.json`.
+
+  * **`stale-dir`** -- code naming a directory that no longer exists. After this session,
+    `engines/` and `references/` are the live examples: `references/` is now `external/`,
+    and `engines/` holds compatibility symlinks that are meant to be temporary.
+
+Findings are advisory by default and `--strict` makes them exit non-zero, so a test can
+gate on the classes that matter without the whole list becoming a wall nobody reads.
+
+    symoneural-audit                    # human-readable report
+    symoneural-audit --json             # machine-readable
+    symoneural-audit --strict depth-root,stale-dir
+    symoneural-audit --only depth-root  # one class
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import pathlib
+import re
+import subprocess
+import sys
+
+MARKER_FILE = pathlib.Path("backend") / "api.py"
+
+#: How the repo root is legitimately found: walk up until a marker is seen. Any file that
+#: does this is fine no matter where it lives.
+MARKER_SEARCH = re.compile(
+    r"for\s+\w+\s+in\s*\(?[^\n]*\.parents|"          # for cand in (start, *start.parents)
+    r"in\s+\w+\.parents\b|"                          # for parent in Path(...).parents
+    r"while\s*\[\[?\s*!\s*-[ef]",                    # shell: while [ ! -f "$d/marker" ]
+    re.MULTILINE,
+)
+
+#: Counting parents to reach a root.
+DEPTH_ROOT = re.compile(
+    r"(?:ROOT|REPO|PROJECT_ROOT|HERE)\s*=\s*[^\n]*?"
+    r"(?:\.parents\[\d+\]|\.parent(?:\.parent)*)|"
+    r"(?:ROOT|REPO)=\"?\$\(\s*cd[^\n]*?(?:\.\./)+",
+    re.MULTILINE,
+)
+
+#: An assertion that the computed root is the real one. Its presence downgrades a finding
+#: from "breaks silently" to "breaks loudly", which is the whole difference in cost.
+HAS_MARKER_ASSERT = re.compile(
+    r"assert[^\n]*(?:backend[/\"']+api\.py|api\.py)|"
+    r"is_file\(\)[^\n]*api\.py|"
+    r"\[\s*-f\s*\"?\$\{?ROOT\}?/backend/api\.py",
+)
+
+ABSOLUTE_REPO_PATH = re.compile(r"/home/[a-z_][a-z0-9_-]*/Symoneural/")
+
+#: Directories that no longer exist, or exist only as a temporary shim.
+STALE_DIRS = {
+    "references/": "renamed to external/ on 2026-09-08",
+    "engines/": "the five runtimes moved to the repo root; engines/ is a temporary shim",
+    "archives/": "renamed to releases/ on 2026-09-08",
+    "demo/": "flattened into the repo root long before this tool existed",
+}
+# `(?<![\w-])` rather than `\b`: a plain word boundary matched `demo/` inside
+# `01-guided-demo/` and `_shared/`-style workshop paths, reporting eight vendored
+# files that name nothing of ours. A hyphen is a non-word character, so `\b` sits
+# happily in the middle of a hyphenated directory name.
+STALE_RE = re.compile(r"(?<![\w-])(" + "|".join(re.escape(d) for d in STALE_DIRS) + r")")
+
+CODE_SUFFIXES = (".py", ".sh", ".bash", ".service", ".mk")
+
+#: Files whose job is to talk about these patterns. Documentation about a rule is not a
+#: breach of it, and this list stays short on purpose -- a long exempt list is how an audit
+#: stops auditing.
+EXEMPT_PREFIXES = ("docs/", ".claude/", "symoneural-audit/")
+
+COMMENT = re.compile(r"^\s*(#|//)")
+
+
+def find_root(start: pathlib.Path) -> pathlib.Path:
+    """The pattern this tool recommends, used by this tool. Walk up, do not count."""
+    for cand in (start, *start.parents):
+        if (cand / MARKER_FILE).is_file():
+            return cand
+    raise SystemExit(f"symoneural-audit: no repo root above {start} contains {MARKER_FILE}")
+
+
+def code_only(text: str) -> str:
+    """Strip whole-line comments; keep everything else.
+
+    A trailing comment after real code is kept, because code that computes a fragile root
+    and then explains itself is still fragile.
+    """
+    return "\n".join("" if COMMENT.match(ln) else ln for ln in text.splitlines())
+
+
+def tracked_files(root: pathlib.Path):
+    out = subprocess.run(["git", "-C", str(root), "ls-files", "-z"],
+                         capture_output=True, text=True, timeout=180)
+    for rel in out.stdout.split("\0"):
+        if not rel or not rel.endswith(CODE_SUFFIXES):
+            continue
+        if any(rel.startswith(p) for p in EXEMPT_PREFIXES):
+            continue
+        p = root / rel
+        if p.is_file():
+            yield rel, p
+
+
+def line_of(text: str, pos: int) -> int:
+    return text.count("\n", 0, pos) + 1
+
+
+def audit(root: pathlib.Path) -> list[dict]:
+    findings: list[dict] = []
+    for rel, path in tracked_files(root):
+        try:
+            raw = path.read_text(errors="replace")
+        except OSError:
+            continue
+        code = code_only(raw)
+
+        if MARKER_SEARCH.search(code):
+            pass                                    # resolves by marker; depth is irrelevant
+        else:
+            for m in DEPTH_ROOT.finditer(code):
+                findings.append({
+                    "class": "depth-root",
+                    "file": rel,
+                    "line": line_of(code, m.start()),
+                    "text": m.group(0).strip()[:100],
+                    "confidence": "loud" if HAS_MARKER_ASSERT.search(code) else "silent",
+                    "why": ("counts parents to reach a root, so any move of this file "
+                            "changes where it thinks the root is"),
+                })
+                break                               # one finding per file is enough to act
+
+        for m in ABSOLUTE_REPO_PATH.finditer(code):
+            findings.append({
+                "class": "absolute-repo-path", "file": rel,
+                "line": line_of(code, m.start()), "text": m.group(0),
+                "confidence": "silent",
+                "why": "hardcodes this checkout's location; works on one machine only",
+            })
+            break
+
+        for m in STALE_RE.finditer(code):
+            d = m.group(1)
+            findings.append({
+                "class": "stale-dir", "file": rel,
+                "line": line_of(code, m.start()), "text": d,
+                "confidence": "loud",
+                "why": STALE_DIRS[d],
+            })
+            break
+
+    findings.sort(key=lambda f: (f["class"], f["confidence"] != "silent", f["file"]))
+    return findings
+
+
+def report(findings: list[dict]) -> None:
+    if not findings:
+        print("symoneural-audit: nothing found.")
+        return
+    by_class: dict[str, list[dict]] = {}
+    for f in findings:
+        by_class.setdefault(f["class"], []).append(f)
+    for cls, items in by_class.items():
+        silent = sum(1 for i in items if i["confidence"] == "silent")
+        print(f"\n{cls}  --  {len(items)} file(s), {silent} that would fail silently")
+        print(f"  {items[0]['why']}")
+        for i in items:
+            mark = "!!" if i["confidence"] == "silent" else "  "
+            print(f"  {mark} {i['file']}:{i['line']}  {i['text']}")
+    print(f"\ntotal: {len(findings)} finding(s) across {len(by_class)} class(es)")
+    print("`!!` fails silently on a move. The rest assert a marker and fail loudly, which "
+          "is the same bug at a fraction of the cost.")
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--json", action="store_true", help="machine-readable output")
+    ap.add_argument("--only", help="report only this comma-separated set of classes")
+    ap.add_argument("--strict", help="comma-separated classes that make this exit non-zero")
+    args = ap.parse_args()
+
+    root = find_root(pathlib.Path(__file__).resolve().parent)
+    findings = audit(root)
+
+    if args.only:
+        keep = {c.strip() for c in args.only.split(",")}
+        findings = [f for f in findings if f["class"] in keep]
+
+    if args.json:
+        json.dump({"root": str(root), "findings": findings}, sys.stdout, indent=2)
+        sys.stdout.write("\n")
+    else:
+        report(findings)
+
+    if args.strict:
+        gated = {c.strip() for c in args.strict.split(",")}
+        hits = [f for f in findings if f["class"] in gated and f["confidence"] == "silent"]
+        if hits:
+            print(f"\nstrict: {len(hits)} silent finding(s) in {sorted(gated)}",
+                  file=sys.stderr)
+            return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

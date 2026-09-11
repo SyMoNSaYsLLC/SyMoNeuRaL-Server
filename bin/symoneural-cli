@@ -1,1 +1,1970 @@
-/home/google/Symoneural/symoneural-code/bin/symoneural-cli
+#!/usr/bin/env python3
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
+"""SyMoNeuRaL -- one command over the whole local stack.
+
+Three surfaces share one workstation, and they do not share it equally:
+
+    chat    symoneural-llm + Qwen2.5-7B Q4_K_M    8.1 GiB resident, measured   needs the card
+    image   symoneural-diffuse + FLUX.1-schnell q4_k   11.8 GiB of weights   needs the card
+    ravencalc   sympy, exact symbolic         CPU only, never queues       needs nothing
+
+The chat figure is the whole resident cost measured on this box -- 4.36 GiB of weights plus
+the adapter and the KV cache -- and it agrees with the ~8.2 GiB `backend/api.py` budgets for
+the same spawn. The image figure is the four weight files summed with `ls`, not a resident
+reading: sd.cpp is not ComfyUI, and the 13.1 GiB peak recorded for a 1024x1024 render in
+HANDOVER belongs to that other engine. Both are verifiable by opening what they name.
+
+The first two cannot be resident at the same time in 15.92 GiB, so every GPU
+operation here goes through the governor, which serialises them and -- more
+importantly -- waits for the driver to actually return the memory between
+tenants. The third does not touch the GPU at all and therefore never queues:
+that asymmetry is a fact about the work, not an implementation detail, and the
+CLI is shaped to make it visible.
+
+A fourth surface joined them and is not on that table because it does not own the
+card: `agent`, `tools`, `tool`, `state` and `mcp` are a client for
+`backend/apps/studio` -- 26 registered tools in four groups, native tool
+calling, and an MCP transport. `agent` streams one turn's frames as they arrive and
+takes the GPU only for as long as a tool it calls does. Its options are exactly the
+five parameters `POST /api/studio/agent` reads -- `query`, `history` (`-c`, from a
+transcript under `run/`), `max_steps`, `model` and `context` -- and no others, and it
+needs the API's own `SYMONEURAL_STUDIO_TOKEN` in the environment.
+
+Deliberately stdlib-only apart from sympy, which the system interpreter already
+carries -- `urllib` reads the SSE stream. `tools` and `mcp` additionally import the
+backend's registry in-process, which costs httpx, already in the serving path.
+Nothing here may be installed into the pinned base environment.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+
+
+def _find_root(start: Path) -> Path:
+    """Walk up until the marker is found, instead of counting parents.
+
+    The previous line was `ROOT = HERE.parent`, with a comment noting the calculation had
+    already been wrong four times in this repo. It was wrong a fifth time on 2026-09-08,
+    when this client was promoted from `bin/` to `symoneural-code/bin/` and one level up
+    stopped being the repo root. The assert caught it immediately, which is the only reason
+    it was a two-minute fix rather than a silent one -- keep the assert.
+
+    Counting parents encodes the file's depth in the tree, so every move is a breaking
+    change. Searching for a marker encodes what the root IS, so a move is free. 152 tracked
+    files in this repo still count parents; `symoneural-audit` exists to find them.
+    """
+    for cand in (start, *start.parents):
+        if (cand / "backend" / "api.py").is_file():
+            return cand
+    return start.parent                     # let the assert below say what went wrong
+
+
+ROOT = _find_root(HERE)
+assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found from {HERE}"
+
+# Legacy env promotion, and it has to run HERE -- above `STATE` and `DEFAULT_API` below,
+# which read the environment at module scope. Every variable this repo owns was once spelled
+# `SYM_*`; an operator's shell and `/etc/symoneural/api.env` may still say so, and this CLI
+# reads the API's own `SYMONEURAL_STUDIO_TOKEN` out of that shell. Without this, `symoneural-cli
+# agent` on an un-migrated box reports "no token in this environment" while the token is
+# plainly set, which is the worst kind of wrong answer -- confidently specific and false.
+# Same module the API uses, so there is one implementation of the rename to reason about.
+sys.path.insert(0, str(ROOT / "backend" / "apps"))
+import symoneuralenv  # noqa: E402
+symoneuralenv.promote()
+
+MODELS = ROOT / "backend" / "models"
+RUN = ROOT / "run"
+GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
+DEPLOY = ROOT / "scripts" / "deploy.sh"
+UNIT = "symoneural-api"
+# Where the packaged postinst records the outcome of its deploy. Read, never invented: the
+# .deb's postinst writes one line here (`ok: <iso>`, `skipped: <why>`, or `FAILED: ...`) and
+# this is the only place either command learns whether the last publish worked.
+# SYMONEURAL_STATE_DIR exists so the tests can point this at a tmpdir; nothing else sets it.
+STATE = Path(os.environ.get("SYMONEURAL_STATE_DIR", "/var/lib/symoneural"))
+
+# Our own engines, built by `tools/fork_engines.sh`. These pointed into `references/`
+# until 2026-08-20 -- a tree this project may not build or link against -- which is why
+# `status` read "not built" with both engines present somewhere else on the box.
+LLM_BIN = ROOT / "engines" / "symoneural-llm" / "build" / "bin"
+DIFFUSE_BIN = ROOT / "engines" / "symoneural-diffuse" / "build" / "bin"
+
+# The resident workhorse, and the base the SyMoNeuRaL adapter is trained against. The 14B is
+# the heavy tier -- better answers, ~98 tok/s instead of ~170, and no adapter.
+CHAT_MODEL = MODELS / "llm" / "symon-1.0-7b-q4_k_m.gguf"
+CHAT_MODEL_HEAVY = MODELS / "llm" / "symon-1.0-14b-q4_k_m.gguf"
+# Present once the fine-tune has run; served as an adapter rather than merged so the base
+# weights stay shared and reverting is a flag rather than a redeploy.
+CHAT_ADAPTER = ROOT / "training" / "adapter" / "symoneural-lora.gguf"
+FLUX_UNET = MODELS / "image" / "symoneural-image-unet-q4_k.gguf"
+FLUX_VAE = MODELS / "image" / "symoneural-image-vae.safetensors"
+FLUX_CLIP = MODELS / "image" / "symoneural-image-clip.safetensors"
+FLUX_T5 = MODELS / "image" / "symoneural-image-t5-q8_0.gguf"
+
+CHAT_PORT = 8081
+CHAT_PIDFILE = RUN / "chat.pid"
+
+# Measured on this machine. Everything derived below uses these rather than
+# vendor figures -- see the site's hardware section for the provenance.
+MEASURED_DRAM_GBS = 752.0
+MEASURED_H2D_GBS = 6.94
+KV_RESERVE = 0.35  # held back from the weights budget for KV cache + activations
+
+BOLD, DIM, GREEN, AMBER, OFF = "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[0m"
+# Italic is the one SGR code here that a terminal is allowed to ignore, and several do --
+# they show the text plain rather than wrongly. That is why emphasis is the only thing it
+# carries: nothing a reader must not miss is rendered with it alone.
+ITALIC = "\033[3m"
+
+
+def _tty() -> bool:
+    return sys.stdout.isatty()
+
+
+def c(text: str, colour: str) -> str:
+    return f"{colour}{text}{OFF}" if _tty() else text
+
+
+def smi(field: str) -> str:
+    """One field out of nvidia-smi, or '' if the driver will not say."""
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", f"--query-gpu={field}", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10,
+        )
+        return out.stdout.strip().splitlines()[0].strip()
+    except Exception:
+        return ""
+
+
+def diffuse_binary() -> Path | None:
+    """The image engine, or None when it has not been built.
+
+    This used to try two names, because the upstream project renamed its CLI mid-flight
+    and a build from either side of that had a different filename. `fork_engines.sh`
+    builds this engine from our own tree and sets the name, so there is one name and no
+    guess -- and a fallback that can never fire is a place for a real miss to hide.
+    """
+    candidate = DIFFUSE_BIN / "symoneural-diffuse"
+    return candidate if candidate.exists() else None
+
+
+def governor(*args: str, check: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run([str(GOVERNOR), *args], text=True, check=False)
+
+
+# --------------------------------------------------------------------------
+# status / residency
+# --------------------------------------------------------------------------
+
+def cmd_status(_args) -> int:
+    total = smi("memory.total") or "?"
+    used = smi("memory.used") or "?"
+    free = smi("memory.free") or "?"
+    resident = (RUN / "resident").read_text().strip() if (RUN / "resident").exists() else "none"
+    locked = (RUN / "gpu.lock.d").exists()
+
+    print(f"{c('device', DIM)}             {smi('name') or 'unknown'}")
+    print(f"{c('vram', DIM)}               {used} / {total} MiB used, {c(free + ' MiB free', GREEN)}")
+    print(f"{c('power', DIM)}              {smi('power.draw') or '?'} W   {smi('temperature.gpu') or '?'} C")
+    print(f"{c('resident surface', DIM)}   {resident}")
+    print(f"{c('gpu lock', DIM)}           {c('HELD', AMBER) if locked else 'free'}")
+    print()
+    print(f"{c('chat', DIM)}   {'built' if (LLM_BIN / 'symoneural-llm').exists() else c('not built', AMBER)}"
+          f"   {'weights present' if CHAT_MODEL.exists() else c('weights missing', AMBER)}")
+    sdb = diffuse_binary()
+    print(f"{c('image', DIM)}  {'built' if sdb else c('not built', AMBER)}"
+          f"   {'weights present' if FLUX_UNET.exists() else c('weights missing', AMBER)}")
+    print(f"{c('ravencalc', DIM)}   always available {c('(cpu, no gpu, never queues)', DIM)}")
+    # Only when something has written it. On a git checkout nothing has, and an invented
+    # "never deployed" row would be a reading of a file that does not exist.
+    verdict = last_deploy()
+    if verdict:
+        print()
+        print(f"{c('last deploy', DIM)}        {verdict}")
+    return 0
+
+
+def cmd_residency(_args) -> int:
+    """The residency plan, computed rather than asserted.
+
+    Every figure here comes from the device or from a measured constant. Load
+    times are weight bytes over the *measured* 6.94 GB/s pinned H2D rate, not
+    the 7.88 GB/s the Gen 3 x8 link is theoretically worth.
+    """
+    free_mib = float(smi("memory.free") or 0)
+    total_mib = float(smi("memory.total") or 0)
+    free_gib = free_mib / 1024
+    budget_gib = (total_mib / 1024) * (1 - KV_RESERVE)
+    resident = (RUN / "resident").read_text().strip() if (RUN / "resident").exists() else "none"
+
+    print(f"free                 {c(f'{free_gib:.1f} GiB', GREEN)}")
+    print(f"weights budget       {c(f'{budget_gib:.1f} GiB', GREEN)}   "
+          f"{c(f'({int(KV_RESERVE * 100)}% reserved for KV + activations)', DIM)}")
+    print(f"resident surface     {c(resident, GREEN)}")
+    print(f"headroom             {c(f'{max(0.0, free_gib - budget_gib):.1f} GiB', GREEN)}")
+    print()
+
+    costs = []
+    for label, path in (("chat", CHAT_MODEL), ("image", FLUX_UNET)):
+        if path.exists():
+            gb = path.stat().st_size / 1e9
+            costs.append(f"{label} {c(f'{gb / MEASURED_H2D_GBS * 1000:.0f} ms', AMBER)}")
+    if costs:
+        print("swap cost            " + "   ".join(costs) +
+              f"   {c(f'(over the measured {MEASURED_H2D_GBS} GB/s host link)', DIM)}")
+    print(f"resident : host      {c(f'{MEASURED_DRAM_GBS / MEASURED_H2D_GBS:.0f}x', GREEN)}"
+          f"   {c(f'({MEASURED_DRAM_GBS:.0f} GB/s on-card vs {MEASURED_H2D_GBS} GB/s across PCIe)', DIM)}")
+    return 0
+
+
+# --------------------------------------------------------------------------
+# chat
+# --------------------------------------------------------------------------
+
+SYSTEM_PROMPT = (
+    "You are SyMoNeuRaL, running locally on the workstation you are being asked about. "
+    "Answer concisely and concretely. These are the machine's measured figures, and you may "
+    "cite them: NVIDIA RTX 5070 Ti, Blackwell sm_120, 70 SMs x 128 = 8,960 CUDA cores, "
+    "15.92 GiB VRAM (15,858 MB), 256-bit bus at 14,001 MHz, 896.1 GB/s theoretical DRAM "
+    "bandwidth, ~752 GB/s measured (~84% of peak), 48 MB L2, PCIe Gen 3 x8 host cap "
+    "(device supports Gen 5) giving ~6.94 GB/s H2D and ~7.20 GB/s D2H pinned. Decode is "
+    "memory-bandwidth bound: every token reads the full weight set once, so tokens/second "
+    "is roughly bandwidth divided by weight bytes. Do not invent numbers you were not given."
+)
+
+
+def chat_running() -> bool:
+    if not CHAT_PIDFILE.exists():
+        return False
+    try:
+        os.kill(int(CHAT_PIDFILE.read_text().strip()), 0)
+        return True
+    except Exception:
+        return False
+
+
+# --------------------------------------------------------------------------
+# upgrade
+# --------------------------------------------------------------------------
+
+def last_deploy() -> str:
+    """The postinst's one-line verdict, or '' when nothing has ever written it."""
+    try:
+        return (STATE / "last-deploy").read_text().strip().splitlines()[0]
+    except (OSError, IndexError):
+        return ""
+
+
+def unit_is_active() -> bool:
+    """Whether systemd is running the API here. `is-active`, not `is-enabled`: a unit that
+    is enabled but deliberately stopped must stay stopped, and `restart` would start it."""
+    try:
+        return subprocess.run(["systemctl", "is-active", "--quiet", UNIT],
+                              check=False, timeout=10).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def sudo_argv(args) -> list[str]:
+    """The re-exec line. Built here rather than inline so a test can read it without
+    running it -- there is no dry-run mode for `sudo` itself."""
+    argv = ["sudo", sys.executable, str(Path(__file__).resolve()), "upgrade"]
+    if args.no_restart:
+        argv.append("--no-restart")
+    return argv
+
+
+def cmd_upgrade(args) -> int:
+    """Republish the staged site and restart the service: the no-apt path to a deploy.
+
+    This does NOT reimplement `scripts/deploy.sh`. That script owns the orphan scan, the
+    `--prune` semantics and the reference check that can fail the publish, and a second
+    implementation of any of those would drift from it silently. This calls it.
+    """
+    apt_list = Path("/etc/apt/sources.list.d/symoneural.list")
+    print(f"{c('deploy', DIM)}             {DEPLOY} --prune")
+    print(f"{c('service', DIM)}            {UNIT} "
+          f"{c('active', GREEN) if unit_is_active() else c('not active here', DIM)}")
+    previous = last_deploy()
+    if previous:
+        print(f"{c('last deploy', DIM)}        {previous}")
+    if apt_list.exists():
+        print(f"{c('apt', DIM)}                {apt_list} exists, so "
+              f"`sudo apt update && sudo apt upgrade` does this too")
+
+    if not DEPLOY.is_file():
+        print(f"{c('no ' + str(DEPLOY), AMBER)} -- this checkout cannot publish", file=sys.stderr)
+        return 1
+
+    if args.check:
+        print()
+        print("--check: nothing was run. Drop the flag to publish.")
+        return 0
+
+    # The webroot is root-owned, so this needs root and does not have it. Re-exec rather
+    # than printing an instruction: the alternative is a command that only ever tells you
+    # to run a different command.
+    if os.geteuid() != 0:
+        argv = sudo_argv(args)
+        if shutil.which("sudo") is None:
+            print("not root, and no sudo on PATH:", " ".join(argv), file=sys.stderr)
+            return 1
+        print()
+        print(f"{c('re-exec', DIM)}            {' '.join(argv)}")
+        sys.stdout.flush()
+        os.execvp(argv[0], argv)
+
+    print()
+    rc = subprocess.run([str(DEPLOY), "--prune"], check=False).returncode
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    verdict = f"ok: {stamp}" if rc == 0 else f"FAILED: {stamp} -- symoneural-cli upgrade"
+    try:
+        STATE.mkdir(parents=True, exist_ok=True)
+        (STATE / "last-deploy").write_text(verdict + "\n")
+    except OSError as exc:
+        # Not fatal: the publish either happened or it did not, and that is what matters.
+        # Saying so beats a silent gap in a file two commands read as history.
+        print(f"could not record the verdict in {STATE / 'last-deploy'}: {exc}", file=sys.stderr)
+    if rc != 0:
+        print(c(f"deploy failed (exit {rc}); the service was left alone", AMBER), file=sys.stderr)
+        return rc
+
+    if args.no_restart:
+        print(c(f"--no-restart: {UNIT} left as it was", DIM))
+    elif unit_is_active():
+        print(f"restarting {UNIT}")
+        if subprocess.run(["systemctl", "restart", UNIT], check=False).returncode != 0:
+            print(c(f"restart failed -- journalctl -u {UNIT}", AMBER), file=sys.stderr)
+            return 1
+    else:
+        print(f"{UNIT} is not active here, so nothing was restarted")
+    print(f"{c('recorded', DIM)}           {verdict}")
+    return 0
+
+
+def cmd_stop_chat(_args) -> int:
+    if CHAT_PIDFILE.exists():
+        try:
+            os.kill(int(CHAT_PIDFILE.read_text().strip()), 15)
+        except Exception:
+            pass
+        CHAT_PIDFILE.unlink(missing_ok=True)
+    subprocess.run(["pkill", "-f", "bin/symoneural-llm"], check=False)
+    return 0
+
+
+def cmd_chat(args) -> int:
+    server = LLM_BIN / "symoneural-llm-cli"
+    if not server.exists():
+        print("chat engine is not built yet -- run the build first", file=sys.stderr)
+        return 1
+    prompt = args.prompt or sys.stdin.read().strip()
+    if not prompt:
+        print("nothing to say", file=sys.stderr)
+        return 2
+
+    model = CHAT_MODEL_HEAVY if args.heavy else CHAT_MODEL
+    if not model.exists():
+        print(f"weights missing: {model}", file=sys.stderr)
+        return 1
+
+    cmd = [
+        str(server), "-m", str(model),
+        "-ngl", "99", "--no-warmup",
+        "-sys", SYSTEM_PROMPT,
+        "-p", prompt,
+        "-n", str(args.max_tokens), "--temp", str(args.temperature),
+        # -st exits after one turn. -no-cnv alone still drops into the interactive UI in
+        # this build and waits on stdin, which is an unbounded hang inside a governor hold.
+        "-no-cnv", "-st",
+    ]
+    # The adapter only matches the 7B base it was trained on; asking the engine to apply it to
+    # the 14B would be a rank/shape error, so it is simply not offered there.
+    if not args.heavy and not args.no_adapter and CHAT_ADAPTER.exists():
+        cmd += ["--lora", str(CHAT_ADAPTER)]
+    started = time.time()
+    rc = subprocess.run([str(GOVERNOR), "with", "chat", "--", *cmd], check=False).returncode
+    print(f"\n{c(f'{time.time() - started:.1f}s wall clock', DIM)}", file=sys.stderr)
+    return rc
+
+
+# --------------------------------------------------------------------------
+# image
+# --------------------------------------------------------------------------
+
+def cmd_image(args) -> int:
+    sdb = diffuse_binary()
+    if not sdb:
+        print("image engine is not built yet -- run the build first", file=sys.stderr)
+        return 1
+    missing = [str(p) for p in (FLUX_UNET, FLUX_VAE, FLUX_CLIP, FLUX_T5) if not p.exists()]
+    if missing:
+        print("weights missing:\n  " + "\n  ".join(missing), file=sys.stderr)
+        return 1
+
+    out = Path(args.output).resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        str(sdb),
+        "--diffusion-model", str(FLUX_UNET),
+        "--vae", str(FLUX_VAE),
+        "--clip_l", str(FLUX_CLIP),
+        "--t5xxl", str(FLUX_T5),
+        "-p", args.prompt,
+        "--cfg-scale", "1.0",          # schnell is distilled; cfg above 1 degrades it
+        "--sampling-method", "euler",
+        "--steps", str(args.steps),
+        "-W", str(args.size), "-H", str(args.size),
+        "-o", str(out),
+        "--seed", str(args.seed),
+    ]
+    if args.clip_on_cpu:
+        # --clip-on-cpu is deprecated in current sd.cpp; te=cpu is the replacement. Tiling
+        # and flash attention are what make 768x768 fit at all on 15.92 GiB.
+        cmd += ["--backend", "te=cpu"]
+    cmd += ["--vae-tiling", "--diffusion-fa"]
+
+    started = time.time()
+    rc = subprocess.run([str(GOVERNOR), "with", "image", "--", *cmd], check=False).returncode
+    elapsed = time.time() - started
+    if rc == 0 and out.exists():
+        print(f"{c(str(out), GREEN)}  {out.stat().st_size / 1024:.0f} KB  "
+              f"{args.size}x{args.size}  {args.steps} steps  seed {args.seed}  "
+              f"{c(f'{elapsed:.1f}s', AMBER)}")
+    return rc
+
+
+# --------------------------------------------------------------------------
+# ravencalc -- no GPU, no lock, no queue
+# --------------------------------------------------------------------------
+
+def cmd_ravencalc(args) -> int:
+    sys.path.insert(0, str(ROOT / "backend" / "apps" / "ravencalc"))
+    try:
+        import ravencalc
+    except ImportError as exc:
+        print(f"ravencalc is not importable: {exc}", file=sys.stderr)
+        return 1
+
+    doc = {"schema": "ravencalc/request/v1", "operation": args.operation,
+           "expression": args.expression}
+    if args.variable:
+        doc["variable"] = args.variable
+    if args.point:
+        doc["point"] = args.point
+
+    try:
+        result = ravencalc.run_request(doc)
+    except ravencalc.RavenCalcError as exc:
+        print(json.dumps(exc.as_record(), indent=2) if args.json else f"refused: {exc}",
+              file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(json.dumps(result, indent=2, default=str))
+        return 0
+
+    print(f"{c('in ', DIM)} {result['input'].get('text')}")
+    print(f"{c('out', DIM)} {c(str(result['result'].get('text')), GREEN)}")
+    check = result.get("check") or {}
+    if check.get("performed"):
+        verdict = {True: c("verified", GREEN), False: c("FAILED", AMBER)}.get(
+            check.get("passed"), c("unconfirmed", AMBER))
+        print(f"{c('chk', DIM)} {verdict} {c('-- ' + str(check.get('how', '')), DIM)}")
+    print(f"{c('eng', DIM)} {result.get('engine')}  {c('exact' if result.get('exact') else 'symbolic', DIM)}")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# The studio surface: connectors, tools, and the agent loop.
+#
+# `backend/apps/studio` is the capable half of this stack -- 26 registered tools in
+# four groups, native tool calling, an SSE agent loop and an MCP transport -- and until now
+# none of it was reachable without a browser or a hand-written curl. The four subcommands
+# below are that surface in a terminal.
+#
+# They are a client and nothing else. Every option here maps to a parameter the endpoint
+# actually reads -- `query`, `history`, `max_steps`, `context`, `model`, which is the whole list
+# `POST /api/studio/agent` accepts -- and every field printed is one the response actually
+# carries. There is no client-side tool filtering and no permission mode, because the server
+# has no such parameters: a flag the endpoint ignores is a lie with a help string.
+#
+# `history` is the one that needs saying out loud. The endpoint reads it (`routes.py`, and
+# `agent.run()` splices it between the system prompt and the new question), so the CLI carries
+# it: `-c` sends back a transcript this command itself recorded under `run/`. The server keeps
+# no session state of its own -- the file is the session, and it is the client's to hold.
+# ---------------------------------------------------------------------------
+
+DEFAULT_API = os.environ.get("SYMONEURAL_API_URL", "http://127.0.0.1:8800")
+# Word for word what `/api/studio/state` returns as its own `detail` when the switch is off,
+# so the CLI and the endpoint cannot drift into saying different things about the same gate.
+GATE_HINT = "set SYMONEURAL_STUDIO_ENABLED=1 and SYMONEURAL_STUDIO_TOKEN=<secret>, then restart the API"
+
+
+def studio_token() -> str:
+    """The operator token, read from the environment and never printed -- only sent."""
+    return os.environ.get("SYMONEURAL_STUDIO_TOKEN") or ""
+
+
+def require_token() -> bool:
+    if studio_token():
+        return True
+    print(f"no SYMONEURAL_STUDIO_TOKEN in this environment: {GATE_HINT}", file=sys.stderr)
+    print(c("the token is the API's own, kept in /etc/symoneural/api.env (root, 0600); "
+            "export the same value here", DIM), file=sys.stderr)
+    return False
+
+
+def api_open(path: str, *, base: str, method: str = "GET", body: object = None,
+             accept: str = "application/json", timeout: float = 30.0):
+    """Open one request against the studio router and hand back the live response.
+
+    stdlib `urllib`, so the module docstring's dependency claim stays true. An SSE stream is
+    newline-delimited chunks over a socket that stays open; nothing here needs a client
+    library, and `urlopen` iterates a chunked response line by line as it arrives.
+    """
+    import urllib.request
+
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(base.rstrip("/") + path, data=data, method=method)
+    req.add_header("Accept", accept)
+    if data is not None:
+        req.add_header("Content-Type", "application/json")
+    if (token := studio_token()):
+        req.add_header("X-Symoneural-Token", token)
+        # And the name it replaced. This CLI is installed from a .deb and the API is a systemd
+        # unit; nothing makes them the same version at the same moment, so a freshly upgraded
+        # CLI can be the first thing to talk to an API that has not been restarted yet -- and
+        # `symoneural-cli agent` reporting 401 against a token that is plainly correct is the
+        # worst failure to diagnose from this end. Drop this line once the deployed API is
+        # known to read the new name.
+        req.add_header("X-Sym-Token", token)
+    return urllib.request.urlopen(req, timeout=timeout)
+
+
+def api_json(path: str, *, base: str, method: str = "GET", body: object = None,
+             timeout: float = 60.0) -> tuple[int, dict]:
+    """`(status, body)`. A 4xx is a result here, not an exception: the router answers `denied`,
+    `unknown_tool` and `empty_query` as JSON, and those bodies are the useful part."""
+    import urllib.error
+
+    try:
+        with api_open(path, base=base, method=method, body=body, timeout=timeout) as r:
+            raw = r.read().decode(errors="replace")
+            return r.status, (json.loads(raw) if raw.strip() else {})
+    except urllib.error.HTTPError as exc:
+        raw = exc.read().decode(errors="replace")
+        try:
+            return exc.code, json.loads(raw)
+        except ValueError:
+            return exc.code, {"error": raw.strip()[:400] or f"HTTP {exc.code}"}
+    except urllib.error.URLError as exc:
+        return 0, {"error": "unreachable", "detail": str(exc.reason)}
+
+
+def unreachable(base: str, obj: dict) -> int:
+    print(f"no API at {base} -- {obj.get('detail') or obj.get('error')}", file=sys.stderr)
+    print("start one:  cd backend && python3 -m uvicorn api:app --port 8800", file=sys.stderr)
+    return 1
+
+
+def local_registry():
+    """The tool registry as this checkout defines it, imported in-process.
+
+    This is the same object `agent.py` generates its system prompt from and `mcp_server.py`
+    iterates, so `tools` tells the truth about what the model can call without an API to ask.
+    It costs the backend's imports -- stdlib plus httpx, both already in the serving path --
+    and `tools --remote` is there for when the live reading is the point.
+    """
+    sys.path.insert(0, str(ROOT / "backend"))
+    from apps.studio import registry, tools_impl  # noqa: F401  (registers the tools)
+    return registry
+
+
+def transcript_path(session: str) -> Path:
+    """`run/agent-<session>.json` -- where a multi-turn thread is kept.
+
+    `run/` is this repo's runtime state and this is runtime state, so it goes there rather than
+    into a dotfile in `$HOME`. The name is filtered down to letters, digits, dash and underscore
+    because it becomes a filename; an empty result falls back to `default` instead of writing
+    `agent-.json`.
+    """
+    safe = "".join(ch if (ch.isalnum() or ch in "-_") else "-" for ch in session).strip("-")
+    return RUN / f"agent-{safe or 'default'}.json"
+
+
+def transcript_read(path: Path) -> list[dict]:
+    """The stored thread, or `[]`.
+
+    Only messages with a string `role` and `content` survive: the file is fed straight to the
+    endpoint as `history`, and a half-written or hand-edited entry would come back as a 422
+    from somewhere far away from here. A malformed file reads as empty rather than raising --
+    the thread is a convenience, and losing it must not take the turn down with it.
+    """
+    try:
+        loaded = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return []
+    if not isinstance(loaded, list):
+        return []
+    return [m for m in loaded
+            if isinstance(m, dict) and isinstance(m.get("role"), str)
+            and isinstance(m.get("content"), str)]
+
+
+def transcript_write(path: Path, messages: list[dict]) -> None:
+    """Replace the thread on disk. Failures are reported, not raised: the answer already
+    arrived, and an unwritable `run/` is not a reason to exit non-zero after a good turn."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(messages, indent=1) + "\n")
+    except OSError as exc:
+        print(c(f"could not record the turn in {path}: {exc}", AMBER), file=sys.stderr)
+
+
+# ---------------------------------------------------------------------------
+
+
+def cmd_state(args) -> int:
+    """What the stack reports about itself, tokenless: `GET /api/studio/state`."""
+    status, obj = api_json("/api/studio/state", base=args.url, timeout=20.0)
+    if status == 0:
+        return unreachable(args.url, obj)
+    if args.json:
+        print(json.dumps(obj, indent=2, sort_keys=True))
+        return 0 if status == 200 else 1
+
+    def row(label: str, value: str) -> None:
+        print(f"{label:<20} {value}")
+
+    on = bool(obj.get("enabled"))
+    row("surface", c("on", GREEN) if on else c("off", AMBER))
+    if not on:
+        row("", c(str(obj.get("detail") or GATE_HINT), DIM))
+    ws = obj.get("workspace") or {}
+    row("workspace", str(ws.get("root") or c("not found -- set SYMONEURAL_STUDIO_ROOT", AMBER)))
+    row("tools", str(obj.get("tools", "?")))
+    row("max steps", str(obj.get("max_steps", "?")))
+    for name, b in (obj.get("inference") or {}).get("backends", {}).items():
+        up = b.get("up")
+        models = ", ".join(b.get("models") or []) if up else ""
+        row(f"inference {name}", (c("up", GREEN) + (f"  {models}" if models else ""))
+            if up else c("down", AMBER))
+        if not up and b.get("detail") and args.why:
+            row("", c(str(b["detail"]), DIM))
+    cu = obj.get("render_ui") or {}
+    row("render ui", c("up", GREEN) if cu.get("up") else c("down", AMBER))
+    lease = obj.get("lease") or {}
+    row("gpu lease", c("held", AMBER) if lease.get("holding") else c("not held", GREEN))
+    row("workflows", ", ".join(obj.get("workflows") or []) or "none")
+    if (pinned := (obj.get("inference") or {}).get("pinned")):
+        row("SYMONEURAL_STUDIO_LLM", str(pinned))
+    return 0
+
+
+def cmd_tools(args) -> int:
+    """The tool registry -- names, groups, and the JSON Schema the model is handed."""
+    if args.remote:
+        if not require_token():
+            return 2
+        status, obj = api_json("/api/studio/tools", base=args.url, timeout=20.0)
+        if status == 0:
+            return unreachable(args.url, obj)
+        if status != 200:
+            print(f"HTTP {status}: {json.dumps(obj)}", file=sys.stderr)
+            return 1
+        entries = obj.get("tools") or []
+        specs = obj.get("specs") or []
+        source = f"live from {args.url}"
+    else:
+        try:
+            registry = local_registry()
+        except Exception as exc:  # noqa: BLE001 -- report the import, do not pretend
+            print(f"cannot import the registry: {type(exc).__name__}: {exc}", file=sys.stderr)
+            print("try:  symoneural-cli tools --remote", file=sys.stderr)
+            return 1
+        entries = [{"name": t.name, "group": t.group, "dangerous": t.dangerous,
+                    "description": t.description, "parameters": t.parameters}
+                   for t in sorted(registry.TOOLS.values(), key=lambda t: (t.group, t.name))]
+        specs = registry.tool_specs()
+        source = f"this checkout ({ROOT.name})"
+
+    if args.name:
+        entries = [e for e in entries if e["name"] == args.name]
+        specs = [s for s in specs
+                 if (s.get("function") or {}).get("name") == args.name or
+                 s.get("name") == args.name]
+        if not entries:
+            print(f"no tool named {args.name!r}", file=sys.stderr)
+            return 1
+    if args.group:
+        entries = [e for e in entries if e["group"] == args.group]
+        keep = {e["name"] for e in entries}
+        specs = [s for s in specs
+                 if ((s.get("function") or {}).get("name") or s.get("name")) in keep]
+        if not entries:
+            print(f"no tools in group {args.group!r}", file=sys.stderr)
+            return 1
+    if args.json:
+        # The OpenAI tool-spec shape, exactly as it goes into the request the model sees.
+        print(json.dumps(specs, indent=2))
+        return 0
+
+    if args.name:
+        e = entries[0]
+        print(f"{c(e['name'], BOLD)}  {c(e['group'], DIM)}"
+              f"{'  ' + c('writes', AMBER) if e['dangerous'] else ''}")
+        print(f"  {e['description'] or '(no description)'}")
+        props = (e.get("parameters") or {}).get("properties") or {}
+        required = set((e.get("parameters") or {}).get("required") or [])
+        for pname, schema in props.items():
+            kind = schema.get("type", "any")
+            mark = "" if pname in required else c(" optional", DIM)
+            print(f"    {pname:<18} {kind}{mark}")
+            if schema.get("description"):
+                print(f"      {c(str(schema['description']), DIM)}")
+        if not props:
+            print(f"    {c('no parameters', DIM)}")
+        return 0
+
+    group = None
+    room = max(24, shutil.get_terminal_size((100, 24)).columns - 32)
+    for e in entries:
+        if e["group"] != group:
+            group = e["group"]
+            print(f"\n{c(group, BOLD)}")
+        flag = c(" writes", AMBER) if e["dangerous"] else ""
+        first = (e["description"] or "").strip().splitlines()[0] if e["description"] else ""
+        if len(first) > room:  # clipped on a word, and it says so, rather than mid-word
+            first = first[:room].rsplit(" ", 1)[0] + " ..."
+        print(f"  {e['name']:<20}{first}{flag}")
+    writes = sum(1 for e in entries if e["dangerous"])
+    print(f"\n{len(entries)} tools, {writes} of which write  {c(source, DIM)}")
+    return 0
+
+
+def cmd_tool(args) -> int:
+    """Run one tool directly: `POST /api/studio/tool/{name}`, no model in the path.
+
+    The route's own docstring calls this an operator surface reached with curl and a token.
+    This is that, with the arguments parsed for you.
+    """
+    if not require_token():
+        return 2
+    arguments: dict = {}
+    if args.body:
+        try:
+            arguments = json.loads(args.body)
+        except ValueError as exc:
+            print(f"--body is not JSON: {exc}", file=sys.stderr)
+            return 2
+        if not isinstance(arguments, dict):
+            print("--body must be a JSON object", file=sys.stderr)
+            return 2
+    for pair in args.arg:
+        if "=" not in pair:
+            print(f"arguments are key=value, got {pair!r}", file=sys.stderr)
+            return 2
+        key, _, raw = pair.partition("=")
+        try:  # so numbers, booleans, null and nested JSON arrive as themselves
+            arguments[key] = json.loads(raw)
+        except ValueError:
+            arguments[key] = raw
+    started = time.monotonic()
+    status, obj = api_json(f"/api/studio/tool/{args.name}", base=args.url,
+                           method="POST", body=arguments, timeout=args.timeout)
+    if status == 0:
+        return unreachable(args.url, obj)
+    if status == 404 and obj.get("error") == "unknown_tool":
+        print(f"no tool named {args.name!r}", file=sys.stderr)
+        print(f"{len(obj.get('available') or [])} available -- "
+              f"symoneural-cli tools", file=sys.stderr)
+        return 1
+    if status != 200:
+        print(f"HTTP {status}: {json.dumps(obj)}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(obj, indent=2, default=str))
+        return 0 if obj.get("ok") else 1
+    wall = time.monotonic() - started
+    if not obj.get("ok"):
+        print(c(f"{args.name} failed: {obj.get('error')}", AMBER), file=sys.stderr)
+        return 1
+    result = obj.get("result")
+    print(result if isinstance(result, str) else json.dumps(result, indent=2, default=str))
+    note = (f"{args.name} ok  server {obj.get('elapsed_s')}s  wall {wall:.2f}s")
+    print(c(note, DIM), file=sys.stderr)
+    return 0
+
+
+def _one_line(value: object, width: int) -> str:
+    """A result rendered on one line, with its own size stated rather than hidden."""
+    text = value if isinstance(value, str) else json.dumps(value, default=str)
+    flat = " ".join(text.split())
+    if len(flat) <= width:
+        return flat
+    return f"{flat[:width]}... ({len(text)} chars)"
+
+
+# ---- markdown, for a terminal ----------------------------------------------------------
+# The loop answers in markdown and this client printed the source. An answer that read
+# "**never** run this against /" put the emphasis a model had chosen to mark the dangerous
+# half of a sentence on the screen as punctuation, and a fenced block of shell arrived
+# indistinguishable from the prose telling you not to paste it. Rendering it is not
+# decoration: it is the difference between reading a warning and reading its markup.
+#
+# The repo rule that shapes all of it: a layout change may not drop data. Nothing here
+# truncates, nothing elides, no line is re-wrapped -- the terminal wraps, which is what the
+# CSS side of this rule already says -- and a link keeps BOTH its text and its target,
+# because a url folded away behind a word is a citation the reader cannot check.
+
+_MD_FENCE = re.compile(r"^\s*(```+|~~~+)\s*([^`\s]*)")
+_MD_HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*$")
+_MD_RULE = re.compile(r"^\s*([-*_])(?:\s*\1){2,}\s*$")
+_MD_QUOTE = re.compile(r"^(\s*)>\s?(.*)$")
+_MD_BULLET = re.compile(r"^(\s*)([-*+])\s+(.*)$")
+_MD_CODESPAN = re.compile(r"(`+)(\S|\S.*?\S)\1(?!`)")
+_MD_STRONG = re.compile(r"(\*\*|__)(?=\S)(.+?)(?<=\S)\1")
+_MD_EM = re.compile(r"(?<![\w*_])([*_])(?=[^\s*_])(.+?)(?<=[^\s*_])\1(?![\w*_])")
+_MD_LINK = re.compile(r"\[([^\]\n]*)\]\(\s*<?([^)\s>]*)>?(?:\s+\"[^\"]*\")?\s*\)")
+_HELD = re.compile(r"\x00(\d+)\x00")
+
+
+def _md_inline(text: str) -> str:
+    """Emphasis, code spans and links, within one line of prose.
+
+    Code spans come out first and go back last. The other order renders the markup INSIDE
+    a span -- and a span is exactly where somebody writes `**not bold**` when they are
+    explaining markdown, which is the one place it has to survive verbatim.
+    """
+    held: list[str] = []
+
+    def hold(m: "re.Match[str]") -> str:
+        held.append(c(m.group(2), AMBER))
+        return f"\x00{len(held) - 1}\x00"
+
+    out = _MD_CODESPAN.sub(hold, text)
+    # Both halves of a link, always. `text (url)` when it has a label, the bare url when it
+    # does not -- an empty label is `[](http://...)`, and printing nothing for it would lose
+    # the whole link to a typo in the markdown.
+    out = _MD_LINK.sub(lambda m: (f"{c(m.group(1), BOLD)} {c(m.group(2), DIM)}"
+                                  if m.group(1) else c(m.group(2), DIM)), out)
+    out = _MD_STRONG.sub(lambda m: c(m.group(2), BOLD), out)
+    out = _MD_EM.sub(lambda m: c(m.group(2), ITALIC), out)
+    return _HELD.sub(lambda m: held[int(m.group(1))], out)
+
+
+def render_markdown(text: str) -> str:
+    """The model's answer, rendered for a terminal.
+
+    Returns the text UNCHANGED when stdout is not a terminal, and that is the important half
+    of the contract. Stripping `**` for a pipe edits the answer without putting anything on
+    screen in its place, and this same string is what `--output-format json` carries, what
+    the transcript under `run/` records, and what a script downstream may diff. Colour is the
+    only thing rendering adds, so where colour cannot go, neither does rendering.
+    """
+    if not text or not _tty():
+        return text
+    out: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        if fence is not None:
+            if line.strip().startswith(fence):
+                fence = None
+            else:
+                # Indented and dim, and NOT re-indented relative to itself: the leading
+                # whitespace inside a fence is often the program's own, and in a language
+                # where it is syntax, eating it would hand the reader something that does
+                # not run.
+                out.append(c("    " + line, DIM))
+            continue
+        m = _MD_FENCE.match(line)
+        if m:
+            fence = m.group(1)[:3]
+            if m.group(2):
+                out.append(c(f"    {m.group(2)}", DIM))
+            continue
+        if _MD_RULE.match(line):
+            out.append(c("─" * 40, DIM))
+            continue
+        m = _MD_HEADING.match(line)
+        if m:
+            out.append(c(m.group(2), BOLD))
+            continue
+        m = _MD_QUOTE.match(line)
+        if m:
+            out.append(f"{m.group(1)}{c('│', DIM)} {_md_inline(m.group(2))}")
+            continue
+        m = _MD_BULLET.match(line)
+        if m:
+            out.append(f"{m.group(1)}{c('•', GREEN)} {_md_inline(m.group(3))}")
+            continue
+        # Ordered lists fall through on purpose. `1.` already reads as a list on a terminal,
+        # and renumbering it -- which is what a renderer that "handles" them tends to do --
+        # would change what the model said about step three.
+        out.append(_md_inline(line))
+    return "\n".join(out)
+
+
+# The four verdicts, and the keys that give them. `always` is per-invocation and is never
+# written to disk: a persisted "always" is a decision made once and applied forever by a file
+# nobody re-reads, which is how `run_command` ends up ungated on a box whose owner does not
+# remember agreeing to it.
+APPROVE_KEYS = {"y": "yes", "yes": "yes", "": "yes",
+                "n": "no", "no": "no",
+                "a": "always", "always": "always",
+                "q": "quit", "quit": "quit"}
+
+
+def have_tty() -> bool:
+    """Is there a human to ask? Answered by opening the controlling terminal, not by testing
+    stdin -- in `agent "..."` stdin may be a pipe carrying the query and in the repl it is
+    the session transcript, and neither absence means there is nobody at the keyboard."""
+    try:
+        with open("/dev/tty", "r"):
+            return True
+    except OSError:
+        return False
+
+
+def approve(name: str, arguments: object, reason: str = "") -> str:
+    """Ask about one gated tool call, and show the arguments that will actually run.
+
+    Returns "yes", "no", "always" or "quit". The arguments are printed in full and never
+    elided -- this is the one place in the client where a truncated line would mean a human
+    approved something they had not read, and the layout rule against `text-overflow` is the
+    same rule for the same reason.
+
+    Reading from `/dev/tty` rather than stdin is deliberate: in `symoneural-cli agent "..."`
+    stdin may be a pipe carrying the query, and in the repl it is the transcript of the
+    session. Neither is a human. If there is no controlling terminal there is nobody to ask,
+    and the caller must not reach this function at all -- it asserts that rather than falling
+    back to a default, because a default here is a policy invented at the worst moment.
+    """
+    print()
+    print(f"  {c('permission required', AMBER)}  {c(name, BOLD)}"
+          + (f"  {c(reason, DIM)}" if reason else ""))
+    for line in json.dumps(arguments, indent=2, default=str).splitlines():
+        print(f"    {line}")
+    print(f"  {c('[y]', BOLD)}es once   {c('[n]', BOLD)}o, tell the model it was refused   "
+          f"{c('[a]', BOLD)}lways this session   {c('[q]', BOLD)}uit the turn")
+    with open("/dev/tty", "r", encoding="utf-8") as tty:
+        while True:
+            print("  > ", end="", flush=True)
+            line = tty.readline()
+            if not line:                      # the terminal went away mid-question
+                print(c("no answer; refusing", DIM))
+                return "no"
+            verdict = APPROVE_KEYS.get(line.strip().lower())
+            if verdict:
+                return verdict
+            print(c("  y, n, a or q", DIM))
+
+
+def resolved_permissions(args) -> str:
+    """The mode in FORCE, which is not always the mode that was asked for.
+
+    Two resolutions, both easy to get wrong in one place and not the other:
+    `--dangerously-allow-all` outranks `--permissions`, and `auto` is not a state at all --
+    it is a question, answered by whether there is a terminal to ask at. Both were written
+    out longhand at the one place that needed them, and a third caller is exactly when a
+    duplicated rule starts to drift. A status line reading `auto` while the loop is denying
+    is a lie shaped like a setting.
+    """
+    if getattr(args, "dangerously_allow_all", False):
+        return "allow"
+    mode = getattr(args, "permissions", None) or "auto"
+    return ("ask" if have_tty() else "deny") if mode == "auto" else mode
+
+
+def status_line(session: str, turns: int, depth: int, *, model: str = "",
+                permissions: str = "", exempt=()) -> str:
+    """The line printed after every turn, as a string so it can be tested without a session.
+
+    It carried the session, the turn count, the thread depth and the model, and it omitted
+    the permission mode -- the one setting that decides whether a tool runs without anybody
+    being asked. An operator who typed `/permissions allow` forty turns ago had nothing on
+    screen to remind them, and `allow` is precisely the state that must not be quiet. Same
+    argument for exemptions, and they are named only when there are any: a widened permission
+    is worth a word, an empty list is noise on every line forever.
+    """
+    bits = [session, f"turn {turns}", f"{depth} message{'' if depth == 1 else 's'}"]
+    if model:
+        bits.append(model)
+    if permissions:
+        bits.append(f"perm {permissions}")
+    if exempt:
+        bits.append(f"exempt {', '.join(exempt)}")
+    return "[" + "  ".join(bits) + "]"
+
+
+def gated_result(name: str, verdict: str) -> dict:
+    """What the model is told when a human refuses. It is told the truth: a person said no.
+
+    Not an error and not an empty result. `{"error": "..."}` would invite a retry, and a
+    silent empty result would have the model reason from a tool it thinks succeeded.
+    """
+    return {"error": "not_permitted", "tool": name,
+            "detail": ("the operator declined this call. Do not retry it; say what you "
+                       "needed it for, or continue without it."
+                       if verdict == "no" else
+                       "the operator ended the turn at this call.")}
+
+
+def cmd_agent(args) -> int:
+    """Drive one agent turn and render the SSE stream as it arrives.
+
+    The frames are `agent.run()`'s own, unchanged: backend, thinking, tool_call, tool_result,
+    answer, error, done, notice. Anything else the loop grows later prints as raw JSON rather
+    than being dropped -- a renderer that silently ignores an event it does not know is how a
+    terminal ends up quieter than the thing it is watching.
+
+    Multi-turn is client-side by necessity: the endpoint reads a `history` list but stores
+    nothing between calls, so the thread lives in `run/agent-<session>.json` and `-c` sends it.
+    """
+    path = transcript_path(args.session)
+    if args.forget:
+        existing = transcript_read(path)
+        if path.exists():
+            path.unlink()
+            print(f"forgot {path} ({len(existing)} messages)")
+        else:
+            print(f"nothing recorded in {path}")
+        return 0
+
+    if not require_token():
+        return 2
+    query = " ".join(args.query).strip()
+    if not query:
+        print("nothing to ask", file=sys.stderr)
+        return 2
+    body: dict = {"query": query}
+
+    prior: list[dict] = []
+    if args.cont:
+        stored = transcript_read(path)
+        prior = stored
+        if args.history_limit and len(prior) > args.history_limit:
+            prior = prior[-args.history_limit:]
+            # A window that starts on an assistant turn asks the model to continue a reply to a
+            # question it cannot see, so the clip moves forward to the first user message.
+            while prior and prior[0].get("role") != "user":
+                prior = prior[1:]
+        if not stored:
+            print(c(f"history: nothing recorded in {path.name} yet", DIM), file=sys.stderr)
+        elif len(prior) < len(stored):
+            print(c(f"history: sending the last {len(prior)} of {len(stored)} messages in "
+                    f"{path.name} (--history-limit {args.history_limit})", DIM), file=sys.stderr)
+        else:
+            print(c(f"history: {len(prior)} messages from {path.name}", DIM), file=sys.stderr)
+    if prior:
+        body["history"] = prior
+
+    if args.max_steps:
+        body["max_steps"] = args.max_steps
+    if args.model:
+        body["model"] = args.model
+    if args.context:
+        body["context"] = args.context
+
+    # The permission policy. `auto` is the only sane default and it is decided by whether
+    # there is a terminal to ask on: with one, the loop stops and asks; without one, it
+    # refuses and tells the model it was refused, which keeps the turn completing. The third
+    # possibility -- assume yes because nobody is watching -- is the one this must never be,
+    # and `--dangerously-allow-all` is spelled the way it is so that choosing it is a
+    # sentence somebody typed rather than a default they inherited.
+    # Longhand here, longhand in `/permissions` and about to be longhand a third time in the
+    # status line: three copies of one rule, and this is the copy the SERVER is told, so a
+    # drift between it and either report is a client showing a mode it is not asking for.
+    body["permissions"] = resolved_permissions(args)
+    if getattr(args, "allow_tool", None):
+        body["allow"] = list(args.allow_tool)
+
+    # One turn may take several requests: a `permissions: "ask"` run stops the moment the
+    # model chooses a gated tool, and resuming it is another POST. So the request is a loop,
+    # and `t0` is deliberately outside it -- the stamps a user reads are elapsed-since-asked,
+    # not elapsed-since-the-latest-segment, and resetting them at each gate would make the
+    # clock appear to run backwards every time somebody answered a prompt.
+    t0 = time.monotonic()
+    frames: list[dict] = []
+    answer = ""
+    failed = False
+    segments = 0
+
+    while True:
+        seg = stream_turn(args, body, t0)
+        segments += 1
+        frames += seg["frames"]
+        if seg["answer"]:
+            answer = seg["answer"]
+        if seg["failed"]:
+            failed = True
+        if seg["http"] is not None:
+            return seg["http"]
+
+        ask = seg["permission"]
+        if ask is None:
+            break
+
+        name, arguments = ask.get("name"), ask.get("arguments")
+        for dropped in ask.get("dropped") or []:
+            print(c(f"  (and {dropped} after it, not run and not approved)", DIM))
+        verdict = approve(name, arguments, ask.get("reason") or "")
+
+        # `pending` is what the server appended during the stopped step: the assistant message
+        # carrying the tool call, plus any results from calls before this one. It has to go
+        # into `resume` verbatim, or the transcript the model reads next will not contain the
+        # call it is being handed a result for.
+        body.setdefault("resume", [])
+        body["resume"] += list(ask.get("pending") or [])
+
+        if verdict == "quit":
+            print(c("  turn ended at the gate", DIM))
+            result = gated_result(name, "quit")
+        elif verdict == "no":
+            result = gated_result(name, "no")
+        else:
+            if verdict == "always":
+                body.setdefault("allow", [])
+                if name not in body["allow"]:
+                    body["allow"].append(name)
+                print(c(f"  {name} allowed for the rest of this invocation", DIM))
+            # THE CLIENT runs it, with the argument object it just displayed. Re-issuing the
+            # turn with the tool merely permitted would let the model choose its arguments
+            # again at temperature, so what ran could differ from what was read and approved.
+            print(c(f"  running {name}", GREEN))
+            try:
+                # `api_json` answers `(status, body)` and BOTH halves matter here. Binding the
+                # tuple to `result` sent the model `[200, {...}]` -- the status folded in as
+                # element 0 of an array where the tool's output belongs -- and, worse, a 4xx
+                # went to it looking exactly like a success, because the router answers
+                # `denied` and `unknown_tool` as ordinary JSON with an error status. A tool the
+                # server refused must reach the model as a failure or it reasons from output it
+                # never got.
+                status, obj = api_json(f"/api/studio/tool/{name}", base=args.url,
+                                       method="POST", body={"arguments": arguments},
+                                       timeout=args.timeout)
+                if 200 <= status < 300:
+                    result = obj
+                else:
+                    result = {"error": obj.get("error") or f"http_{status}", "tool": name,
+                              "detail": obj.get("detail")
+                                        or f"the API answered {status} for this call"}
+            except Exception as exc:                       # noqa: BLE001
+                result = {"error": "tool_failed", "tool": name,
+                          "detail": f"{type(exc).__name__}: {exc}"}
+            print(f"  {c('   ->', DIM)} "
+                  f"{_one_line(result, max(20, shutil.get_terminal_size((100, 24)).columns - 30))}")
+
+        entry: dict = {"role": "tool", "name": name,
+                       "content": json.dumps(result, default=str)}
+        if ask.get("call_id"):
+            entry["tool_call_id"] = ask["call_id"]
+        body["resume"].append(entry)
+
+        if verdict == "quit":
+            failed = False
+            break
+
+    # Record the exchange whether or not this turn read the thread, so that a later `-c` has
+    # something to send. A failed turn is not appended: half a turn is worse than none.
+    if answer and not failed and not args.no_save:
+        transcript_write(path, transcript_read(path)
+                         + [{"role": "user", "content": query},
+                            {"role": "assistant", "content": answer}])
+
+    if args.output_format == "json":
+        print(json.dumps({"query": query, "answer": answer, "events": frames,
+                          "session": args.session, "history_sent": len(prior),
+                          "segments": segments,
+                          "elapsed_s": round(time.monotonic() - t0, 3),
+                          "ok": not failed}, indent=2, default=str))
+    return 1 if failed else 0
+
+
+def stream_turn(args, body: dict, t0: float) -> dict:
+    """One POST to `/api/studio/agent`, rendered as it arrives.
+
+    Returns what the caller needs to decide whether the turn is over:
+
+        frames      every frame, in order
+        answer      the final text, or ""
+        failed      an `error` frame arrived
+        permission  the `permission_required` frame, if the turn stopped on a gate
+        http        an exit code, if the request itself failed; otherwise None
+
+    Split out of `cmd_agent` when the gate landed, because a turn is no longer one request.
+    The renderer is unchanged and still prints frames it has not been taught rather than
+    dropping them -- a terminal quieter than the loop it is watching is the failure mode.
+    """
+    import urllib.error
+
+    try:
+        resp = api_open("/api/studio/agent", base=args.url, method="POST", body=body,
+                        accept="text/event-stream", timeout=args.timeout)
+    except urllib.error.HTTPError as exc:
+        raw = exc.read().decode(errors="replace")
+        try:
+            detail = json.dumps(json.loads(raw))
+        except ValueError:
+            detail = raw.strip()[:400]
+        print(f"HTTP {exc.code}: {detail}", file=sys.stderr)
+        return {"frames": [], "answer": "", "failed": True, "permission": None, "http": 1}
+    except urllib.error.URLError as exc:
+        return {"frames": [], "answer": "", "failed": True, "permission": None,
+                "http": unreachable(args.url, {"detail": str(exc.reason)})}
+
+    frames: list[dict] = []
+    answer = ""
+    failed = False
+    permission = None
+    width = shutil.get_terminal_size((100, 24)).columns
+    with resp:
+        for raw in resp:
+            line = raw.decode("utf-8", errors="replace").strip()
+            if not line.startswith("data:"):
+                continue
+            try:
+                frame = json.loads(line[5:].strip())
+            except ValueError:
+                continue
+            frames.append(frame)
+            kind = frame.get("event")
+            if kind == "answer":
+                answer = frame.get("text") or ""
+            if kind == "error":
+                failed = True
+            if kind == "permission_required":
+                permission = frame
+            if args.output_format == "stream-json":
+                print(json.dumps(frame, default=str), flush=True)
+                continue
+            if args.output_format == "json":
+                continue
+            stamp = c(f"{time.monotonic() - t0:6.2f}s", DIM)
+            if kind == "backend":
+                print(f"{stamp} {c('backend', BOLD)} {frame.get('name')} "
+                      f"{c(str(frame.get('url') or ''), DIM)}")
+            elif kind == "thinking":
+                for para in (frame.get("text") or "").strip().splitlines():
+                    if para.strip():
+                        print(f"{stamp} {c(para.strip(), DIM)}")
+            elif kind == "tool_call":
+                print(f"{stamp} {c('call', GREEN)} {frame.get('name')}"
+                      f"({_one_line(frame.get('arguments'), max(20, width - 30))})")
+            elif kind == "tool_result":
+                shown = (json.dumps(frame.get('result'), indent=2, default=str)
+                         if args.verbose else _one_line(frame.get("result"),
+                                                        max(20, width - 30)))
+                print(f"{stamp} {c('   ->', DIM)} {shown}")
+            elif kind == "permission_required":
+                # The prompt itself is `approve()`'s, printed by the caller once the stream
+                # has finished. Announcing it here keeps the stamp sequence honest: the turn
+                # stopped at this moment, and the seconds a human then spends deciding are
+                # not the loop's.
+                print(f"{stamp} {c('stopped', AMBER)} {frame.get('name')} needs permission")
+            elif kind == "answer":
+                print(f"{stamp} {c('answer', BOLD)}"
+                      f"{c('  (step limit reached)', AMBER) if frame.get('truncated') else ''}")
+                print(render_markdown(answer.strip()))
+            elif kind == "notice":
+                print(f"{stamp} {c('notice', AMBER)} {frame.get('detail')}")
+            elif kind == "error":
+                print(f"{stamp} {c('error', AMBER)} {frame.get('code')}: "
+                      f"{frame.get('detail')}", file=sys.stderr)
+            elif kind == "done":
+                if frame.get("awaiting_permission"):
+                    continue            # the turn is not done; the caller is about to ask
+                used, secs = frame.get("tools_used"), frame.get("seconds")
+                print(f"{stamp} {c('done', DIM)} {c(str(frame.get('steps')) + ' steps', DIM)}"
+                      + (c(f", tools {used}", DIM) if used else "")
+                      + (c(f", {secs}s server-side", DIM) if secs is not None else "")
+                      + (c(", hit the step limit", AMBER) if frame.get("hit_step_limit")
+                         else ""))
+            else:  # an event this renderer has not been taught: show it, do not swallow it
+                print(f"{stamp} {c('?', AMBER)} {json.dumps(frame, default=str)}")
+
+    return {"frames": frames, "answer": answer, "failed": failed,
+            "permission": permission, "http": None}
+
+
+def cmd_mcp(args) -> int:
+    """The MCP transport: what it would serve, whether it can start, and how to wire a client.
+
+    `mcp_server.py` iterates the same registry the agent does, so the tool list here is not a
+    second copy -- it is the same 26 functions over a different transport. The venv is the only
+    thing FastMCP is installed into; without it this reports the gap instead of guessing.
+    """
+    pkg = ROOT / "backend" / "apps" / "symoneuralstudio"
+    venv_py = pkg / ".venv" / "bin" / "python"
+    server = pkg / "mcp_server.py"
+    have_venv = venv_py.is_file()
+    fastmcp = None
+    if have_venv:
+        probe = subprocess.run([str(venv_py), "-c",
+                                "import fastmcp;print(fastmcp.__version__)"],
+                               capture_output=True, text=True)
+        fastmcp = probe.stdout.strip() if probe.returncode == 0 else None
+
+    if args.serve:
+        if not have_venv or not fastmcp:
+            print("the MCP venv is not ready. build it, by full path, never into the system "
+                  "interpreter:", file=sys.stderr)
+            print(f"  python3 -m venv {pkg / '.venv'}", file=sys.stderr)
+            print(f"  {pkg / '.venv/bin/pip'} install -r {pkg / 'requirements.txt'}",
+                  file=sys.stderr)
+            return 1
+        cmd = [str(venv_py), str(server)] + (["--http", str(args.http)] if args.http else [])
+        # exec, not spawn: on stdio the client owns this process's stdin and stdout, and an
+        # intermediate python would sit in the middle of the transport for no reason.
+        os.execv(cmd[0], cmd)
+
+    try:
+        registry = local_registry()
+        count, groups = len(registry.TOOLS), sorted({t.group for t in registry.TOOLS.values()})
+    except Exception as exc:  # noqa: BLE001
+        count, groups = "?", []
+        print(f"registry did not import: {type(exc).__name__}: {exc}", file=sys.stderr)
+
+    def row(label: str, value: str) -> None:
+        print(f"{label:<20} {value}")
+
+    if args.json:
+        print(json.dumps({"server": str(server), "venv": str(venv_py.parent.parent),
+                          "venv_ready": bool(fastmcp), "fastmcp": fastmcp,
+                          "tools": count, "groups": groups,
+                          "stdio": [str(venv_py), str(server)],
+                          "http": [str(venv_py), str(server), "--http", "PORT"]}, indent=2))
+        return 0
+    row("server", str(server))
+    row("transport", "stdio (default), or --http PORT for streamable HTTP")
+    row("fastmcp", f"{fastmcp}  {c(str(venv_py.parent.parent), DIM)}" if fastmcp
+        else c("not installed -- symoneural-cli mcp --serve prints the two commands", AMBER))
+    row("tools", f"{count} in {', '.join(groups)}" if groups else str(count))
+    row("switch", c("on", GREEN) if os.environ.get("SYMONEURAL_STUDIO_ENABLED") == "1"
+        else c("SYMONEURAL_STUDIO_ENABLED is not 1 in this shell", AMBER))
+    print()
+    print(f"{c('a client wires it as:', BOLD)}")
+    print(json.dumps({"mcpServers": {"symoneural-studio": {
+        "command": str(venv_py), "args": [str(server)],
+        "env": {"SYMONEURAL_STUDIO_ENABLED": "1", "SYMONEURAL_STUDIO_TOKEN": "<secret>",
+                "SYMONEURAL_STUDIO_ROOT": str(ROOT)}}}}, indent=2))
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# The interactive client. `symoneural-cli` with no arguments, or `repl`.
+# ---------------------------------------------------------------------------
+#
+# Everything below is a client over the surfaces already here -- `cmd_agent` runs the turn,
+# `cmd_status` and `cmd_tools` answer the slash commands that ask about the box. Nothing is
+# reimplemented, because the interesting half of an interactive client is not the transport;
+# it is the session: what survives a Ctrl-C, what a `@path` means, where the thread is kept,
+# and what the prompt tells you about the state you are in.
+#
+# One turn is one `POST /api/studio/agent`, and that endpoint stores nothing between calls.
+# The thread therefore lives on this side, in `run/agent-<session>.json`, and is re-sent as
+# `history` each turn. That is why `/resume` can exist at all and why it is a file listing.
+
+SLASH: list[tuple[str, str]] = [
+    ("/help", "this table"),
+    ("/clear", "drop the thread and start a new session id"),
+    ("/status", "device, surfaces and lock state -- the `status` subcommand"),
+    ("/tools", "the tool registry the model is handed, by group"),
+    ("/model [NAME]", "show, set, or clear the model this session asks for"),
+    ("/resume [ID]", "list the recorded sessions, or switch to one"),
+    ("/session", "this session's id, its file, and how many messages are in it"),
+    ("/permissions", "what is gated, what this session does about it, and change it"),
+    ("/exit", "leave -- Ctrl-D does the same; Ctrl-C only cancels the line"),
+]
+
+# A cap on `@path` expansion. The point of the number is that the client says when it clips:
+# silently sending half a file is the same class of bug as silently dropping a rack row.
+AT_FILE_LIMIT = 64_000
+
+
+def session_id() -> str:
+    """A new, sortable session id. `time.strftime` rather than a counter, because two clients
+    open at once must not both decide they are session 3 and write the same thread."""
+    return time.strftime("code-%Y%m%d-%H%M%S")
+
+
+def sessions() -> list[tuple[str, Path, int]]:
+    """Every recorded thread: (id, path, message count), newest file first."""
+    out = []
+    for path in sorted(RUN.glob("agent-*.json"), key=lambda p: p.stat().st_mtime,
+                       reverse=True):
+        out.append((path.stem[len("agent-"):], path, len(transcript_read(path))))
+    return out
+
+
+def expand_at(text: str) -> tuple[str, list[str]]:
+    """Replace `@path` tokens with the file's contents, and say what happened.
+
+    A missing path is left in the text verbatim and reported, never dropped: `@nots.py`
+    silently becoming nothing would send the model a question with the subject removed.
+    """
+    notes: list[str] = []
+    out: list[str] = []
+    for token in text.split(" "):
+        if not token.startswith("@") or len(token) < 2:
+            out.append(token)
+            continue
+        target = Path(token[1:]).expanduser()
+        if not target.is_file():
+            notes.append(f"@{target}: not a file, sent as written")
+            out.append(token)
+            continue
+        try:
+            body = target.read_text(errors="replace")
+        except OSError as exc:
+            notes.append(f"@{target}: {exc.strerror}, sent as written")
+            out.append(token)
+            continue
+        clipped = len(body) > AT_FILE_LIMIT
+        if clipped:
+            body = body[:AT_FILE_LIMIT]
+        notes.append(f"@{target}: {len(body)} chars"
+                     + (f" (clipped at {AT_FILE_LIMIT})" if clipped else ""))
+        out.append(f"\n\n--- {target} ---\n{body}\n--- end {target} ---\n\n")
+    return " ".join(out), notes
+
+
+def read_block(prompt: str, more: str) -> str | None:
+    """One input, which may span lines. None means end of input (Ctrl-D).
+
+    Two continuations, both explicit, because an implicit one makes Enter unpredictable:
+    a trailing backslash, and a line of exactly `\"\"\"` opening a block until the next one.
+    """
+    first = input(prompt)
+    if first.strip() == '"""':
+        lines: list[str] = []
+        while True:
+            line = input(more)
+            if line.strip() == '"""':
+                return "\n".join(lines)
+            lines.append(line)
+    lines = [first]
+    while lines[-1].endswith("\\"):
+        lines[-1] = lines[-1][:-1]
+        lines.append(input(more))
+    return "\n".join(lines)
+
+
+def agent_namespace(args, session: str, query: str, cont: bool) -> argparse.Namespace:
+    """The Namespace `cmd_agent` expects, built for one REPL turn.
+
+    Calling `cmd_agent` rather than re-rendering the stream here is deliberate: there is one
+    SSE renderer in this file and it already handles every frame the loop emits plus the ones
+    it does not know. A second renderer would drift from the first, and the way that shows up
+    is an event appearing in the browser and not in the terminal.
+    """
+    return argparse.Namespace(
+        query=[query], cont=cont, session=session, history_limit=args.history_limit,
+        no_save=False, forget=False, max_steps=args.max_steps, model=args.model,
+        context=args.context, output_format="text", verbose=args.verbose,
+        timeout=args.timeout, url=args.url,
+        # The gate's settings live on the repl's own args so that `/permissions` can change
+        # them mid-session and the next turn honours it. Copying them per turn rather than
+        # reading them once is what makes that possible.
+        permissions=args.permissions, dangerously_allow_all=args.dangerously_allow_all,
+        allow_tool=list(args.allow_tool or []))
+
+
+# ---------------------------------------------------------------------------------------
+# the launch dashboard
+# ---------------------------------------------------------------------------------------
+def repo_version() -> str:
+    """The short commit this tree is on, or `dev` -- read from `.git`, never via subprocess.
+
+    A splash that shells out to `git` on every launch pays a process for a decoration, and on
+    a box where `git` is missing it prints a traceback instead of a session. Reading the two
+    files directly is cheaper and cannot fail loudly: anything unexpected is `dev`.
+    """
+    try:
+        head = (ROOT / ".git" / "HEAD").read_text(encoding="utf-8").strip()
+        if head.startswith("ref: "):
+            ref = (ROOT / ".git" / head[5:]).read_text(encoding="utf-8").strip()
+            return ref[:8]
+        return head[:8] or "dev"
+    except OSError:
+        return "dev"
+
+
+def gate_row() -> tuple[str, str]:
+    """What the gate will actually do to the next turn, and the colour to say it in.
+
+    TWO states now, not three. NO API KEYS, owner decision 2026-09-11: the token gate was
+    removed from every surface, so what decides whether a turn works is the switch and
+    nothing else.
+
+    This function used to report three states because a token could be exported, absent, or
+    bypassed on loopback. All three collapsed into one question -- is the surface on -- and a
+    status line that still spoke about tokens would be describing a gate that no longer
+    exists. **A status line that is wrong about a gate is worse than no status line**, which
+    was the reason for the third state and is the reason for removing it.
+    """
+    if os.environ.get("SYMONEURAL_STUDIO_ENABLED") == "1":
+        return "on -- no token required; the switch and the network are the boundary", GREEN
+    return ("off -- /status and /tools work, a turn will not; "
+            "set SYMONEURAL_STUDIO_ENABLED=1"), AMBER
+
+
+def splash_lines(url: str, session: str, cwd: str, permissions: str,
+                 depth: int = 0) -> list[str]:
+    """The launch dashboard, as a list of rendered lines.
+
+    Pure on purpose: a renderer that prints cannot be asserted on without capturing stdout,
+    and the one thing that most needs asserting here is a NEGATIVE -- that no token value can
+    appear in the output. `SplashTests` checks that against the returned list.
+
+    **There are deliberately no `Working:` / `Needs input:` / `Completed:` sections.** This
+    client has no job queue to read them from, and printing three empty headers would be a
+    decorative status -- the exact failure `.claude/CLAUDE.md` and the rack rules forbid, one
+    layer down. They belong here the day there is a queue behind them and not before.
+    """
+    gate, gate_colour = gate_row()
+    rows = [
+        f"{c('SyMoNeuRaL Code', BOLD)}  {c('local session', DIM)}",
+        c(f"  version      {repo_version()}", DIM),
+        c(f"  mode         local owner/dev", DIM),
+        c(f"  api          {url}", DIM),
+        c(f"  cwd          {cwd}", DIM),
+        c(f"  session      {session}", DIM),
+        f"  {c('gate', DIM)}         {c(gate, gate_colour)}",
+        c(f"  permissions  {permissions}", DIM),
+    ]
+    if depth:
+        rows.append(c(f"  thread       {depth} message{'s' if depth != 1 else ''}", DIM))
+    rows.append("")
+    rows.append(c("  /help  /status  /permissions  /exit", DIM))
+    rows.append("")
+    return rows
+
+
+def cmd_repl(args) -> int:
+    """An interactive session over the local stack.
+
+    The five things this owes a user that `symoneural-cli agent "..."` does not:
+
+      * a thread that continues without `-c` on every line
+      * slash commands, so asking about the box does not mean leaving the session
+      * `@path`, so a file can be handed over without pasting it
+      * Ctrl-C that cancels the line and keeps the session -- the whole reason to be in one
+      * a status line, so the session, model, thread depth and permission mode are
+        never a guess -- the last of those being the one that decides whether a tool
+        runs without anybody being asked
+
+    `readline` is imported for history and line editing. It is stdlib and its absence is
+    survivable, so the import is guarded rather than assumed: without it every keystroke
+    still arrives, the arrow keys just stop working.
+    """
+    try:                                                    # noqa: SIM105
+        import readline                                     # noqa: F401
+    except ImportError:
+        pass
+
+    session = args.session or session_id()
+    turns = 0
+
+    # The transcript FILENAME is deliberately not on the splash any more -- it is a debug
+    # detail, it is derivable from the session id, and `/session` prints it in full. Six rows
+    # of bootstrap text was the complaint this splash answers.
+    # THE MODE IN FORCE, not the mode that was asked for. This passed `args.permissions or
+    # "auto"` -- the raw request -- while the loop below asks the shared resolver on every
+    # turn. That resolver's own docstring names the resulting bug exactly: "a
+    # status line reading `auto` while the loop is denying is a lie shaped like a setting."
+    #
+    # Both resolutions are worth showing rather than hiding, because both surprise people:
+    # `auto` is a question answered by whether there is a terminal (`ask` in a window, `deny`
+    # down a pipe), and `--dangerously-allow-all` silently outranks whatever `--permissions`
+    # said. So the arrow form is used whenever the answer differs from the request, and the
+    # plain form when nothing was resolved -- an operator who typed `--permissions deny` should
+    # not have to read `deny -> deny`.
+    _asked = args.permissions or "auto"
+    _in_force = resolved_permissions(args)
+    _permissions_row = _in_force if _in_force == _asked else f"{_asked} -> {_in_force}"
+    for row in splash_lines(args.url, session, str(Path.cwd()),
+                            _permissions_row,
+                            len(transcript_read(transcript_path(session)))):
+        print(row)
+
+    while True:
+        depth = len(transcript_read(transcript_path(session)))
+        try:
+            line = read_block(f"{c('>', GREEN)} ", c('. ', DIM))
+        except EOFError:
+            print()
+            break
+        except KeyboardInterrupt:
+            # Ctrl-C at the prompt discards the line. It does not leave: an interactive client
+            # that exits on Ctrl-C makes the thread disposable, and the thread is the point.
+            print(c("\n^C  (line cancelled -- Ctrl-D or /exit to leave)", DIM))
+            continue
+
+        text = (line or "").strip()
+        if not text:
+            continue
+
+        if text.startswith("/"):
+            verb, _, rest = text.partition(" ")
+            rest = rest.strip()
+            if verb in ("/exit", "/quit"):
+                break
+            if verb == "/help":
+                width = max(len(name) for name, _ in SLASH)
+                for name, what in SLASH:
+                    print(f"  {c(name.ljust(width), BOLD)}  {c(what, DIM)}")
+                print(c(f"\n  @path sends a file. A trailing \\ or a line of \"\"\" "
+                        f"continues onto the next line.", DIM))
+                continue
+            if verb == "/clear":
+                path = transcript_path(session)
+                gone = len(transcript_read(path))
+                if path.exists():
+                    path.unlink()
+                session = session_id()
+                print(c(f"cleared {gone} messages; new session {session}", DIM))
+                continue
+            if verb == "/status":
+                cmd_status(args)
+                continue
+            if verb == "/tools":
+                cmd_tools(argparse.Namespace(name=rest or None, group=None, json=False,
+                                             remote=False, url=args.url))
+                continue
+            if verb == "/model":
+                if rest in ("", "?"):
+                    print(c(f"model: {args.model or 'the backend default'}", DIM))
+                elif rest in ("-", "default", "clear"):
+                    args.model = None
+                    print(c("model: the backend default", DIM))
+                else:
+                    args.model = rest
+                    print(c(f"model: {rest}  (this session only)", DIM))
+                continue
+            if verb == "/session":
+                path = transcript_path(session)
+                print(c(f"session {session}  {path}  {depth} messages"
+                        f"{'' if path.exists() else '  (not written yet)'}", DIM))
+                continue
+            if verb == "/resume":
+                found = sessions()
+                if not rest:
+                    if not found:
+                        print(c("no recorded sessions in run/", DIM))
+                    for name, path, n in found:
+                        mark = "*" if name == session else " "
+                        print(f" {mark} {c(name.ljust(24), BOLD)} "
+                              f"{c(f'{n:4d} messages  {path.name}', DIM)}")
+                    print(c("  /resume <id> to switch", DIM))
+                    continue
+                if not transcript_path(rest).exists():
+                    print(c(f"no thread at {transcript_path(rest)}", AMBER))
+                    continue
+                session = rest
+                print(c(f"resumed {session}  "
+                        f"{len(transcript_read(transcript_path(session)))} messages", DIM))
+                continue
+            if verb == "/permissions":
+                if rest in ("ask", "deny", "allow"):
+                    args.permissions = rest
+                    args.dangerously_allow_all = rest == "allow"
+                    print(c(f"permissions: {rest}", DIM))
+                    continue
+                if rest.startswith("+") and len(rest) > 1:
+                    args.allow_tool = list(args.allow_tool or []) + [rest[1:]]
+                    print(c(f"exempt for this session: {', '.join(args.allow_tool)}", DIM))
+                    continue
+                if rest.startswith("-") and len(rest) > 1:
+                    args.allow_tool = [x for x in (args.allow_tool or []) if x != rest[1:]]
+                    print(c(f"exempt for this session: "
+                            f"{', '.join(args.allow_tool) or 'nothing'}", DIM))
+                    continue
+                shown = resolved_permissions(args)
+                if not args.dangerously_allow_all and args.permissions == "auto":
+                    # Say what auto RESOLVES to, not just that it is auto. "auto" alone tells
+                    # a reader the setting and not the state, and the state is the thing they
+                    # asked about. Both halves come from `resolved_permissions` now, so this
+                    # report and the status line cannot disagree about what is in force.
+                    shown = f"auto -> {shown}"
+                print(c(f"permissions: {shown}", DIM))
+                # The gated set comes from the registry that decides it, over /state, rather
+                # than from a list typed into this client -- a copied list is a list that
+                # drifts, and the drift is silent in exactly the direction that matters.
+                # Same tuple. `api_json` returns `(status, body)`, so treating the call as a
+                # dict raised AttributeError and took the whole session down with it -- every
+                # time, not only when the API was absent. The CLI is what an operator reaches
+                # for when the box is broken; a traceback out of it is the one output it may
+                # not have.
+                _status, state = api_json("/api/studio/state", base=args.url)
+                gated = (state or {}).get("gated")
+                print(c(f"gated: {', '.join(gated) if gated else 'unknown (no api)'}", DIM))
+                print(c(f"exempt this session: "
+                        f"{', '.join(args.allow_tool or []) or 'nothing'}", DIM))
+                print(c("  /permissions ask|deny|allow, /permissions +NAME, "
+                        "/permissions -NAME", DIM))
+                continue
+            print(c(f"{verb}: no such command -- /help", AMBER))
+            continue
+
+        query, notes = expand_at(text)
+        for note in notes:
+            print(c(f"  {note}", DIM))
+
+        try:
+            cmd_agent(agent_namespace(args, session, query, cont=depth > 0))
+        except KeyboardInterrupt:
+            # The turn is abandoned, the session is not. `cmd_agent` only writes the thread
+            # after a complete answer, so an interrupted turn leaves nothing half-recorded.
+            print(c("\n^C  (turn abandoned; the thread is unchanged)", DIM))
+            continue
+        turns += 1
+        after = len(transcript_read(transcript_path(session)))
+        print(c("  " + status_line(session, turns, after, model=args.model or "",
+                                   permissions=resolved_permissions(args),
+                                   exempt=tuple(args.allow_tool or ())), DIM))
+
+    print(c(f"{turns} turn{'' if turns == 1 else 's'} in {session}; "
+            f"resume with `symoneural-cli repl --session {session}`", DIM))
+    return 0
+
+
+# --------------------------------------------------------------------------
+
+def cmd_import_claude(args) -> int:
+    """Import the owner's own Claude Code material into first-party SyMoNeuRaL state.
+
+    Two destinations, and the split is the safety property: project configuration is
+    tracked, private runtime state is gitignored, `0700`/`0600`, and never added to Git by
+    this command. Credentials, proprietary implementation, hidden prompts, caches and tool
+    traces are refused in code rather than by convention -- see
+    `symoneural-code/src/symoneural_import/claude.py`, which is tested against real
+    malformed input, a real symlink escape, a real traversal and real credential shapes.
+
+    `--apply` is required to write anything. A migration command that mutates state on a
+    bare invocation is one typo away from a surprise, so the default is a dry run.
+    """
+    sys.path.insert(0, str(ROOT / "symoneural-code" / "src"))
+    from symoneural_import import claude as imp
+
+    src = Path(args.source).expanduser()
+    project_dest = ROOT / "docs" / "imported"
+    private_dest = Path(os.environ.get("SYMONEURAL_STATE_DIR")
+                        or (ROOT / "run" / "private")).expanduser()
+
+    dry = not args.apply
+    res = imp.run_import(src, project_dest=project_dest, private_dest=private_dest,
+                         dry_run=dry)
+    counts = res.counts()
+
+    print(f"import-claude  source={src}")
+    print(f"  mode          {'DRY RUN — nothing written' if dry else 'APPLY'}")
+    print(f"  project dest  {project_dest}   (tracked)")
+    print(f"  private dest  {private_dest}   (gitignored, 0700/0600)")
+    print("  dispositions:")
+    for k in sorted(counts):
+        print(f"    {k:<30} {counts[k]}")
+    print(f"  {'would write  ' if dry else 'wrote        '} {len(res.written)}")
+    if res.collisions:
+        print(f"  collisions    {len(res.collisions)} (existing state NOT overwritten)")
+    if res.reauth_required:
+        print(f"  reauth needed {', '.join(sorted(set(res.reauth_required)))}")
+
+    if args.manifest:
+        mp = Path(args.manifest)
+        mp.write_text(imp.manifest_tsv(res))
+        os.chmod(mp, 0o600)
+        print(f"  manifest      {mp}")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        prog="symoneural-cli", description="One command over the local SyMoNeuRaL stack.")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    sub.add_parser("status", help="device, surfaces and lock state").set_defaults(fn=cmd_status)
+    sub.add_parser("residency", help="the residency plan, computed live").set_defaults(fn=cmd_residency)
+
+    p = sub.add_parser("upgrade", help="republish the site and restart the service (needs root)")
+    p.add_argument("--check", action="store_true",
+                   help="print what would happen and exit, without root and without deploying")
+    p.add_argument("--no-restart", action="store_true",
+                   help="publish the site but leave the service running the old code")
+    p.set_defaults(fn=cmd_upgrade)
+
+    p = sub.add_parser("chat", help="ask the local model (takes the GPU)")
+    p.add_argument("prompt", nargs="?")
+    p.add_argument("-n", "--max-tokens", type=int, default=512)
+    p.add_argument("-t", "--temperature", type=float, default=0.7)
+    p.add_argument("--heavy", action="store_true", help="use the 14B tier instead of the 7B")
+    p.add_argument("--no-adapter", action="store_true", help="serve the stock base model")
+    p.set_defaults(fn=cmd_chat)
+
+    p = sub.add_parser("image", help="generate an image (takes the GPU)")
+    p.add_argument("prompt")
+    p.add_argument("-o", "--output", default=str(RUN / "out.png"))
+    p.add_argument("--steps", type=int, default=4)
+    p.add_argument("--size", type=int, default=768, choices=(512, 768, 1024))
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--clip-on-cpu", action="store_true", default=True)
+    p.set_defaults(fn=cmd_image)
+
+    p = sub.add_parser("ravencalc", help="exact mathematics (cpu, never queues)")
+    p.add_argument("operation", choices=sorted(
+        ("differentiate", "integrate", "limit", "series", "solve", "simplify", "evaluate")))
+    p.add_argument("expression")
+    p.add_argument("-v", "--variable")
+    p.add_argument("--point")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(fn=cmd_ravencalc)
+
+    # The studio surface. `--url` and `--json` are repeated per subcommand rather than hung on
+    # the top-level parser, because `symoneural-cli --json ravencalc ...` would then parse and
+    # do nothing: ravencalc has its own `--json` and never speaks HTTP.
+    def studio(name: str, help_text: str):
+        q = sub.add_parser(name, help=help_text)
+        q.add_argument("--url", default=DEFAULT_API,
+                       help=f"the API to talk to (default {DEFAULT_API}, or $SYMONEURAL_API_URL)")
+        return q
+
+    # The gate's flags are identical on `agent` and `repl` and are added by one function, so
+    # the two cannot drift into disagreeing about what `--dangerously-allow-all` means.
+    def gate_flags(q):
+        q.add_argument("--permissions", choices=("auto", "ask", "deny", "allow"),
+                       default="auto",
+                       help="what to do when the model chooses a tool the registry marks "
+                            "dangerous: ask (stop and prompt), deny (refuse and tell the "
+                            "model), allow (run it). auto asks if there is a terminal and "
+                            "denies if there is not")
+        q.add_argument("--dangerously-allow-all", action="store_true",
+                       help="equivalent to --permissions allow: run delete_path, env_set, "
+                            "run_command and write_file without asking")
+        q.add_argument("--allow-tool", action="append", metavar="NAME",
+                       help="exempt one tool from the gate; repeatable")
+        return q
+
+    p = studio("agent", "one agent turn, streamed -- thinking, tool calls, results, answer")
+    p.add_argument("query", nargs="*", help="what to ask")
+    # `history` is a parameter the endpoint reads, so it gets a flag. The thread is a file this
+    # command writes, because the server keeps no session state to resume.
+    p.add_argument("-c", "--continue", dest="cont", action="store_true",
+                   help="send the recorded thread as `history`, making this turn a reply")
+    p.add_argument("--session", default="default", metavar="NAME",
+                   help="which thread to use, kept in run/agent-NAME.json (default: default)")
+    p.add_argument("--history-limit", type=int, default=20, metavar="N",
+                   help="send at most the last N messages of it (default 20, 0 for all); "
+                        "when it clips, it says so")
+    p.add_argument("--no-save", action="store_true",
+                   help="do not record this turn in the thread")
+    p.add_argument("--forget", action="store_true",
+                   help="delete the thread's file and exit")
+    p.add_argument("--max-steps", type=int,
+                   help="tool-calling rounds before the loop stops (server default 8)")
+    p.add_argument("--model", help="override the backend's model name")
+    p.add_argument("--context", help="extra context prepended to the system prompt")
+    p.add_argument("--output-format", choices=("text", "json", "stream-json"), default="text",
+                   help="text renders as it arrives; stream-json is one frame per line, "
+                        "and json is a single object at the end")
+    p.add_argument("-v", "--verbose", action="store_true",
+                   help="print whole tool results instead of one line each")
+    p.add_argument("--timeout", type=float, default=900.0)
+    gate_flags(p)
+    p.set_defaults(fn=cmd_agent)
+
+    p = studio("tools", "the tool registry the model is handed")
+    p.add_argument("name", nargs="?", help="one tool, with its full parameter schema")
+    p.add_argument("--group", help="filter to one group")
+    p.add_argument("--json", action="store_true", help="the OpenAI tool specs, verbatim")
+    p.add_argument("--remote", action="store_true",
+                   help="read the live registry over HTTP instead of this checkout")
+    p.set_defaults(fn=cmd_tools)
+
+    p = studio("tool", "run one tool directly, with no model in the path")
+    p.add_argument("name")
+    p.add_argument("arg", nargs="*", metavar="key=value",
+                   help="values are parsed as JSON when they parse, else as strings")
+    p.add_argument("--body", help="the whole argument object as JSON")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--timeout", type=float, default=300.0)
+    p.set_defaults(fn=cmd_tool)
+
+    p = studio("state", "what the stack reports about itself (no token needed)")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--why", action="store_true",
+                   help="also print each down backend's stated reason")
+    p.set_defaults(fn=cmd_state)
+
+    p = studio("repl", "an interactive session -- this is what a bare invocation opens")
+    p.add_argument("--session", metavar="ID",
+                   help="resume this thread instead of opening a new one "
+                        "(run/agent-ID.json); /resume lists them")
+    p.add_argument("--history-limit", type=int, default=20, metavar="N",
+                   help="send at most the last N messages each turn (default 20, 0 for all)")
+    p.add_argument("--max-steps", type=int,
+                   help="tool-calling rounds before a turn stops (server default 8)")
+    p.add_argument("--model", help="override the backend's model name")
+    p.add_argument("--context", help="extra context prepended to the system prompt")
+    p.add_argument("-v", "--verbose", action="store_true",
+                   help="print whole tool results instead of one line each")
+    p.add_argument("--timeout", type=float, default=900.0)
+    gate_flags(p)
+    p.set_defaults(fn=cmd_repl)
+
+    p = sub.add_parser("mcp", help="the MCP transport: tools, readiness, client wiring")
+    p.add_argument("--serve", action="store_true",
+                   help="exec the MCP server on stdio (this process becomes it)")
+    p.add_argument("--http", type=int, metavar="PORT",
+                   help="with --serve, streamable HTTP on 127.0.0.1:PORT instead of stdio")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(fn=cmd_mcp)
+
+    p = sub.add_parser("import-claude",
+                       help="import your own Claude Code material into SyMoNeuRaL state")
+    p.add_argument("--source", default=str(Path.home() / ".claude"),
+                   help="Claude Code state directory to read (default ~/.claude)")
+    p.add_argument("--apply", action="store_true",
+                   help="actually write; without it this is a dry run")
+    p.add_argument("--manifest", help="write the source-to-destination manifest here")
+    p.set_defaults(fn=cmd_import_claude)
+
+    sub.add_parser("_stop-chat").set_defaults(fn=cmd_stop_chat)
+
+    # A bare `symoneural-cli` opens an interactive session -- but only when there is a
+    # terminal on stdin. `required=True` above made a no-argument invocation exit 2 with
+    # usage, and a script writing `symoneural-cli "$CMD"` with CMD unset depends on that:
+    # if this read the pipe instead, that script would block on stdin forever, in a cron
+    # job, with no output. So the terminal is the condition, and its absence is the old
+    # behaviour byte for byte. `sys.stdin.isatty()` and not `_tty()` -- that one reads
+    # stdout and decides about colour, which is a different question with the same shape.
+    argv = sys.argv[1:]
+    if not argv:
+        if not sys.stdin.isatty():
+            parser.print_usage(sys.stderr)
+            print("symoneural-cli: no command, and stdin is not a terminal, so there is no "
+                  "session to open. `--help` for the commands, or `repl` to read a script "
+                  "from a pipe.", file=sys.stderr)
+            return 2
+        argv = ["repl"]
+
+    args = parser.parse_args(argv)
+    return args.fn(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

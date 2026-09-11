@@ -1,1 +1,94 @@
-/home/google/Symoneural/symoneural-code/bin/symoneural-code
+#!/usr/bin/env bash
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
+# symoneural-code -- the front door to the interactive client.
+#
+# There is no engine in here. Everything this does is `bin/symoneural-cli repl` with a shorter
+# name and four flags translated, and that is the whole design: one implementation of a session,
+# reachable either as a subcommand of the tool that owns the whole stack or as a command of its
+# own. Two implementations of "resume a thread" would drift, and the way that drift shows up is
+# a session you can open one way and not the other.
+#
+# The flags are the ones an interactive client is actually reached by:
+#
+#   symoneural-code                    open a session
+#   symoneural-code -p "..."           one turn, print the answer, exit -- no session
+#   symoneural-code -c                 continue the most recently written thread
+#   symoneural-code -r ID              resume that thread by id
+#   symoneural-code --sessions         list what there is to resume
+#   symoneural-code <anything else>    passed through to `symoneural-cli repl` verbatim
+#
+# `-p` goes to `agent`, not to `repl`, because a one-shot turn is not a session: it must be
+# usable in a pipe, and a client that opens a prompt when its stdout is a pipe is the bug the
+# tty guard in `symoneural-cli` exists to prevent.
+set -euo pipefail
+
+HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+CLI="$HERE/symoneural-cli"
+[ -x "$CLI" ] || { echo "symoneural-code: $CLI is missing or not executable" >&2; exit 2; }
+
+RUN="$(cd -- "$HERE/.." && pwd)/run"
+
+# The most recent thread, by mtime. `ls -t` and not a sort on the id, because an id is only
+# sortable while it is a timestamp and `--session` accepts any name a user types.
+latest_session() {
+    local newest
+    newest="$(ls -t "$RUN"/agent-*.json 2>/dev/null | head -1 || true)"
+    [ -n "$newest" ] || return 1
+    basename "$newest" .json | sed 's/^agent-//'
+}
+
+case "${1:-}" in
+    -p|--print)
+        shift
+        [ $# -gt 0 ] || { echo "symoneural-code -p: nothing to ask" >&2; exit 2; }
+        exec "$CLI" agent "$@"
+        ;;
+    -c|--continue)
+        shift
+        if ! session="$(latest_session)"; then
+            echo "symoneural-code: no thread in $RUN to continue; opening a new session" >&2
+            exec "$CLI" repl "$@"
+        fi
+        echo "continuing $session" >&2
+        exec "$CLI" repl --session "$session" "$@"
+        ;;
+    -r|--resume)
+        shift
+        [ $# -gt 0 ] || { echo "symoneural-code -r: which session? --sessions lists them" >&2; exit 2; }
+        session="$1"; shift
+        exec "$CLI" repl --session "$session" "$@"
+        ;;
+    --sessions)
+        # Deliberately the client's own listing rather than a second one written here, for the
+        # same reason this file has no engine in it. The leading prompt character is stripped
+        # because it belongs to a session that is not being opened.
+        printf '/resume\n/exit\n' | "$CLI" repl 2>/dev/null \
+            | sed -n '/messages  agent-/p;/switch/p' | sed 's/^> //'
+        ;;
+    repl)
+        # `symoneural-code repl` is what a reader of `symoneural-cli` will type, and passing it
+        # through would exec `repl repl` and answer with an argparse error about an invalid
+        # choice -- technically correct and useless. Drop the redundant word and say so once.
+        shift
+        echo "symoneural-code: this IS the session; the word \`repl\` is redundant here" >&2
+        exec "$CLI" repl "$@"
+        ;;
+    -h|--help)
+        sed -n '2,25p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        echo
+        exec "$CLI" repl --help
+        ;;
+    *)
+        # No arguments delegates to a BARE `symoneural-cli`, not to `symoneural-cli repl`, so
+        # that the "no terminal on stdin, no session" rule is enforced in exactly one place.
+        # Asking for `repl` by name is an explicit request to read whatever stdin is, which is
+        # how the test suite drives a session; typing `symoneural-code` in a cron job is not,
+        # and it must get usage and exit 2 rather than a prompt nobody will ever answer.
+        if [ $# -eq 0 ]; then
+            exec "$CLI"
+        fi
+        exec "$CLI" repl "$@"
+        ;;
+esac
