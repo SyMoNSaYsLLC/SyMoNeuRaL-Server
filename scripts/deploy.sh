@@ -148,11 +148,30 @@ orphan_list="$(mktemp)"
 # The backup taken at the top of this run is exempt. It is written into the webroot and has
 # no counterpart in site/, so a naive check prunes the one file that exists to undo a bad
 # deploy, in the same run that created it.
-find "$DST" -maxdepth 1 -type f -printf '%f\n' | sort | while read -r f; do
+#
+# An orphan is tested against *the same rules this deploy publishes by*, and that
+# is not the same as "exists at the top of site/". Pages flatten from pages/ to
+# the webroot root, so `[ -f "$SRC/$f" ]` alone called every published page an
+# orphan: 98 reported on this box, 26 of them pages the very same run had just
+# installed. `--prune` would have deleted the live site one command after
+# publishing it, and the message printed above tells the operator to run exactly
+# that. The webroot is walked at full depth for the same reason -- assets now
+# live in subdirectories, and a maxdepth-1 walk cannot see a stale file in one.
+find "$DST" -type f -printf '%P\n' | sort | while read -r f; do
   [ "$f" = "index.prev-$STAMP.html" ] && continue
+  case "$f" in index.prev-*.html) continue;; esac
+  # Published from its own path (css/, js/, assets/ keep their tree) ...
   if [ -f "$SRC/$f" ] && printf '%s\n' "$SRC/$f" | grep -qx -e "$PUBLISH"; then
     continue
   fi
+  # ... or flattened from pages/, which is how every .html arrives.
+  case "$f" in
+    */*) ;;
+    *) if [ -f "$SRC/pages/$f" ] &&
+          printf '%s\n' "$SRC/pages/$f" | grep -qx -e "$PUBLISH"; then
+         continue
+       fi ;;
+  esac
   echo "$f"
 done > "$orphan_list"
 orphans="$(wc -l < "$orphan_list")"
