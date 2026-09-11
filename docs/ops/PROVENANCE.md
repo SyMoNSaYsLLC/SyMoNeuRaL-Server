@@ -44,7 +44,7 @@ so their attribution cannot travel. `docs/ops/MODEL-LICENSES.md` ML-1.
 **And the larger gap, measured 2026-08-22: the manifest covers 11 of 28 weight files.** The other
 **17 — 78.26 GiB, 61% of the weight bytes here — have no provenance at all.** So "model provenance
 is strong" was true of what the manifest describes and false as a statement about this disk, which
-is a distinction this file of all files should have drawn. `tools/modelops_inventory.py` now
+is a distinction this file of all files should have drawn. `tools/lib/modelops_inventory.py` now
 measures it and `docs/ops/SYMONEURAL-MODEL-BUNDLES.md` §5 lists them.
 
 **The pattern held; the coverage did not.** Nothing about the manifest's design was wrong — its
@@ -61,7 +61,7 @@ difference between provenance and entitlement.
 The instinct is already here: the **tracked artefact is the build script**, not a copied tree.
 `.gitignore` says it for `engines/` — *"the tracked artefact is the script, which is the
 provenance — re-run it and you get the same engines. Do not track a derived copy of an untracked
-source."* Same for `tools/fork_engines.sh` and `tools/fork_render_ui.sh`.
+source."* Same for `tools/sh/fork_engines.sh` and `tools/sh/fork_render_ui.sh`.
 
 **That is reproducibility by construction, and it is not attestation.** Nothing records *which*
 engine binary served a given job, or which commit of the script built it.

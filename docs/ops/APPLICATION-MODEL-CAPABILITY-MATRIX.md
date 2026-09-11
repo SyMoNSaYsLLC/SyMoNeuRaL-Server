@@ -49,7 +49,7 @@ cell is `X`, and leaving a `W` would understate the gap by naming the smaller of
 **CORRECTED 2026-09-04: whisper `base.en` is back, and so is its runtime, so the two ASR cells
 now read `R`.** This is the one movement on this table that went the good way. Both halves were
 missing and both are now present: `engines/symoneural-listen` is built from source under our own
-names by `tools/fork_engines.sh listen`, and the weight is on disk at 147,964,211 bytes. Neither
+names by `tools/sh/fork_engines.sh listen`, and the weight is on disk at 147,964,211 bytes. Neither
 is asserted -- `symoneural-listen/SMOKE-listen-asr.md` records a real transcription of real speech, which
 is the only evidence that distinguishes `R` from a hopeful `W`.
 
@@ -88,7 +88,7 @@ under `references/` — both **973,872 B** — but `references/` is INSPIRE_ONLY
 **quarantined, not available**.
 
 **What fixed it was building the engine we were entitled to build, not finding the binary.**
-`tools/fork_engines.sh listen` now forks the vendored upstream into
+`tools/sh/fork_engines.sh listen` now forks the vendored upstream into
 `engines/symoneural-listen` under our own names — the same treatment the other two engines got
 — and both call sites resolve there. CPU-only by decision, not default: `ldd` reports zero CUDA
 libraries linked, so it cannot take the card, which is what lets a spoken sticker transcribe

@@ -44,7 +44,7 @@ Every component on the field has exactly one status. The point of the vocabulary
 | **Captain** | evaluator / policy / agent that recommends | **cannot activate alone** |
 | **Coach** | operator runbook or scripted workflow | tells a human how to test, bench, promote, roll back |
 | **Referee** | the anti-cheat gate | detects fallback, wrong route, fake adapter, cache contamination, benchmark leakage, false status |
-| **Scout** | inventory and discovery | finds and classifies; `tools/bootcamp_scout.py` |
+| **Scout** | inventory and discovery | finds and classifies; `tools/lib/bootcamp_scout.py` |
 | **Depth chart** | the ranked roster for one position | starter · backup · candidates · blockers · next smallest safe commit |
 
 ### Captain types
@@ -96,7 +96,7 @@ explicit instruction** · commercial/deploy/Phase-1 locks.
 
 ## 3. The Referee — blinded probes and anti-cheat scoring
 
-`tools/bootcamp_referee.py`. Two properties, both structural.
+`tools/lib/bootcamp_referee.py`. Two properties, both structural.
 
 ### The model under test learns nothing about the test
 
@@ -148,7 +148,7 @@ prose quality.
 
 ## 4. Scout report — the measured roster
 
-Read by `tools/bootcamp_scout.py`, 2026-08-22. **Every figure below is measured; nothing in this
+Read by `tools/lib/bootcamp_scout.py`, 2026-08-22. **Every figure below is measured; nothing in this
 section is an opinion.**
 
 | | |
@@ -595,7 +595,7 @@ rollback       : the bundle is the rollback; nothing has replaced it
 
 ---
 
-### ModelOps  ·  `scripts/modelops/`, `tools/modelops_inventory.py`
+### ModelOps  ·  `scripts/modelops/`, `tools/lib/modelops_inventory.py`
 **Classification** PROD · **Priority** `safety_first` + `by_the_book`
 - **Option 1 — Current/Proven** — by-the-book scripts and gates. **proof** six activation gates, exit 3 on refusal; smoke refusal exit 5; **no mode deletes a weight**; the stage mode refuses to overwrite a manifest that records real state. 34 tests. **recommendation** **STARTER.**
 - **Option 2 — Near Upgrade** — Bootcamp Captain agents that rank candidates. **proof needed** a captain must be shown unable to activate. **blocker** none — but the guardrail is the design. **recommendation** CANDIDATE.
@@ -648,4 +648,4 @@ any depth chart for it has to say.
 
 **Related** `docs/ops/OPENAI-GPT-OSS-MIGRATION.md` · `docs/ops/PROVENANCE.md` ·
 `docs/ops/SECURITY-AUDIT.md` · `docs/ops/MODEL-LICENSES.md` · `docs/ops/SYMONEURAL-MODEL-BUNDLES.md` ·
-`tools/bootcamp_scout.py` · `tools/bootcamp_referee.py`
+`tools/lib/bootcamp_scout.py` · `tools/lib/bootcamp_referee.py`

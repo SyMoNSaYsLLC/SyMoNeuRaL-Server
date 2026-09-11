@@ -19,7 +19,7 @@
 | HEAD | `698bef87` | **`6da52783`** *"ProjectStatus: a check, so the third identical staleness cannot happen quietly"* (17:20) |
 | Prior sample, 17:18 | — | `d02fe034` *"tests: stop the suite reading this box's real *****"* (live credential material) |
 | Branch / tree | main, `/home/google/Symoneural` | main, `/home/google/Symoneural` |
-| Tracked mods | — | **3** at 17:22 — `.claude/HANDOVER.md`, `.claude/settings.local.json`, `tools/fork_engines.sh` (the last appeared between samples; the peer is mid-edit). Untracked **0**. |
+| Tracked mods | — | **3** at 17:22 — `.claude/HANDOVER.md`, `.claude/settings.local.json`, `tools/sh/fork_engines.sh` (the last appeared between samples; the peer is mid-edit). Untracked **0**. |
 | Commits today | — | **18** |
 | API service | active, HTTP 200 | **active / enabled** |
 | Gateway service | defined but disabled | **inactive / disabled** |
@@ -103,7 +103,7 @@ Durable evidence per the peer: git history (18 commits, detailed messages), `bac
 ```
 repo    /home/google/Symoneural   branch main
 HEAD    6da52783   (sampled 17:22 — MOVING; peer is committing)
-mods    3 tracked: .claude/HANDOVER.md, .claude/settings.local.json, tools/fork_engines.sh
+mods    3 tracked: .claude/HANDOVER.md, .claude/settings.local.json, tools/sh/fork_engines.sh
         0 untracked
 sha256  ProjectStatus.md              8c1f57e7b21dcec04ac8ee8aec9c4c6177e03fe8ef7d4d56db82e7fba4adf1d7
         backend/SMOKE-listen-asr.md   832cbd303cba0dcc6f3f15095727696a2422930cfe1b66c07081fee0e47aa373

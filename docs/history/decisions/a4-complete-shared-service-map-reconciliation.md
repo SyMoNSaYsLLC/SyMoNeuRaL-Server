@@ -93,7 +93,7 @@ three of them contradicting the 19-of-19 determination roughly thirty lines belo
 | § | Was | Now |
 |---|---|---|
 | 11.2 | pre-A-series snapshot: `EXISTING-INCOMPLETE (3)`, `MISSING (5)` | regenerated **mechanically from the 19 indicator rows**: EXISTING-INCOMPLETE **0**, MISSING **0** |
-| 12.1 | "`tools/export_snapshot.sh` DOES NOT EXIST" under a **Hard state** heading | superseded — it exists, A-2 `728df639` |
+| 12.1 | "`tools/data/export_snapshot.sh` DOES NOT EXIST" under a **Hard state** heading | superseded — it exists, A-2 `728df639` |
 | 3 | entitlement gap open; exporter absent | both marked delivered with hashes |
 | 4.4 / 9.1 | DispatchOS separate login = `EXISTING-INCOMPLETE` | `CURRENT — intended under D-3(b)`; separation is the settled design |
 | 4.5 | exporter row "DOES NOT EXIST" | `CURRENT`, `728df639` |

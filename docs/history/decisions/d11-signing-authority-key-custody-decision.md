@@ -140,7 +140,7 @@ there is **no git remote at all**, and that is a protection, not a gap.
 ### F-1 (finding) — the exporter's protected patterns do NOT cover signing material
 
 Measured by matching hypothetical paths against the **live 17 patterns** parsed out of
-`tools/export_snapshot.sh`:
+`tools/data/export_snapshot.sh`:
 
 ```
 BLOCKED  ops/keys/release.pem                by \.(pem|key|p12|pfx)$

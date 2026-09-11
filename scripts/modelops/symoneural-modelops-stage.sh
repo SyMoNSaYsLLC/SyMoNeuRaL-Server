@@ -22,7 +22,7 @@
 # ## Modes
 #
 #   --dry-run                      say what each mode would do; change nothing
-#   --inventory                    the measured model inventory (tools/modelops_inventory.py)
+#   --inventory                    the measured model inventory (tools/lib/modelops_inventory.py)
 #   --stage-openai-gpt-oss-20b     prepare staging for the LLM candidate; no download
 #   --write-docs                   regenerate the inventory block in the ops docs
 #   --smoke-plan                   print the smoke steps a candidate must pass
@@ -52,7 +52,7 @@ ENGINE="symoneural-llm/build/bin/symoneural-llm"
 # ---------------------------------------------------------------------------- guardrail 1
 # Run from the repo root or not at all. Every path below is relative, and a script like this
 # run from the wrong directory is how a staging tree lands somewhere nobody looks again.
-if [[ ! -f "backend/server.py" || ! -f "tools/modelops_inventory.py" ]]; then
+if [[ ! -f "backend/server.py" || ! -f "tools/lib/modelops_inventory.py" ]]; then
   echo "refusing: run this from the repository root (backend/server.py not found here)" >&2
   exit 2
 fi
@@ -82,7 +82,7 @@ show_disk() {
 
 # ---------------------------------------------------------------------------- inventory
 mode_inventory() {
-  python3 tools/modelops_inventory.py
+  python3 tools/lib/modelops_inventory.py
   say ""
   show_disk
 }
@@ -441,8 +441,8 @@ mode_write_docs() {
   say "  section it does not fully own is how this repo grew its accumulate bug three times."
   say "  Regenerate the numbers and paste them deliberately:"
   say ""
-  say "    python3 tools/modelops_inventory.py > /tmp/modelops-inventory.txt"
-  say "    python3 tools/modelops_inventory.py --json > /tmp/modelops-inventory.json"
+  say "    python3 tools/lib/modelops_inventory.py > /tmp/modelops-inventory.txt"
+  say "    python3 tools/lib/modelops_inventory.py --json > /tmp/modelops-inventory.json"
 }
 
 # ---------------------------------------------------------------------------- main

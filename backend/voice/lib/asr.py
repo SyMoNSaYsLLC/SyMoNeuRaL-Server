@@ -3,7 +3,7 @@
 Everything in here is CPU work and none of it touches `scripts/gpu-governor.sh`. That is not
 a preference, it is what the build on this box is:
 `symoneural-listen/build/CMakeCache.txt` carries `GGML_CUDA:BOOL=OFF`, set by
-`tools/fork_engines.sh listen` and argued there. The evidence path named here until
+`tools/sh/fork_engines.sh listen` and argued there. The evidence path named here until
 2026-09-04 was under `contrib/`, which no longer exists -- a claim whose source cannot be
 opened is the thing this file's own §2.2 warning is about.
 Measured with `base.en` at `-t 8`: peak RSS **284 MiB**, **0**
@@ -54,7 +54,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 
-# Our engine, under our name, built by `tools/fork_engines.sh listen`. The default used to
+# Our engine, under our name, built by `tools/sh/fork_engines.sh listen`. The default used to
 # name a third-party binary under `contrib/`, which was two problems in one line: `/contrib`
 # is gitignored, so the capability vanished with nothing in `git log` to say it had, and the
 # path is one `backend/test_references_boundary.py` bans outright -- it escaped that

@@ -7,8 +7,8 @@
 #
 # ## Why a helper and not four copies of a hash
 #
-# Four scripts need to know which artifact is the right one: `ops/install-runtime.sh` before
-# it installs, `ops/verify-runtime.sh` after, `scripts/setup.sh` when it reports whether this
+# Four scripts need to know which artifact is the right one: `ops/deploy/install-runtime.sh` before
+# it installs, `ops/deploy/verify-runtime.sh` after, `scripts/setup.sh` when it reports whether this
 # machine can serve, and `apps/test_governor_paths.py` for the path the governor evicts. The
 # obvious way to do that is to paste the sha256 into each -- and then there are four copies of
 # one fact and no way to tell which is stale. `gateway-build.json` sat three days describing a
@@ -19,7 +19,7 @@
 #
 # ## One process per manifest
 #
-# `ops/verify-runtime.sh` had no python3 dependency before this, and a helper that spawned an
+# `ops/deploy/verify-runtime.sh` had no python3 dependency before this, and a helper that spawned an
 # interpreter per field would add a dozen. `artifact_fields` emits every field a caller could
 # want as one block of `shlex.quote`d assignments from a single `python3`, and `artifact_load`
 # eval's it. Hashing is a second, separate call because it is the expensive half and most

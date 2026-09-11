@@ -223,7 +223,7 @@ Qwen/Qwen2.5-7B-Instruct   present=False   same_model_as=symon-1.0-7b-q4_k_m
 ```
 
 **The runtime does not need any of this**, and that is the point of the split: 37 GB of GGUF
-inference weights are local and intact and `tools/smoke.py` reports `model weights present
+inference weights are local and intact and `tools/lib/smoke.py` reports `model weights present
 5/5`. Serving works with Drive unavailable; training is the occasional operation that reaches
 for it.
 
@@ -243,13 +243,13 @@ python3 backend/apps/studio/plugins/reinforce/test_reinforce.py
 
 # The last FOUR of the 50 load the deployed `site/reinforce.html` rather than the `page.html`
 # fragment, so generate it first or they fail on a file that is merely absent. They exist
-# because `tools/build_reinforce.py` unwraps the fragment's `<section><div class="wrap">` and
+# because `tools/build/build_reinforce.py` unwraps the fragment's `<section><div class="wrap">` and
 # has to carry `id="reinforce"` through: every selector in the fragment's sheet is
 # `#reinforce .rf-*`, so losing the id renders the panel UNSTYLED with all its text intact.
 # No content assertion and no JS-error check can see that, which is why one reads a computed
 # colour -- `.rf-lab-measured` must be rgb(127,215,164). Confirmed against a negative control:
 # dropping the id fails exactly those two assertions and leaves the other 48 passing.
-python3 tools/build_reinforce.py
+python3 tools/build/build_reinforce.py
 node    backend/apps/studio/plugins/reinforce/test_page.mjs
 
 # The surface is off unless BOTH are set. A never-evicted GPU route open to the world is a

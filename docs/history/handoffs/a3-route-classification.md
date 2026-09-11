@@ -22,11 +22,11 @@
 All four now name the measured owner. Verified: **0** stale ownership claims remain.
 
 ```
--  *Affected:* ... tools/build_stack.py (livestack is generated).
-+  *Affected:* ... tools/build_split.py (livestack is generated).
+-  *Affected:* ... tools/build/build_stack.py (livestack is generated).
++  *Affected:* ... tools/build/build_split.py (livestack is generated).
 
--  check: grep entitle -- tools/build_stack.py
-+  check: grep entitle -- tools/build_split.py
+-  check: grep entitle -- tools/build/build_stack.py
++  check: grep entitle -- tools/build/build_split.py
 
 -  | 3 | ... `accounts/`, `build_stack.py` | ...
 +  | 3 | ... `accounts/`, `build_split.py` | ...

@@ -15,7 +15,7 @@ a BitBake workspace, 21 GB of sstate and 18 GB of downloads. That is not what wa
 
 | path | status |
 |---|---|
-| `/home/google/yocto` | **PERMANENTLY DELETED.** Never recreate it, never reference it. `ops/verify-runtime.sh` fails if it reappears, because `mkdir -p` in a careless script is exactly how it would. |
+| `/home/google/yocto` | **PERMANENTLY DELETED.** Never recreate it, never reference it. `ops/deploy/verify-runtime.sh` fails if it reappears, because `mkdir -p` in a careless script is exactly how it would. |
 | `/yocto` (top-level mount) | **Authorized build environment.** A different thing entirely. |
 
 ## What `/yocto` may be used for — ALLOWED
@@ -48,7 +48,7 @@ After installation, no live component may reach `/yocto` through:
 
 ## Why the check inspects the system and not the repository
 
-`ops/verify-runtime.sh` deliberately does **not** grep this repository for `/yocto`. The
+`ops/deploy/verify-runtime.sh` deliberately does **not** grep this repository for `/yocto`. The
 `yocto/` layer directory, the BitBake recipes and the build docs all contain that string
 legitimately, and a check that goes red on them is a check people learn to skip. It inspects
 the running system and the installable artifacts instead — units, processes, ELF headers,
@@ -146,10 +146,10 @@ When reading either, check whether the subject is a Python module or an ELF exec
 
 | script | what it does |
 |---|---|
-| `ops/build-gateway.sh` | native Debian build of the gateway from canonical source; writes `ops/manifests/gateway-build.json` |
-| `ops/install-runtime.sh` | idempotent install/migration: preflight, backup, atomic install, `daemon-reload`, controlled restart, health checks, **automatic rollback on failure**, then runs the verifier. `--dry-run`, `--no-restart`. |
-| `ops/rollback-runtime.sh` | restore a backup by hand later. `--list`, `--dry-run`. |
-| `ops/verify-runtime.sh` | proves the runtime boundary against the live system. Exit 1 on any violation. |
+| `ops/deploy/build-gateway.sh` | native Debian build of the gateway from canonical source; writes `ops/manifests/gateway-build.json` |
+| `ops/deploy/install-runtime.sh` | idempotent install/migration: preflight, backup, atomic install, `daemon-reload`, controlled restart, health checks, **automatic rollback on failure**, then runs the verifier. `--dry-run`, `--no-restart`. |
+| `ops/deploy/rollback-runtime.sh` | restore a backup by hand later. `--list`, `--dry-run`. |
+| `ops/deploy/verify-runtime.sh` | proves the runtime boundary against the live system. Exit 1 on any violation. |
 | `ops/manifests/llm-chat-model.json` | model identity, so an uncommitted weight file is verifiable |
 | `backend/apps/test_runtime_boundary.py` | fails if a template or installed unit reintroduces `/yocto` |
 

@@ -13,7 +13,7 @@ An unstamped `href="/symoneural.css"` means a visitor's browser may hold a seven
 stylesheet against markup that expects the current one. There is no way for the visitor to
 know, and nothing you can do from the server to invalidate it.
 
-This is not hypothetical. `tools/build_cachebust.py`'s own docstring records the shipped
+This is not hypothetical. `tools/build/build_cachebust.py`'s own docstring records the shipped
 failure: new HTML went out with a band the cached stylesheet had no rules for, and nineteen
 full-size renders stacked down the left of the page in front of a visitor.
 
@@ -25,7 +25,7 @@ cache stays — the asset really is immutable *for that hash*.
 **After anything lands in `site/`, and last.**
 
 ```bash
-python3 tools/build_cachebust.py
+python3 tools/build/build_cachebust.py
 ```
 
 It globs `site/*.html` and `site/*/*.html`. Two consequences worth knowing:
@@ -44,7 +44,7 @@ in the diff review. Take a baseline first:
 
 ```bash
 md5sum site/*.html > /tmp/before.md5
-python3 tools/build_cachebust.py
+python3 tools/build/build_cachebust.py
 md5sum -c /tmp/before.md5 2>/dev/null | grep -v ": OK"
 ```
 
@@ -60,7 +60,7 @@ times in this repository.
 
 ```bash
 cp site/<page>.html /tmp/run1.html
-python3 tools/build_cachebust.py
+python3 tools/build/build_cachebust.py
 cmp -s /tmp/run1.html site/<page>.html && echo idempotent || echo NOT IDEMPOTENT
 ```
 
@@ -137,7 +137,7 @@ copy page into site/  ->  build_cachebust.py  ->  verify only intended files cha
                       ->  deploy  ->  cmp site vs webroot  ->  re-check access statuses
 ```
 
-Cachebust is always **last** before the deploy. `ops/symoneural-deploy.service` says why it is
+Cachebust is always **last** before the deploy. `ops/units/symoneural-deploy.service` says why it is
 deliberately not a `.path` unit watching `site/`: the generators rewrite pages in place and
 cachebust stamps them afterwards, so a watcher would fire mid-sequence and publish a tree whose
 stylesheet references had been stripped and not yet re-stamped — pages cacheable for a week

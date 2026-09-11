@@ -12,7 +12,7 @@ That sequence is not caution for its own sake — it exists because the two halv
 protected page live in two different files and **only one of them deploys by itself**.
 
 `scripts/deploy.sh` publishes `$ROOT/site` at `-maxdepth 1`, and
-`ops/symoneural-deploy.service` is **enabled** with `--prune`, so that publish runs at every
+`ops/units/symoneural-deploy.service` is **enabled** with `--prune`, so that publish runs at every
 boot with no person involved. A restricted page sitting in `site/` is therefore one reboot
 away from being served — and if the access-control block is not yet in the live web server
 config at that moment, **it is served with no protection at all**.

@@ -6,7 +6,7 @@ authoritative for what the project is. `.claude/HANDOVER.md` is the state docume
 
 Written 2026-08-17 against the tree at `595835d`. It quotes `file:line`; **re-grep before
 trusting any of them.** That warning is unusually live here: `backend/server.py`,
-`scripts/gpu-governor.sh`, `tools/build_pages.py` and `tools/build_training.py` were all
+`scripts/gpu-governor.sh`, `tools/build/build_pages.py` and `tools/build/build_training.py` were all
 being edited by other agents while this was written, and the `train` unit's line number moved
 once mid-audit. Every load-bearing claim below was re-verified against the working tree at
 the end of the pass; the line numbers are the part most likely to have drifted since.
@@ -155,7 +155,7 @@ wall-clock training figure may be quoted from this log.**
    `backend/models/hf/` (15 GB), moved there by `9b5da84`. A fresh run today
    re-downloads ~14.2 GiB into a non-repo path, silently, and the docstring's promise that
    *"where are the models" has one answer* is broken. The repo already has the fix pattern:
-   `tools/build_training.py:33` asserts `(ROOT / "backend" / "api.py").is_file()` with the
+   `tools/build/build_training.py:33` asserts `(ROOT / "backend" / "api.py").is_file()` with the
    comment *"This exact calculation has been wrong twice in this repo's history ... and it
    fails silently."* It has now been wrong three times.
 
@@ -673,7 +673,7 @@ class of finding.
    default. This is a hard requirement, not a hardening task for later.
 
 6. **No multi-GPU anything.** One card. No FSDP, no DeepSpeed ZeRO-3, no tensor parallelism,
-   no NVLink — `tools/build_stack.py:110` already records the last of these. Reinforce's P2P
+   no NVLink — `tools/build/build_stack.py:110` already records the last of these. Reinforce's P2P
    test is *waived*, not failed, for the same reason, and that is the right vocabulary here
    too: cannot-here, not broken.
 
@@ -765,7 +765,7 @@ waiver semantics, not its server, its licensing subsystem or its kernel layer.
 Not a schedule. This is what has to be true before the next thing can be.
 
 1. **Fix `HF_HOME`** in `train_lora.py` (§1.5.1) and add the `assert` that
-   `tools/build_training.py:33` already models. Nothing else works until the cache resolves.
+   `tools/build/build_training.py:33` already models. Nothing else works until the cache resolves.
 2. **Extract the run config into a dataclass/JSON**, one file per preset, `train_lora.py`
    reduced to a runner. The Nemotron shape (§3.2): the run *is* a config file.
 3. **Add val split, `save_strategy="epoch"`, a seed, and a written run manifest** beside the

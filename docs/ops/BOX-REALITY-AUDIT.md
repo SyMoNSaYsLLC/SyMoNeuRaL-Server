@@ -208,7 +208,7 @@ reporting success."*
 ### 3.1 REMOVED — `ComfyUI/` does not exist
 
 **The repo-root `ComfyUI/` directory is absent under any spelling.** The render UI is
-`engines/symoneural-ui/`, a rebranded fork produced by `tools/fork_render_ui.sh`. The rename is
+`engines/symoneural-ui/`, a rebranded fork produced by `tools/sh/fork_render_ui.sh`. The rename is
 already recorded at `scripts/lib/archive-guard.sh:94`.
 
 Consequences, and **`ComfyUI/models/checkpoints/` is not a baseline** — it is not a directory:
@@ -218,7 +218,7 @@ Consequences, and **`ComfyUI/models/checkpoints/` is not a baseline** — it is 
 | `apps/test_governor_paths.py:46` | **PROD** | `ComfyUI/main.py` is in `RETIRED` — the guard *against* the stale path, not an instance of it |
 | `apps/studio/workflows.py:25` | **AUDIT** | Says `ComfyUI/models/checkpoints/` "is empty apart from its placeholder". Doubly stale: the dir does not exist, and its live equivalent `backend/models/checkpoints/` is **not** empty (9.22 GB of `stable_audio_3_medium`). The *conclusion* — don't use `CheckpointLoaderSimple` — remains correct. |
 | `apps/studio/comfy.py:7`, `graph.py:24`, `routes.py:320`, `tools_impl/comfy_tool.py:27` | **AUDIT** | Upstream source citations (`ComfyUI/server.py:686` etc.). The claims are checkable only if the reader knows to look in `engines/symoneural-ui/`. Re-point the prefix; do not delete the line numbers, they are the evidence. |
-| `tools/fork_render_ui.sh:16,139` | **AUDIT** | Greps for shebangs `#!/home/google/Symoneural/ComfyUI/.venv/bin/`. Correct for re-forking *from* the old layout; can never match today. |
+| `tools/sh/fork_render_ui.sh:16,139` | **AUDIT** | Greps for shebangs `#!/home/google/Symoneural/ComfyUI/.venv/bin/`. Correct for re-forking *from* the old layout; can never match today. |
 
 ### 3.2 PROD — `backend/models/image` references resolve
 
@@ -636,7 +636,7 @@ beyond what one tracked file plus two test modules can be doing today.
 ### 10.4 RavenCalc — PROD direction, current implementation AUDIT before migration
 
 `backend/apps/ravencalc/` — 5 tracked files, plus `backend/apps/test_ravencalc.py` and
-`tools/prove_ravencalc_steps.py`. First-class rack row at `backend/server.py:1974`:
+`tools/audit/prove_ravencalc_steps.py`. First-class rack row at `backend/server.py:1974`:
 `Unit(id="ravencalc", label="SyMoNeuRaL RavenCalc", slot="1U", state="ready")` — the only
 `state="ready"` written as a literal rather than derived from a GPU probe, which is itself the
 CPU-only claim expressed in code.

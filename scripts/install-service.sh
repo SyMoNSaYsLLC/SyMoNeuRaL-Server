@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# DEPRECATED, 2026-09-09. Use `sudo ops/install-runtime.sh` instead.
+# DEPRECATED, 2026-09-09. Use `sudo ops/deploy/install-runtime.sh` instead.
 #
 # Install the SyMoNeuRaL API as a system service.
 #
@@ -8,13 +8,13 @@
 # After this the API starts on boot, restarts on crash, and is managed with systemctl
 # rather than a shell script. It replaces symoneural.sh for anything production (that script stays for manual control).
 #
-# ## Why this refuses to run -- see ops/INSTALLERS.md for the full adjudication
+# ## Why this refuses to run -- see ops/deploy/INSTALLERS.md for the full adjudication
 #
 # Commissioning found FOUR installers whose unit headers disagreed about which one owns them.
 # This is the oldest and it is superseded in full: it renders the same
-# ops/symoneural-api.service with the same sed substitution and installs it to the same path,
+# ops/units/symoneural-api.service with the same sed substitution and installs it to the same path,
 # but with no --dry-run, no backup, no rollback, and no check that the placeholder was
-# actually substituted. `ops/install-runtime.sh` does all four and refuses rather than
+# actually substituted. `ops/deploy/install-runtime.sh` does all four and refuses rather than
 # installing something wrong.
 #
 # It is not deleted, because deleting tracked content was not commissioning's call. It is
@@ -33,16 +33,16 @@ REFUSING: scripts/install-service.sh is deprecated (2026-09-09).
 Use the authoritative installer, which dry-runs, backs up, verifies the placeholder was
 substituted, and rolls back on failure:
 
-    sudo ops/install-runtime.sh --dry-run     # see what it would do
-    sudo ops/install-runtime.sh
+    sudo ops/deploy/install-runtime.sh --dry-run     # see what it would do
+    sudo ops/deploy/install-runtime.sh
 
 Note before you run it: install-runtime.sh also installs symoneural-deploy.service, which
-has never been installed on this box. See ops/INSTALLERS.md.
+has never been installed on this box. See ops/deploy/INSTALLERS.md.
 
 For the unit repair commissioning identified specifically (StartLimit* sitting in [Service],
 where systemd ignores it), use:
 
-    sudo ops/commission-apply.sh --apply
+    sudo ops/deploy/commission-apply.sh --apply
 
 To run this deprecated script anyway:
     sudo ./scripts/install-service.sh --i-know-this-is-deprecated
@@ -63,7 +63,7 @@ echo "installing unit -> $UNIT"
 # is what lets the checkout be cloned anywhere and still produce a correct unit.
 ROOT="$(cd "$HERE/.." && pwd)"
 [ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
-sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/symoneural-api.service" > "$UNIT.tmp"
+sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/units/symoneural-api.service" > "$UNIT.tmp"
 install -m 644 -o root -g root "$UNIT.tmp" "$UNIT"
 rm -f "$UNIT.tmp"
 echo "  unit points at $ROOT"
@@ -122,6 +122,6 @@ a stop is not a hold, and this line used to imply it was: the unit is `enabled`,
 plain `stop` evaporates at the next boot and the API comes back on its own. Commissioning
 watched exactly that happen on 2026-09-09 -- a deliberate hold was in force, the box
 rebooted, and the service started itself. For a hold that survives a reboot see
-ops/SERVICE-HOLD.md; the short version is `systemctl disable --now`, or `mask` if it must
+ops/deploy/SERVICE-HOLD.md; the short version is `systemctl disable --now`, or `mask` if it must
 not be startable even by hand.
 EOF

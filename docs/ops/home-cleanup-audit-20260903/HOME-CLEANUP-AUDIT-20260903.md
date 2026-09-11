@@ -115,7 +115,7 @@ only**:
 | `symoneural-api.service` | `WorkingDirectory=/home/google/Symoneural`, `ExecStart=…/backend/server.py`, governor calls in `ExecStartPre`/`ExecStopPost` |
 | `symoneural-gateway.service` | `ExecStart=…/backend/apps/gateway/target/release/symoneural-gateway` |
 | `symoneural-web.service` | `ExecStart=…/web/symoneural-web/build/symoneural-web` |
-| `symoneural-progress.service` (user) | `ExecStart` of `tools/build_intake.py`, `archive_tasks.py`, `build_progress.py`; `ReadWritePaths` |
+| `symoneural-progress.service` (user) | `ExecStart` of `tools/build/build_intake.py`, `archive_tasks.py`, `build_progress.py`; `ReadWritePaths` |
 | `rclone-gdrive.service` | `RequiresMountsFor` + `RCLONE_CONFIG=/home/google/.config/rclone/rclone.conf`; backs the `/mnt/gdrive` rclone mount |
 
 **No systemd unit references any clutter directory.**

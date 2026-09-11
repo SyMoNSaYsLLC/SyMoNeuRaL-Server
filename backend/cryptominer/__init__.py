@@ -99,7 +99,7 @@ SURFACE = "miner"          # the governor surface name; must match gpu-governor.
 # The operator's config. Absent by default -- see `miner.env.example` next to it.
 ENVFILE = pathlib.Path(os.environ.get("SYMONEURAL_MINER_ENV") or (HERE / "miner.env"))
 
-# Where `tools/fork_engines.sh miner` puts the miner it builds. This is a SIGNPOST, not a
+# Where `tools/sh/fork_engines.sh miner` puts the miner it builds. This is a SIGNPOST, not a
 # default: it is quoted back to the operator by `selftest()` and by the example file, and
 # no code path anywhere turns it into a running process. Making it a fallback for an unset
 # SYMONEURAL_MINER_CMD would mean an unconfigured box starts hashing the first time somebody hits

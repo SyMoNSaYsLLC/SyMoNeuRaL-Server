@@ -453,7 +453,7 @@ def e(s: str) -> str:
 # The page.
 #
 # Inline, like `/docs` and for the reason its docstring gives: a page assembled at request
-# time is never seen by `tools/build_cachebust.py`, so a stylesheet of its own would ship
+# time is never seen by `tools/build/build_cachebust.py`, so a stylesheet of its own would ship
 # unstamped and be cacheable for a week against markup that changes whenever a route does.
 # It borrows `/symoneural.css` and `/rack-detail.css`, which ARE stamped, and adds only
 # `ad-`-prefixed rules. The prefix is not tidiness: `.bar` collapsed this site's header to

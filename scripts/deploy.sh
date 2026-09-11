@@ -147,7 +147,7 @@ missing=0
 # a check that cries wolf is worse than no check, because the next real failure gets ignored.
 #
 # The four front-page sections belong in this list for exactly the same reason as docs.
-# tools/build_split.py writes them as overview.html, livestack.html and so on, but every
+# tools/build/build_split.py writes them as overview.html, livestack.html and so on, but every
 # page links them WITHOUT the extension because ops/Caddyfile reverse-proxies those paths
 # to FastAPI. So `/livestack` is a real, working URL that is correctly not a file, and
 # checking it with -f reported MISSING on a deploy where all four answered 200.
@@ -157,7 +157,7 @@ missing=0
 # livestack.html is still caught.
 # `studio` and `exp` are the same case again and were reported MISSING on a deploy where both
 # answered 200 -- so this check was failing every deploy, and `deploy.sh` exits non-zero when
-# it does. That is not a cosmetic wolf-cry: ops/symoneural-deploy.service deliberately carries
+# it does. That is not a cosmetic wolf-cry: ops/units/symoneural-deploy.service deliberately carries
 # no SuccessExitStatus, so an unattended boot-time deploy would have gone red every time.
 #
 # Checked before being added, because the whole value of this list is that nothing goes in it
@@ -211,7 +211,7 @@ is_route() {
     # fallback grew an `<a class="unit" href="/demo/dispatchos">`.
     #
     # Without this line the reference check reports `MISSING demo/dispatchos` and exits 1 on a
-    # deploy where the path answers 200 -- and `ops/symoneural-deploy.service` deliberately
+    # deploy where the path answers 200 -- and `ops/units/symoneural-deploy.service` deliberately
     # carries no SuccessExitStatus, so the boot-time publish would have gone red every time.
     # Exactly the failure the four paragraphs above this function describe, arriving again.
     #

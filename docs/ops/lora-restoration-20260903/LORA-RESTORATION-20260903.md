@@ -184,7 +184,7 @@ engine as a launch argument, and `symoneural-llm` was **not resident** at restor
 `training/adapter/adapter_model.safetensors` — `reinforce/jobs.py:87` declares
 `SHIPPED_ADAPTER = ROOT / "training" / "adapter"`. Consumers: `test_reinforce.py:1009`,
 `test_coder.py:183` ("adapter weights"), `test_cleanroom.py:246`,
-`tools/modelops_inventory.py:148`. **`test_reinforce.py:546-549` records the exact figure:**
+`tools/lib/modelops_inventory.py:148`. **`test_reinforce.py:546-549` records the exact figure:**
 "`adapter_model.safetensors` is **161,533,192 bytes**, which is 40,370,176 fp32 parameters
 plus a 52 KB safetensors header" — identical to the archived member, and consistent with
 `adapter_config.json`'s `r: 16` over seven target modules.

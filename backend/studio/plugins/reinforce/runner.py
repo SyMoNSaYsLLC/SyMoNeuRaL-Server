@@ -122,7 +122,7 @@ sys.path[:] = [p for p in sys.path if pathlib.Path(p or ".").resolve() != HERE]
 # wrong three times in this repo and it fails silently, because the wrong parent is usually a
 # directory that exists -- `training/train_lora.py` has it wrong right now, producing an
 # HF_HOME of /home/google/models/hf, which does not exist. Assert, the way
-# tools/build_training.py does, so a misresolution is immediate and obvious.
+# tools/build/build_training.py does, so a misresolution is immediate and obvious.
 # `backend/server.py` is the marker, and it is WALKED for rather than counted to. The counted
 # form (`HERE.parent.parent.parent`) has now been wrong a FOURTH time: moving this app to
 # `backend/studio/plugins/reinforce` added two levels and the count resolved to

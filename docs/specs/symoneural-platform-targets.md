@@ -90,7 +90,7 @@ Status words below are **direction**, not readiness. Readiness is the measured t
 and the reason the box is the reference for every implementation claim.
 
 **App packaging and runtime direction stays open until scoped.** The repo already ships Debian
-packaging machinery (`scripts/build-deb.sh`, `ops/install-service.sh`, systemd units) for *the
+packaging machinery (`scripts/build-deb.sh`, `ops/deploy/install-service.sh`, systemd units) for *the
 server*. That is not the same decision as how a promoted *application* is packaged for Linux,
 and the second one is not made. Yocto/embedded appliance images are a separate route again —
 `docs/specs/symoneural-application-lab.md` §3.10.

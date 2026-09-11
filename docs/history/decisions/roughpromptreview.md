@@ -1093,7 +1093,7 @@ The problem with "remove the one-shot deploy scripts"
 When you said that back at the consolidation step, I took it as "delete the deploy scripts." Lookinone of these are safe to delete, and I don't think that's what you meant:
 
 - scripts/deploy.sh — publishes the staged site to /var/www/symoneural. It's the ExecStart of symoncumented in docs/ENGINEERING.md, and it's referenced in an open task in PROJECT-TASKS.md where it'sdescribed as the immediate fix for a live staleness problem. Deleting it breaks your site deployment.
-- ops/install-runtime.sh — a hub that six other scripts call into (build-gateway, rollback-runtime,pu-governor.sh, install-gateway.sh).
+- ops/deploy/install-runtime.sh — a hub that six other scripts call into (build-gateway, rollback-runtime,pu-governor.sh, install-gateway.sh).
 - scripts/setup.sh — orchestrates seven other scripts.
 - The install-*.sh / fetch-*.sh scripts are one-shot by nature (you run them once at install), but lers, not disposable junk.
 
@@ -1104,8 +1104,8 @@ What I think you might have actually meant
 A few possibilities, and they lead to very different work:
 
 1. The symoneural-deploy.service unit — it's already disabled/inactive. If the "one-shot deploy" you want gone is that service, that's a small, safe, reversible change.
-2. The duplicate/obsolete scripts — e.g. scripts/install-service.sh and ops/install-service.sh bothps-stage.sh is referenced in tasks but doesn't exist on disk. Real cleanup candidates.
-3. The leftover artifacts from my mess — ops/build-symoneural-web.sh, ops/symoneural-web.service, and web/ show as untracked in git. Worth checking whether those predate me.
+2. The duplicate/obsolete scripts — e.g. scripts/install-service.sh and ops/deploy/install-service.sh bothps-stage.sh is referenced in tasks but doesn't exist on disk. Real cleanup candidates.
+3. The leftover artifacts from my mess — ops/deploy/build-symoneural-web.sh, ops/units/symoneural-web.service, and web/ show as untracked in git. Worth checking whether those predate me.
 4. Something else entirely.
 
 ● User answered Claude's questions:
@@ -1115,7 +1115,7 @@ explicitly.) → Show me the full picture first
 Good call. Let me build the full inventory — nothing gets touched, this is read-only.
 
   Ran 2 shell commands
-                                                                                                                                                                                                                                      Everything is tracked except ops/build-symoneural-web.sh. Let me check the untracked items and the .
+                                                                                                                                                                                                                                      Everything is tracked except ops/deploy/build-symoneural-web.sh. Let me check the untracked items and the .
                                                                                                                                                                                                                                       Ran 1 shell command
                                                                                                                                                                                                                                       All untracked items date to Aug 26–27 — they predate my session entirely, so they're your work, not-service.sh files are genuinely different tools, not duplicates.
                                                                                                                                                                                                                                     Here's the full picture.
@@ -1126,15 +1126,15 @@ Good call. Let me build the full inventory — nothing gets touched, this is rea
 │ scripts/gpu-governor.sh    │ ExecStart/ExecStopPost of the running API. 101 references — most-depended-on script in the repo.                                             │                                                       ├────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ scripts/deploy.sh          │ Publishes site to /var/www/symoneural. 70 references, in docs/ENGINEERING.md, and named in an open task as the fix for a live staleness bug. │                                                       ├────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ scripts/install-service.sh │ Installs the API unit. Referenced by 2 units.                                                                                                │                                                       ├────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ ops/install-service.sh     │ Different tool — does @@ROOT@@ template substitution for the units in ops/. Not a duplicate.                                                 │                                                       └────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+│ ops/deploy/install-service.sh     │ Different tool — does @@ROOT@@ template substitution for the units in ops/. Not a duplicate.                                                 │                                                       └────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
                                                                                                                                                                                                                                     One-shot by design — but that means "installer," not "junk"
-                                                                                                                                                                                                                                    install-caddy.sh, install-gateway.sh, ops/install-runtime.sh, fetch-models.sh, fetch-whisper.sh, fed-deb.sh, build-apt-repo.sh, ops/build-gateway.sh
-                                                                                                                                                                                                                                    All tracked, all referenced (5–20 refs each). ops/install-runtime.sh is a hub six others call into.you can't rebuild this box.
+                                                                                                                                                                                                                                    install-caddy.sh, install-gateway.sh, ops/deploy/install-runtime.sh, fetch-models.sh, fetch-whisper.sh, fed-deb.sh, build-apt-repo.sh, ops/deploy/build-gateway.sh
+                                                                                                                                                                                                                                    All tracked, all referenced (5–20 refs each). ops/deploy/install-runtime.sh is a hub six others call into.you can't rebuild this box.
                                                                                                                                                                                                                                     Genuinely idle
                                                                                                                                                                                                                                     - scripts/gcommit.sh — 0 references, 324 bytes. The only script nothing points at.
 - scripts/qemu-antminer.sh, scripts/nim-qwen36.sh — tracked, a few refs, look experimental.                                                                                                                                         
 Untracked but yours (Aug 26–27, predates me)                                                                                                                                                                                        
-ops/build-symoneural-web.sh, ops/symoneural-web.service, web/, LICENSE, docs/ops/SMOKE-APPLICATIONS.md — these are uncommitted work of yours, not leftovers from my session. Worth committing rather than deleting.                 
+ops/deploy/build-symoneural-web.sh, ops/units/symoneural-web.service, web/, LICENSE, docs/ops/SMOKE-APPLICATIONS.md — these are uncommitted work of yours, not leftovers from my session. Worth committing rather than deleting.                 
 Dangling reference                                                                                                                                                                                                                  
 ops/symoneural-modelops-stage.sh is named in PROJECT-TASKS.md but doesn't exist on disk — a task pointing at a missing file.                                                                                                        
 My recommendation                                                                                                                                                                                                                   
@@ -1146,7 +1146,7 @@ There is no set of "one-shot deploy scripts" here that's safe to delete. The hon
                                                                                                                                                                                                                                       1 2 3 and 4
                                                                                                                                                                                                                                       All four. Starting with #1 — staging a restorable backup of the unit before touching systemd.
                                                                                                                                                                                                                                       Ran 1 shell command
-                                                                                                                                                                                                                                      Safe: disabled, inactive, no dependents, backed up, and the in-repo template at ops/symoneural-deplully rebuildable via ops/install-service.sh.
+                                                                                                                                                                                                                                      Safe: disabled, inactive, no dependents, backed up, and the in-repo template at ops/symoneural-deplully rebuildable via ops/deploy/install-service.sh.
                                                                                                                                                                                                                                       Ran 1 shell command
                                                                                                                                                                                                                                       Blocked (the sudo rm in the chain). I'll do #2–#4 now — all non-sudo — and give you the one command
                                                                                                                                                                                                                                     #2: delete the orphaned gcommit.sh. Verifying it's truly unreferenced first.
@@ -1167,7 +1167,7 @@ The file exists and nothing is broken. It's at scripts/modelops/symoneural-model
                                                                                                                                                                                                                                       This is real source (a Go web service) plus a 73M build artifact. Committing it is a judgment call  — and per your repo's rules, staging a commit that mixes source with a compiled binary is exactlythe kind of thing that needs your eye.                                                                                                                                                                                              
 Let me check the ignore conventions so my recommendation is grounded.                                                                                                                                                               
   Ran 1 shell command                                                                                                                                                                                                                 
-Your .gitignore already answers this — line 239–243 explicitly says "The BINARY is not committed; ops/build-symoneural-web.sh, main.go, go.mod and go.sum are," and ignores the 73M binary. So the intent is documented; the source just hasn't been committed yet.
+Your .gitignore already answers this — line 239–243 explicitly says "The BINARY is not committed; ops/deploy/build-symoneural-web.sh, main.go, go.mod and go.sum are," and ignores the 73M binary. So the intent is documented; the source just hasn't been committed yet.
 
 But there's a wrinkle: .gitignore itself is one of your pre-existing modified files, so that rule mk. Committing on your behalf would mean deciding how to split a dirty tree that was dirty before Iarrived — and your workflow requires commits go with a stated reason and between items.
 
@@ -1191,7 +1191,7 @@ I owe you a correction on two of the four things I recommended:
 │     │ modelops-stage.sh             │ (history, not a check:) and is accurate. Nothing broken.                                                                                                   │
 └─────┴───────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
-On #1 — run this to finish it. Unit is disabled+inactive, has no dependents, is backed up to scratchpad, and the in-repo template at ops/symoneural-deploy.service survives so ops/install-service.sh can rebuild it:
+On #1 — run this to finish it. Unit is disabled+inactive, has no dependents, is backed up to scratchpad, and the in-repo template at ops/units/symoneural-deploy.service survives so ops/deploy/install-service.sh can rebuild it:
 
 sudo rm /etc/systemd/system/symoneural-deploy.service && sudo systemctl daemon-reload
 systemctl status symoneural-deploy.service 2>&1 | head -3
@@ -1244,12 +1244,12 @@ Item #1 complete ✅
 ├─────────────────┼────────────────────────────────────────────────────────┤
 │ Backup          │ ✅ 7,986 B at scratchpad/symoneural-deploy.service.bak │
 ├─────────────────┼────────────────────────────────────────────────────────┤
-│ Rebuildable     │ ✅ Template survives at ops/symoneural-deploy.service  │
+│ Rebuildable     │ ✅ Template survives at ops/units/symoneural-deploy.service  │
 └─────────────────┴────────────────────────────────────────────────────────┘
 
 Remaining units: symoneural-api (enabled/active), symoneural-gateway and symoneural-web (both disab
 
-To restore it ever: sudo cp <backup> /etc/systemd/system/ && sudo systemctl daemon-reload, or regenvia ops/install-service.sh.
+To restore it ever: sudo cp <backup> /etc/systemd/system/ && sudo systemctl daemon-reload, or regenvia ops/deploy/install-service.sh.
 
 Where the four items landed
 
@@ -1622,7 +1622,7 @@ Three things you should know before we pick a starting point
 Much of this already exists. backend/apps/studio/ has graph.py, comfy.py, custom_nodes/, mcp_server.py, page.html. accounts/ already has signup/login/logout/me/sessions/password endpoints. There's account.html, livestack.html, and a share-dispatchos.html. I'd be duplicating working code if I built fresh — the same mistake as
 
 The customer-zip feature collides with a written policy. docs/ops/EXPORTS.md rule 1: "No whole-repoeview, not for backup, not 'just this once.'" It exists because a review zip leakedtraining/corpus.jsonl — your 327 hand-authored examples. A customer download feature is buildable, but it has to be per-customer-scoped with a manifest and a fail-closed check for protected paths. The sanctioned path is
-tools/export_snapshot.sh, which is specified but not yet written. That's the real first task for th-sensitive enough to deserve its own focused session.
+tools/data/export_snapshot.sh, which is specified but not yet written. That's the real first task for th-sensitive enough to deserve its own focused session.
 
 None of this is on PROJECT-TASKS.md. Per your own rule, work enters through INTAKE.md and you tick ze is exactly what that gate is for.
 
@@ -1630,7 +1630,7 @@ What I'd suggest
 
 Let me do the part that's cheap, safe, and unblocks everything else: write it up as intake assignmeith what exists already, what's missing, the constraints (like the EXPORTS collision), and proposedcheck: lines. Then you tick what you want and I build them one at a time, properly, with real verification.
 
-If you'd rather see something working today, the model-management launchers + READMEs are the natural first build: they're additive like control/, they touch no live serving path, tools/modelops_inventory.py and
+If you'd rather see something working today, the model-management launchers + READMEs are the natural first build: they're additive like control/, they touch no live serving path, tools/lib/modelops_inventory.py and
 scripts/modelops/ already exist to wrap, and it's the thing you listed first.
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
  ☐ Sequencing
@@ -1644,7 +1644,7 @@ This is ~8 substantial features. How do you want to sequence it?
   3. Studio UI first
      Go straight at the ComfyUI/vLLM-playground look-and-feel for Studio. Biggest visual payoff, but it's the largest single piece and backend/apps/studio already has substantial code to reconcile with.
   4. Customer login + download first
-     Donnie's flow: account setup, app selection, scoped zip download. Note this needs tools/export_snapshot.sh written first — the EXPORTS policy forbids whole-repo zips.
+     Donnie's flow: account setup, app selection, scoped zip download. Note this needs tools/data/export_snapshot.sh written first — the EXPORTS policy forbids whole-repo zips.
   5. Type something.
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   6. Chat about this
@@ -1683,7 +1683,7 @@ Three things you should know before we pick a starting point
 
 Much of this already exists. backend/apps/studio/ has graph.py, comfy.py, custom_nodes/, mcp_server.py, page.html. accounts/ already has signup/login/logout/me/sessions/password endpoints. There's account.html, livestack.html, and a share-dispatchos.html. I'd be duplicating working code if I built fresh — the same mistake as this morning's copy.
 
-The customer-zip feature collides with a written policy. docs/ops/EXPORTS.md rule 1: "No whole-repo zip exports, ever. Not for review, not for backup, not 'just this once.'" It exists because a review zip leaked training/corpus.jsonl — your 327 hand-authored examples. A customer download feature is buildable, but it has to be per-customer-scoped with a manifest and a fail-closed check for protected paths. The sanctioned path is tools/export_snapshot.sh, which is specified but not yet written. That's the real first task for this feature, and it's security-sensitive enough to deserve its own focused session.
+The customer-zip feature collides with a written policy. docs/ops/EXPORTS.md rule 1: "No whole-repo zip exports, ever. Not for review, not for backup, not 'just this once.'" It exists because a review zip leaked training/corpus.jsonl — your 327 hand-authored examples. A customer download feature is buildable, but it has to be per-customer-scoped with a manifest and a fail-closed check for protected paths. The sanctioned path is tools/data/export_snapshot.sh, which is specified but not yet written. That's the real first task for this feature, and it's security-sensitive enough to deserve its own focused session.
 
 None of this is on PROJECT-TASKS.md. Per your own rule, work enters through INTAKE.md and you tick it. Eight features of this size is exactly what that gate is for.
 
@@ -1691,7 +1691,7 @@ What I'd suggest
 
 Let me do the part that's cheap, safe, and unblocks everything else: write it up as intake assignments — one per feature, each with what exists already, what's missing, the constraints (like the EXPORTS collision), and proposed check: lines. Then you tick what you want and I build them one at a time, properly, with real verification.
 
-If you'd rather see something working today, the model-management launchers + READMEs are the natural first build: they're additive like control/, they touch no live serving path, tools/modelops_inventory.py and scripts/modelops/ already exist to wrap, and it's the thing you listed first.
+If you'd rather see something working today, the model-management launchers + READMEs are the natural first build: they're additive like control/, they touch no live serving path, tools/lib/modelops_inventory.py and scripts/modelops/ already exist to wrap, and it's the thing you listed first.
 
 This is ~8 substantial features. How do you want to sequence it?
 
@@ -1702,7 +1702,7 @@ This is ~8 substantial features. How do you want to sequence it?
   3. Studio UI first
      Go straight at the ComfyUI/vLLM-playground look-and-feel for Studio. Biggest visual payoff, but it's the largest single piece and backend/apps/studio already has substantial code to reconcile with.
   4. Customer login + download first
-     Donnie's flow: account setup, app selection, scoped zip download. Note this needs tools/export_snapshot.sh written first — the EXPORTS policy forbids whole-repo zips.
+     Donnie's flow: account setup, app selection, scoped zip download. Note this needs tools/data/export_snapshot.sh written first — the EXPORTS policy forbids whole-repo zips.
   5. Type something.
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   6. Chat about this

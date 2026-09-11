@@ -1,6 +1,6 @@
 """The rack roster, read from `ROSTER.md`.
 
-One parser, so that `tools/build_rack.py` and `apps/test_roster.py` are reading the same
+One parser, so that `tools/build/build_rack.py` and `apps/test_roster.py` are reading the same
 thirteen rows off the same file instead of each carrying its own copy. `ROSTER.md` explains
 why the file exists and what it is deliberately not; this module is only the reader.
 

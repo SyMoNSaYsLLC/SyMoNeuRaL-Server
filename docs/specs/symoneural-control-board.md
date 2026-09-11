@@ -75,7 +75,7 @@ deliberate — deriving one from the other would delete the check.
 | rack assembly | **inline in `backend/server.py`** (`:1955` onward) |
 | the switch | `backend/apps/controlboard/` |
 | the gate | `RackPowerGate`, `backend/server.py:1415-1486` |
-| the page | generated into `site/index.html` by `tools/build_console.py` |
+| the page | generated into `site/index.html` by `tools/build/build_console.py` |
 | the live view | browser script over WebSocket |
 
 **Direction:** rackpower + Live Stack + Control Board eventually belong under
@@ -91,7 +91,7 @@ not authorized.
 
 ## 5. Generator rules — for whenever the page is touched
 
-- **`tools/build_console.py` must be idempotent.** Run it **twice and diff**. This repo has had
+- **`tools/build/build_console.py` must be idempotent.** Run it **twice and diff**. This repo has had
   the accumulate bug — a generator that re-reads its own output and does not recognise something
   it emits will duplicate it, one copy per run — **three times**.
 - **`build_cachebust.py` runs last.** Learned again in this session: `build_pages.py` alone

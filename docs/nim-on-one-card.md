@@ -93,7 +93,7 @@ which already carries `LLM_ARCH_QWEN35` and can serve a LoRA adapter. That is ho
 Whether a **32B** GGUF clears this card with usable KV headroom is a measurement nobody here
 has taken. Until it is taken, no figure for it appears on any page. The control board's
 `32B @ IQ2 · ~78 tok/s · 9.6 GB` cell is marked `data-src="projected"`
-(`tools/build_console.py:122`) and must stay marked that way.
+(`tools/build/build_console.py:122`) and must stay marked that way.
 
 ## Two NIM features worth remembering, even though this one is refused
 

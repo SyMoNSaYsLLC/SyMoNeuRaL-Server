@@ -117,7 +117,7 @@ ASR route to claim** — `apps/voice` already reports `offline` and names the mi
 
 ## Registry sections — added 2026-08-22, and the inventory that populates them
 
-**The registry is not a list any more; it is a reading.** `tools/modelops_inventory.py` scans the
+**The registry is not a list any more; it is a reading.** `tools/lib/modelops_inventory.py` scans the
 disk, joins it to `PROVENANCE.json`, and joins that to the paths the running surfaces actually
 load. **Re-run it rather than trusting the numbers below** — that is the standing rule and this
 file is subject to it.

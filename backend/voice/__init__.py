@@ -14,7 +14,7 @@ Three exports, and they are the whole contract with `api.py`:
 
 **The rack row is deliberately NOT mounted yet.** `status()` is here and correct, but its
 `href` is `/voice.html` and that page does not exist -- it is written by
-`tools/build_pages.py`, which two other sessions were holding when this landed. A rack row
+`tools/build/build_pages.py`, which two other sessions were holding when this landed. A rack row
 pointing at a 404 is worse than no row: the front page is the one place on this site where
 every link is expected to work. Add the row in the same commit as the page, not before.
 

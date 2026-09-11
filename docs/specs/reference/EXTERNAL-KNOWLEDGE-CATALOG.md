@@ -9,7 +9,7 @@ The authoritative, generated index lives at `gdrive:INDEX.md` with `gdrive:CATAL
 when Drive is *not* available and you need to know whether something exists before going
 looking for it.
 
-Regenerate the Drive-side files with `tools/drive_catalog.py build` then `upload`.
+Regenerate the Drive-side files with `tools/data/drive_catalog.py build` then `upload`.
 
 ## The split, in one sentence each
 

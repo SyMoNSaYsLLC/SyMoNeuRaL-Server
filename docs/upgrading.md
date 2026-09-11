@@ -40,7 +40,7 @@ The primitive. It publishes the staged `site/` directory of the checkout it live
 What it does not do:
 
 - It does not build the site. It publishes whatever is staged, so the generator pipeline
-  — the `tools/build_*.py` generators, then `tools/build_cachebust.py` strictly last —
+  — the `tools/build_*.py` generators, then `tools/build/build_cachebust.py` strictly last —
   has to have been run first. Deploying a tree where a generator ran after the stamper
   ships pages whose stylesheets are cacheable for a week with no way to invalidate them,
   because the generators emit unstamped asset references and only the stamper rewrites
@@ -154,7 +154,7 @@ unwanted publish is undone by fixing `site/` and publishing again, not by restor
   delete-then-verify before packaging and abort if any of them survives.
 - **Service installation.** The `.deb` installs no systemd unit and starts nothing. The
   unit is installed from the checkout by `sudo scripts/install-service.sh`, which
-  substitutes the repo root into the `ops/symoneural-api.service` template.
+  substitutes the repo root into the `ops/units/symoneural-api.service` template.
 - **Configuration and state.** `/etc/symoneural/` and `/var/lib/symoneural/` are left
   alone apart from the one-line `last-deploy` verdict.
 

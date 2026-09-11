@@ -4,7 +4,7 @@
         python3 -m uvicorn ravencalc.service:app --host 127.0.0.1 --port 8811
 
     or, the way the unit does it:
-        ops/symoneural-surface@.service  ->  Environment=SURFACE=ravencalc
+        ops/units/symoneural-surface@.service  ->  Environment=SURFACE=ravencalc
 
 ## Why RavenCalc first
 
@@ -16,7 +16,7 @@ pattern does not work here it works nowhere.
 the governor invariant. It has no rack power state worth gating. Its unit row is derivable
 from a constant, so it barely tests the aggregation. The one hard thing it CAN carry is
 whether the rack tells the truth when this process is gone — see `/healthz` below and
-`tools/surface_pilot_proof.py`.
+`tools/lib/surface_pilot_proof.py`.
 
 ## What it does NOT duplicate
 

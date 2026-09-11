@@ -4,7 +4,7 @@
 # and the operator power switch this repo calls Rack. Optionally the TRON licensing Gateway,
 # which needs two facts this script cannot invent, and DispatchOS, which issues no shared
 # token at all -- its accounts are per-person scrypt hashes written by
-# tools/dispatchos_accounts.py, so this script only flips its switch.
+# tools/lib/dispatchos_accounts.py, so this script only flips its switch.
 #
 #   sudo ./scripts/enable-surfaces.sh project rack
 #   sudo ./scripts/enable-surfaces.sh coder studio                # local-only, see below
@@ -18,7 +18,7 @@
 # ## Why a drop-in and an env file rather than editing the unit
 #
 # The live unit is the TEMPLATED copy at /etc/systemd/system/symoneural-api.service, written
-# by ops/install-service.sh with the repo root substituted in. Editing ops/symoneural-api.service
+# by ops/deploy/install-service.sh with the repo root substituted in. Editing ops/units/symoneural-api.service
 # changes nothing that is running, and editing the installed copy is undone the next time
 # anybody re-runs the installer. A drop-in at .../symoneural-api.service.d/ survives both.
 #
@@ -224,7 +224,7 @@ done
 #
 # It is also the reason this surface writes nothing secret here at all: there is no value in
 # this file that unlocks it. The accounts are in the store, and the passwords are set by
-# tools/dispatchos_accounts.py, which writes them to a root-owned 0600 file rather than to a
+# tools/lib/dispatchos_accounts.py, which writes them to a root-owned 0600 file rather than to a
 # terminal -- a credential that has been displayed is spent (request ledger R-168).
 # Like dispatchos, a switch and nothing else -- this surface mints no shared bearer token.
 # It is reachable only from a loopback peer with no x-forwarded-* header (api.py
@@ -319,7 +319,7 @@ fi
 install -d -m 0755 "$DROPIN_DIR"
 cat > "$DROPIN" <<EOF
 # Written by scripts/enable-surfaces.sh. A drop-in rather than an edit to the unit, so
-# re-running ops/install-service.sh does not silently switch these surfaces back off.
+# re-running ops/deploy/install-service.sh does not silently switch these surfaces back off.
 #
 # The leading '-' means a missing file is not a startup failure: deleting $ENV_FILE
 # turns every one of these surfaces off and the API still serves chat, image and calc.

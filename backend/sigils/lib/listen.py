@@ -45,7 +45,7 @@ assert (ROOT / "scripts" / "gpu-governor.sh").is_file(), (
     "root, which was the one thing that was correct."
 )
 
-#: Built by `tools/fork_engines.sh listen`, CPU-only on purpose. See the module docstring.
+#: Built by `tools/sh/fork_engines.sh listen`, CPU-only on purpose. See the module docstring.
 #: The CPU-only choice is unchanged and is argued in `scripts/fetch-whisper.sh`; what changed
 #: is the home. This named a third-party binary under `contrib/`, which is gitignored -- so
 #: the engine could disappear without a trace, and did. `voice/asr.py` is the other call site

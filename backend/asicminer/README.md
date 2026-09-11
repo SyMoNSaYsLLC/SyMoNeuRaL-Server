@@ -48,7 +48,7 @@ faces the public internet, and one of them takes a filename.
 ### Where the variables actually have to go
 
 `scripts/symoneural.sh` starts the API with `setsid python3 backend/server.py` and sources no
-env file, and `ops/symoneural-api.service` carries only `PYTHONUNBUFFERED` and
+env file, and `ops/units/symoneural-api.service` carries only `PYTHONUNBUFFERED` and
 `SYMONEURAL_PORT`. So there are exactly two working places to put them:
 
 ```bash
@@ -58,7 +58,7 @@ SYMONEURAL_ASIC_ENABLED=1 SYMONEURAL_ASIC_TOKEN=… SYMONEURAL_ASIC_RIGS=10.0.0.
 ```
 
 ```ini
-# permanent, under systemd — add to ops/symoneural-api.service, then
+# permanent, under systemd — add to ops/units/symoneural-api.service, then
 #   sudo systemctl daemon-reload && sudo systemctl restart symoneural-api
 Environment=SYMONEURAL_ASIC_ENABLED=1
 Environment=SYMONEURAL_ASIC_TOKEN=…

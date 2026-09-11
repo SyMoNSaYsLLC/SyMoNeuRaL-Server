@@ -15,7 +15,7 @@ neither. The customer surface cannot inherit a "down for maintenance" strip by a
 
 Same rule as the rest of the site: everything a visitor loads comes off this box. No CDN,
 no font fetch, no analytics. The styles are inline because this page is behind basicauth and
-is not part of the cache-busted asset set that `tools/build_cachebust.py` stamps -- a
+is not part of the cache-busted asset set that `tools/build/build_cachebust.py` stamps -- a
 stylesheet link here would be the one asset on the page with no cache story.
 
 ## What is deliberately absent from the interface

@@ -97,16 +97,16 @@ Seven package/leak mutation tests pass against the new boundary.
 
 ```bash
 # Read-only manifest, AST import, lock, engine-home and ASR-path inventory.
-python3 tools/audit_runtime_dependencies.py
-python3 tools/audit_runtime_dependencies.py --json
+python3 tools/audit/audit_runtime_dependencies.py
+python3 tools/audit/audit_runtime_dependencies.py --json
 
 # Exact production payload; does not build or write a .deb.
 scripts/build-deb.sh --list
 
 # Existing engine helpers. These require host-only reference inputs and should fail loudly
 # in this portable archive rather than inventing binaries.
-tools/fork_engines.sh all
-tools/fork_render_ui.sh --verify
+tools/sh/fork_engines.sh all
+tools/sh/fork_render_ui.sh --verify
 ```
 
 ## Recommended order for the next runtime pass

@@ -270,7 +270,7 @@ def _write_segmented(width: int, height: int, rgba: list[bytes], out: pathlib.Pa
 def _encode(width: int, height: int, rgba: list[bytes], key: str, provenance: dict) -> bytes:
     """Attach the provenance and encode. One encoder for every path that makes a sticker.
 
-    Provenance rides in the file's metadata, not in its pixels. `tools/build_gallery.py`
+    Provenance rides in the file's metadata, not in its pixels. `tools/build/build_gallery.py`
     stamps a bar naming the model, size and seed onto homepage art; burning that into a
     sticker would deface the thing being made, so the same facts go into tEXt chunks
     instead and the sticker itself is untouched.

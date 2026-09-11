@@ -443,7 +443,7 @@ def status() -> dict:
         "slot": "1U",
         "state": st,
         "bus": "cpu",
-        # `site/project.html` now exists -- `tools/build_project.py` generates it -- so the
+        # `site/project.html` now exists -- `tools/build/build_project.py` generates it -- so the
         # tile links to the surface instead of to the documentation page. That page and this
         # line changed in one commit, which is the order this comment used to ask for:
         # `scripts/deploy.sh`'s reference check fails the build on a link to a page that is

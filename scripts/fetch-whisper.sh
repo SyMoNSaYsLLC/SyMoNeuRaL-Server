@@ -34,7 +34,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 # SUPERSEDED 2026-09-04, and delegating rather than deleted.
 #
 # The argument above is still the design and is cited from backend/voice/asr.py and
-# from tools/fork_engines.sh, so it stays here where those citations point. What changed is
+# from tools/sh/fork_engines.sh, so it stays here where those citations point. What changed is
 # that every operative line below it was wrong:
 #
 #   * it cloned into `contrib/whisper.cpp`, which `/contrib` gitignores and
@@ -48,7 +48,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 #
 # The two canonical tools now own the two halves, and both are tracked:
 #
-#     tools/fork_engines.sh listen     builds symoneural-listen, under our names
+#     tools/sh/fork_engines.sh listen     builds symoneural-listen, under our names
 #     scripts/fetch-models.sh          fetches the weight under its house name
 #
 # This wrapper runs them in that order so an old command line still does the right thing.
@@ -61,7 +61,7 @@ if [ -x "$ROOT/symoneural-listen/build/bin/symoneural-listen" ]; then
   echo "==> engine already built at symoneural-listen"
 else
   echo "==> building the engine"
-  "$ROOT/tools/fork_engines.sh" listen
+  "$ROOT/tools/sh/fork_engines.sh" listen
 fi
 
 WEIGHT="$ROOT/backend/models/whisper/symoneural-listen-base-en.bin"

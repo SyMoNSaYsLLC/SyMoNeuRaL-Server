@@ -32,7 +32,7 @@ so it survives the worktree being removed.
 Main independently grew its own `backend/apps/gateway/abi.py`, so git reports **add/add** on it
 (and on `test_gateway.py` and `docs/specs/gateway-completion.md`), plus content conflicts in
 `backend/apps/gateway/__init__.py`, `site/gateway.html`, `tests/frontend.mjs` and
-`tools/build_pages.py`. Seven in total; everything else auto-merges, confirmed with
+`tools/build/build_pages.py`. Seven in total; everything else auto-merges, confirmed with
 `git merge-tree --write-tree HEAD main`, which trial-merges without touching the tree.
 
 **Take this branch's `abi.py` wholesale.** This is not a close call and does not need
@@ -57,19 +57,19 @@ pre-mainnet decision below, and this section.
 cd /home/google/Symoneural
 git status                                 # FIRST -- see the next paragraph
 git merge worktree-gateway-online
-python3 tools/build_pages.py               # re-run: build_pages.py moved under me once already
-python3 tools/build_cachebust.py           # LAST, always
+python3 tools/build/build_pages.py               # re-run: build_pages.py moved under me once already
+python3 tools/build/build_cachebust.py           # LAST, always
 node tests/frontend.mjs                    # expect 28/28
 sudo scripts/deploy.sh --prune             # the page is repo-only until this runs
 ```
 
 **The merge will abort if you run it today.** The shared checkout is dirty across exactly the
-files this branch touches — `backend/server.py`, a dozen `site/*.html`, `tools/build_rack.py`,
-`tools/build_stack.py`, `tools/build_training.py` — plus untracked `backend/apps/{accounts,
+files this branch touches — `backend/server.py`, a dozen `site/*.html`, `tools/build/build_rack.py`,
+`tools/build/build_stack.py`, `tools/build/build_training.py` — plus untracked `backend/apps/{accounts,
 coder,cryptominer,guide,project,reinforce,sigils}/` from other sessions still working. Git
 refuses to merge when local modifications would be overwritten, and the error reads as though
 this branch is broken when the problem is only that the tree is busy. Commit or stash that work
-first. Expect the conflict in `tools/build_pages.py` specifically: it is shared ground and it
+first. Expect the conflict in `tools/build/build_pages.py` specifically: it is shared ground and it
 already moved under this work once, when another session landed the Tuner EPG guide in it.
 
 The regeneration matters and the order matters. Re-running the generators after the merge is
@@ -207,10 +207,10 @@ and restart.
 
 `site/gateway.html` currently states, truthfully, that there is *no deployed contract, no
 wallet, no daemon and no key material on this box*. **Phase B makes the first clause false.**
-The page is generated, so edit `GATEWAY_BODY` in `tools/build_pages.py`, never the HTML:
+The page is generated, so edit `GATEWAY_BODY` in `tools/build/build_pages.py`, never the HTML:
 
 ```bash
-python3 tools/build_pages.py && python3 tools/build_cachebust.py   # cachebust ALWAYS last
+python3 tools/build/build_pages.py && python3 tools/build/build_cachebust.py   # cachebust ALWAYS last
 node tests/frontend.mjs                                            # expect green
 sudo scripts/deploy.sh --prune                                     # only this reaches visitors
 ```

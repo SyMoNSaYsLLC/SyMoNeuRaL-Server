@@ -179,7 +179,7 @@ def write_rgba(width: int, height: int, planes: list[bytes],
     """Encode four 8-bit planes as an RGBA PNG.
 
     `text` becomes `tEXt` chunks. That is where this surface's provenance goes, and it is
-    the deliberate replacement for `tools/build_gallery.py`'s watermark bar: the bar prints
+    the deliberate replacement for `tools/build/build_gallery.py`'s watermark bar: the bar prints
     the model, size and seed *into the pixels*, which on a sticker is a caption strip burned
     into the artwork. The information is the point, not the pixels -- so it rides in the
     file's metadata instead, where a sticker saved to a phone still carries how it was made

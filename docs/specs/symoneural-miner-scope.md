@@ -141,7 +141,7 @@ decision; moving a package is a migration, and no migration is authorized.
   (`BOX-REALITY-AUDIT.md` §10.4).
 
 This is the one place where the existing page copy is already exactly right —
-`tools/build_pages.py:5900-5904` — and it is not touched.
+`tools/build/build_pages.py:5900-5904` — and it is not touched.
 
 ## 6. Security — two tokens, and they stay two
 

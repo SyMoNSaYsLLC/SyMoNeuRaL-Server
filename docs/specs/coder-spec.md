@@ -333,7 +333,7 @@ Applied here:
 | An extensionless `/coder` | **Yes** — and three other files. |
 
 That last row is the expensive one: an extensionless route means editing
-`tools/build_split.py`, `backend/server.py`, `ops/Caddyfile`, **and** `is_route()` in
+`tools/build/build_split.py`, `backend/server.py`, `ops/Caddyfile`, **and** `is_route()` in
 `scripts/deploy.sh` (which otherwise reports `MISSING coder`, because pages link `/coder`
 while the file is `coder.html`). **Do not add an extensionless route for this surface.**
 

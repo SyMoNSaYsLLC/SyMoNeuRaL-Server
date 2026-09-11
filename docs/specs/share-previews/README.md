@@ -6,7 +6,7 @@ out of `site/` on purpose, and the reason is mechanical rather than stylistic.
 ## Why not `site/`
 
 `scripts/deploy.sh` publishes `$ROOT/site` at `-maxdepth 1` into `/var/www/symoneural`, and
-`ops/symoneural-deploy.service` is **enabled** with `--prune`, so that publish runs **at every
+`ops/units/symoneural-deploy.service` is **enabled** with `--prune`, so that publish runs **at every
 boot** without a person. A restricted page sitting in `site/` is therefore one reboot away from
 being served — and if the matching access-control block is not yet installed in the live web
 server config at that moment, it is served **with no protection at all**.
@@ -26,12 +26,12 @@ and unprotected.
 1. **Install the web server config and reload it**, so the access-control block for the page's
    exact path is live. Verify the path answers `401` before continuing.
 2. **Move the page into `site/`.**
-3. **Re-run `python3 tools/build_cachebust.py`** — it does not reach this directory, so asset
+3. **Re-run `python3 tools/build/build_cachebust.py`** — it does not reach this directory, so asset
    stamps are only refreshed once the page is in `site/`. Run it twice and diff; it must be a
    no-op the second time.
 4. **Re-run the page guards.** A page under `docs/` is outside every one of them, and they all
    glob `site/*.html`:
-   - `python3 tools/check_links.py`
+   - `python3 tools/audit/check_links.py`
    - `cd backend && python3 -m pytest apps/test_brand_boundary.py apps/test_streamer_migration.py -q`
 5. **Publish** with `scripts/deploy.sh`, and confirm the live path still asks for credentials.
 

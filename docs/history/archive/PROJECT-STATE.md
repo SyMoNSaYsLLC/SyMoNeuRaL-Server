@@ -37,7 +37,7 @@ traces to this and nothing else.
 Optional second command — only needed for boot-start/crash-restart, not for the site to work:
 
 ```bash
-sudo .../ops/install-service.sh     # systemd unit
+sudo .../ops/deploy/install-service.sh     # systemd unit
 sudo .../ops/install-apache.sh      # adds /api/ws + live /docs proxy (static /docs works without it)
 ```
 

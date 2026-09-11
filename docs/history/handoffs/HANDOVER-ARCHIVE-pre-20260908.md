@@ -255,16 +255,16 @@ performed by this documentation update. Preserve the pre-existing docs/ops/EXPOR
 > CMake/BitBake metadata are fine. A **live component depending on it** is not.
 >
 > **`/home/google/yocto` was permanently deleted. Never recreate or reference it.** That is a
-> different path from the top-level `/yocto` mount, and `ops/verify-runtime.sh` fails if it
+> different path from the top-level `/yocto` mount, and `ops/deploy/verify-runtime.sh` fails if it
 > reappears.
 >
 > **Do not migrate anything by hand.** The path is coded and idempotent:
 >
->     ops/build-gateway.sh              native Debian build from canonical source
->     sudo ops/install-runtime.sh       preflight, backup, atomic install, daemon-reload,
+>     ops/deploy/build-gateway.sh              native Debian build from canonical source
+>     sudo ops/deploy/install-runtime.sh       preflight, backup, atomic install, daemon-reload,
 >                                       controlled restart, health check, AUTO-ROLLBACK
->     ops/verify-runtime.sh             proves the boundary; exit 1 on any violation
->     sudo ops/rollback-runtime.sh      restore a backup later, by hand
+>     ops/deploy/verify-runtime.sh             proves the boundary; exit 1 on any violation
+>     sudo ops/deploy/rollback-runtime.sh      restore a backup later, by hand
 >
 > `--dry-run` on the installer answers "what would change" without changing it.
 >
@@ -472,7 +472,7 @@ conversation, so every number, path and decision you need is stated here.
 - **`/` redirects (302) to `/overview`.** The front page is four sections, each at its own
   URL — `/overview`, `/livestack`, `/controlboard`, `/receipts`. The tabbed one-screen
   `index.html` still exists and still answers at `/index.html`; it is the page
-  `tools/build_split.py` reads to build the other four, so it cannot simply stop being
+  `tools/build/build_split.py` reads to build the other four, so it cannot simply stop being
   generated. **Whether to retire it is an open question — see §5.** Eleven generators now.
   §3.0 explains the layout and, more usefully, the four ways its tests lied.
 - **All four sections fit one screen again. `/livestack` was 42/43; it is 43/43.** Fixed
@@ -607,14 +607,14 @@ path" was true of the right one and the wrong one alike.
 
 `3be56de8` (custody model + four consumers), `25be151a` (gateway rename).
 
-**THE RULE THIS TEACHES:** existence is not identity. `ops/verify-runtime.sh` and
-`ops/install-runtime.sh` were both checking `.../release/symon-gateway` — present, correctly
+**THE RULE THIS TEACHES:** existence is not identity. `ops/deploy/verify-runtime.sh` and
+`ops/deploy/install-runtime.sh` were both checking `.../release/symon-gateway` — present, correctly
 hashed, and not what had been running since the cutover.
 
 ### The gateway rename could re-stale the manifest on the next build
 
 Worse than two files holding an old name. Cargo.toml, Cargo.lock and the unit were already
-renamed, so cargo emitted `symoneural-gateway` while `ops/build-gateway.sh`'s `OUT` still named
+renamed, so cargo emitted `symoneural-gateway` while `ops/deploy/build-gateway.sh`'s `OUT` still named
 `symon-gateway` — **and that file was still on disk**, so `[ -f "$OUT" ]` passed and the builder
 hashed, proved and recorded a binary cargo had not produced. Its record was a `cat >` heredoc
 that rewrote the whole file, so a build would also have destroyed `deployed_by_unit`,
@@ -667,10 +667,10 @@ One finding was a **false positive in my own check** and was caught before editi
 chat's composer does have an indicator, drawn on the wrapper by `.cu-composer:focus-within`.
 Acting on it would have added a redundant outline and broken a working design. The check walks
 the ancestor chain now. Fixed at source (`backend/apps/studio/page.js`,
-`.../plugins/exp/page.js`, `tools/build_pages.py`), 0 findings after. `995bc7d9`, `0cdb458f`.
+`.../plugins/exp/page.js`, `tools/build/build_pages.py`), 0 findings after. `995bc7d9`, `0cdb458f`.
 
 **Generator trap re-encountered:** running `build_exp/build_studio/build_pages` without
-`tools/build_cachebust.py` afterwards stripped `?v=` stamps from seven unrelated pages.
+`tools/build/build_cachebust.py` afterwards stripped `?v=` stamps from seven unrelated pages.
 `build_studio.py`'s own header warns about it. Two full runs are now byte-identical.
 
 ### The corpus audit — READ ONLY, and it stopped there deliberately
@@ -732,7 +732,7 @@ moved** — `symoneural-web.service` (MainPID 1804) executes
 (a live questionnaire, 46 references) stayed for the same class of reason.
 
 `references/` — **108 GB**, untracked, mentioned by **89 tracked files** including
-`tools/index_references.py` — was left in place. Biggest win available, but moving it breaks
+`tools/lib/index_references.py` — was left in place. Biggest win available, but moving it breaks
 that tool; it is a decision, not a tidy-up.
 
 `docs.zip` (340 tracked docs, export-checked by name AND by content) is at `/home/google/docs.zip`.
@@ -807,7 +807,7 @@ Bootcamp still owns the competition rules and depth charts; the matrix owns the 
 
 ### What the sabotage run found, which is the part worth copying
 
-**The harness is tracked** — `python3 tools/sabotage_matrix.py` (`--list` to inspect without
+**The harness is tracked** — `python3 tools/lib/sabotage_matrix.py` (`--list` to inspect without
 mutating). It refuses to start on a dirty tree, restores in a `finally` and asserts the restore is
 byte-exact; `apps/test_sabotage_matrix.py` keeps it honest without running it, so `pytest apps/`
 stays side-effect free. **Twelve cases** — nine original, two from the pre-merge review (a Safety
@@ -856,7 +856,7 @@ had no such directory, so the test was green there — **the assertion depended 
 leftovers, which is the one input a test must never trust.**
 
 The filter now lives in **`is_app_module_dir()`** and excludes `__pycache__` **and any dot-prefixed
-name**, which is what **`tools/bootcamp_scout.py:189` already did**. So the Scout was right the
+name**, which is what **`tools/lib/bootcamp_scout.py:189` already did**. So the Scout was right the
 whole time and the test was wrong *while carrying a comment claiming it matched the Scout* — the
 same shape as the ASR finding: an assertion about agreement, with nothing enforcing it.
 `test_the_filter_matches_the_scouts_own_predicate` now reads the Scout's source and goes red if
@@ -1110,7 +1110,7 @@ next tenant OOM'd at step 0.
 | `ComfyUI/.venv` | `engines/symoneural-ui/.venv` |
 
 `engines/symoneural-ui` is **derived and gitignored**, exactly like the two forked C++ engines
-beside it. The tracked artefact is **`tools/fork_render_ui.sh`**, which is the provenance: it
+beside it. The tracked artefact is **`tools/sh/fork_render_ui.sh`**, which is the provenance: it
 rsyncs from `references/ComfyUI`, rewrites `pyvenv.cfg`'s `command =` line and the `.venv/bin`
 shebangs, and repoints the copied `extra_model_paths.yaml` at the house weight names. Delete
 the tree and re-run the script and you get it back. **The venv is COPIED, not rebuilt** — the
@@ -1137,7 +1137,7 @@ Against the running server at `127.0.0.1:8188`:
 
 ### The two bugs found on the way, both committed
 
-1. **`tools/build_progress.py` was archiving tasks over the top of their own failing checks.**
+1. **`tools/build/build_progress.py` was archiving tasks over the top of their own failing checks.**
    A `resolve: OLD -> NEW` line was assigned straight to the task's state, and the percentage
    gate below it can only ever *set* `done`, never withhold it — so one satisfied `git mv`
    silenced eleven red `check:` lines and `archive_tasks.py` moved all **330 lines** of #74 to
@@ -1214,7 +1214,7 @@ separate commands, and **either can be run first**. So:
 
 Only both together make the deploy order-independent, which it was not before. The senders are
 `symoneuralstudio/page.js`, `symoneuralexp/page.js`, `site/console.js` (hand-authored),
-`tools/build_pages.py` ×2, `tools/build_project.py`, and `bin/symoneural-cli` — that last one
+`tools/build/build_pages.py` ×2, `tools/build/build_project.py`, and `bin/symoneural-cli` — that last one
 because the CLI ships in a `.deb` and the API is a systemd unit, so nothing makes them the same
 version at the same moment.
 
@@ -1406,7 +1406,7 @@ bentoml_service_runner}.py`, `bentofile.yaml`, `requirements.txt`, `README.md`,
 `llama-server` still serves, `run/registry.json` is still the registry, nothing in `backend/`
 imports BentoML, `api.py` is byte-identical. What this buys is a **generated Dockerfile**: the
 image recipe comes from `bentofile.yaml` instead of a hand-maintained file that drifts away from
-`ops/Containerfile`. The service holds no weights and never takes a GPU lease.
+`ops/deploy/Containerfile`. The service holds no weights and never takes a GPU lease.
 
 **The workflow has never executed**, because there is no git remote. That is the request's own
 allowed fallback ("a green CI run *or* a documented reason why CI could not push") and the
@@ -1552,7 +1552,7 @@ NVIDIA's FastAPI fork was written over `backend/`; a clone of NVIDIA/NemoClaw la
 
 `GET /api/studio/models` is declared inline in `backend/server.py`, above the StaticFiles mount.
 It reads **one pre-computed file**, `run/registry.json`, written out-of-band by
-`python3 tools/build_registry.py`. It does not scan, fork, probe the network, or take the GPU
+`python3 tools/build/build_registry.py`. It does not scan, fork, probe the network, or take the GPU
 lock — that is the point of it, and `apps/test_studio_models.py` asserts it against the
 handler's own AST, so "fixing" a stale response by calling `registry.catalogue()` from the
 route fails the suite rather than quietly landing a directory walk on the live path.
@@ -1566,7 +1566,7 @@ route fails the suite rather than quietly landing a directory walk on the live p
   intact.
 - **`latency_ms` is null on every row and that is the honest answer.** Nothing on this machine
   stores a per-model latency. The `151 tok/s` on the site is a string literal in
-  `tools/build_console.py:115`; the only measurement persisted to disk is peak VRAM
+  `tools/build/build_console.py:115`; the only measurement persisted to disk is peak VRAM
   (`run/reinforce/measured-peaks.json`). `_latency_for()` in the generator is the single
   documented place to wire a real reading in, per row, once something measures one — and a
   test fails if a number ever appears without `latency_label: "measured"`. Do not fill it from
@@ -1783,7 +1783,7 @@ land on a fresh clone silently.
 
 ### TRAP: editing the manual's markdown does not change the site
 
-`tools/build_training.py` reads **`docs/symoneural-manual.html`**, not the `.md` — deliberately,
+`tools/build/build_training.py` reads **`docs/symoneural-manual.html`**, not the `.md` — deliberately,
 because that file carries the long-form layout and 750-odd heading anchors that are already
 deep-linked. **There is no in-repo step that regenerates the `.html` from the `.md`, and pandoc
 is not installed on this box** (`command -v pandoc` → nothing). So the two files drift silently,
@@ -1796,8 +1796,8 @@ Until pandoc exists here, edit **both**, matching pandoc's idiom (`<div class="t
 tables, `<h3 id="slug">`). Then the full sequence, which is the one from `docs/authority/PROJECT-AUTHORITY.md`:
 
 ```bash
-python3 tools/build_training.py     # twice, and diff -- idempotency is the contract
-python3 tools/build_cachebust.py    # ALWAYS LAST
+python3 tools/build/build_training.py     # twice, and diff -- idempotency is the contract
+python3 tools/build/build_cachebust.py    # ALWAYS LAST
 git status --porcelain site/        # only the page you touched may be modified
 ```
 
@@ -1824,7 +1824,7 @@ directory clobber each other silently — the file just loses one of the two edi
 
 | Claimed by | Files |
 |---|---|
-| the tuner/site agent (this one) | `backend/apps/tuner/**`, `tools/build_pages.py`, `site/tuner*.html`, `site/symoneural.css`, `tests/tuner_*`, `tests/frontend.mjs` |
+| the tuner/site agent (this one) | `backend/apps/tuner/**`, `tools/build/build_pages.py`, `site/tuner*.html`, `site/symoneural.css`, `tests/tuner_*`, `tests/frontend.mjs` |
 | per-app agents | `backend/apps/<their app>/**`, `site/<their surface>.html` and the generator that writes it |
 | nobody — coordinate first | `ops/Caddyfile`, `scripts/deploy.sh`, this file's §0c |
 
@@ -1879,7 +1879,7 @@ and the file times agree with the names:
 | Session | Owns — do not write these files | Evidence on disk |
 |---|---|---|
 | `symoneural reinforce lora tuning` | `backend/apps/reinforce/**` on branch `worktree-reinforce-rl` | `23f96b3` |
-| **unidentified** | `tools/build_reinforce.py`, `site/reinforce.html`, `site/reinforce.js`, and the uncommitted `/api/train` mount in `main`'s working copy | written 14:49, still untracked |
+| **unidentified** | `tools/build/build_reinforce.py`, `site/reinforce.html`, `site/reinforce.js`, and the uncommitted `/api/train` mount in `main`'s working copy | written 14:49, still untracked |
 | `symoneural miner completion` | `backend/apps/asicminer/**` (code), `site/miner.html` | — |
 | `symoneural coder online integration` | `backend/apps/coder/**` | — |
 | `symoneural gateway online status` | `backend/apps/gateway/**`, `site/gateway.html` | — |
@@ -1887,9 +1887,9 @@ and the file times agree with the names:
 | the tuner session | `backend/apps/tuner/**`, `tests/tuner_*`, `site/tuner*.html` | 13:44–14:40 |
 | `symoneural typography spacing` | type/spacing in `site/symoneural.css` | — |
 | `online applications testing` | `tests/frontend.mjs` | 29-line rack-unit block added |
-| this session (handover/review) | `docs/HANDOFF.md`, `tools/build_masthead.py`, `backend/apps/accounts/routes.py`, `scripts/qemu-antminer.sh` | committed below |
+| this session (handover/review) | `docs/HANDOFF.md`, `tools/build/build_masthead.py`, `backend/apps/accounts/routes.py`, `scripts/qemu-antminer.sh` | committed below |
 
-**`tools/build_pages.py` and `backend/server.py` are the two contended files.** Every surface needs
+**`tools/build/build_pages.py` and `backend/server.py` are the two contended files.** Every surface needs
 a page (`build_pages.py`) and a mount (`api.py`), so both will be edited by several sessions in
 the same hour. Rules that follow from that, and they are not optional:
 
@@ -1910,7 +1910,7 @@ Garrett's instruction was "merge the four clean branches first". Done, as `56623
 | Branch | What arrived |
 |---|---|
 | `worktree-docs-accuracy` | 22 files — nineteen dead pointers in `docs/`, README counts |
-| `worktree-project-page` | `site/project.html`, `tools/build_project.py`, `tests/project.mjs` |
+| `worktree-project-page` | `site/project.html`, `tools/build/build_project.py`, `tests/project.mjs` |
 | `worktree-site-typography-tlc` | type and spacing across 18 pages, `symoneural.css`, `build_cost.py` |
 | `worktree-online-apps-audit` | the audit document, ravencalc fixes, two probe scripts |
 
@@ -1925,14 +1925,14 @@ ellipsis violations.
 |---|---|
 | `worktree-reinforce-rl` | **0** — it has merged `main` into itself three times (`dd9107d`, `c9dba85`, and the catch-up that resolved this row). Was 10, then 1: that last one was `site/reinforce.html`, which is generator output. |
 | `worktree-stickers` | 3 — `backend/server.py`, `apps/sigils/test_sigils.py`, `site/sigils.html` |
-| `worktree-coder-online` | 8 — incl. `docs/authority/PROJECT-AUTHORITY.md`, `backend/server.py`, `tools/build_pages.py` |
+| `worktree-coder-online` | 8 — incl. `docs/authority/PROJECT-AUTHORITY.md`, `backend/server.py`, `tools/build/build_pages.py` |
 | `worktree-gateway-online` | 7 — incl. `apps/gateway/__init__.py`, `site/gateway.html`, `build_pages.py` |
 
 Reinforce collapsing from 10 conflicts to 1 is the whole argument for merging in this order:
 the session that owned it committed its working-copy work (`8770676`) while these ran, so nine
 of its ten conflicts dissolved on their own. **That last conflict looked like a product question and is not
 one — answered below, and it needed no decision from anybody.** There are not two surfaces.
-`tools/build_reinforce.py` (from `main`) generates `site/reinforce.html` FROM
+`tools/build/build_reinforce.py` (from `main`) generates `site/reinforce.html` FROM
 `apps/reinforce/page.html` (from the branch), so both sides of that conflict are build output
 of the same generator over different inputs, and §1c's own rule applies verbatim: take either
 side, re-run the generator, commit what it emits. The RL bay is not a rival product to the
@@ -1959,7 +1959,7 @@ cache-bust assertion) and that one merged clean — `852d24c`.
   swallowed it into a commit that had nothing to do with it. With eleven sessions live, assume
   the index is dirty and not yours.
 - **Seventeen of eighteen conflicts in the catch-up merge were `?v=<hash>`.**
-  `tools/build_cachebust.py` stamps a content hash into 284 asset links across 21 pages, so any
+  `tools/build/build_cachebust.py` stamps a content hash into 284 asset links across 21 pages, so any
   two branches that both touch `site/symoneural.css` conflict on *every page that references
   it*. That is the generator working. Resolve **hunk-wise and then re-run the generator** —
   `git checkout --theirs` replaces the whole *file* and would have discarded the typography
@@ -1977,7 +1977,7 @@ places.** Both warnings below are kept because the reasoning still applies to th
 of this shape, but neither is live any more.
 
 The unowned files are committed: `8770676` *"Reinforce goes online: the training bay its author
-left unwired"* is the working-copy work — the `/api/train` mount, `tools/build_reinforce.py`,
+left unwired"* is the working-copy work — the `/api/train` mount, `tools/build/build_reinforce.py`,
 `site/reinforce.html` and `site/reinforce.js` — landed on `main` by the session that wrote them.
 So nothing is untracked and nobody needs to be asked which body of work to keep. **The two were
 complements, not rivals**: that session wired the surface and built the page, this one built the
@@ -1999,7 +1999,7 @@ two merges actually found, which is the part worth carrying forward:
   mounts after any `api.py` merge**: `grep -c include_router backend/server.py` should be 6, and
   `grep -c reinforce.router` should be 1. That count is the only thing that catches it.
 - **A generator merged from one side and its input from the other is an untested pair.**
-  `tools/build_reinforce.py` came from `main`, written against the supervised-only `page.html`;
+  `tools/build/build_reinforce.py` came from `main`, written against the supervised-only `page.html`;
   the fragment came from the branch. Its unwrap of `<section><div class="wrap">` has to carry
   `id="reinforce"` through, and every selector in that fragment's sheet is `#reinforce .rf-*`, so
   losing the id renders the panel **unstyled with all its text intact** — content assertions pass
@@ -2044,7 +2044,7 @@ near-fullscreen with PiP and guide settings.
   /controlboard /receipts`, and `handle { file_server }` serves any new `.html` off the webroot
   with no config at all. Same for `site/reinforce.html`. The rule that remains true, and it is
   the one to carry forward: only a new top-level *section* path costs four files
-  (`ops/Caddyfile`, `tools/build_split.py`, `backend/server.py`, `tests/frontend.mjs`).
+  (`ops/Caddyfile`, `tools/build/build_split.py`, `backend/server.py`, `tests/frontend.mjs`).
 - Guide AI: `backend/apps/guide/` exists with 50 tests. Location-aware means asking, not
   geolocating — do not add IP geolocation to a box whose whole argument is that it measures
   rather than infers.
@@ -2064,7 +2064,7 @@ player has not reported yet renders `-`, which is itself the reading.
 
 **Do not start these from a general session.** As of 14:55 there is a dedicated background
 session per surface and they are already writing: `site/reinforce.html` and
-`tools/build_reinforce.py` appeared at 14:49. A second agent doing the same surface will clobber
+`tools/build/build_reinforce.py` appeared at 14:49. A second agent doing the same surface will clobber
 a generator mid-write. What is below is the survey those sessions should be reading, not a
 queue to pick up.
 
@@ -2105,7 +2105,7 @@ What each one actually needs, established by reading the code rather than assumi
   `/api/*` is wholly delegated to FastAPI, so a route is a public route. "Online" here cannot mean
   a public endpoint; decide what it *does* mean before writing anything.
 - **Project** — offline solely for want of `SYM_PROJECT_ENABLED`/`SYM_PROJECT_TOKEN`. Its 14
-  routes exist and work. `site/project.html` belongs in `tools/build_pages.py`, which the tuner
+  routes exist and work. `site/project.html` belongs in `tools/build/build_pages.py`, which the tuner
   session is holding, so the page is blocked on that session landing — not on any design question.
 
 **A new `.html` file and a new `/api/*` subtree need no `ops/Caddyfile` change and no `is_route()`
@@ -2181,7 +2181,7 @@ tokens, and the page says so).
   so on the page), and whether the miner should ever be left holding the card on a box that also
   serves chat and image, given it is **not preemptible** (§5 item 8).
 - **Contention to know about:** at 15:00 the shared checkout had ~2,000 uncommitted lines of
-  *someone else's* work in `tools/build_pages.py`. My commit is rebased onto `e38f463` and does
+  *someone else's* work in `tools/build/build_pages.py`. My commit is rebased onto `e38f463` and does
   not touch theirs, but whoever lands second in that file resolves the conflict.
 
 ### 5. Site-wide, and he repeated it twice
@@ -2195,7 +2195,7 @@ tokens, and the page says so).
   so it is safe to edit by hand). Both browser suites re-run green afterwards: `frontend.mjs`
   26/26, `tuner_failpaths.mjs` 23/23.
 - **Verify every link works. DONE, and it is now a command rather than an audit:**
-  `python3 tools/check_links.py` — 20 pages, 912 links, 282 unique targets, **clean**, exit 1 if
+  `python3 tools/audit/check_links.py` — 20 pages, 912 links, 282 unique targets, **clean**, exit 1 if
   not (re-run 14:58, after `site/reinforce.html` and `site/tuner-watch.html` appeared). One real
   break existed and is fixed in `b5f4e4f`: the masthead's `See it running` pointed at `#rack`,
   which does not exist on `/overview` since the page split — and `/` 302s there, so it was dead
@@ -2230,7 +2230,7 @@ tokens, and the page says so).
   `SYM_ASIC_ENABLED=1` because it is copy-pasteable and `test_asic.py::test_disabled` asserts
   it — 42/42 green), `scripts/qemu-antminer.sh` (a header block: YOU DO NOT NEED
   SYM_ASIC_ENABLED TO RUN THIS), and `backend/apps/asicminer/README.md`.
-  **OWED: the same sentence on `site/miner.html`**, which is written by `tools/build_pages.py`.
+  **OWED: the same sentence on `site/miner.html`**, which is written by `tools/build/build_pages.py`.
   That file was held by the tuner session and is now in the miner session's lane (§1b), so this
   half is handed to whoever owns `build_pages.py` — it is a page-text change, not a code change.
   Landing three quarters of a clarification reads as done and is why this line exists.
@@ -2240,7 +2240,7 @@ tokens, and the page says so).
   of them costs Garrett a single sentence to answer:
   - **The switch.** `/account.html` reads CLOSED for a mechanical reason, not a design one:
     `enabled()` in `backend/apps/accounts/__init__.py:233` needs `SYM_ACCOUNTS_ENABLED=1` **and**
-    `SYM_SESSION_SECRET`, and `ops/symoneural-api.service` sets neither (it carries only
+    `SYM_SESSION_SECRET`, and `ops/units/symoneural-api.service` sets neither (it carries only
     `PYTHONUNBUFFERED` and `SYMONEURAL_PORT`). Turning accounts on is two `Environment=` lines
     plus `sudo systemctl daemon-reload && sudo systemctl restart symoneural-api` — **a password
     no agent has.** Generate the secret on the box, never in a transcript:
@@ -2288,7 +2288,7 @@ finished write-up, so commit early — but if a remote is ever added, audit what
 | Pending deploy | **One, and only one: `sudo scripts/deploy.sh --prune`.** Still one command, and as of `26cb58e` it carries more: `site/ui.js` and `site/symoneural.css` now hold the Symon Say News bar (§2i) and 307 asset links were re-stamped, so the bar cannot appear in production until this runs — and **setting `SYMONEURAL_NEWS_ENABLED=1` first would show a bar built from new markup against the old stylesheet**, which is the worst of the three states. Deploy, then the env var, then the restart; `GARRETT-INBOX.md` has the order. The row's original text, still true of what it describes: this commit edits `site/symoneural.css` (the rack's one-screen fix) and re-stamps the cache-bust hash across all 23 pages, so `/var/www/symoneural/` is behind again. It matters more than it looks: `/livestack` is a FastAPI route reading `<root>/site/` and so is already current, but `/symoneural.css` is a plain static path **Caddy serves off the webroot**, and the query string is only a cache key — the old stylesheet still answers a request for `?v=<new hash>`. Until the deploy runs, production serves the new page against the old CSS and the rack still overflows there. Nothing under `ops/` changed, so **no `install-caddy.sh` and no `install-gateway.sh` this time**. All three of those ran 2026-08-19 08:02-08:0x EDT and production was verified green after them — read the rest of this row for what the list got wrong, because the ordering cost an outage. Verified after the fact, from this box: `ss -lptn` shows `symon-gateway` PID 136848 on :8000 and the API PID 90295 on :8800; `https://symoneural.com/api/status` answers **200 with thirteen units**, the same count as `:8000` and `:8800` direct; `/studio`, `/exp`, `/studio.js` and `/exp.js` all answer **200** through Caddy and the served `/studio.js` is byte-identical to `site/studio.js`; `/swagger-ui/` answers 200. `/v1/models` answers **404, and that is the API's route table, not a gateway fault** — `:8800` direct 404s it identically; the gateway registers `/v1/{*path}` and forwards verbatim (`symon-gateway/src/router.rs:55`), and `/v1/chat/completions` answers 400 to a GET, which is a route that exists rejecting a method. The history below is kept because the ordering finding is the reusable part. Originally measured 2026-08-19 05:20 EDT. The service has restarted past the `api.py` rewrite — the invocation running at 06:30 EDT entered active state 05:22:39 EDT — and runs `backend/server.py` out of this repo, so the backend half is live: `/api/status` answers thirteen units and `/studio` and `/exp` both return 200 on 127.0.0.1:8800. What is owed, Garrett only: **(1) `sudo scripts/deploy.sh --prune`** — `/var/www/symoneural/` has no `studio.html`, no `exp.html`, no `studio.js`, no `exp.js`, and its `symoneural.css` predates the masthead change. The two pages would answer through the API even so, because `/studio` and `/exp` are FastAPI routes reading `<root>/site/`; their **scripts** would not, because `/studio.js` and `/exp.js` are plain static paths Caddy serves off the webroot. A page that loads and does nothing is the failure mode here. **(2) `sudo ./scripts/install-caddy.sh`** — the `@studio` and `@exp` delegation blocks in `ops/Caddyfile` are written and `caddy validate` passes, but until they are installed production resolves both paths against the webroot and 404s without asking the API. Neither block is exercised against localhost, which is why local 200s prove nothing about it. Order stays `deploy.sh` first. **(3) `sudo ./scripts/install-gateway.sh` — this row missed it, and the omission took production down at 08:03 EDT on 2026-08-19.** The Caddyfile that `install-caddy.sh` installs routes `/api/*`, `/v1/*`, `/swagger-ui*` and `/api-docs/*` to **`127.0.0.1:8000`** (`symon-gateway`), not to `:8800`. The unit was never installed — `/etc/systemd/system/symoneural-gateway.service` did not exist and nothing listened on :8000 — so the moment the new Caddyfile loaded, every `/api` path returned **502 connection refused**, including `/api/status` and `/api/ws`. The previous installed file (kept as `/etc/caddy/Caddyfile.prev-20260819-080305`) had `/api/*` on `:8800`, which is why this was invisible until the install. `install-caddy.sh` does not check for the gateway and says so in its own header — *it does not touch Caddy's peers, so the two changes fail independently*. **The correct order is `deploy.sh`, then `install-gateway.sh`, then `install-caddy.sh`**: the Caddyfile is the only thing that points at :8000, so installing it before its upstream exists is the outage. The binary is present and works — run as `google` on a spare `:8001` against the live API 2026-08-19, `/healthz` answers `{"status":"ok",...,"validator":"native-fallback"}` and a proxied `/api/status` returns the same **thirteen units** as `:8800` direct, so this is an install, not a build. `limiter.wasm` is absent (Go is not on this box) and the gateway degrades to `native-fallback` by design at `symon-gateway/src/middleware.rs:82` — a warning, not a failure. |
 | Backend suites | **1267 passed, 0 failed at `c129d81`**, 119.25 s, measured from `backend/` with the two mandatory `--ignore`s; 117.78 s on the identical tree pre-commit. The +38 over 1229 at `d3a4040` is counted, not subtracted: `apps/test_symoneuraldiscovery.py` collects 38 on its own, and the commit's only other test-file change (`test_enable_surfaces.py`) renames one test and widens two set literals, which moves no count. Between those readings: **1229 at `d3a4040`** (1225 at the tree before its four rename-guard tests; 1200 at `74dee33`). Previous full reading in this row: **1188 passed, 0 failed at `26cb58e`**, 117.42 s, measured from `backend/` with the two mandatory `--ignore`s. The +1 over `deaa19d` is counted, not subtracted: one method in `test_project.py` (108 -> 109), asserting `bootstrap()` returns `None` rather than raising when the store cannot be created. Mutation-checked twice, because the guard has two independent halves: dropping the `except` fails it with `PermissionError`, and removing the module logger fails it with `NameError` at `store.py:493` -- which is not hypothetical, it is the bug the first version of the guard shipped with, `log.exception` in a module that had never had a logger. Previous reading: **1117 passed at `deaa19d`**, 113.10 s; +6 there was `test_project.py` 102 -> 108, four tests on `bootstrap()` and two reading `api.py`'s lifespan through `ast`. Before that: **1111 passed at `431c337`**, +18 counted as `test_yocto_layers.py` (9) and `test_enable_surfaces.py` (9), with `--collect-only` on those two files agreeing at 18; and **1102 at `11dc426`**, then 1108 -- those two are carried forward from an earlier reading of this row rather than re-run, and are labelled so because the standard this row is held to is that a figure is anchored to the tree it was measured on; the SHAs resolve, the counts were genuinely measured when written, and neither has been re-observed since. Older history, verbatim from the reading it was written at: **1093 passed, 0 failed at `e81ffa4`**, measured 2026-08-19 from `backend/` with `python3 -m pytest apps/ -q --ignore=apps/reinforce/tests --ignore=apps/remix/tests` in **109.36 s**; `--collect-only -q` collects the same **1093** in 0.81 s. The +8 over the previous reading is `backend/apps/test_cli_upgrade.py`, the first tests ever written against `bin/symoneural-cli`, and is accounted for rather than inferred: 8 test methods, 8 new passes. **The 1093 also flushed out a defect in my own new test file, which is why the count is worth running and not just quoting** — its first version did `self.cli.subprocess.run = fake_run`, mutating the one `subprocess` module the whole pytest process shares, and 27 tests in `apps/voice` and `apps/tuner` failed because they shell out to ffmpeg and were handed the stub (1061 passed, 27 failed, 5 errors). A shim bound to the module's own *name* is visible to the code under test and to nothing else. Previous reading: **1085 passed, 0 failed at `5e68ea3`** (the tree that was measured on; the two commits after it are documentation only). Run twice on that tree: **110.38 s** then **111.55 s** — the count is the reading, the wall time is a range, and quoting one second-precision figure as *the* runtime is how the last one went stale. `--collect-only -q` collected the same **1085** there (0.78 s, 0.80 s); that comparison is the check that catches a collection abort (a smaller number is a lost test, *no* number is `Interrupted`). studio + exp alone are **141 passed in 3.69 s** (63 + 78). **The apparent +22 over the morning's 1063 is not twenty-two new tests, and chasing it found a second stale number.** `git diff 0f247cd..HEAD -- '*test_*.py'` adds exactly **one** `def test_`, and the two `subTest` loops it also adds do not raise pytest's count (a `subTest` block reports as one test). So the delta was measured instead of inferred: a detached worktree at **`0f247cd`** — the commit the 1063 was published against — collects **1084**. The real movement to HEAD is **1084 → 1085, +1**, which is that one test function. **1063 was never true of the tree it was written beside**; it is a reading from an earlier tree that got carried forward onto a later commit. Reading a source diff would not have caught that, and the arithmetic +22 would have invented twenty-one tests that do not exist. Earlier figures the same day were 1062 and 1063; treat any of them as provenance-free unless a SHA is beside it, which is why one is beside this. Previous reading for contrast: **679 passed, 1 failed** at `f9f3546` (2026-08-17 14:40), excluding `reinforce/tests` and `remix/tests` — those two need venvs this interpreter does not have (`cupy`, `symoneural_dj`) and error at *collection*, which is not the same as failing. That single red was the tuner codec test, owned by a live writer at the time; today's run has no reds. **1128 at `e47c8ec` → 1188 at `26cb58e` is +60, and every one of the sixty is accounted for by a file, not by arithmetic:** `apps/test_weight_names.py` **+10** (`34c5009`), `apps/test_site_css.py` **+16** (`bd05397`), `apps/symoneuralnews/test_news.py` **+34** (`16ddfb9`). Counted by collecting each file on its own rather than by subtracting, because that is the only form of this check that names what it found. `apps/test_studio_models.py` also changed at `26cb58e` and is **not** in that sum: one expected count moved 12 → 13 for the news router, which is a figure inside a test, not a new test. Earlier rows in this table read **1118 at `1537262`** and **1093 at `e81ffa4`**; both were true of the trees they name. The commit that added §2i adds one more — `test_news.py::test_the_request_budget_in_the_comments_matches_the_source_list`, which pins the two politeness figures to the source tuples — and the suite is **1189 passed in 117.86 s at `91230b1`**, 2026-08-20 — measured on that tree before it was committed, and still 1189 at the SHA because the only thing added after the reading was this sentence. That is the honest form of the off-by-one this convention has: a count cannot name its own commit until the commit exists, so it is named one commit later, from a tree where it is still true. Nothing under `site/` changed with it, so the 49/49 frontend figure above still names the tree it was measured on and was not re-run. Re-measured after the second round of figure corrections: **1189 passed in 116.06 s at `b85002f`** — the same count, since that commit changed comment prose and added assertions to an existing test rather than a test function. This reading is exact rather than one commit late: the whole tree, including the HANDOVER edits, was written before pytest ran, and only the commit message came after. |
 | Frontend suite | **49 of 49, 0 failed, at `26cb58e`** — `node tests/frontend.mjs http://127.0.0.1:8874`, measured 2026-08-20 against a uvicorn I started on a spare port for the run, never the deployed service. Baseline held; the five `400`/`404` lines it prints under "failed requests" are the tuner endpoints refusing unconfigured probe requests, are counted as expected by the suite, and predate this commit. Previous reading: **43 of 43, 0 failed, at `e81ffa4`** — `node tests/frontend.mjs http://127.0.0.1:8875` against a uvicorn started for the run and stopped after, measured 2026-08-19. Re-measured at `e81ffa4` because the previous stamp was `8b557ac` and `site/documentation.html` changed by 16 lines in between — a page this suite asserts on (`tests/frontend.mjs:736`, `:854`), so the older stamp did not carry forward and re-labelling it would have been the softening this review is about. Same 43, including the mid-run render: `/api/gen/gen-1787185377742-1963400137.png` decoded 768x768 in the browser, served from the API and not the webroot. The red this row used to carry was `#rack` on `/livestack` at 1855x745, 599px of content in a 584px panel; two spacing rules in the `html.ns` block closed it and §0 has the measured capacity table. **This row said 42 of 43 for three commits after it stopped being true**, and asserted that `docs/authority/PROJECT-AUTHORITY.md` agreed when that file had already been corrected to 43/43 — the same one-place-only edit that produced the 1063 above, found by grepping every occurrence of the number instead of the one the diff touched. **43 → 49 at `26cb58e` is the six Symon Say News assertions being *added*, not the old 43 changing** (§2i): the bar's presence and height, the dismiss control, the reduced-motion branch, no truncation, and two that intercept `/api/news/ticker` with a fabricated payload so the stale lamp is checked in both states rather than only in the state live data happens to produce. Measured on `:8874` with `SYMONEURAL_NEWS_ENABLED=1` and 32 real items in the cache, and again on `:8876` with the route present and the surface off — **49/49 both ways**, which is the assertion that the bar degrades to absent rather than to broken. Previous reading: **43 of 43, 0 failed, at `1537262`**, and before that the same 43 at `e81ffa4`. |
-| Link check | **clean** — `python3 tools/check_links.py`, 2026-08-19: 23 pages, 993 links, 285 unique targets (69 resolve, 58 external, 158 in-page), zero dead. This is the check the Voice precedent asks for after adding a route, and `/studio` and `/exp` both resolve in it. |
+| Link check | **clean** — `python3 tools/audit/check_links.py`, 2026-08-19: 23 pages, 993 links, 285 unique targets (69 resolve, 58 external, 158 in-page), zero dead. This is the check the Voice precedent asks for after adding a route, and `/studio` and `/exp` both resolve in it. |
 | Streamer suites | **32/32** and **8/8** — `node tests/streamer_failpaths.mjs` and `node tests/streamer_watch.mjs`, measured 2026-08-19 at **`e81ffa4`**, the same tree as the two rows above, when all three files were still called `tuner_*` (renamed 2026-08-20 under #73 item 2 — the counts keep their SHA, the paths are the ones that exist). These are two of the five invocations `docs/authority/PROJECT-AUTHORITY.md` names, and they need no API, no GPU and no ComfyUI: each starts and stops its own `tests/streamer_fake_provider.py`. **This row used to end "Both match the 2026-08-18 reading at `.claude/HANDOVER.md:303`, so that dated line is confirmed rather than merely old." That citation was false and is deleted rather than softened.** `:303` holds a `frontend.mjs` **26/26** line at this commit and at `df1d862`, and something unrelated at `5e68ea3`; no 32/32 or 8/8 reading has ever stood there. The nearest 08-18-era tuner figure in this file is **23/23** at `:1022`, which does not match, so nothing was being confirmed. Two lessons, and the second is the general one: a line-number citation into a file that grows is unstable by construction — cite the § or quote the sentence — and **a claim that something "matches" is a claim to have compared them.** The counts have moved before — 21/21, then 23/23, then 27/27, then 28 — so the same SHA-beside-the-number rule applies here as to pytest. **Re-read 2026-08-20 at `f6ed7d3`: still 32/32 and 8/8, now under the streamer names, so these two are no longer past-tense figures.** |
 | `project.mjs` | **16/16** — `python3 tests/project-harness.py &` then `node tests/project.mjs`, measured 2026-08-20 at **`fdb21b0`**. **It was 15/16 for a fortnight and the red was not this page's.** `site/ui.js` fetches `/api/news/ticker` on every page load — the ticker is shared page chrome — and the harness mounted only the project router, so a 404 tripped the *no uncaught JavaScript errors* assertion. `apps/news/routes.py` already argues that this endpoint is safe to expose in exactly that case (no fetch triggered, no token, 200 with an empty bar when off) and gives the red-line-in-a-visitor's-console reason for it, so the harness mounts it at `fdb21b0` and now matches the production shape. **The general form: a single-app harness that omits news will report a console error on a page it renders correctly.** This suite had also never been named in `docs/authority/PROJECT-AUTHORITY.md`, which is why nobody ran it; it is the sixth suite there now, and `InvocableDocsTests` in `backend/apps/test_streamer_migration.py` fails if a browser suite goes unnamed again. |
 | `node tests/studio.mjs` | **16 of 16, 0 failed, at `1537262`** — measured 2026-08-19, `SYM_STUDIO_TOKEN=devtest node tests/studio.mjs http://127.0.0.1:8875` against a uvicorn started with `SYM_STUDIO_ENABLED=1` and ComfyUI up via `scripts/comfyui.sh start`. Not a smoke test: it did a real **1024x1024** render, `studio_00008_.png` in **14.4 s** (14.2 s server-side), decoded the image *in the browser* to prove it was proxied through `/api/studio/image` rather than fetched from `:8188`, and the governor released the lock with the card back in **4.1 s**. The strip read `Inference: not answering` because llama-server was not running — a true cell, not a failure. This re-anchors the figure that had been carried at `d20e09b` since 2026-08-19. Previous reading: **16 of 16, 0 failed, at `d20e09b`** — measured 2026-08-19, `SYM_STUDIO_TOKEN=devtest node tests/studio.mjs http://127.0.0.1:8876` against an agent-started uvicorn carrying `SYM_STUDIO_ENABLED=1`, with ComfyUI up from `scripts/comfyui.sh start`. **This row said "NOT RUN" and gave a reason that was false when it was written**: it claimed ComfyUI "has no venv and no torch, which is Phase 0 of the Studio plan and has never been executed." Phase 0 *had* executed — see the ComfyUI row below. Nothing was blocked; the suite had simply never been invoked, and a stale prerequisite claim was doing the work of an explanation. What it now verifies for real: a **1024x1024 FLUX-schnell render decoding in the browser in 14.5 s**, served through `/api/studio/image` and not from port 8188 (which the browser cannot reach), the ComfyUI editor booting inside the iframe through the proxy and reaching **863 node classes** on its own `/object_info`, six status cells, 26 tools with 4 flagged as writing, no `text-overflow` anywhere on the page and no sideways scroll at 390px. Three `net::ERR_ABORTED` lines are printed and labelled: `user.css`, `comfy.templates.json` and an `api/settings/` key, all **404 upstream at :8188 too** — optional files ComfyUI asks for and 404s itself. The 141 studio+exp pytest passes still prove nothing about this path; they are stdlib-only and mock the bridge. **At `26cb58e` this suite reported `5/14`, and that is not a smaller 16/16 — it is a different measurement, and it is not a gate figure.** The denominator is computed, not fixed: `tests/studio.mjs:131` prints `${pass}/${pass + fail}`, so a run whose later assertions are never reached reports a smaller total, and 14 attempted against 16 is exactly that. Every one of the nine failures names a missing `SYM_STUDIO_ENABLED`/`SYM_STUDIO_TOKEN` or a ComfyUI that is not running; the 16/16 baseline needed both switches **and** `scripts/comfyui.sh start`, and that render takes the card, so it was not re-run for a CSS-and-JS commit. What the run was for: the two assertions on this page that the news bar could plausibly have broken — no `text-overflow` anywhere on the page, and no sideways scroll at 390px — **both pass**. Read that as the coverage this commit actually has here, and re-measure 16/16 with the surface on before quoting a ratio for `/studio` again. |
@@ -2386,7 +2386,7 @@ Seven commits, `14f1599` through `677e25b`. In the order they happened:
 2. **The receipts index is a card grid** — eight cards, each one claim plus what backs it.
    The PCIe negative result is amber rather than green because it is not a win; the API
    card carries a live dot because its destination is generated by the running service.
-3. **`tools/build_cachebust.py`** stamps `?v=<content hash>` on every local CSS/JS link.
+3. **`tools/build/build_cachebust.py`** stamps `?v=<content hash>` on every local CSS/JS link.
    The Caddyfile sets `max-age=604800`, which is right for immutable assets and wrong for a
    site under development: it served a week-old stylesheet against new markup and put
    nineteen full-size renders down the left of the live page in front of a visitor. **Run it
@@ -2431,7 +2431,7 @@ still set on the PNG, but the URL now changes whenever the file does.
   Redrawn with `build_gallery.py --restamp` — no GPU, no governor lease, artwork unchanged.
 - **Each gutter render prints its provenance as HTML text** (`.gprov`), because a burned-in
   strip cannot survive a 3.5× downscale at any size that leaves the picture intact.
-- **`tools/build_cachebust.py` now stamps `.png`, `.svg` and `.woff2`, not just CSS and JS.**
+- **`tools/build/build_cachebust.py` now stamps `.png`, `.svg` and `.woff2`, not just CSS and JS.**
   This one is load-bearing for the above: the Caddyfile puts `max-age=604800` on `*.png` and
   the renders keep their filenames, so without a stamp the user deploys, looks, sees the old
   four-pixel bar and reasonably concludes it did not work.
@@ -2561,7 +2561,7 @@ bug rather than a size bug.
   this" from "we declined to load it", and the note says which.
 - **The M3U path had the same class of defect and still would have:** `parse_m3u` caps at
   `MAX_CHANNELS = 20000` and returns `truncated`; `routes.load_playlist`'s docstring says
-  "`truncated` says plainly when it bit"; and `tools/build_pages.py` read that flag **nowhere**.
+  "`truncated` says plainly when it bit"; and `tools/build/build_pages.py` read that flag **nowhere**.
   An over-cap playlist lost its tail — usually the Movies block, the largest and last in most
   provider files — under the words "Loaded from your playlist." That is a silent cap, which is
   the `text-overflow:ellipsis` rule in another costume. The page now names the limit. The cap
@@ -2614,7 +2614,7 @@ panel is `#units`, the same element console.js renders the rack into, restyled c
 every rule scoped under `.gpu-panel`.
 
 If you add another surface page, pass `gpu=True/False` and `surface="Name"` to `page()` in
-`tools/build_pages.py` and the panel appears. `gpu=False` still shows the card — it is
+`tools/build/build_pages.py` and the panel appears. `gpu=False` still shows the card — it is
 shared and worth seeing — but says outright that the page does not wait for it, which is why
 RavenCalc (CPU/SymPy) and Tuner (network) get that variant.
 
@@ -2672,14 +2672,14 @@ production once on `tuner.html`, and the suite passed 22/22 while the page was d
 every assertion checked markup, CSS and endpoints and none of those care whether the script
 runs.
 
-**If you add or edit inline JS in `tools/build_pages.py`, write `\\n`, not `\n`.** The
+**If you add or edit inline JS in `tools/build/build_pages.py`, write `\\n`, not `\n`.** The
 `no page throws a script error` assertion now loads all twelve pages and fails on any
 `pageerror`; it caught the same bug in `CHAT_JS` before that one shipped.
 
 ## 2h. The guide, the watch page, and four bugs behind a black rectangle (2026-08-17 ~14:45)
 
 Everything here is **on disk and unverified live** — see the BLOCKER in §0c. `backend/server.py`,
-`backend/apps/tuner/**`, `tools/build_pages.py`, `site/tuner*.html`, `tests/tuner_*` and
+`backend/apps/tuner/**`, `tools/build/build_pages.py`, `site/tuner*.html`, `tests/tuner_*` and
 `tests/frontend.mjs` were all edited; nothing else was touched.
 
 ### The guide is a grid now
@@ -2898,7 +2898,7 @@ than the truth; the first was the AAC control in `tuner_failpaths.mjs`.
 
 **And a build-order trap that nearly shipped, now written into `docs/authority/PROJECT-AUTHORITY.md`.** Running
 `build_pages.py` **strips every `?v=` cache-bust stamp off the pages it writes**, because the
-generators emit plain hrefs and `tools/build_cachebust.py` stamps them afterwards. Seven pages
+generators emit plain hrefs and `tools/build/build_cachebust.py` stamps them afterwards. Seven pages
 came up modified in `git status` and the diff read like a harmless hash refresh; it was the
 opposite — committing there would have shipped HTML whose CSS and JS are cacheable for a week
 with no way to invalidate them, which is the exact failure that made the stamper exist. The
@@ -2909,7 +2909,7 @@ It had already bitten somebody else: `site/project.html` was committed with **no
 and running the stamper here put all ten back. Check your own surface page for `?v=` before you
 call it done — `grep -c '?v=' site/<page>.html` should be non-zero. And note **`deploy.sh` does
 not stamp** — it only strips `?v=` when checking that references resolve, so a destamped page
-deploys silently. `python3 tools/build_cachebust.py` has to run before `sudo scripts/deploy.sh`,
+deploys silently. `python3 tools/build/build_cachebust.py` has to run before `sudo scripts/deploy.sh`,
 not as part of it.
 
 ## 2g. Two open design questions Garrett raised (NOT decided, NOT built)
@@ -3063,7 +3063,7 @@ python3 backend/apps/reinforce/test_reinforce.py   # 124 passed, 0 skipped (6 sk
                                                    # training/.venv -- they read real trl)
 node    backend/apps/reinforce/test_page.mjs       # 50/50, real Chrome. The last four load the
                                                   # DEPLOYED site/reinforce.html, so run
-                                                  # tools/build_reinforce.py first or they fail.
+                                                  # tools/build/build_reinforce.py first or they fail.
 ```
 
 `test_page.mjs` is new and follows §4's rule — it reads computed styles rather than reasoning
@@ -3196,7 +3196,7 @@ Three full-width sections stacked, and no trimming inside them adds up to a scre
 
 The fix was to stop stacking:
 
-- **`tools/build_masthead.py`** owns the top of `site/index.html`. Four grid columns:
+- **`tools/build/build_masthead.py`** owns the top of `site/index.html`. Four grid columns:
   `[render | pitch | hero | render]`. The `h1` is on the right where the eye lands after
   the nav; the pitch is on the left, quieter — serif, one shade down, a ghost button, so
   two solid CTAs do not read as two competing offers. The `h1` is **first in the document**
@@ -3204,16 +3204,16 @@ The fix was to stop stacking:
   the visual order.
 - **The four renders live in the gutters.** At 1900px the readable centre column is 1120px
   and the ~390px either side of it were empty at every width above 1280. Two flank the
-  masthead, two flank the rack (`tools/build_rack.py` emits those). They cost **zero**
+  masthead, two flank the rack (`tools/build/build_rack.py` emits those). They cost **zero**
   vertical space instead of a full screen. Measured at 1906×950: rack top at 744px.
 - **They are capped at 268px, and 206px once they stack.** "They are gigantic" was a grid
   column doing what grid columns do: below the breakpoint each render took a full `1fr`,
   measuring 520px at an 1100px viewport — larger than they had ever been in the gutter they
   were sized for. If you add a render anywhere, cap it.
-- **`tools/_art.py`** holds the markup all three placements share. The masthead, the rack
+- **`tools/lib/_art.py`** holds the markup all three placements share. The masthead, the rack
   and the constellation each had their own copy of the prompt/seed/seconds lookup, and one
   had already drifted.
-- **The constellation moved to `/build.html`** (`tools/build_sky.py`), in its own `.sky`
+- **The constellation moved to `/build.html`** (`tools/build/build_sky.py`), in its own `.sky`
   namespace. It is a good object and the user likes it; it just cannot live beside a
   readable centre column, because below 1280px the absolutely-positioned renders collapsed
   into a vertical stack down the left edge — which is what a visitor actually saw.
@@ -3224,7 +3224,7 @@ The fix was to stop stacking:
 
 **`tools/build_band.py` is deleted.** If you find a reference to it, it is stale.
 
-#### The one-screen layout on top of all that — `tools/build_tabs.py`, the tenth generator
+#### The one-screen layout on top of all that — `tools/build/build_tabs.py`, the tenth generator
 
 Garrett asked for a no-scroll front page. The page is 3,358px at 1440×900 and 9,161px at
 390px, so trimming was never on the table; `docs/authority/PROJECT-AUTHORITY.md` says fold, so it folds into
@@ -3272,7 +3272,7 @@ Anything in the test suite that asserts on the rack or control board must now `o
 first — a hidden element has no box, which is exactly how `pitch, hero and rack fit one
 look` went vacuous (it required `rack.top < innerHeight`; a hidden element reports 0).
 
-#### `tools/build_split.py` — one page per section (eleventh generator)
+#### `tools/build/build_split.py` — one page per section (eleventh generator)
 
 `/overview`, `/livestack`, `/controlboard`, `/receipts`. Each page is `index.html` **with
 the other sections deleted** — subtraction, not reassembly, so head/header/footer/scripts
@@ -3359,7 +3359,7 @@ returned 200, and Caddy answered the public request from the webroot without ask
 on the list only so the redirect route can run; `path /` is an exact match and does not
 affect anything else.
 
-Adding a fifth section means touching **four** places: `tools/build_split.py`,
+Adding a fifth section means touching **four** places: `tools/build/build_split.py`,
 `backend/server.py`, `ops/Caddyfile`, and `is_route()` in `scripts/deploy.sh` (which otherwise
 reports `MISSING livestack`, because pages link `/livestack` while the file is
 `livestack.html` — only the extensionless form is exempted, so a genuinely missing
@@ -3402,7 +3402,7 @@ In two days, all seven of these printed FAILED or MISSING while the system was c
    `systemctl restart symoneural-api` — systemd returns before uvicorn binds the port. That
    branch offers a five-second abort, so it invited the operator to cancel a healthy
    deploy. It retries for ten seconds now.
-6. **`tools/build_reinforce.py` asserting no `text-overflow` reached the page** — against a
+6. **`tools/build/build_reinforce.py` asserting no `text-overflow` reached the page** — against a
    page that was entirely correct. `backend/apps/reinforce/page.html` opens its stylesheet
    with a comment in capitals stating that there is no `text-overflow:ellipsis` in it and
    there must never be one, and a substring search cannot tell a rule from a promise not to
@@ -3494,12 +3494,12 @@ to polling, and neither works when pages are served from a different port than t
 - **No decorative indicators.** The `.vent` slat block was removed for exactly this reason.
   Every LED and gauge reflects a real reading.
 - **Label every figure** measured / vendor / projected.
-- **Generators must stay idempotent.** Run each twice and `diff` — `tools/build_console.py` once
+- **Generators must stay idempotent.** Run each twice and `diff` — `tools/build/build_console.py` once
   nested folds inside folds. The BEGIN/END marker strings are the contract: if you change a
   marker in a generator you **must** change it in the HTML in the same commit, or the generator
   stops finding its block and appends a second one.
 - **GPU: never a bare `gpu-governor.sh release`.** Name the surface. Fixed in
-  `ops/symoneural-api.service`, which had it in both `ExecStartPre` and `ExecStopPost`.
+  `ops/units/symoneural-api.service`, which had it in both `ExecStartPre` and `ExecStopPost`.
 - **Never `pip install` into the base interpreter** (pinned at exactly 7 packages). Installing
   into a venv *by its full path* is allowed and is the intended route.
 
@@ -3538,8 +3538,8 @@ because they are the cheapest real work available.
 
 0b. **The tabbed `index.html` is no longer linked from anywhere.** `/` redirects to
    `/overview`, so the one-screen tabbed page is reachable only by typing `/index.html`. It
-   is not dead code — `tools/build_split.py` reads it to produce the other four pages, and
-   `tools/build_tabs.py` still maintains it — but it is now a build artifact that also
+   is not dead code — `tools/build/build_split.py` reads it to produce the other four pages, and
+   `tools/build/build_tabs.py` still maintains it — but it is now a build artifact that also
    happens to be a working page, which is an odd thing to keep maintaining. **Decide with
    Garrett:** keep it as-is, or retire `build_tabs.py` and let `build_split.py` read an
    untabbed `index.html`. Do not quietly delete it; four assertions still address it.
@@ -3669,7 +3669,7 @@ because they are the cheapest real work available.
 
     - **No `voice` rack unit and no `site/voice.html`.** `status()` in
       `backend/apps/voice/__init__.py` is written and correct but its `href` is `/voice.html`,
-      which does not exist — the page comes from `tools/build_pages.py`, which other sessions
+      which does not exist — the page comes from `tools/build/build_pages.py`, which other sessions
       were holding. A rack row pointing at a 404 is worse than no row, so the `Unit` was left
       out of `api.py` on purpose. **Land the page and the unit in the same commit.**
     - **Speech out.** `tts.py` reports its own absence rather than faking it, and probes on
@@ -3720,7 +3720,7 @@ because they are the cheapest real work available.
     you. That is the real work item, it is a segmentation step, and it decides whether this
     needs its own model resident (another GPU tenant) or a CPU post-process.
 
-    Output is PNG with alpha, which means `tools/build_gallery.py`'s watermark bar must
+    Output is PNG with alpha, which means `tools/build/build_gallery.py`'s watermark bar must
     **not** be applied — a sticker with a caption strip burned into it is not a sticker.
     Renders still go to `backend/output/` and come back as `/api/gen/<name>`; see §3.3.
 
@@ -3817,7 +3817,7 @@ is deliberately capped (below).
 - **Do not "release" `.gart`'s max-width without measuring it first.** A `clamp(268px, ...)` meant
   as generous actually *cut* the art from 434px to 350px at 2560 and 302px at 1920, because a
   later rule was already sizing it to 434px. It is now capped at 768px, which is the art's own
-  native canvas width (`tools/_art.py`); past that the browser upscales and the watermark strip
+  native canvas width (`tools/lib/_art.py`); past that the browser upscales and the watermark strip
   goes unreadable, which is the bug the 1700px tier was written to fix, reached from the other
   side.
 
@@ -4093,22 +4093,22 @@ broken** — this is a queue of new work, not a repair list.
 
 ### The build chain — fourteen generators, and the order matters at both ends
 ```bash
-python3 tools/build_pages.py       # chat/image/ravencalc/remix surfaces -> site/*.html
-python3 tools/build_reinforce.py   # the training bay      -> site/reinforce.html + .js
-python3 tools/build_project.py     # the project surface   -> site/project.html
-python3 tools/build_sigils.py      # the sigils page       -> site/sigils.html
-python3 tools/build_masthead.py    # pitch + hero side by side           -> site/index.html
-python3 tools/build_rack.py        # live rack + 2 gutter renders        -> site/index.html
-python3 tools/build_console.py     # control board                       -> site/index.html
-python3 tools/build_cost.py        # Owned vs Rented                     -> site/documentation.html
-python3 tools/build_stack.py       # Inference Architecture              -> site/documentation.html
-python3 tools/build_training.py    # the manual                          -> site/training.html
-python3 tools/build_sky.py         # the 19-render constellation         -> site/build.html
-python3 tools/build_tabs.py        # one-screen front page, tab strip    -> site/index.html
-python3 tools/build_split.py       # one page per section  -> site/{overview,livestack,
+python3 tools/build/build_pages.py       # chat/image/ravencalc/remix surfaces -> site/*.html
+python3 tools/build/build_reinforce.py   # the training bay      -> site/reinforce.html + .js
+python3 tools/build/build_project.py     # the project surface   -> site/project.html
+python3 tools/build/build_sigils.py      # the sigils page       -> site/sigils.html
+python3 tools/build/build_masthead.py    # pitch + hero side by side           -> site/index.html
+python3 tools/build/build_rack.py        # live rack + 2 gutter renders        -> site/index.html
+python3 tools/build/build_console.py     # control board                       -> site/index.html
+python3 tools/build/build_cost.py        # Owned vs Rented                     -> site/documentation.html
+python3 tools/build/build_stack.py       # Inference Architecture              -> site/documentation.html
+python3 tools/build/build_training.py    # the manual                          -> site/training.html
+python3 tools/build/build_sky.py         # the 19-render constellation         -> site/build.html
+python3 tools/build/build_tabs.py        # one-screen front page, tab strip    -> site/index.html
+python3 tools/build/build_split.py       # one page per section  -> site/{overview,livestack,
                                    #   controlboard,receipts}.html  (READS index.html;
                                    #   must run after everything that writes into it)
-python3 tools/build_cachebust.py   # <-- ALWAYS LAST. stamps ?v=<hash> on every local asset
+python3 tools/build/build_cachebust.py   # <-- ALWAYS LAST. stamps ?v=<hash> on every local asset
 ```
 Two ordering constraints, not one. `build_split.py` **reads** the assembled `index.html`
 and writes four pages from it, so anything that edits `index.html` must run before it or
@@ -4125,13 +4125,13 @@ for f in site/*.html; do grep -q '?v=' "$f" || echo "UNSTAMPED $f"; done   # exp
 
 The three generators added since the count of 11 each write one file they own outright, so
 they slot in anywhere before the stamper; they are listed early above only for tidiness.
-`tools/build_gallery.py` is separate, and which flag you use decides whether it touches the
+`tools/build/build_gallery.py` is separate, and which flag you use decides whether it touches the
 card at all:
 
 ```bash
-python3 tools/build_gallery.py              # render what is missing   -- GPU, ~11.2s each
-python3 tools/build_gallery.py --force      # re-render everything     -- GPU
-python3 tools/build_gallery.py --restamp    # redraw the watermark bar -- NO GPU, seconds
+python3 tools/build/build_gallery.py              # render what is missing   -- GPU, ~11.2s each
+python3 tools/build/build_gallery.py --force      # re-render everything     -- GPU
+python3 tools/build/build_gallery.py --restamp    # redraw the watermark bar -- NO GPU, seconds
 ```
 
 `--restamp` crops each PNG to `meta['size']` rows and redraws the bar from the sidecar. It
@@ -4139,7 +4139,7 @@ is idempotent *because* it crops to the art height rather than subtracting the c
 height, so it discards whatever bar is present regardless of size. Changing the watermark
 never needs a governor lease and never re-renders the art.
 
-`tools/_art.py` is a shared helper, not a generator — do not run it. It is also the only
+`tools/lib/_art.py` is a shared helper, not a generator — do not run it. It is also the only
 place that should compute a render's dimensions: `_art.dims()` reads the PNG's IHDR, because
 `height="802"` was hardcoded in two generators and the watermark change made both wrong.
 
@@ -4343,7 +4343,7 @@ exit 144. Put the pkill in a command that does not otherwise mention the process
   second state document; update this one.
 - **The duplicate `SymoneuralGPUWorker/…-1818 2/` copy was byte-identical and is deleted.**
 - **Every Apache reference that meant *the web server* is now Caddy**, including
-  `ops/symoneural-api.service`, which still ordered itself `Before=apache2.service` — a real
+  `ops/units/symoneural-api.service`, which still ordered itself `Before=apache2.service` — a real
   functional error after the migration. `scripts/install-caddy.sh` was reframed: it reads as a
   rebuild tool rather than a pending migration, and it no-ops cleanly on a machine without
   apache2. Remaining "Apache" mentions are **Apache-2.0 licence** references and must stay.
@@ -4540,7 +4540,7 @@ tuner/site agent holds (precedent: `tests/tuner_failpaths.mjs`).
 - `python3 -m pytest backend/apps/sigils/test_sigils.py -q` → **25 passed**
 - `node tests/stickers.mjs http://127.0.0.1:8877` → **25/25**
 - `node tests/frontend.mjs http://127.0.0.1:8877` → **26/26**, nothing sitewide regressed
-- `python3 tools/build_sigils.py` run twice, `diff` clean — still idempotent
+- `python3 tools/build/build_sigils.py` run twice, `diff` clean — still idempotent
 - An end-to-end HTTP suite over all three inputs → **37 passed, 0 failed**
 
 ### Left open
@@ -4623,7 +4623,7 @@ cd backend && python3 -m pytest apps/ -q \
   --ignore=apps/reinforce/tests --ignore=apps/remix/tests
 → 1128 collected, 1128 passed in 113.36s
 node tests/frontend.mjs http://127.0.0.1:8877 → 43/43, 993 links clean
-python3 tools/check_links.py → clean
+python3 tools/audit/check_links.py → clean
 ```
 
 1122 → 1128 is the six new tests in `backend/apps/test_nim_models.py` being *counted*.
@@ -4632,7 +4632,7 @@ missing aborts collection with `Interrupted`, which is not a smaller count, it i
 count at all. The two `--ignore` flags are the pre-existing `reinforce`/`remix` venv
 suites, unchanged.
 
-**Editing `tools/build_pages.py` means rerunning every generator that imports SHELL.**
+**Editing `tools/build/build_pages.py` means rerunning every generator that imports SHELL.**
 Nine of them do: build_exp, build_studio, build_reinforce, build_sigils, build_project,
 build_training, build_rack, build_console, build_tabs — then `build_split.py`, then
 `build_cachebust.py` last. Adding the `.llc` span to the header and rerunning only
@@ -4906,7 +4906,7 @@ an agent to do what Garrett explicitly deauthorized.
 
 ## 2026-08-22 — ModelOps: 61% of the weight bytes had no provenance
 
-`tools/modelops_inventory.py` · `scripts/modelops/symoneural-modelops-stage.sh` ·
+`tools/lib/modelops_inventory.py` · `scripts/modelops/symoneural-modelops-stage.sh` ·
 `backend/apps/test_modelops.py` · four ops docs. **Docs/script/inventory only: no model
 downloaded, no active default changed, no weight deleted, moved or committed.**
 
@@ -4917,7 +4917,7 @@ of unreferenced weights"; **nobody had counted, because no document was measurin
 re-runnable now:
 
 ```bash
-python3 tools/modelops_inventory.py
+python3 tools/lib/modelops_inventory.py
 ```
 
 **Active defaults, read from source rather than assumed** — 7 files:

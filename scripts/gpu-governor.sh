@@ -340,7 +340,7 @@ drain() {
 #
 # So the manifest stays authoritative by TEST instead: `apps/test_governor_paths.py` asserts
 # this literal against `llm-engine.json`, so moving the engine fails a test rather than
-# silently breaking eviction. That is the same arrangement `tools/page_families.py` uses, and
+# silently breaking eviction. That is the same arrangement `tools/lib/page_families.py` uses, and
 # it is why there is no second copy of the engine's identity anywhere in this file -- no path
 # beyond this one, and no hash at all.
 surface_pattern() {

@@ -34,7 +34,7 @@ Three capabilities have been lost the same way. The third was found in this wind
 | Mining benchmark binary | `contrib/` | A published MH/s figure with no reproducible source |
 | `kawpowminer` | `contrib/` | Miner runtime absent — found here |
 
-`/contrib` is gitignored. **A required binary there can vanish leaving nothing in `git log` to say it existed.** The fix, now applied four times: build into `engines/` under our own name **from a tracked script**. An edit inside `engines/` is worthless — that tree is `rsync --delete`'d from upstream on every fork, so a rename must live in `tools/fork_engines.sh` or the next build reverts it silently.
+`/contrib` is gitignored. **A required binary there can vanish leaving nothing in `git log` to say it existed.** The fix, now applied four times: build into `engines/` under our own name **from a tracked script**. An edit inside `engines/` is worthless — that tree is `rsync --delete`'d from upstream on every fork, so a rename must live in `tools/sh/fork_engines.sh` or the next build reverts it silently.
 
 **A fourth instance is the finding, not the binary.**
 

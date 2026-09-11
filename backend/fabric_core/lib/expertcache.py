@@ -44,7 +44,7 @@ tend to reuse experts, and routing concentrates sharply with depth (measured: la
 across 26 experts, layer 20 across 14, with top-8 covering 85%). LRU over a real routing
 sequence can therefore beat frequency-based residency by a wide margin.
 
-This module replays **captured routing sequences** (`tools/moe_sequence.py`) through several
+This module replays **captured routing sequences** (`tools/bench/moe_sequence.py`) through several
 residency policies and reports the hit rate each achieves. It is a simulation over real
 routing decisions, not a model of one -- the sequences came out of the actual router.
 

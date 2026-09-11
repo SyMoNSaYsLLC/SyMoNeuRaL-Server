@@ -26,7 +26,7 @@ test, commit — with the goal that all engines are first-party code in `backend
 
 **(a) The mechanism already existed.** `references/` is gitignored at `.gitignore:68`, holds
 72 entries of third-party material, and carries a standing owner rule quoted in
-`tools/index_references.py`: *"we cannot use code in references its for reference only we
+`tools/lib/index_references.py`: *"we cannot use code in references its for reference only we
 must rebrand if we want to use it"*. `incoming/` is the adoption path, and
 `incoming/*/PROVENANCE.md` is **tracked while the copied tree is not** — the exact
 "record the provenance, not the payload" shape this job needed. Inventing an `external/`
@@ -41,7 +41,7 @@ manifest, not from a list.**
 **(c) The licence wall.** Four engines are MIT-derived, which is why the first-party fork
 worked four times. `symoneural-ui` is **ComfyUI, GPL-3.0** — verified at
 `engines/symoneural-ui/LICENSE`. MIT permits relicensing the combined work; GPL-3.0 does
-not. `tools/fork_engines.sh` defines `fork_llm | fork_diffuse | fork_listen | fork_miner`
+not. `tools/sh/fork_engines.sh` defines `fork_llm | fork_diffuse | fork_listen | fork_miner`
 and **no `fork_ui`** — the codebase already knew. Decision taken: replace it with a
 first-party render surface over the MIT `symoneural-diffuse`. **That is a project, not a
 migration, and it has not been started.**
@@ -63,8 +63,8 @@ metadata survived; `git worktree list` now shows all four trees inside the repo.
 ## 3. Found uncommitted, again
 
 Six files, 158 KB, written **2026-09-07** by a session with no handoff and no record here:
-`tools/probe_engines.py`, `tools/probe_apps.py`, `tools/bench_llm.py`,
-`tools/bench_llm_spec_ab.py` and two test modules. Committed verbatim at `ecb3f11e`.
+`tools/audit/probe_engines.py`, `tools/audit/probe_apps.py`, `tools/bench/bench_llm.py`,
+`tools/bench/bench_llm_spec_ab.py` and two test modules. Committed verbatim at `ecb3f11e`.
 
 **Second time in four days** that substantive work was found modified-but-uncommitted
 (`00ecad02` was the first, an 80-line HANDOVER entry that had sat three days). There is no

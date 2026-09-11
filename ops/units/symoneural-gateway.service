@@ -1,0 +1,119 @@
+[Unit]
+# TEMPLATE. @@ROOT@@ is replaced with the repo root by scripts/install-gateway.sh at install
+# time. systemd has no notion of a relative path, so this is the only way the unit can live in
+# a repo that gets cloned anywhere. Same shape as ops/units/symoneural-api.service.
+Description=SyMoNeuRaL HTTP gateway (routing, WebSocket relay, payload validation)
+# StartLimit* live in [Unit], NOT [Service], and this pair sat in [Service] until 2026-09-03
+# where systemd silently ignored them -- `systemd-analyze verify` says "Unknown key
+# 'StartLimitIntervalSec' in section [Service], ignoring", and `systemctl show` measured the
+# effective window as 10s, the built-in default, identical to a unit that declares nothing.
+# So the crash-loop protection the comment below describes had never once applied.
+StartLimitIntervalSec=120
+StartLimitBurst=5
+# Same pre-712e15b path the ExecStart below carried; corrected in the same sweep. Harmless to
+# systemd, but a stale pointer here sends the next reader to a directory that is not there.
+Documentation=file://@@ROOT@@/backend/apps/gateway/README.md
+
+# The gateway proxies to the API and is useless without it, but it must not fail to start
+# because the API is down: a 502 from the gateway is a diagnosable answer, whereas a gateway
+# that refuses to run turns an API outage into a connection-refused with no log. So this is
+# ordering only -- After= without Requires=.
+After=network-online.target symoneural-api.service
+Wants=network-online.target
+
+# Caddy terminates TLS and proxies /api, /v1 and /swagger-ui to us. Same soft ordering the API
+# uses: the static site must serve whether or not this is up.
+# Before=caddy.service is kept and is a NO-OP on this host, which is the whole problem this
+# second line fixes. `caddy.service` was the production owner of :80 and :443 until the
+# 2026-08-26 cutover; it is now disabled, and systemd treats an ordering constraint against a
+# unit that never starts as satisfied-by-absence. So this unit had NO boot ordering against the
+# process that actually serves, and "start before the web server" quietly stopped being true.
+#
+# Both lines, not a replacement: a host still running stock Caddy needs the first, and
+# ordering against a unit that is absent there costs nothing either. Ordering is declarative
+# and cheap; guessing which shape a host is at install time is not.
+Before=caddy.service
+Before=symoneural-web.service
+
+[Service]
+Type=exec
+User=google
+Group=google
+WorkingDirectory=@@ROOT@@
+
+# The release binary, not debug. `cargo build --release` must have been run; the installer
+# checks for it and refuses rather than installing a unit that will crash-loop on ENOENT.
+#
+# The crate lives under `backend/apps/gateway/`, not at the repo root. It moved there in
+# `712e15b` with every other app -- Garrett: "all applications should be in /backend/apps" --
+# and this line did not move with it, which took the PUBLIC API down. The unit stayed
+# `enabled`, so systemd reported `activating` forever against a path with no binary at it,
+# Caddy's `/api/*` hop to :8000 had nothing to reach, and every visitor got a 502 while the
+# API itself was healthy on :8800 and every rack unit read `ready`. Nothing in any test went
+# red: the suites exercise `api.py`, and no check anywhere asserted that the string in this
+# ExecStart names a file that exists. That is what `test_gateway_unit.py` now does.
+ExecStart=@@ROOT@@/backend/apps/gateway/target/release/symoneural-gateway
+
+# --- environment -------------------------------------------------------------------------
+Environment=SYMON_GATEWAY_BIND=127.0.0.1:8000
+Environment=SYMON_API_UPSTREAM=http://127.0.0.1:8800
+# Deliberately the same :8800 as the API and NOT an engine port. On this machine the LLM
+# engine is not a service -- backend/server.py spawns it (see LLM_ENGINE) per job while holding
+# the mutex in scripts/gpu-governor.sh. Nothing listens on :8080 or :9001 between jobs, and a
+# gateway that reached one directly would be using the GPU without the governor lock.
+Environment=SYMON_ENGINE_UPSTREAM=http://127.0.0.1:8800
+
+# Caddy is in front and writes the real client into X-Forwarded-For, so the chain is trusted
+# and this hop is appended to it rather than replacing it. api.py:505 and api.py:1771 key the
+# rate limiter on the FIRST entry, so getting this wrong makes every visitor share one bucket.
+#
+# If Caddy is ever removed from in front of this, set it back to 0 in the same change --
+# trusting a header that arrives straight off the internet hands any client a fresh rate-limit
+# bucket for the cost of sending its own X-Forwarded-For.
+Environment=SYMON_TRUST_FORWARDED=1
+
+# JSON records so this unit's log and the Python API's can be read as one stream.
+Environment=SYMON_LOG=info
+Environment=SYMON_LOG_JSON=1
+
+# --- lifecycle ---------------------------------------------------------------------------
+# The gateway holds no GPU lock and spawns no children, so a restart costs a dropped
+# connection and nothing else. Long enough for in-flight SSE streams and WebSockets to end
+# on their own after SIGTERM, which main.rs handles via with_graceful_shutdown.
+TimeoutStopSec=30
+KillSignal=SIGTERM
+
+Restart=always
+RestartSec=2
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=symoneural-gateway
+
+# --- hardening -----------------------------------------------------------------------------
+# Much stricter than the API's, and it can be: this process touches no GPU, writes no files,
+# and needs nothing from the filesystem except its own binary. The one thing it does read is
+# ops/gateway/middleware/limiter.wasm, which ProtectSystem=strict still permits because that is a read.
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=yes
+# Explicitly NOT yes, and this is the one hardening line that must stay off. Wasmtime is a
+# JIT: it maps pages writable, emits machine code into them, then makes them executable.
+# MemoryDenyWriteExecute=yes blocks exactly that, and the failure is at module load -- so it
+# would look like a broken limiter.wasm rather than a sandbox policy, and the gateway would
+# quietly drop to native-fallback.
+MemoryDenyWriteExecute=no
+MemoryMax=1G
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

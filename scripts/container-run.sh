@@ -28,7 +28,7 @@ done
 command -v podman >/dev/null || { echo "podman is not installed" >&2; exit 1; }
 podman image exists "$IMAGE" || {
   echo "image '$IMAGE' not built. Run:" >&2
-  echo "  podman build -t $IMAGE -f ops/Containerfile ." >&2; exit 1; }
+  echo "  podman build -t $IMAGE -f ops/deploy/Containerfile ." >&2; exit 1; }
 
 # --- why each of these flags is here -----------------------------------------
 #

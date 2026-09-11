@@ -59,7 +59,7 @@ package is standard library only.
   card can decode, a time budget. `routes.PROMPT_GATE` is a seam and is deliberately unset.
 * **Output is API output.** It lands in `backend/output/` and comes back as
   `/api/gen/<name>`, in that route's exact filename shape, never in `site/`.
-* **No watermark bar.** `tools/build_gallery.py` stamps the model, size and seed into the
+* **No watermark bar.** `tools/build/build_gallery.py` stamps the model, size and seed into the
   pixels of homepage art; on a sticker that is a caption burned into the artwork. The same
   facts ride in the PNG's `tEXt` chunks instead, so provenance survives without defacing
   anything.

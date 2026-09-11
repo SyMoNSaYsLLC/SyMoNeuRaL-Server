@@ -113,7 +113,7 @@ vendored". That was wrong, and it was wrong because I asserted it without lookin
 
 **`backend/vendor/` is tracked: 15,297 files**, and it holds ten deliberately vendored third-party
 SDK trees. `backend/vendor/PROVENANCE.md` is the record, it is **generated** by
-`tools/index_references.py vendor`, and it says so in its own opening: *"Do not hand-edit: it is
+`tools/lib/index_references.py vendor`, and it says so in its own opening: *"Do not hand-edit: it is
 regenerated, and a hand-added row would be a claim nobody read a licence file to make."*
 
 | Vendored tree | Licence | Tracked files |

@@ -159,7 +159,7 @@ def cmd_keygen(args) -> int:
     print("  1. fund it from a testnet faucet — https://nileex.io/join/getJoinPage")
     print("  2. gateway-cli.py balance --network nile --address <the address above>")
     print()
-    print("The private key never goes into ops/symoneural-api.service, any systemd drop-in, "
+    print("The private key never goes into ops/units/symoneural-api.service, any systemd drop-in, "
           "or any file the web process can read.")
     return 0
 

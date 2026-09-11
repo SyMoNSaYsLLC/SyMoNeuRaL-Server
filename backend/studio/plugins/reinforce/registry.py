@@ -67,7 +67,7 @@ ROOT = next((_p for _p in (HERE, *HERE.parents) if (_p / "backend" / "server.py"
 # This calculation has been wrong three times in this repo's history (the demo/ flatten, the
 # tools/ move, and `train_lora.py`'s HF_HOME, which is still wrong today -- it resolves to
 # /home/google/models/hf, a path that does not exist). It fails silently, because the wrong
-# parent is usually a directory that does exist. So assert, the way tools/build_training.py
+# parent is usually a directory that does exist. So assert, the way tools/build/build_training.py
 # does, and turn a silent misresolution into an import-time crash.
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root misresolved to {ROOT}"
 

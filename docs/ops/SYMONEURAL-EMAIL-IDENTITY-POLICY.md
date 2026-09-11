@@ -89,7 +89,7 @@ policy that address is not customer-facing and is explicitly not a public suppor
 the live site and this file disagree.
 
 That was left alone deliberately. Most of those pages are generator-written, so the change
-belongs in `tools/build_pages.py` and its siblings rather than in the HTML, and swapping the
+belongs in `tools/build/build_pages.py` and its siblings rather than in the HTML, and swapping the
 public contact address on the whole site is a decision with its own blast radius — it is not a
 side effect of writing down a policy. Recorded here so the next person finds the gap on
 purpose instead of discovering it as a surprise.

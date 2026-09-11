@@ -121,19 +121,19 @@ Mutation-proved rather than trusted — each applied, caught, reverted:
 
 Not a description — this was actually run, in this order, on the live box:
 
-1. `ops/rollback-runtime.sh` → production **back onto the `/yocto` units**, health 200.
-2. `ops/verify-runtime.sh` → **exit 1**, ten specific violations (cwd, argv, exe, 4 open fds,
+1. `ops/deploy/rollback-runtime.sh` → production **back onto the `/yocto` units**, health 200.
+2. `ops/deploy/verify-runtime.sh` → **exit 1**, ten specific violations (cwd, argv, exe, 4 open fds,
    mapped files, deploy would republish from `/yocto`). That is the verifier's own proof.
-3. `sudo ops/install-runtime.sh` → preflight, backup to
+3. `sudo ops/deploy/install-runtime.sh` → preflight, backup to
    `/etc/symoneural/unit-backups/20260826-092957`, atomic install of three units,
    `daemon-reload`, controlled restart (gateway then API), local 200 after ~4 s, public 200,
    verifier **clean**.
-4. `ops/install-runtime.sh --dry-run` re-run → *"every unit is already correct — nothing to
+4. `ops/deploy/install-runtime.sh --dry-run` re-run → *"every unit is already correct — nothing to
    install"*. **Idempotent.**
 
 ### The gateway is built, not copied
 
-`ops/build-gateway.sh --force` after deleting the binary **and** cargo's `deps/` copy: a real
+`ops/deploy/build-gateway.sh --force` after deleting the binary **and** cargo's `deps/` copy: a real
 43-second relink produced **byte-identical `sha256 41b9eda8…ad74`**, 27,232,992 bytes,
 `st_nlink=1`, 0 unresolved deps, 0 `/yocto` linkage, no `/yocto` string in the binary. Record
 in `ops/manifests/gateway-build.json`.
@@ -163,7 +163,7 @@ moved, modified or deleted.
   *(Not to be confused with `.claude/HANDOVER.md`'s planned Python adapter package, also
   called `backend/engines/` — a different thing, correct as written.)*
 - **Driver 590.48.01 / CUDA 13.1.** The box reads **610.57.04** and **13.3**.
-- **Hand-run migration commands.** Replaced by `ops/install-runtime.sh` and friends. The
+- **Hand-run migration commands.** Replaced by `ops/deploy/install-runtime.sh` and friends. The
   installer's dry run proving "nothing to install" is the evidence that what was done by hand
   and what the repository does are the same thing.
 
@@ -216,7 +216,7 @@ across cwd, exe, argv, environ, memory maps and open file descriptors:
 | `symoneural-web` | 1791 | 0 (read via sudo; it runs as `caddy`) |
 | inference engine | 54394 | 0 |
 
-`ops/verify-runtime.sh` exits **0 — `RUNTIME BOUNDARY CLEAN`**. All four units report
+`ops/deploy/verify-runtime.sh` exits **0 — `RUNTIME BOUNDARY CLEAN`**. All four units report
 `active`, `enabled`, `Result=success`. Current-boot journals hold **277 lines across the four
 units and not one mentions `/yocto`**. No mount over the canonical tree; no symlink under it
 pointing into `/yocto`.
@@ -260,8 +260,8 @@ canonical path. 93.4 tok/s is GPU throughput; **there is no CPU fallback here.**
 Both are 17,952-byte launchers that link `libsymoneural_llm_server_impl.so`, and each `bin/`
 holds 23 `.so` files beside it — the engine is a whole runtime directory, not one file. The
 `$ORIGIN` RUNPATH is what makes the staged set relocatable; the `build/bin` copy hardcodes its
-own absolute path. `ops/install-runtime.sh:78`, `ops/verify-runtime.sh:110` and
-`ops/verify-runtime.sh:152` all name `build/bin`.
+own absolute path. `ops/deploy/install-runtime.sh:78`, `ops/deploy/verify-runtime.sh:110` and
+`ops/deploy/verify-runtime.sh:152` all name `build/bin`.
 
 **A demonstrated consequence, not a theoretical one:** with the engine resident at pid 54394,
 `verify-runtime.sh` still printed *"engine not resident … skipped"*, because line 110 greps for
@@ -277,7 +277,7 @@ service therefore depends on code that is not in git.
 `:443` binary `web/symoneural-web/build/symoneural-web`
 (`b0d3234f9543bce2f83f01e1e010031b4b3928e859bd616d2ce7ae7d15d6eb06`, 76,206,670 bytes) is
 explicitly ignored by `.gitignore:243`, and neither `scripts/build-deb.sh`,
-`ops/install-runtime.sh` nor `ops/manifests/` references it. There is no source-to-live chain
+`ops/deploy/install-runtime.sh` nor `ops/manifests/` references it. There is no source-to-live chain
 in the repository for the process that currently serves the public site.
 
 **4. The authenticated DispatchOS `model: true` response was not freshly proved.** That field
@@ -314,7 +314,7 @@ Every claim below is read out of that capture; nothing here is asserted beyond i
 
 **The runtime boundary survived with zero live `/yocto` dependency.** Measured per process
 across cwd, exe, cmdline, environ, maps and open file descriptors — eighteen measurements over
-the three service processes — **0 references**. `ops/verify-runtime.sh` exits **0 —
+the three service processes — **0 references**. `ops/deploy/verify-runtime.sh` exits **0 —
 `RUNTIME BOUNDARY CLEAN`**. Current-boot journals across the four units hold **198 lines and
 not one mentions `/yocto`**. No mount over the canonical tree.
 
@@ -379,7 +379,7 @@ as its own dated measurement and **has not been re-dated to this boot**.
 **deliberately absent here, exactly as it is absent from the 2026-08-28 section**, and for a
 sharper reason now that the cause is known.
 
-`tools/archive_tasks.py` moves any task at 100% into `review/CLOSED-TASKS.md` as finished. Typing
+`tools/lib/archive_tasks.py` moves any task at 100% into `review/CLOSED-TASKS.md` as finished. Typing
 the phrase would take `#108` to 15/15 and archive it **as done** while the engine it is supposed
 to prove is still not the engine that would answer. That is precisely the failure
 `.claude/CLAUDE.md` warns about — *"a check that can pass without the work being finished is
@@ -403,7 +403,7 @@ Boot id `8482ab4b-5b32-40c6-8d8c-46c7e958f7d9`, booted `2026-08-29 10:30:32 EDT`
 of any agent action. All four units activated at boot with `NRestarts=0` and `Result=success`.
 
     /yocto references across 3 live services x 6 process fields ... 0 of 18
-    ops/verify-runtime.sh ....................................... exit 0, RUNTIME BOUNDARY CLEAN
+    ops/deploy/verify-runtime.sh ....................................... exit 0, RUNTIME BOUNDARY CLEAN
     current-boot journals, 4 units .............................. 198 lines, 0 mention /yocto
     mounts over the canonical tree .............................. 0
     webroot provenance, disagreement set ........................ 29 files: 29 canonical, 0 /yocto

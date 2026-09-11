@@ -55,7 +55,7 @@ bash scripts/symoneural-ui.sh start        # the bench; loopback :8188, no GPU l
 | `workflows.py` | the stock FLUX.1-schnell graph, built for the weights on this disk |
 | `routes.py` | the two routers: the API, and the reverse proxy for the editor |
 | `mcp_server.py` | the same functions over MCP/FastMCP, from an isolated venv |
-| `page.html` / `page.js` | the surface; `tools/build_studio.py` deploys them to `site/` |
+| `page.html` / `page.js` | the surface; `tools/build/build_studio.py` deploys them to `site/` |
 | `custom_nodes/symoneural_gguf/` | our ComfyUI node — see *The custom node* below |
 
 ---
@@ -209,8 +209,8 @@ it lives. Confirmed by restarting the server and fetching
 ## Building the page
 
 ```bash
-python3 tools/build_studio.py      # -> site/studio.html + site/studio.js
-python3 tools/build_cachebust.py   # ALWAYS LAST
+python3 tools/build/build_studio.py      # -> site/studio.html + site/studio.js
+python3 tools/build/build_cachebust.py   # ALWAYS LAST
 ```
 
 The generator is idempotent (verified: two runs, identical MD5s) and asserts every step of the
@@ -219,7 +219,7 @@ fragment unwrap. `page.html` is a section fragment whose every selector is names
 shape, because losing that id renders the page unstyled rather than broken — the failure mode
 hardest to notice.
 
-`/studio` is **not** in `tools/build_pages.py`'s `NAV`, matching `/reinforce`: operator
+`/studio` is **not** in `tools/build/build_pages.py`'s `NAV`, matching `/reinforce`: operator
 surfaces are reached from the rack row, and an eighth nav item for a page that is off by
 default for every visitor would be noise.
 

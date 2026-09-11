@@ -53,7 +53,7 @@ Points that matter:
   `/api/project/*` is covered the moment the router exists. Worth knowing rather than
   trusting: Caddy answers everything *else* off disk without asking the API, which is why the
   four section pages 404'd in production while returning 200 on `127.0.0.1:8800`.
-- **Do not add an extensionless `/project` route.** That costs edits to `tools/build_split.py`,
+- **Do not add an extensionless `/project` route.** That costs edits to `tools/build/build_split.py`,
   `backend/server.py`, `ops/Caddyfile` **and** `is_route()` in `scripts/deploy.sh`, and gets you
   a `MISSING project` from the deploy check if you forget the last one.
 - **`status()` is synchronous, cheap and safe to call on every rack poll.** It opens the store
@@ -88,7 +88,7 @@ omission.** `busy` on this rack means holding the card. This surface never holds
 workspace that flashed `busy` while a SQL query ran would be exactly the decorative indicator
 the house rules forbid. There is nothing to queue behind either.
 
-**`href` points at `/project.html`, which `tools/build_project.py` generates.** It pointed at
+**`href` points at `/project.html`, which `tools/build/build_project.py` generates.** It pointed at
 `/documentation.html` until that page existed, because `scripts/deploy.sh`'s reference check
 can fail the build on a link to a page that is not there and a rack tile linking to a 404 is
 a dishonest pixel; the page and this link changed in one commit, which is what that rule
@@ -438,7 +438,7 @@ index correct, because `delete_project` also sweeps by `project_id`. Removing bo
 
 Blunt list. Nothing here is hidden behind a "coming soon".
 
-1. ~~**There is no page.**~~ **Done.** `tools/build_project.py` generates `site/project.html`
+1. ~~**There is no page.**~~ **Done.** `tools/build/build_project.py` generates `site/project.html`
    and the rack unit links to it. The generator writes that one new file and nothing else, so
    it cannot clobber the writers that share `site/index.html`; it imports `build_pages` for
    `SHELL` and `NAV` but never calls `page()`. `tests/project.mjs` drives the page in real

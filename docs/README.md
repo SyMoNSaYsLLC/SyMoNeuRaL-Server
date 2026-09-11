@@ -6,7 +6,7 @@ concern can be read on its own.
 
 > **Naming, since it is confusing on first read.** The manual's own `<h1>` still
 > says "MIT AI Training — Consolidated Manual" and that is deliberate, not an
-> oversight: `tools/build_training.py` matches that exact phrase to rebrand the
+> oversight: `tools/build/build_training.py` matches that exact phrase to rebrand the
 > document into `site/training.html`, so renaming the heading would silently
 > break the purge and put the old name on the live page. The generator asserts
 > that nothing remains after it runs, and the live page carries zero occurrences.

@@ -517,7 +517,7 @@ async function main() {
   // ---- 18. the DEPLOYED page, not the fragment above.
   //
   // Everything to this point builds its own document around `page.html`. That is the right
-  // way to test the panel's behaviour and it cannot see the one thing `tools/build_reinforce.py`
+  // way to test the panel's behaviour and it cannot see the one thing `tools/build/build_reinforce.py`
   // can break: that generator unwraps the fragment's `<section><div class="wrap">` because the
   // site shell already opens both, and it has to carry `id="reinforce"` through the unwrap.
   // Every selector in the fragment's stylesheet is written `#reinforce .rf-*`, so losing the id
@@ -562,7 +562,7 @@ async function main() {
     await dp.close();
   } else {
     record('the deployed page keeps id="reinforce" through the unwrap', false,
-           'site/reinforce.html is absent -- run tools/build_reinforce.py');
+           'site/reinforce.html is absent -- run tools/build/build_reinforce.py');
   }
 
   await browser.close();

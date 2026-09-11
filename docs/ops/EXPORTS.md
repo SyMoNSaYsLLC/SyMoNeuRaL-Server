@@ -14,7 +14,7 @@ files. Trade secret exists only while reasonable measures keep it in.
    weights. Never in an export, never served, never quoted into a page or commit message.
 3. **Also excluded from any export:** the mode-600 ledgers (`GARRETT-REQUESTS.md`,
    `INTAKE.md`), anything under `review/`, `.env` files, tokens, `run/`, session transcripts.
-4. **The only sanctioned path** is `tools/export_snapshot.sh`, and it is **allow-list
+4. **The only sanctioned path** is `tools/data/export_snapshot.sh`, and it is **allow-list
    construction, never repository-minus-deny-list**. The distinction is the whole security
    argument, because the two architectures give OPPOSITE answers for a path nobody
    classified:

@@ -101,7 +101,7 @@ At minimum verify coverage of:
 
   control/
   control/models planning
-  tools/modelops_inventory.py
+  tools/lib/modelops_inventory.py
   scripts/modelops/
   training/
   backend model-management code
@@ -241,7 +241,7 @@ and must account for protected content such as:
 
 Confirm the actual state of:
 
-  tools/export_snapshot.sh
+  tools/data/export_snapshot.sh
 
 Do not state that it exists if it is only specified.
 Do not state that it is missing if it now exists.

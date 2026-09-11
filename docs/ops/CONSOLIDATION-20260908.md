@@ -9,7 +9,7 @@ before looking for something that used to be in `/home/google`.
 | Destination | Tracked? | Rule |
 |---|---|---|
 | `docs/` | **yes** | First-party writing: decisions, rulings, manifests, diagnostics. Small. |
-| `references/` | no (`.gitignore:68`) | Somebody else's code or a saved document. Read-only. The standing owner rule quoted in `tools/index_references.py` is *"we cannot use code in references its for reference only we must rebrand if we want to use it"*. |
+| `references/` | no (`.gitignore:68`) | Somebody else's code or a saved document. Read-only. The standing owner rule quoted in `tools/lib/index_references.py` is *"we cannot use code in references its for reference only we must rebrand if we want to use it"*. |
 | `archive/` | no | Bulk that is neither: workspace archives, backups, build outputs, weight staging, session transcripts, evidence trees. |
 
 Nothing needed inventing. `references/` and the `incoming/` adoption path already existed,

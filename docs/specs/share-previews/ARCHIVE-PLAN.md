@@ -30,7 +30,7 @@ accidentally archiving secrets"* — is **half right**. It correctly excludes un
 none of them can reach a `git archive`). It does **nothing** about material that is tracked and
 protected, which is the category that actually leaked last time.
 
-The sanctioned path, `tools/export_snapshot.sh`, **does not exist** — it is still Phase 1 work.
+The sanctioned path, `tools/data/export_snapshot.sh`, **does not exist** — it is still Phase 1 work.
 
 ## 1. Recommendation
 
@@ -43,7 +43,7 @@ entirely, and cannot carry the corpus because the corpus is not in the pathspec.
 
 If Garrett genuinely wants a full-repo checkpoint, that is a different decision with a
 different owner: it needs either an explicit exception to `EXPORTS.md` or
-`tools/export_snapshot.sh` built first. **A git tag is the better instrument for that** — it
+`tools/data/export_snapshot.sh` built first. **A git tag is the better instrument for that** — it
 marks the state permanently, costs nothing, and moves no bytes off the box.
 
 ## 2. Stages

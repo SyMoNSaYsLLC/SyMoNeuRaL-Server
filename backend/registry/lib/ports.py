@@ -1,11 +1,11 @@
 """The port registry, read once. Nothing in this repository hardcodes a surface port.
 
 `ops/PORTS.tsv` is the record; this is the reader. Four consumers use it — the API, each
-split surface process, the unit template's env file, and `tools/smoke.py` — and the whole
+split surface process, the unit template's env file, and `tools/lib/smoke.py` — and the whole
 point is that adding a surface edits one file.
 
 Written 2026-09-10 for the RavenCalc pilot. Before it, `:8800` appeared as a literal in
-`api.py`, `ops/Caddyfile`, `tools/smoke.py` and the unit, and the split would have added
+`api.py`, `ops/Caddyfile`, `tools/lib/smoke.py` and the unit, and the split would have added
 nine more ports to each of those.
 
 ## The one safety rule in here

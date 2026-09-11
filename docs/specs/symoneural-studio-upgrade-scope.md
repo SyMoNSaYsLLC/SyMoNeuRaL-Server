@@ -241,7 +241,7 @@ each already requires a `SMOKE-*.md` that only a real run can write.
 
 **A node canvas for this page was already built and deleted.** Roughly a thousand lines:
 snap-to-grid, SVG wires, port-type checking. The reasoning is recorded in
-`tools/build_studio.py:13-22` and again in `backend/apps/studio/routes.py:9`, where it is
+`tools/build/build_studio.py:13-22` and again in `backend/apps/studio/routes.py:9`, where it is
 called "the largest single decision in this app":
 
 > `comfyui_frontend_package 1.49.6` turned out to be installed in
@@ -635,7 +635,7 @@ whichever applies: the **node docs page**, the matching **`/docs` OpenAPI operat
 canonical JSON contract: `docs/specs/symoneural-studio-node-system.md` §2.
 
 A node's docs page is **public output**, so it inherits the assertions
-`tools/build_studio.py` already makes: no `corpus.jsonl`, no `build_dataset`, no filesystem
+`tools/build/build_studio.py` already makes: no `corpus.jsonl`, no `build_dataset`, no filesystem
 paths off this box.
 
 ---

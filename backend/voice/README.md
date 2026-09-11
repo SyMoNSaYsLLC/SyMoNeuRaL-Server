@@ -26,7 +26,7 @@ Measured end to end through the route on this box: an 11-second WebM/Opus clip �
 ## The two owed pieces, and who they belong to
 
 1. **`site/voice.html` and the rack row.** `status()` is written and correct, but its `href` is
-   `/voice.html` and that page does not exist — the page is written by `tools/build_pages.py`,
+   `/voice.html` and that page does not exist — the page is written by `tools/build/build_pages.py`,
    which other sessions were holding. **No `voice` `Unit` was added to `api.py` for exactly
    this reason:** a rack row pointing at a 404 is worse than no row. Add both in one commit.
 2. **Speech out.** Nothing that speaks is installed and Piper needs its own venv, which is

@@ -3,7 +3,7 @@
 ## Who calls this, now that there is no hand-written canvas
 
 The canvas this module was written for was deleted in favour of embedding ComfyUI's own editor
-(`tools/build_studio.py` records why), and that editor speaks ComfyUI's format directly through
+(`tools/build/build_studio.py` records why), and that editor speaks ComfyUI's format directly through
 the proxy -- it never touches this file. What is left has three live callers, and no page among
 them: `POST /api/studio/queue` converts a `canvas` field with `to_prompt`, `GET
 /api/studio/workflow/{name}` returns `from_prompt` of a stored graph, and

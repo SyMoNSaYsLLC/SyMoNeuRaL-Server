@@ -219,7 +219,7 @@ GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 # The two GPU engines, and they are ours. They pointed into `external/` until 2026-08-20,
 # which broke two standing rules at once -- nothing under `external/` is imported, built or
 # linked, and nothing here ships under a third-party name -- and it took chat and image
-# offline the moment that tree moved. `tools/fork_engines.sh` builds both from our own tree
+# offline the moment that tree moved. `tools/sh/fork_engines.sh` builds both from our own tree
 # and renames every shipped artefact; the constants below carry our names because a constant
 # spelling a third-party product is the same leak as a filename doing it.
 #
@@ -291,7 +291,7 @@ CHAT_MODEL_LABEL = "SymonChat S1-30B-A3B"
 
 #: TOTAL context, divided by the two slots below -- so each conversation gets half of it.
 #:
-#: MEASURED by pushing to OOM and stepping back (`tools/bench_maxfit.py`, 2026-09-11):
+#: MEASURED by pushing to OOM and stepping back (`tools/bench/bench_maxfit.py`, 2026-09-11):
 #:
 #:     -c 40960   peak 15,844 MiB    459 MiB headroom   <- the edge, and unusable
 #:     -c 33792   peak 15,188 MiB  1,115 MiB headroom   <- this
@@ -2473,7 +2473,7 @@ def build_status() -> Status:
             # docs/specs/qlora-upgrade.md, which is a spec and not a description of state.
             #
             # The href now points at the bay rather than at the manual. `site/reinforce.html`
-            # is written by `tools/build_reinforce.py`, which wires up the `page.html` and
+            # is written by `tools/build/build_reinforce.py`, which wires up the `page.html` and
             # `page.js` that the bay's author left in `apps/studio/plugins/reinforce/` with nothing
             # referencing them. THIS MEANS THE PAGE MUST BE DEPLOYED BEFORE THE API IS
             # RESTARTED: `sudo scripts/deploy.sh --prune` first, then
@@ -3542,7 +3542,7 @@ dispatchos.set_ask_model(guide_ask_model)
 #
 # This route is the opposite case: a client polling for a model list on the live path. The
 # architecture rule for this stack is that the control plane's scans stay off that path
-# entirely, so the scan happens out-of-band in `tools/build_registry.py` and lands in
+# entirely, so the scan happens out-of-band in `tools/build/build_registry.py` and lands in
 # `run/registry.json`, and what happens here is one `read_text` and a validation pass. No
 # directory walk, no subprocess, no network, and nothing that could ever take the GPU lock.
 #
@@ -3550,7 +3550,7 @@ dispatchos.set_ask_model(guide_ask_model)
 STUDIO_REGISTRY_FILE = RUN / "registry.json"
 
 # Only these keys survive a read, and each is checked against the type it must be. Re-validated
-# even though `tools/build_registry.py` wrote it, exactly as `apps/studio/plugins/reinforce/jobs.py` re-validates
+# even though `tools/build/build_registry.py` wrote it, exactly as `apps/studio/plugins/reinforce/jobs.py` re-validates
 # `progress.json`: `run/` is world-readable state on a box that also runs a web server, and
 # trusting a field because we wrote it is how a validated field silently becomes an unvalidated
 # one the next time somebody edits the writer.
@@ -3605,11 +3605,11 @@ def _studio_rows(raw: object) -> list[dict]:
          summary="Models on this machine, read from a pre-computed file",
          dependencies=[Depends(throttled_for("studio"))])
 async def studio_models() -> dict:
-    """The model list, as last written by `tools/build_registry.py`.
+    """The model list, as last written by `tools/build/build_registry.py`.
 
     **`latency_ms` is null on every row, and that is the honest answer today.** Nothing on this
     machine stores a per-model latency: the token rate on the site is a literal in
-    `tools/build_console.py`, and the only measurement persisted to disk is peak VRAM. The field
+    `tools/build/build_console.py`, and the only measurement persisted to disk is peak VRAM. The field
     is present so the response shape does not change when a real reading appears; a number will
     only ever be written by something that measured it, for the row it measured.
 
@@ -3633,7 +3633,7 @@ async def studio_models() -> dict:
         return {
             "models": [], "generated_at": None, "schema": None,
             "detail": ("run/registry.json has not been generated; "
-                       "run python3 tools/build_registry.py"),
+                       "run python3 tools/build/build_registry.py"),
         }
     generated = doc.get("generated_at")
     schema = doc.get("schema")
@@ -3644,7 +3644,7 @@ async def studio_models() -> dict:
         "latency_note": ("null latency means unmeasured, not zero. See the route docstring: no "
                          "per-model timing is recorded on this machine yet."),
         "freshness_note": ("this file is written out-of-band and is not refreshed by this "
-                           "request; re-run tools/build_registry.py after changing what is on "
+                           "request; re-run tools/build/build_registry.py after changing what is on "
                            "disk"),
     }
 
@@ -3717,7 +3717,7 @@ async def dispatchos_docs() -> HTMLResponse:
 
 
 # ---- clean URLs for the four front-page sections ---------------------------
-# tools/build_split.py writes one page per section. These give them addresses without a
+# tools/build/build_split.py writes one page per section. These give them addresses without a
 # `.html`, which is what makes them shareable. It is done HERE because FastAPI does all
 # the routing -- ops/Caddyfile has no rewrites and must not grow any.
 #
@@ -3740,7 +3740,7 @@ def _section_route(filename: str):
             # the generator is more useful than a blank page.
             raise HTTPException(status_code=404,
                                 detail=f"{filename} has not been generated; "
-                                       "run python3 tools/build_split.py")
+                                       "run python3 tools/build/build_split.py")
         return FileResponse(f, media_type="text/html")
     return page
 
@@ -3754,7 +3754,7 @@ async def studio_page() -> FileResponse:
     """The Studio, at a clean address.
 
     Its own route rather than a `SECTION_PAGES` entry, because `_section_route`'s 404 hardcodes
-    *"run python3 tools/build_split.py"*. That is true of the four section pages and false of
+    *"run python3 tools/build/build_split.py"*. That is true of the four section pages and false of
     this one, and a 404 that names the wrong generator sends the next person to the wrong file.
     Same read-at-request-time behaviour, different instruction.
 
@@ -3764,7 +3764,7 @@ async def studio_page() -> FileResponse:
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="studio.html has not been generated; "
-                                   "run python3 tools/build_studio.py")
+                                   "run python3 tools/build/build_studio.py")
     return FileResponse(f, media_type="text/html")
 
 
@@ -3773,7 +3773,7 @@ async def exp_page() -> FileResponse:
     """The plugin runtime's page, at a clean address.
 
     Its own route rather than a `SECTION_PAGES` entry, for the same reason `/studio` has one:
-    `_section_route`'s 404 hardcodes *"run python3 tools/build_split.py"*, which would send the
+    `_section_route`'s 404 hardcodes *"run python3 tools/build/build_split.py"*, which would send the
     next person to the wrong generator. Same read-at-request-time behaviour, right instruction.
 
     Declared above the StaticFiles mount, for the same reason every route here is.
@@ -3782,7 +3782,7 @@ async def exp_page() -> FileResponse:
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="exp.html has not been generated; "
-                                   "run python3 tools/build_exp.py")
+                                   "run python3 tools/build/build_exp.py")
     return FileResponse(f, media_type="text/html")
 
 
@@ -3901,7 +3901,7 @@ async def coder_page() -> FileResponse:
 # R-154, #81: *"the https://symoneural.com/image.html needs to be updated to
 # https://symoneural.com/livestack/image"*, then *"apply this to all applications."*
 #
-# Keys are the application name; values are the file `tools/build_pages.py` writes. Each
+# Keys are the application name; values are the file `tools/build/build_pages.py` writes. Each
 # entry serves BOTH spellings -- `/livestack/<name>` and `/live-stack/<name>` -- for the
 # reason the Coder block above gives at length: he typed the hyphen, every other application
 # on the rack does not, and a surface reachable at only one of them is a 404 waiting for
@@ -3917,7 +3917,7 @@ async def coder_page() -> FileResponse:
 #
 # Coder and Live are deliberately NOT folded in here. Both are hand-authored tracked pages
 # with no generator, so their 404s say `git checkout` -- and `_livestack_route` below says
-# `run python3 tools/build_pages.py`, which is true of this dict and false of them. That is
+# `run python3 tools/build/build_pages.py`, which is true of this dict and false of them. That is
 # the same distinction `/studio` and `/exp` were given their own routes for: a 404 naming the
 # wrong generator sends the next person to the wrong file.
 #
@@ -3933,7 +3933,7 @@ def _livestack_route(filename: str):
         if not f.is_file():
             raise HTTPException(status_code=404,
                                 detail=f"{filename} has not been generated; "
-                                       "run python3 tools/build_pages.py")
+                                       "run python3 tools/build/build_pages.py")
         return FileResponse(f, media_type="text/html")
     return page
 
@@ -4078,7 +4078,7 @@ async def local_tasknote(body: TaskNote, request: Request) -> JSONResponse:
     Append-only on purpose: it inserts after the last indented line of the task and rewrites
     nothing, so two comments cannot collide and no existing line can be lost to a bug here.
 
-    THE INDENTATION IS LOAD-BEARING, not cosmetic. `tools/archive_tasks.py` ends a task block
+    THE INDENTATION IS LOAD-BEARING, not cosmetic. `tools/lib/archive_tasks.py` ends a task block
     at the first non-blank column-zero line, so a comment written flush left would sever its
     own task from every detail line below it the next time the archiver ran. Newlines inside
     the comment are re-prefixed for the same reason, and keeping `note:` on every line also
@@ -4140,7 +4140,7 @@ async def local_progress(request: Request) -> FileResponse:
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="run/progress.html has not been generated; "
-                                   "run python3 tools/build_progress.py")
+                                   "run python3 tools/build/build_progress.py")
     # no-store: the page is regenerated every two minutes by symoneural-progress.timer, and a
     # cached copy of a status page is worse than no status page.
     return FileResponse(f, media_type="text/html", headers={"Cache-Control": "no-store"})
@@ -4276,7 +4276,7 @@ async def root() -> RedirectResponse:
     stays reversible.
 
     `site/index.html` is still built and still served at /index.html. It is the assembled
-    page tools/build_split.py reads to produce the four section pages, so it cannot simply
+    page tools/build/build_split.py reads to produce the four section pages, so it cannot simply
     stop being generated.
     """
     return RedirectResponse("/overview", status_code=302)

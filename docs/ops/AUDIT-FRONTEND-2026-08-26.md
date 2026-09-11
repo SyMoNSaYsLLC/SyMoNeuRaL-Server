@@ -82,15 +82,15 @@ shell described in §3.
 
 | Page(s) | Owner | Edit here |
 |---|---|---|
-| chat, image, ravencalc, remix, miner, gateway, streamer, streamer-watch | `tools/build_pages.py` (5,974 lines) | generator |
-| overview, livestack, controlboard, receipts | `tools/build_split.py` (subtraction from `index.html`) | `index.html`, then re-run |
-| exp (+ `exp.js`) | `tools/build_exp.py` | generator |
-| project | `tools/build_project.py` | generator |
-| reinforce (+ `reinforce.js`) | `tools/build_reinforce.py` | generator |
-| sigils | `tools/build_sigils.py` | generator |
-| studio (+ `studio.js`) | `tools/build_studio.py` | generator |
-| training | `tools/build_training.py` | generator |
-| build | `tools/build_sky.py` | generator |
+| chat, image, ravencalc, remix, miner, gateway, streamer, streamer-watch | `tools/build/build_pages.py` (5,974 lines) | generator |
+| overview, livestack, controlboard, receipts | `tools/build/build_split.py` (subtraction from `index.html`) | `index.html`, then re-run |
+| exp (+ `exp.js`) | `tools/build/build_exp.py` | generator |
+| project | `tools/build/build_project.py` | generator |
+| reinforce (+ `reinforce.js`) | `tools/build/build_reinforce.py` | generator |
+| sigils | `tools/build/build_sigils.py` | generator |
+| studio (+ `studio.js`) | `tools/build/build_studio.py` | generator |
+| training | `tools/build/build_training.py` | generator |
+| build | `tools/build/build_sky.py` | generator |
 | `index.html` | hand-maintained, **patched between BEGIN/END markers** by `build_masthead.py`, `build_rack.py`, `build_console.py`, `build_tabs.py` | `site/index.html` outside markers, else the generator |
 | `documentation.html` | hand-maintained, patched by `build_cost.py`, `build_stack.py` | as above |
 | account, coder, credits, live, share-dispatchos | **hand-written in `site/`** | `site/` directly |
@@ -108,7 +108,7 @@ CSS: `symoneural.css` (3,253 lines, shared) + `rack-detail.css`, `coder.css`, `i
 
 ### F1 — Every generated application page is wrapped in a marketing shell
 
-`tools/build_pages.py:33` `SHELL` hardcodes, above the workspace and identically for all
+`tools/build/build_pages.py:33` `SHELL` hardcodes, above the workspace and identically for all
 eight pages it writes:
 
 ```html
@@ -267,7 +267,7 @@ site/symoneural.css
   ├─ app shell     .app / .app-nav / .app-main / .app-bar / .app-drawer
   └─ components    buttons, inputs, cards, badges, tables, empty/loading/error
 
-tools/build_pages.py
+tools/build/build_pages.py
   ├─ SHELL         marketing shell — build.html, credits, overview, receipts
   └─ APP_SHELL     new: compact bar, no hero, no baked-in callout, 100dvh    [F1,F2]
 ```
@@ -290,13 +290,13 @@ Inline blobs migrate to page files **one page at a time**, Image's proven patter
 ## 8. Files to modify
 
 1. `site/symoneural.css` — tokens, breakpoints, shell, components, header fix
-2. `tools/build_pages.py` — `APP_SHELL`, hero removal, callout relocation, script tags
+2. `tools/build/build_pages.py` — `APP_SHELL`, hero removal, callout relocation, script tags
 3. `site/app.js`, `site/shell.js` — new
 4. `site/index.html`, `documentation.html`, `account.html`, `coder.html`, `credits.html`,
    `live.html` — hand-maintained pages, header markup
 5. `tools/build_{exp,project,reinforce,sigils,studio,training,sky,split}.py` — shell adoption
 6. `tests/responsive.mjs` — new, the check below
-7. `tools/build_cachebust.py` — run last
+7. `tools/build/build_cachebust.py` — run last
 
 ## 9. The check that makes this task honest
 
@@ -448,7 +448,7 @@ table was an error; it is removed rather than softened.
   `enable_surfaces`, `control_plane_matrix`, `chat_model_identity`, `rack_probes`,
   `gateway_unit`) fail **identically** there. Three more in the working tree come from the
   uncommitted #108 runtime cutover.
-- `tools/check_links.py` — 3 broken (`/livestack/live`, `/studio`): routes, not files.
+- `tools/audit/check_links.py` — 3 broken (`/livestack/live`, `/studio`): routes, not files.
 - `apps/test_brand_boundary.py` — 3 errors, `ModuleNotFoundError: No module named 'steps'`
   from `apps/ravencalc/ravencalc.py:45`.
 

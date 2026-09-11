@@ -73,7 +73,7 @@ assert (ROOT / "scripts" / "gpu-governor.sh").is_file(), (
 )
 
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
-#: Our diffusion engine, built by `tools/fork_engines.sh`. It was pointed into
+#: Our diffusion engine, built by `tools/sh/fork_engines.sh`. It was pointed into
 #: `external/` -- a tree this project may not build or link -- which is what took
 #: the sigil surface offline with every weight file present.
 DIFFUSE_ENGINE = ROOT / "symoneural-diffuse" / "build" / "bin" / "symoneural-diffuse"

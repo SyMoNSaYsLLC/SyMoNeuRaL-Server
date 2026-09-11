@@ -1,0 +1,83 @@
+# SyMoNeuRaL surface — one template, one instance per split surface.
+#
+#   sudo systemctl enable --now symoneural-surface@ravencalc
+#
+# Written 2026-09-10 for the RavenCalc pilot. Twelve unit files would have been the wrong
+# answer to the split; this is the one file, and `%i` is the surface id.
+#
+# ------------------------------------------------------------------ where the port comes from
+#
+# NOT from this file. `ops/PORTS.tsv` is the registry and
+# `backend/apps/ravencalc/service.py` reads its own port out of it via `apps/ports.py`, so a
+# port appears in exactly one place in this repository. That is deliberate: before the split
+# `:8800` was a literal in `api.py`, `ops/Caddyfile`, `tools/lib/smoke.py` and the unit, and
+# adding nine surfaces would have multiplied every one of those.
+#
+# ------------------------------------------------------------------ what differs per instance
+#
+# Three surfaces need a DIFFERENT INTERPRETER, because their dependency sets are ones the
+# serving interpreter is forbidden by policy to have: `studio`, `sigils` and `asicminer` each
+# have their own venv, reached today by subprocess from inside the monolith. Running them as
+# their own process is what dissolves that hop -- and it is the main reason to do the split at
+# all -- but it means `ExecStart`'s interpreter is per-instance.
+#
+# So: one template, plus an optional per-instance environment file that overrides the
+# interpreter. `EnvironmentFile=-` means an absent file is not an error, which is the common
+# case: a surface with no special dependencies needs no file.
+#
+#   /etc/symoneural/surface-studio.env:
+#       SURFACE_PYTHON=@@ROOT@@/backend/apps/studio/.venv/bin/python3
+#
+# Honest limitation, since the scoping report asked the question: the three interesting
+# instances differ in the one field that matters most. This is still one unit file, but the
+# differences live in the env files rather than being absent.
+
+[Unit]
+Description=SyMoNeuRaL surface: %i
+Documentation=https://symoneural.com/docs/%i
+# Crash-loop protection. In [Unit], NOT [Service] -- systemd silently ignores these under
+# [Service] and reports the 10 s default, which is how the API unit spent months with no
+# protection at all while its file said 120 s.
+StartLimitIntervalSec=120
+StartLimitBurst=5
+After=network-online.target
+Wants=network-online.target
+# A surface answers on its own port and the gateway routes to it, so it should be up before
+# anything is asked to proxy to it. Not a hard dependency: a surface that fails must not stop
+# the web server, or one dead row takes the whole site down -- which is the failure mode the
+# rack's `unreachable` state exists to report rather than to cause.
+Before=symoneural-web.service
+
+[Service]
+Type=exec
+User=google
+Group=google
+WorkingDirectory=@@ROOT@@/backend
+# The interpreter is overridable per instance; the default is the serving interpreter, which
+# is correct for every surface that does not need a venv.
+Environment=SURFACE_PYTHON=/usr/bin/python3
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/symoneural/surface-%i.env
+ExecStart=/usr/bin/env sh -c 'exec "$SURFACE_PYTHON" -m uvicorn apps.%i.service:app --host 127.0.0.1 --port "$(/usr/bin/python3 -c "import sys; sys.path.insert(0, \"@@ROOT@@/backend\"); from apps.ports import port_of; p = port_of(\"%i\"); sys.exit(\"no PORT for %i in ops/PORTS.tsv\") if p is None else print(p)")" --log-level info'
+# No ExecStopPost releasing a GPU lease: a surface installed from this template does not hold
+# one. When a GPU surface is split -- `image` is the planned second pilot -- it needs the
+# release arm the API unit carries, and that is a reason for a second template rather than a
+# reason to put a governor call in the path of surfaces that never touch the card.
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+KillMode=mixed
+KillSignal=SIGTERM
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=symoneural-surface-%i
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=@@ROOT@@/run
+MemoryMax=4G
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target

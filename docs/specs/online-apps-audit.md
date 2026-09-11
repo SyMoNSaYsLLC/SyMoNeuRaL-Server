@@ -189,7 +189,7 @@ needs saying separately:
 `/index.html` is deliberate and documented (HANDOVER §5 item 0b — `/` redirects to `/overview`
 and the tabbed page survives as a build input). The other six are not documented as deliberate.
 A concurrent session reported the same six independently and is adding image, ravencalc and remix
-to the nav in `tools/build_pages.py`; miner, gateway and sigils belong to other active sessions.
+to the nav in `tools/build/build_pages.py`; miner, gateway and sigils belong to other active sessions.
 **Not edited here** — three writers in one generator is the clobber CLAUDE.md warns about.
 
 Related trap, confirmed by that session and consistent with everything measured here:
@@ -577,13 +577,13 @@ ln -s /home/google/Symoneural/contrib contrib
 # the transcode numbers in section 7. Takes a governor lease and releases it even on crash;
 # runs in about two minutes. Re-take them on a card that is otherwise idle -- a contended
 # measurement is a contaminated one, which is why they were not taken on the first attempt.
-scripts/gpu-governor.sh with tuner -- tools/bench_nvenc.sh
+scripts/gpu-governor.sh with tuner -- tools/bench/bench_nvenc.sh
 ```
 
 `bench_nvenc.sh` measures its real-source cases against `seg-*.ts` files sitting beside it, which
 are live segments captured from a channel and are deliberately not committed. Without them it
 reports the synthetic cases only and says so; §7's real-720p rows came from six consecutive
-segments pulled off a working channel with `tools/probe_tuner_stream.sh`.
+segments pulled off a working channel with `tools/audit/probe_tuner_stream.sh`.
 
 The link/orphan crawler used here was a scratch probe and was not kept; it is ~60 lines of
 `fetch` over the eighteen-page list, and §6 item 1 is the only subtlety in writing another.
@@ -758,6 +758,6 @@ measured 13.4× realtime and never touches the GPU.
 
 `site/tuner-watch.html` still says the tuner does not use the GPU, and its codec warning does not
 yet read `repair` — so a repaired channel will play while the page still explains that it cannot.
-The backend publishes what the page needs; wiring it up is a `tools/build_pages.py` change, which
+The backend publishes what the page needs; wiring it up is a `tools/build/build_pages.py` change, which
 means it also needs `build_cachebust.py` after it, and it is the next piece of work rather than a
 finished one.

@@ -48,7 +48,7 @@ Consolidated from all attached SyMoNeuRaL Markdown history/status/correction/reg
       16,424 bytes, 6 files touched, +175/-19
 
   It is a working-tree snapshot from 2026-08-26 touching `backend/server.py`,
-  `backend/apps/gateway/Cargo.{toml,lock}`, `ops/symoneural-gateway.service`, `.gitignore` and
+  `backend/apps/gateway/Cargo.{toml,lock}`, `ops/units/symoneural-gateway.service`, `.gitignore` and
   `LICENSES.md`. All six are tracked in Git today and have evolved since, so the patch is
   superseded by history rather than unique.
 
@@ -186,7 +186,7 @@ Gateway build rc=0 (genuinely captured), artefact 27,231,968 bytes — identical
    _ "github.com/caddyserver/caddy/v2/modules/standard"
 )
 
-// Build metadata. Overridden at link time by ops/build-symoneural-web.sh via -ldflags -X.
+// Build metadata. Overridden at link time by ops/deploy/build-symoneural-web.sh via -ldflags -X.
 // Defaults are deliberately the string "unknown" rather than a plausible-looking value: a
 // binary built outside the recorded procedure should SAY it has no provenance instead of
 // quietly reporting a version somebody will later treat as evidence.
@@ -283,12 +283,12 @@ func main() {
 
 The version surface already exists — it's --version, not version. My earlier probe used the bare word, which main.go deliberately passes through to Caddy. That was my measurement error, not a missing surface, so no source change to main.go is needed and the web evidence stands as final rather than pre-final.
 
-But it exposes a different registry error: -ldflags are stamped by ops/build-symoneural-web.sh, which is the real build authority. My recorded plain go build produces a binary reporting version=unknown:
+But it exposes a different registry error: -ldflags are stamped by ops/deploy/build-symoneural-web.sh, which is the real build authority. My recorded plain go build produces a binary reporting version=unknown:
 
 ● Bash(cd /home/google/Symoneural
   echo "############ is there a canonical build script? ############"
-  ls -l ops/build-symoneural-web.sh 2>&1 | head -2
-  grep -nE 'ldflags|-X ' ops/build-symoneural-web.sh 2>/dev/null | head -8
+  ls -l ops/deploy/build-symoneural-web.sh 2>&1 | head -2
+  grep -nE 'ldflags|-X ' ops/deploy/build-symoneural-web.sh 2>/dev/null | head -8
   echo
   echo "############ --version on the PRODUCTION binary (built by the script) ############"
   web/symoneural-web/build/symoneural-web --version 2>&1 | head -12 | sed 's/^/  /'
@@ -296,7 +296,7 @@ But it exposes a different registry error: -ldflags are stamped by ops/build-sym
   echo "############ --version on my REHEARSAL binary (plain go build) ############"
   /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal/Symoneural/web/symoneural-web/build/symoneural-web --v's/^/  /')
 ############ is there a canonical build script? ############
--rwxrwxr-x 1 google google 6307 Aug 26 15:13 ops/build-symoneural-web.sh
+-rwxrwxr-x 1 google google 6307 Aug 26 15:13 ops/deploy/build-symoneural-web.sh
 102:LD="-X main.version=$VERSION -X main.gitCommit=$GIT_COMMIT -X main.gitDirty=$GIT_DIRTY"
 103:LD="$LD -X main.buildID=$BUILD_ID -X main.licenseSHA=$LICENSE_SHA"
 104:LD="$LD -X main.licensePath=$LICENSE_PATH -X main.noticesPath=$OUT/$NOTICES_REL"
@@ -331,9 +331,9 @@ Exactly as the code's own comment predicted: "a binary built outside the recorde
   cd "$R"
   rm -rf web/symoneural-web/build
   echo "  build/ removed: $([ -e web/symoneural-web/build ] && echo NO || echo YES)"
-  timeout 1800 ops/build-symoneural-web.sh > "$S/web-build2.log" 2>&1
+  timeout 1800 ops/deploy/build-symoneural-web.sh > "$S/web-build2.log" 2>&1
   rc=$?
-  echo "  ops/build-symoneural-web.sh REAL rc=$rc"
+  echo "  ops/deploy/build-symoneural-web.sh REAL rc=$rc"
   tail -8 "$S/web-build2.log" | sed 's/^/    /'
   echo
   if [ -f web/symoneural-web/build/symoneural-web ]; then
@@ -348,7 +348,7 @@ Exactly as the code's own comment predicted: "a binary built outside the recorde
     ls -1 web/symoneural-web/build/ | sed 's/^/    /'
   fi)
   build/ removed: YES
-  ops/build-symoneural-web.sh REAL rc=0
+  ops/deploy/build-symoneural-web.sh REAL rc=0
       generating module inventory and third-party notices ...
       modules       : 547  -> /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal/Symoneural/web/symoneural-web/build/THIRD_PARTY_NOTICES.md
       building (-trimpath, stamped) ...
@@ -385,9 +385,9 @@ The canonical build is rc=0, artefact 76,206,670 bytes — exactly the productio
   python3 - <<'PYEOF'
   import pathlib
   p = pathlib.Path("restore/lib/registry.py"); t = p.read_text()
-  t = t.replace('''        build_authority="go build",''', '''        build_authority="ops/build-symoneural-web.sh",''')
+  t = t.replace('''        build_authority="go build",''', '''        build_authority="ops/deploy/build-symoneural-web.sh",''')
   t = t.replace('''        build_command="cd web/symoneural-web && go build -o build/symoneural-web .",''',
-  '''        build_command="ops/build-symoneural-web.sh",''')
+  '''        build_command="ops/deploy/build-symoneural-web.sh",''')
   t = t.replace('''        prep_command="cd web/symoneural-web && go mod download",''',
   '''        prep_command="cd web/symoneural-web && go mod download   # needs Go >= 1.25.1",''')
   t = t.replace('''        network_required="YES (go mod download, once)",''',
@@ -405,7 +405,7 @@ The canonical build is rc=0, artefact 76,206,670 bytes — exactly the productio
                 "authorship claim. So the application source is ours and Caddy is a package "
                 "dependency: THIRD_PARTY_SOURCE_CARRIED_IN_BACKUP=NO, "
                 "REBUILDABLE_FROM_LOCKED_MODULES=YES via go.sum (573 entries). "
-                "BUILD AUTHORITY is ops/build-symoneural-web.sh, NOT a plain `go build`: it "
+                "BUILD AUTHORITY is ops/deploy/build-symoneural-web.sh, NOT a plain `go build`: it "
                 "stamps -ldflags -X main.version/gitCommit/buildID/licenseSHA and emits "
                 "THIRD_PARTY_NOTICES.md over 547 modules plus go-modules.tsv and "
                 "build-manifest.json. A plain go build produces a binary whose --version "
@@ -420,7 +420,7 @@ The canonical build is rc=0, artefact 76,206,670 bytes — exactly the productio
   p.write_text(t)
   print("registry.py: web build authority, classification and toolchain recorded")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
   echo
   echo "############ engine rebuild progress ############"
   S=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
@@ -446,7 +446,7 @@ LLM_EXIT=0
   log lines: 1367   still running: YES
 
 
-❯ You do not need another large instruction right now. Let ops/build-symoneural-web.sh finish.
+❯ You do not need another large instruction right now. Let ops/deploy/build-symoneural-web.sh finish.
 
   At the next boundary, this is sufficient:
 
@@ -456,7 +456,7 @@ LLM_EXIT=0
 
   The real finding is that the canonical Web build authority is:
 
-  ops/build-symoneural-web.sh
+  ops/deploy/build-symoneural-web.sh
 
   not a plain go build.
 
@@ -495,7 +495,7 @@ LLM_EXIT=0
   Do not create the definitive archive yet.
 
 ❯ Execution order
-  Let ops/build-symoneural-web.sh finish.
+  Let ops/deploy/build-symoneural-web.sh finish.
   Verify its real exit code.
   Inspect its complete output set.
   Verify rebuilt symoneural-web --version and --license.
@@ -585,7 +585,7 @@ LLM_EXIT=0 — the chat engine clean-built from reacquired llama.cpp. Diffuse is
 
 ❯ Targets
   web/symoneural-web/main.go NO CHANGE NEEDED
-  ops/build-symoneural-web.sh PROMOTE TO CANONICAL WEB BUILD AUTHORITY
+  ops/deploy/build-symoneural-web.sh PROMOTE TO CANONICAL WEB BUILD AUTHORITY
   restore/lib/registry.py / BUILD-RECIPES.tsv REPLACE PLAIN go build RECIPE
   Web rehearsal artifact WAIT FOR CANONICAL SCRIPT RESULT
   Web provenance side artifacts RECORD AND VERIFY
@@ -626,7 +626,7 @@ LLM_EXIT=0 — the chat engine clean-built from reacquired llama.cpp. Diffuse is
 
   Do not modify main.go for version identity. There is no defect there.
 
-  Target 2 — ops/build-symoneural-web.sh
+  Target 2 — ops/deploy/build-symoneural-web.sh
   Do
 
   This is the more important discovery.
@@ -637,7 +637,7 @@ LLM_EXIT=0 — the chat engine clean-built from reacquired llama.cpp. Diffuse is
 
   It is:
 
-  ops/build-symoneural-web.sh
+  ops/deploy/build-symoneural-web.sh
 
   because the script supplies the provenance contract:
 
@@ -660,8 +660,8 @@ LLM_EXIT=0 — the chat engine clean-built from reacquired llama.cpp. Diffuse is
 
   So the coder should change the registry to:
 
-  BUILD_AUTHORITY=ops/build-symoneural-web.sh
-  BUILD_COMMAND=ops/build-symoneural-web.sh
+  BUILD_AUTHORITY=ops/deploy/build-symoneural-web.sh
+  BUILD_COMMAND=ops/deploy/build-symoneural-web.sh
 
   rather than plain go build.
 
@@ -904,7 +904,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
   ## symoneural-web — the production HTTP/TLS runtime
 
       WEB_CLEAN_REBUILD            PASS
-      CANONICAL_BUILD_SCRIPT_RC    0     (ops/build-symoneural-web.sh)
+      CANONICAL_BUILD_SCRIPT_RC    0     (ops/deploy/build-symoneural-web.sh)
       WEB_GO_BUILD_RC              0     (plain go build, for comparison only)
       WEB_GO_VET_RC                0
       ARTIFACT_PRESENT             YES   76,206,670 bytes -- identical size to production
@@ -917,7 +917,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
       WEB_REPRODUCIBLE_BYTES       NO -- see below
 
   **The build authority was wrong in the registry and is now corrected.** It is
-  \`ops/build-symoneural-web.sh\`, not a plain \`go build\`. The script supplies the provenance
+  \`ops/deploy/build-symoneural-web.sh\`, not a plain \`go build\`. The script supplies the provenance
   contract: \`-trimpath\` plus \`-X main.version/gitCommit/gitDirty/buildID/licenseSHA/
   licensePath/noticesPath\`. Built the plain way, the binary honestly reports
   \`version=unknown, git commit=unknown, build id=unknown\` — verified by building it both ways.
@@ -946,7 +946,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
   | \`build/go-modules.tsv\` | 22,902 | \`$(sha256sum "$R/web/symoneural-web/build/go-modules.tsv" | cut -c1-32)\` | module inventory |
   | \`build/build-manifest.json\` | 594 | \`$(sha256sum "$R/web/symoneural-web/build/build-manifest.json" | cut -c1-32)\` | the script's own rec
 
-  Generated by \`ops/build-symoneural-web.sh\` at source revision
+  Generated by \`ops/deploy/build-symoneural-web.sh\` at source revision
   \`f0a3fcf7f5cf5a7697c9bc1846bc06d7b390cf1a\`.
 
   ### Classification
@@ -1165,7 +1165,7 @@ DIFFUSE_EXIT=0
 
   ```text
   FIRST_PARTY_APPLICATION_SOURCE=YES
-  CANONICAL_BUILD_AUTHORITY=ops/build-symoneural-web.sh
+  CANONICAL_BUILD_AUTHORITY=ops/deploy/build-symoneural-web.sh
 
   GO=1.25.1
   CANONICAL_BUILD_RC=0
@@ -1281,7 +1281,7 @@ DIFFUSE_EXIT=0
   ```text
   symoneural-web
     source_root=web/symoneural-web
-    build_authority=ops/build-symoneural-web.sh
+    build_authority=ops/deploy/build-symoneural-web.sh
     Go >=1.25.1
     go.mod/go.sum
     Caddy package dependency
@@ -1565,7 +1565,7 @@ Production has the same absolute CUDA RUNPATH, so it's by design rather than a r
   t = t.replace(old, new, 1)
 
   evidence = {
-      "symoneural-web": ("PASS (ops/build-symoneural-web.sh rc=0, go vet rc=0)",
+      "symoneural-web": ("PASS (ops/deploy/build-symoneural-web.sh rc=0, go vet rc=0)",
                          "NO -- binary embeds its own git commit and build id"),
       "symoneural-gateway": ("PASS (cargo build --release --locked rc=0 from an empty target/; "
                              "cargo test rc=0 but RUST_TEST_COUNT=0, which is a passing "
@@ -1614,7 +1614,7 @@ Production has the same absolute CUDA RUNPATH, so it's by design rather than a r
   p.write_text(t)
   print("generate.py: BUILD-RECIPES carries the measured rebuild outcome")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "regenerated"
   echo
   awk -F'\t' 'NR==1{next} $21!="-" {printf "  %-22s %s\n     bytes: %s\n",$1,substr($21,1,86),substr($22,1,76)}' restore/manifests/BUILD-RECIPES
 registry.py: clean_rebuild + reproducible_bytes recorded from measurement
@@ -1691,7 +1691,7 @@ My awk indices were off by the two new columns. Reading by header name instead o
                          REPRODUCIBLE  = NO -- +20,480 bytes, explained by the embedded git-describe version string the b
   symoneural-listen      CLEAN_REBUILD = PASS (fork_engines.sh listen rc=0 from reacquired whisper.cpp)
                          REPRODUCIBLE  = YES -- sha256 identical to the production artefact
-  symoneural-web         CLEAN_REBUILD = PASS (ops/build-symoneural-web.sh rc=0, go vet rc=0)
+  symoneural-web         CLEAN_REBUILD = PASS (ops/deploy/build-symoneural-web.sh rc=0, go vet rc=0)
                          REPRODUCIBLE  = NO -- binary embeds its own git commit and build id
   symoneural-gateway     CLEAN_REBUILD = PASS (cargo build --release --locked rc=0 from an empty target/; cargo test rc=0 but RUST_TEST_C
                          REPRODUCIBLE  = NO -- identical size, arch and 4 NEEDED, but sha differs
@@ -1744,7 +1744,7 @@ The freshness test failing is correct — the manifests changed and aren't commi
   p.write_text(t.replace(old, new, 1))
   print("deps.py: Caddy and the Go toolchain requirement recorded")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   awk -F'\t' 'NR==1{next} $5=="GO_MODULE"||$5=="TOOLCHAIN"&&$1=="dep-go-toolchain" {printf "  %-38s %s\n     %s\n",$2,$3,substr($13,1,100)}' restore/manifests/DEPENDENCIES.tsv
   echo
   git add -A restore backend/apps FIRST-PARTY-CLOSURE.tsv THIRD-PARTY-REBUILD-MANIFEST.tsv
@@ -1806,7 +1806,7 @@ go --version isn't valid Go syntax (it's go version), so my probe returned UNMEA
   p.write_text(t)
   print("deps.py: go/cargo/rustc added to the platform table")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   awk -F'\t' 'NR==1{next} $5=="TOOLCHAIN"||$5=="GO_MODULE" {printf "  %-38s %s\n",$2,substr($3,1,60)}' restore/manifests/DEPENDENCIES.tsv)
 measure.py: go/cargo/rustc probes added
   go       go version go1.24.4 linux/amd64
@@ -1851,7 +1851,7 @@ All toolchains now measured. Committing this round, then running the full suite:
     component, symoneural-site.
 
     Its build authority was recorded as a plain `go build`. It is
-    ops/build-symoneural-web.sh, which supplies -trimpath and the -X stamps for
+    ops/deploy/build-symoneural-web.sh, which supplies -trimpath and the -X stamps for
     version, git commit, build id and licence sha. Built the plain way the binary
     honestly reports version=unknown -- verified by building it both ways. main.go
     says why: "a binary built outside the recorded procedure should SAY it has no
@@ -2348,7 +2348,7 @@ All three diagnosed, and one is genuinely instructive. Looking at each:
 
 ● Bash(cd /home/google/Symoneural
   echo "############ 1. which new file counts parents? ############"
-  grep -n 'parent' restore/lib/*.py restore/symoneural-restore tools/build_restore_manifests.py tools/build_recovery_root.py tools/build_private_state.py tools/build_dependency_locks.py 2>/dev/null | grep -vE 'for cand in|start.parents|p.parents|\.parents\)' | head -10
+  grep -n 'parent' restore/lib/*.py restore/symoneural-restore tools/build/build_restore_manifests.py tools/build/build_recovery_root.py tools/build/build_private_state.py tools/build/build_dependency_locks.py 2>/dev/null | grep -vE 'for cand in|start.parents|p.parents|\.parents\)' | head -10
   echo
   echo "############ 2. how does test_references_boundary exempt files? ############"
   grep -nE 'EXEMPT|SKIP|ALLOW|exempt' backend/apps/test_references_boundary.py | head -12
@@ -2356,16 +2356,16 @@ All three diagnosed, and one is genuinely instructive. Looking at each:
   echo "############ 3. where is the other component map? ############"
   grep -rn 'archive/from-desktop/symoneural-buildv2' --include='*.py' --include='*.json' --include='*.md' . 2>/dev/null | grep -v '^./external' | head -6)
 ############ 1. which new file counts parents? ############
-tools/build_private_state.py:52:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
-tools/build_private_state.py:82:    p.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:90:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:91:    os.chmod(dst.parent, 0o700)
-tools/build_private_state.py:113:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:114:    os.chmod(dst.parent, 0o700)
-tools/build_private_state.py:124:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:125:    os.chmod(dst.parent, 0o700)
-tools/build_restore_manifests.py:29:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
-tools/build_recovery_root.py:58:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_private_state.py:52:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_private_state.py:82:    p.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:90:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:91:    os.chmod(dst.parent, 0o700)
+tools/build/build_private_state.py:113:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:114:    os.chmod(dst.parent, 0o700)
+tools/build/build_private_state.py:124:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:125:    os.chmod(dst.parent, 0o700)
+tools/build/build_restore_manifests.py:29:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_recovery_root.py:58:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
 
 ############ 2. how does test_references_boundary exempt files? ############
 21:through by requiring a path separator and a quote-ish context, and why the exemptions below
@@ -2425,7 +2425,7 @@ ALLOWED = {
     # does not match. That is a punctuation accident, not a decision, and it would have broken
     # the moment an upstream source sat one directory deeper -- which is exactly what happened
     # when the ASR engine's source turned out to live under a differently-named parent.
-    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
 }
 
 #: A path into a third-party working tree, in either spelling. `\b` on the left so that
@@ -2591,9 +2591,9 @@ Confirmed — restore/lib/generate.py:27 uses .parent to reach a root, and the r
 
   # ---- 2. references boundary: exempt the detector's own fixtures, narrowly
   p = pathlib.Path("backend/apps/test_references_boundary.py"); t = p.read_text()
-  old = '''    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+  old = '''    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
   }'''
-  new = '''    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+  new = '''    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
       # The external-source DETECTOR's own fixtures. Its
       # test_the_detector_catches_split_form_construction asserts that a real dependency is
       # recognised, and a fixture proving that has to LOOK like the thing being detected --
@@ -2683,7 +2683,7 @@ All 14 pass. Now correction 3 — the release-HEAD semantics, replacing the circ
   new2 = '''        "git_bundle_path": ".private/git-backup/Symoneural-all.bundle",
           # NOT the hash itself. The bundle is regenerated AFTER the commit that carries this
           # file, so any value inlined here is stale the moment it is true. The sidecar is
-          # written beside the bundle by tools/build_recovery_root.py and is the authority.
+          # written beside the bundle by tools/build/build_recovery_root.py and is the authority.
           "git_bundle_sha256_sidecar":
               ".private/git-backup/Symoneural-all.bundle.sha256",
           "source_closure_status": source_closure_status(),
@@ -2741,7 +2741,7 @@ All 14 pass. Now correction 3 — the release-HEAD semantics, replacing the circ
   p.write_text(t)
   print("generate.py: three-head semantics + the missing Target 25 fields")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null 2>&1 || python3 tools/build_restore_manifests.py 2>&1 | tail -5)
+  python3 tools/build/build_restore_manifests.py >/dev/null 2>&1 || python3 tools/build/build_restore_manifests.py 2>&1 | tail -5)
 generate.py: three-head semantics + the missing Target 25 fields
 
 ● Bash(cd /home/google/Symoneural
@@ -2754,7 +2754,7 @@ generate.py: three-head semantics + the missing Target 25 fields
   } > run/SUITE-LAST.txt
   cat run/SUITE-LAST.txt | sed 's/^/  /'
   echo
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   python3 -c "
   import json
   d=json.load(open('restore/RELEASE.json'))
@@ -3108,7 +3108,7 @@ def gen_models(write_tsv) -> int:
                 '"NO", "classified per file -- see restore/manifests/MODELS.tsv",')
   p.write_text(t)
   PY
-  python3 tools/build_restore_manifests.py 2>&1 | tail -3
+  python3 tools/build/build_restore_manifests.py 2>&1 | tail -3
   echo
   echo "############ MODELS.tsv ############"
   awk -F'\t' 'NR==1{next}{printf "  %-46s %-22s %8.2f GB  %s\n",substr($2,1,46),$3,$4/1073741824,substr($12,1,44)}' restore/manifests/MODELS.tsv
@@ -4025,7 +4025,7 @@ Definitive: the four absent models are referenced only by scripts/fetch-models.s
   p.write_text(t.replace(old, new))
   print("models.py: requiredness measured from consumers; hashes verified against disk")
   PYEOF
-  python3 tools/build_restore_manifests.py 2>&1 | grep MODELS
+  python3 tools/build/build_restore_manifests.py 2>&1 | grep MODELS
   echo
   python3 - <<'PY'
   import pathlib
@@ -4984,7 +4984,7 @@ def gen_home_disposition(write_tsv) -> int:
   p.write_text(t)
   print("generate.py: HOME-DISPOSITION.tsv wired in")
   PY
-  python3 tools/build_restore_manifests.py 2>&1 | grep -E 'HOME|MODELS'
+  python3 tools/build/build_restore_manifests.py 2>&1 | grep -E 'HOME|MODELS'
   echo
   echo "############ anything UNCLASSIFIED? ############"
   awk -F'\t' 'NR==1{next} $2=="UNCLASSIFIED" {printf "  %-46s %s\n",$1,$5}' restore/manifests/HOME-DISPOSITION.tsv
@@ -5096,7 +5096,7 @@ Zero UNCLASSIFIED items across 50 rows. And the 14B landed at 8,988,110,976 byte
   p.write_text(t)
   print("models.py: five-way reference taxonomy")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null 2>&1
+  python3 tools/build/build_restore_manifests.py >/dev/null 2>&1
   python3 - <<'PY'
   import pathlib
   lines = pathlib.Path("restore/manifests/MODELS.tsv").read_text().splitlines()
@@ -5232,7 +5232,7 @@ guard:
   p.write_text(t)
   print("generate.py: RESET_PRIVATE_INCLUDE.tsv + archive confidentiality posture")
   PYEOF
-  python3 tools/build_restore_manifests.py 2>&1 | tail -4
+  python3 tools/build/build_restore_manifests.py 2>&1 | tail -4
   echo
   echo "############ RESET_PRIVATE_INCLUDE.tsv ############"
   awk -F'\t' 'NR==1{next}{printf "  %-34s %-9s %-6s %s\n",$1,$3,$5,substr($2,1,52)}' RESET_PRIVATE_INCLUDE.tsv)
@@ -5991,7 +5991,7 @@ All four verified: sizes match PROVENANCE.json exactly, GGUF magic confirmed, Ap
     -d '{"prompt":"reply with the single word ok"}' -o /dev/null -w '  live chat still answers: HTTP %{http_code}\n'
   echo
   echo "############ regenerate + verify ############"
-  python3 tools/build_restore_manifests.py 2>&1 | grep -E 'MODELS|HOME|RESET'
+  python3 tools/build/build_restore_manifests.py 2>&1 | grep -E 'MODELS|HOME|RESET'
   ./restore/symoneural-restore verify | tail -2
   echo
   echo "############ MISSING_RECORDED_MODELS ############"
@@ -6015,9 +6015,9 @@ RESTORE_VERIFY=PASS  (79 rows examined)
 
 MISSING_RECORDED_MODELS=0, and live chat still answers HTTP 200 — production undisturbed. Now the offload tool. Given 3.6 M files against Drive's per-file overhead, it tars each subtree into one object, uploads with checksum verification, and deletes locally only after the remote MD5 matches:
 
-● Write(/home/google/Symoneural/tools/offload-to-drive.sh)
+● Write(/home/google/Symoneural/tools/data/offload-to-drive.sh)
 
-Wrote 209 lines to /home/google/Symoneural/tools/offload-to-drive.sh
+Wrote 209 lines to /home/google/Symoneural/tools/data/offload-to-drive.sh
 #!/usr/bin/env bash
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -6068,9 +6068,9 @@ Wrote 209 lines to /home/google/Symoneural/tools/offload-to-drive.sh
 # so an interrupted run continues rather than restarting, and re-running after completion
 # does nothing. This will take hours; it must survive being interrupted.
 #
-#     tools/offload-to-drive.sh --plan          # what would move, and how big
-#     tools/offload-to-drive.sh --run           # do it
-#     tools/offload-to-drive.sh --status        # ledger
+#     tools/data/offload-to-drive.sh --plan          # what would move, and how big
+#     tools/data/offload-to-drive.sh --run           # do it
+#     tools/data/offload-to-drive.sh --status        # ledger
 #
 set -uo pipefail
 
@@ -6230,10 +6230,10 @@ esac
 
 
 ● Bash(cd /home/google/Symoneural
-  chmod 755 tools/offload-to-drive.sh
-  bash -n tools/offload-to-drive.sh && echo "  syntax OK"
+  chmod 755 tools/data/offload-to-drive.sh
+  bash -n tools/data/offload-to-drive.sh && echo "  syntax OK"
   echo
-  tools/offload-to-drive.sh --plan 2>&1 | tail -35)
+  tools/data/offload-to-drive.sh --plan 2>&1 | tail -35)
   syntax OK
 
 SUBTREE                                                    SIZE      FILES STATE
@@ -6274,7 +6274,7 @@ NOT in this list, and each for a stated reason:
 Plan is sound: 136 GB in this batch, largest single staged tar 29 GB against 200 GB free. Launching it in the background — this will run for hours:
 
 ● Bash(cd /home/google/Symoneural
-  nohup setsid tools/offload-to-drive.sh --run > .private/offload-run.out 2>&1 &
+  nohup setsid tools/data/offload-to-drive.sh --run > .private/offload-run.out 2>&1 &
   echo "  offload started (pid $!) — detached, survives this session"
   sleep 90
   echo
@@ -6395,7 +6395,7 @@ A  restore/manifests/HOME-DISPOSITION.tsv
 A  restore/manifests/MODELS.tsv
 M  restore/manifests/PERSISTENT-STATE.tsv
 M  restore/manifests/SOURCE-CLOSURE.tsv
-A  tools/offload-to-drive.sh
+A  tools/data/offload-to-drive.sh
 
 committed: 39cf7b87
 
@@ -6613,7 +6613,7 @@ web/symoneural-web
 
 The canonical build authority is:
 
-ops/build-symoneural-web.sh
+ops/deploy/build-symoneural-web.sh
 
 NOT a plain go build.
 
@@ -6636,7 +6636,7 @@ web/symoneural-web/build/build-manifest.json
 Record:
 
 WEB_CLEAN_REBUILD=PASS
-WEB_CANONICAL_BUILD_AUTHORITY=ops/build-symoneural-web.sh
+WEB_CANONICAL_BUILD_AUTHORITY=ops/deploy/build-symoneural-web.sh
 WEB_CANONICAL_BUILD_RC=
 WEB_GO_VET_RC=
 WEB_FIRST_PARTY_IDENTITY=PASS
@@ -6794,13 +6794,13 @@ Ensure the authoritative component mapping reflects measured reality:
 symoneural-web
   source_root=web/symoneural-web
   language=Go
-  build_authority=ops/build-symoneural-web.sh
+  build_authority=ops/deploy/build-symoneural-web.sh
   executable=web/symoneural-web/build/symoneural-web
 
 symoneural-site
   source_root=site
   language=HTML/CSS/JS
-  build_authority=tools/build_rack.py + tools/build_cachebust.py
+  build_authority=tools/build/build_rack.py + tools/build/build_cachebust.py
 
 symoneural-gateway
   source_root=backend/apps/gateway
@@ -7522,7 +7522,7 @@ Now working the authorized non-destructive scope. Starting with a real defect in
   printf '  who owns :443          : %s\n' "$(ss -ltnp 2>/dev/null | awk '/:443/{print $NF}' | head -1)"
   echo
   echo "############ symoneural-web.service Conflicts= ############"
-  grep -nE 'Conflicts|ExecStart|Environment=HOME' ops/symoneural-web.service | head -6)
+  grep -nE 'Conflicts|ExecStart|Environment=HOME' ops/units/symoneural-web.service | head -6)
 ############ PRIORITY 7 defect: does my restore plan resurrect caddy.service? ############
 10:90      caddy   Install the Caddy configuration and certificates        services        sudo install -m0644 ops/Caddyfile /etc/caddy/Cadad caddy   curl -fsS -o /dev/null -w '%{http_code}' http://127.0.0.1/      YES     YES     STOP. Certificate state is COPIED and chowned into /
 11:100     start   Start the services in dependency order  caddy   sudo systemctl start symoneural-api && sudo systemctl start symoneural-web      curl -fsS http://127.0.0.1:8800/api/status      YES     YES     STOP
@@ -7597,7 +7597,7 @@ Confirmed, and it's consequential: symoneural-web.service declares Conflicts=cad
   p.write_text(t)
   print("registry.py: caddy is configuration; the restore no longer resurrects the vendor unit")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo
   echo "############ does any restore command still touch caddy.service? ############"
   grep -oE '(systemctl [a-z-]+ caddy[a-z.]*)' restore/manifests/RESTORE-ORDER.tsv restore/manifests/SERVICES.tsv 2>/dev/null | sort -u | sed 's/an"
@@ -7796,11 +7796,11 @@ No restore command touches caddy.service any more. Now Priority 5 — the smokes
   p.write_text(t)
   print("registry.py: all 14 smokes now assert their expected result")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null && ./restore/symoneural-restore verify | tail -2)
+  python3 tools/build/build_restore_manifests.py >/dev/null && ./restore/symoneural-restore verify | tail -2)
 Error: Exit code 1
 registry.py: all 14 smokes now assert their expected result
 Traceback (most recent call last):
-  File "/home/google/Symoneural/tools/build_restore_manifests.py", line 31, in <module>
+  File "/home/google/Symoneural/tools/build/build_restore_manifests.py", line 31, in <module>
     from lib import generate as G          # noqa: E402
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/google/Symoneural/restore/lib/generate.py", line 45, in <module>
@@ -7831,7 +7831,7 @@ A was defined in my generator script but not in registry.py itself. Defining it 
   p.write_text(t.replace(old, new, 1))
   print("registry.py: A defined")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "regenerated"
   ./restore/symoneural-restore verify | tail -2
   echo
   echo "############ THE ONE CANONICAL SMOKE RUN ############"
@@ -8536,12 +8536,12 @@ Tree is already clean — the Yocto preservation went into gitignored .private/ 
   cd /home/google/Symoneural
   echo
   echo "############ generators run twice -- deterministic? ############"
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   for f in restore/manifests/*.tsv restore/RELEASE.json FIRST-PARTY-CLOSURE.tsv \
            THIRD-PARTY-REBUILD-MANIFEST.tsv RESET_PRIVATE_INCLUDE.tsv; do
     cp "$f" "$S/$(basename $f).r1"
   done
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   diffs=0
   for f in restore/manifests/*.tsv restore/RELEASE.json FIRST-PARTY-CLOSURE.tsv \
            THIRD-PARTY-REBUILD-MANIFEST.tsv RESET_PRIVATE_INCLUDE.tsv; do
@@ -8551,7 +8551,7 @@ Tree is already clean — the Yocto preservation went into gitignored .private/ 
   printf '  manifests compared: %s   differing: %s\n' "$(ls restore/manifests/*.tsv | wc -l)" "$diffs"
   echo
   echo "############ dependency locks --check ############"
-  python3 tools/build_dependency_locks.py --check 2>&1 | tail -3
+  python3 tools/build/build_dependency_locks.py --check 2>&1 | tail -3
   echo
   echo "############ tree state ############"
   git status --porcelain | head -5
@@ -8626,9 +8626,9 @@ Same class as the self-referential hash problem: the canonical root's own size c
   print("home.py: the canonical root's self-referential size is no longer measured")
   PYEOF
   S=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   for f in restore/manifests/*.tsv restore/RELEASE.json; do cp "$f" "$S/$(basename $f).r1"; done
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   d=0
   for f in restore/manifests/*.tsv restore/RELEASE.json; do
     b=$(basename "$f"); diff -q "$S/$b.r1" "$f" >/dev/null 2>&1 || { d=$((d+1)); echo "  DIFFERS: $b"; }
@@ -8675,7 +8675,7 @@ Determinism restored: 0 differing across two consecutive generations. One UNCLAS
   p.write_text(t.replace(old, new))
   print("  classified: gptosspromptandsymoneuraldefaults.md")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   printf '  UNCLASSIFIED now: %s\n' "$(awk -F'\t' 'NR==1{next} $2=="UNCLASSIFIED"' restore/manifests/HOME-DISPOSITION.tsv | wc -l)"
   echo
   echo "############ suite ############"
@@ -8712,19 +8712,19 @@ E       - {}
 E       + {'restore/lib/home.py': ['".claude"']} : these resolve a path under .claude at runtime. The authority moved to docs/authority/PRONDOFF.md on 2026-09-08, and the directory is retired -- point at the neutral path instead
 E           AssertionError: 14 production reference(s) to a tree that will not survive the reset:
 E             restore/lib/models.py:86  [external]  if path.startswith(("docs/", "review/", "archive/", "external/")) \
-E             tools/offload-to-drive.sh:77  [external]  "external/oss"
-E             tools/offload-to-drive.sh:78  [external]  "external/ENGINEERING"
-E             tools/offload-to-drive.sh:79  [external]  "external/referencestochatgpt.tar.gz"
-E             tools/offload-to-drive.sh:80  [external]  "external/openai"
-E             tools/offload-to-drive.sh:81  [external]  "external/ComfyUI (1)"
-E             tools/offload-to-drive.sh:82  [external]  "external/ComfyUI-Installs"
-E             tools/offload-to-drive.sh:83  [external]  "external/Projects_Crypto"
-E             tools/offload-to-drive.sh:84  [external]  "external/Projects_Crypto.tar.gz"
-E             tools/offload-to-drive.sh:85  [external]  "external/symoneural"
-E             tools/offload-to-drive.sh:86  [external]  "external/TensorRT-LLM"
-E             tools/offload-to-drive.sh:87  [external]  "external/contrib"
-E             tools/offload-to-drive.sh:88  [external]  "external/ComfyUI-Shared"
-E             tools/offload-to-drive.sh:89  [external]  "external/IPTV"
+E             tools/data/offload-to-drive.sh:77  [external]  "external/oss"
+E             tools/data/offload-to-drive.sh:78  [external]  "external/ENGINEERING"
+E             tools/data/offload-to-drive.sh:79  [external]  "external/referencestochatgpt.tar.gz"
+E             tools/data/offload-to-drive.sh:80  [external]  "external/openai"
+E             tools/data/offload-to-drive.sh:81  [external]  "external/ComfyUI (1)"
+E             tools/data/offload-to-drive.sh:82  [external]  "external/ComfyUI-Installs"
+E             tools/data/offload-to-drive.sh:83  [external]  "external/Projects_Crypto"
+E             tools/data/offload-to-drive.sh:84  [external]  "external/Projects_Crypto.tar.gz"
+E             tools/data/offload-to-drive.sh:85  [external]  "external/symoneural"
+E             tools/data/offload-to-drive.sh:86  [external]  "external/TensorRT-LLM"
+E             tools/data/offload-to-drive.sh:87  [external]  "external/contrib"
+E             tools/data/offload-to-drive.sh:88  [external]  "external/ComfyUI-Shared"
+E             tools/data/offload-to-drive.sh:89  [external]  "external/IPTV"
 E
 E           Either replace the reference with first-party code or a reinstallable package dependency, or -- if it is genuinely build authority consuming a pinned upstream -- add it to EXEMPT_PREFIXES with its reason and record the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.
 E       KeyError: 'repository_head'
@@ -8785,7 +8785,7 @@ All four are mine, and each is a legitimate catch. Fixing:
   # ---- 3. the offload tool and the filter list name external/ by necessity
   p = pathlib.Path("backend/apps/test_no_external_source_dependency.py"); t = p.read_text()
   old = '''    "training/project-history/",             # the history CORPUS: recorded question and'''
-  new = '''    "tools/offload-to-drive.sh",             # its ENTIRE JOB is relocating external/ to
+  new = '''    "tools/data/offload-to-drive.sh",             # its ENTIRE JOB is relocating external/ to
                                                # Google Drive; naming the trees it moves is
                                                # the tool, not a dependency on them
       "restore/lib/models.py",                 # "external/" appears in a path-PREFIX FILTER
@@ -8854,7 +8854,7 @@ All 62 pass. Committing and running the final full suite:
   TWO DETECTORS FIRING ON RULES ABOUT THE PATH, NOT DEPENDENCIES ON IT
 
   restore/lib/home.py names ".claude" because its job is to record what HAPPENS to
-  .claude at the reset. tools/offload-to-drive.sh names external/ because relocating
+  .claude at the reset. tools/data/offload-to-drive.sh names external/ because relocating
   external/ is the entire tool. restore/lib/models.py has "external/" in a path-prefix
   FILTER that classifies a reference as DOCUMENTATION_ONLY.
 
@@ -8981,7 +8981,7 @@ Decisive result: external/ contains ZERO first-party-licensed files — 3.1 mill
     backend/apps/gateway/Cargo.toml
     .gitignore
     LICENSES.md
-    ops/symoneural-gateway.service
+    ops/units/symoneural-gateway.service
 
 ############ is that work already in Git history? ############
   patch touches 6 file(s)
@@ -9018,7 +9018,7 @@ All 6 files it touches are tracked in Git today — it's a 2026-08-26 working-tr
       16,424 bytes, 6 files touched, +175/-19
 
   It is a working-tree snapshot from 2026-08-26 touching `backend/server.py`,
-  `backend/apps/gateway/Cargo.{toml,lock}`, `ops/symoneural-gateway.service`, `.gitignore` and
+  `backend/apps/gateway/Cargo.{toml,lock}`, `ops/units/symoneural-gateway.service`, `.gitignore` and
   `LICENSES.md`. All six are tracked in Git today and have evolved since, so the patch is
   superseded by history rather than unique.
 
@@ -10337,7 +10337,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
   ## symoneural-web — the production HTTP/TLS runtime
 
       WEB_CLEAN_REBUILD            PASS
-      CANONICAL_BUILD_SCRIPT_RC    0     (ops/build-symoneural-web.sh)
+      CANONICAL_BUILD_SCRIPT_RC    0     (ops/deploy/build-symoneural-web.sh)
       WEB_GO_BUILD_RC              0     (plain go build, for comparison only)
       WEB_GO_VET_RC                0
       ARTIFACT_PRESENT             YES   76,206,670 bytes -- identical size to production
@@ -10350,7 +10350,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
       WEB_REPRODUCIBLE_BYTES       NO -- see below
 
   **The build authority was wrong in the registry and is now corrected.** It is
-  \`ops/build-symoneural-web.sh\`, not a plain \`go build\`. The script supplies the provenance
+  \`ops/deploy/build-symoneural-web.sh\`, not a plain \`go build\`. The script supplies the provenance
   contract: \`-trimpath\` plus \`-X main.version/gitCommit/gitDirty/buildID/licenseSHA/
   licensePath/noticesPath\`. Built the plain way, the binary honestly reports
   \`version=unknown, git commit=unknown, build id=unknown\` — verified by building it both ways.
@@ -10379,7 +10379,7 @@ Diffuse is at 80% of its CUDA objects. Writing the durable build evidence while 
   | \`build/go-modules.tsv\` | 22,902 | \`$(sha256sum "$R/web/symoneural-web/build/go-modules.tsv" | cut -c1-32)\` | module inventory |
   | \`build/build-manifest.json\` | 594 | \`$(sha256sum "$R/web/symoneural-web/build/build-manifest.json" | cut -c1-32)\` | the script's own record |
 
-  Generated by \`ops/build-symoneural-web.sh\` at source revision
+  Generated by \`ops/deploy/build-symoneural-web.sh\` at source revision
   \`f0a3fcf7f5cf5a7697c9bc1846bc06d7b390cf1a\`.
 
   ### Classification
@@ -10598,7 +10598,7 @@ DIFFUSE_EXIT=0
 
   ```text
   FIRST_PARTY_APPLICATION_SOURCE=YES
-  CANONICAL_BUILD_AUTHORITY=ops/build-symoneural-web.sh
+  CANONICAL_BUILD_AUTHORITY=ops/deploy/build-symoneural-web.sh
 
   GO=1.25.1
   CANONICAL_BUILD_RC=0
@@ -10714,7 +10714,7 @@ DIFFUSE_EXIT=0
   ```text
   symoneural-web
     source_root=web/symoneural-web
-    build_authority=ops/build-symoneural-web.sh
+    build_authority=ops/deploy/build-symoneural-web.sh
     Go >=1.25.1
     go.mod/go.sum
     Caddy package dependency
@@ -10997,7 +10997,7 @@ Production has the same absolute CUDA RUNPATH, so it's by design rather than a r
   t = t.replace(old, new, 1)
 
   evidence = {
-      "symoneural-web": ("PASS (ops/build-symoneural-web.sh rc=0, go vet rc=0)",
+      "symoneural-web": ("PASS (ops/deploy/build-symoneural-web.sh rc=0, go vet rc=0)",
                          "NO -- binary embeds its own git commit and build id"),
       "symoneural-gateway": ("PASS (cargo build --release --locked rc=0 from an empty target/; "
                              "cargo test rc=0 but RUST_TEST_COUNT=0, which is a passing "
@@ -11046,7 +11046,7 @@ Production has the same absolute CUDA RUNPATH, so it's by design rather than a r
   p.write_text(t)
   print("generate.py: BUILD-RECIPES carries the measured rebuild outcome")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "regenerated"
   echo
   awk -F'\t' 'NR==1{next} $21!="-" {printf "  %-22s %s\n     bytes: %s\n",$1,substr($21,1,86),substr($22,1,76)}' restore/manifests/BUILD-RECIPES.tsv)
 registry.py: clean_rebuild + reproducible_bytes recorded from measurement
@@ -11123,7 +11123,7 @@ My awk indices were off by the two new columns. Reading by header name instead o
                          REPRODUCIBLE  = NO -- +20,480 bytes, explained by the embedded git-describe version string the b
   symoneural-listen      CLEAN_REBUILD = PASS (fork_engines.sh listen rc=0 from reacquired whisper.cpp)
                          REPRODUCIBLE  = YES -- sha256 identical to the production artefact
-  symoneural-web         CLEAN_REBUILD = PASS (ops/build-symoneural-web.sh rc=0, go vet rc=0)
+  symoneural-web         CLEAN_REBUILD = PASS (ops/deploy/build-symoneural-web.sh rc=0, go vet rc=0)
                          REPRODUCIBLE  = NO -- binary embeds its own git commit and build id
   symoneural-gateway     CLEAN_REBUILD = PASS (cargo build --release --locked rc=0 from an empty target/; cargo test rc=0 but RUST_TEST_C
                          REPRODUCIBLE  = NO -- identical size, arch and 4 NEEDED, but sha differs
@@ -11176,7 +11176,7 @@ The freshness test failing is correct — the manifests changed and aren't commi
   p.write_text(t.replace(old, new, 1))
   print("deps.py: Caddy and the Go toolchain requirement recorded")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   awk -F'\t' 'NR==1{next} $5=="GO_MODULE"||$5=="TOOLCHAIN"&&$1=="dep-go-toolchain" {printf "  %-38s %s\n     %s\n",$2,$3,substr($13,1,100)}' restore/manifests/DEPENDENCIES.tsv
   echo
   git add -A restore backend/apps FIRST-PARTY-CLOSURE.tsv THIRD-PARTY-REBUILD-MANIFEST.tsv
@@ -11238,7 +11238,7 @@ go --version isn't valid Go syntax (it's go version), so my probe returned UNMEA
   p.write_text(t)
   print("deps.py: go/cargo/rustc added to the platform table")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   awk -F'\t' 'NR==1{next} $5=="TOOLCHAIN"||$5=="GO_MODULE" {printf "  %-38s %s\n",$2,substr($3,1,60)}' restore/manifests/DEPENDENCIES.tsv)
 measure.py: go/cargo/rustc probes added
   go       go version go1.24.4 linux/amd64
@@ -11283,7 +11283,7 @@ All toolchains now measured. Committing this round, then running the full suite:
     component, symoneural-site.
 
     Its build authority was recorded as a plain `go build`. It is
-    ops/build-symoneural-web.sh, which supplies -trimpath and the -X stamps for
+    ops/deploy/build-symoneural-web.sh, which supplies -trimpath and the -X stamps for
     version, git commit, build id and licence sha. Built the plain way the binary
     honestly reports version=unknown -- verified by building it both ways. main.go
     says why: "a binary built outside the recorded procedure should SAY it has no
@@ -11780,7 +11780,7 @@ All three diagnosed, and one is genuinely instructive. Looking at each:
 
 ● Bash(cd /home/google/Symoneural
   echo "############ 1. which new file counts parents? ############"
-  grep -n 'parent' restore/lib/*.py restore/symoneural-restore tools/build_restore_manifests.py tools/build_recovery_root.py tools/build_private_state.py tools/build_dependency_locks.py 2>/dev/null | grep -vE 'for cand in|start.parents|p.parents|\.parents\)' | head -10
+  grep -n 'parent' restore/lib/*.py restore/symoneural-restore tools/build/build_restore_manifests.py tools/build/build_recovery_root.py tools/build/build_private_state.py tools/build/build_dependency_locks.py 2>/dev/null | grep -vE 'for cand in|start.parents|p.parents|\.parents\)' | head -10
   echo
   echo "############ 2. how does test_references_boundary exempt files? ############"
   grep -nE 'EXEMPT|SKIP|ALLOW|exempt' backend/apps/test_references_boundary.py | head -12
@@ -11788,16 +11788,16 @@ All three diagnosed, and one is genuinely instructive. Looking at each:
   echo "############ 3. where is the other component map? ############"
   grep -rn 'archive/from-desktop/symoneural-buildv2' --include='*.py' --include='*.json' --include='*.md' . 2>/dev/null | grep -v '^./external' | head -6)
 ############ 1. which new file counts parents? ############
-tools/build_private_state.py:52:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
-tools/build_private_state.py:82:    p.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:90:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:91:    os.chmod(dst.parent, 0o700)
-tools/build_private_state.py:113:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:114:    os.chmod(dst.parent, 0o700)
-tools/build_private_state.py:124:    dst.parent.mkdir(parents=True, exist_ok=True)
-tools/build_private_state.py:125:    os.chmod(dst.parent, 0o700)
-tools/build_restore_manifests.py:29:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
-tools/build_recovery_root.py:58:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_private_state.py:52:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_private_state.py:82:    p.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:90:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:91:    os.chmod(dst.parent, 0o700)
+tools/build/build_private_state.py:113:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:114:    os.chmod(dst.parent, 0o700)
+tools/build/build_private_state.py:124:    dst.parent.mkdir(parents=True, exist_ok=True)
+tools/build/build_private_state.py:125:    os.chmod(dst.parent, 0o700)
+tools/build/build_restore_manifests.py:29:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
+tools/build/build_recovery_root.py:58:ROOT = find_root(pathlib.Path(__file__).resolve().parent)
 
 ############ 2. how does test_references_boundary exempt files? ############
 21:through by requiring a path separator and a quote-ish context, and why the exemptions below
@@ -11857,7 +11857,7 @@ ALLOWED = {
     # does not match. That is a punctuation accident, not a decision, and it would have broken
     # the moment an upstream source sat one directory deeper -- which is exactly what happened
     # when the ASR engine's source turned out to live under a differently-named parent.
-    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
 }
 
 #: A path into a third-party working tree, in either spelling. `\b` on the left so that
@@ -12023,9 +12023,9 @@ Confirmed — restore/lib/generate.py:27 uses .parent to reach a root, and the r
 
   # ---- 2. references boundary: exempt the detector's own fixtures, narrowly
   p = pathlib.Path("backend/apps/test_references_boundary.py"); t = p.read_text()
-  old = '''    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+  old = '''    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
   }'''
-  new = '''    "tools/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
+  new = '''    "tools/sh/fork_engines.sh": "takes external/ as build input, writes engines/ as output",
       # The external-source DETECTOR's own fixtures. Its
       # test_the_detector_catches_split_form_construction asserts that a real dependency is
       # recognised, and a fixture proving that has to LOOK like the thing being detected --
@@ -12115,7 +12115,7 @@ All 14 pass. Now correction 3 — the release-HEAD semantics, replacing the circ
   new2 = '''        "git_bundle_path": ".private/git-backup/Symoneural-all.bundle",
           # NOT the hash itself. The bundle is regenerated AFTER the commit that carries this
           # file, so any value inlined here is stale the moment it is true. The sidecar is
-          # written beside the bundle by tools/build_recovery_root.py and is the authority.
+          # written beside the bundle by tools/build/build_recovery_root.py and is the authority.
           "git_bundle_sha256_sidecar":
               ".private/git-backup/Symoneural-all.bundle.sha256",
           "source_closure_status": source_closure_status(),
@@ -12173,7 +12173,7 @@ All 14 pass. Now correction 3 — the release-HEAD semantics, replacing the circ
   p.write_text(t)
   print("generate.py: three-head semantics + the missing Target 25 fields")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null 2>&1 || python3 tools/build_restore_manifests.py 2>&1 | tail -5)
+  python3 tools/build/build_restore_manifests.py >/dev/null 2>&1 || python3 tools/build/build_restore_manifests.py 2>&1 | tail -5)
 generate.py: three-head semantics + the missing Target 25 fields
 
 ● Bash(cd /home/google/Symoneural
@@ -12186,7 +12186,7 @@ generate.py: three-head semantics + the missing Target 25 fields
   } > run/SUITE-LAST.txt
   cat run/SUITE-LAST.txt | sed 's/^/  /'
   echo
-  python3 tools/build_restore_manifests.py > /dev/null
+  python3 tools/build/build_restore_manifests.py > /dev/null
   python3 -c "
   import json
   d=json.load(open('restore/RELEASE.json'))
@@ -12539,7 +12539,7 @@ def gen_models(write_tsv) -> int:
                 '"NO", "classified per file -- see restore/manifests/MODELS.tsv",')
   p.write_text(t)
   PY
-  python3 tools/build_restore_manifests.py 2>&1 | tail -3
+  python3 tools/build/build_restore_manifests.py 2>&1 | tail -3
   echo
   echo "############ MODELS.tsv ############"
   awk -F'\t' 'NR==1{next}{printf "  %-46s %-22s %8.2f GB  %s\n",substr($2,1,46),$3,$4/1073741824,substr($12,1,44)}' restore/manifests/MODELS.tsv
@@ -13744,7 +13744,7 @@ Every body confirmed by measurement: chat, image and sigils/render all take prom
   p.write_text(t)
   print("registry.py: all 14 smokes rewritten against measured routes")
   PYEOF
-  python3 tools/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
   ./restore/symoneural-restore verify | tail -3)
 registry.py: all 14 smokes rewritten against measured routes
 manifests regenerated
@@ -13802,7 +13802,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
 
   THE FINDING THAT SHAPED IT
 
-  tools/fork_engines.sh builds the three engines behind chat, image and ASR out of
+  tools/sh/fork_engines.sh builds the three engines behind chat, image and ASR out of
   external/referencestochatgpt/ -- 149 GB the owner does not want to carry. That is a
   real, load-bearing dependency and claiming otherwise to make a gate go green would
   be a lie the next restore would discover.
@@ -13811,7 +13811,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
   public remote at a pinned revision, verified against the checkout while the
   checkout is still here to verify against. 149 GB of source custody collapses into
   five URLs and five forty-hex strings. THIRD-PARTY-REBUILD-MANIFEST.tsv carries the
-  pins; tools/restore-upstream.sh fetches them and refuses on a mismatch.
+  pins; tools/sh/restore-upstream.sh fetches them and refuses on a mismatch.
 
   kawpowminer is the exception that proves the rule: three uncommitted local edits,
   including a real #include <cstdint> fix for gcc 13+. A revision pin cannot restore
@@ -13841,7 +13841,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
     * the state table named run/accounts.db and run/api.env. Neither exists.
     * the first-party source bundle for the API was 97% vendored Anthropic and
       OpenAI SDK -- 15,704 files, now 407.
-    * symoneural-ui was recorded as having no rebuild path. tools/fork_render_ui.sh
+    * symoneural-ui was recorded as having no rebuild path. tools/sh/fork_render_ui.sh
       builds it. Buildable and disabled are different facts; both are now recorded.
 
   A PRODUCTION FINDING, NOT FIXED HERE
@@ -13866,7 +13866,7 @@ committed: 3d8fb76f
 
                 "the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.")
 E           AssertionError: 1 production reference(s) to a tree that will not survive the reset:
-E             tools/build_recovery_root.py:256  [external]  VENDOR = ("backend/vendor/", "external/", "/node_modules/", "/.venv/",
+E             tools/build/build_recovery_root.py:256  [external]  VENDOR = ("backend/vendor/", "external/", "/node_modules/", "/.venv/",
 E
 E           Either replace the reference with first-party code or a reinstallable package dependency, or -- if it is genuinely build authority consuming a pinned upstream -- add it to EXEMPT_PREFIXES with its reason and record the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.
 
@@ -13883,7 +13883,7 @@ I committed with three tests red — I ran the commit and the tests in the same 
 ● Bash(cd /home/google/Symoneural
   S=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
   for f in restore/manifests/*.tsv restore/RELEASE.json; do cp "$f" "$S/$(basename $f).b"; done
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo "############ idempotence diff ############"
   for f in restore/manifests/*.tsv restore/RELEASE.json; do
     b=$(basename "$f")
@@ -13939,7 +13939,7 @@ The manifests are stable; only RELEASE.json's created_at moves. Two consequences
   # 2. An exclusion list is a protection rule, not a dependency -- the archive-guard case.
   p = pathlib.Path("backend/apps/test_no_external_source_dependency.py"); t = p.read_text()
   t = t.replace('''    "training/project-history/",             # the history CORPUS: recorded question and''',
-  '''    "tools/build_recovery_root.py",          # its "external/" is an EXCLUSION list -- the
+  '''    "tools/build/build_recovery_root.py",          # its "external/" is an EXCLUSION list -- the
                                                # rule that keeps vendored trees OUT of a
                                                # first-party source bundle. Deleting it
                                                # because the detector fired would put
@@ -13948,11 +13948,11 @@ The manifests are stable; only RELEASE.json's created_at moves. Two consequences
   p.write_text(t)
   print("detector: exclusion list exempted as a protection rule")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo
   echo "############ RELEASE.json now stable across two runs? ############"
   sha1=$(sha256sum restore/RELEASE.json | cut -c1-16)
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   sha2=$(sha256sum restore/RELEASE.json | cut -c1-16)
   printf '  run1=%s run2=%s  %s\n' "$sha1" "$sha2" "$([ "$sha1" = "$sha2" ] && echo IDENTICAL || echo DIFFERS)")
 generate.py: RELEASE.json created_at is now the HEAD commit date
@@ -14254,7 +14254,7 @@ Move complete at zero cost, evidence ZIP identical and still 0600, and MANIFEST.
   p.write_text(t)
   print("registry.py: buildv2 notes updated to the measured consolidation")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "manifests regenerated")
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "manifests regenerated")
 ############ full MANIFEST.sha256 verification ############
   entries: 141
   OK:      141
@@ -14305,7 +14305,7 @@ manifests regenerated
 
   THE FINDING THAT SHAPED IT
 
-  tools/fork_engines.sh builds the three engines behind chat, image and ASR out of
+  tools/sh/fork_engines.sh builds the three engines behind chat, image and ASR out of
   external/referencestochatgpt/ -- 149 GB the owner does not want to carry. That is a
   real, load-bearing dependency and claiming otherwise to make a gate go green would
   be a lie the next restore would discover.
@@ -14314,7 +14314,7 @@ manifests regenerated
   public remote at a pinned revision, verified against the checkout while the
   checkout is still here to verify against. 149 GB of source custody collapses into
   five URLs and five forty-hex strings. THIRD-PARTY-REBUILD-MANIFEST.tsv carries the
-  pins; tools/restore-upstream.sh fetches them and refuses on a mismatch.
+  pins; tools/sh/restore-upstream.sh fetches them and refuses on a mismatch.
 
   kawpowminer is the exception that proves the rule: three uncommitted local edits,
   including a real #include <cstdint> fix for gcc 13+. A revision pin cannot restore
@@ -14343,7 +14343,7 @@ manifests regenerated
       stores are a directory deeper and two had a live writer attached.
     * the API source bundle was 97% vendored Anthropic and OpenAI SDK -- 15,704
       files, now 407.
-    * symoneural-ui was recorded as having no rebuild path. tools/fork_render_ui.sh
+    * symoneural-ui was recorded as having no rebuild path. tools/sh/fork_render_ui.sh
       builds it. Buildable and disabled are different facts; both are now recorded.
     * RELEASE.json stamped a wall clock, so every regeneration dirtied the tree. It
       is now the commit date of repository_head -- a function of the release, not of
@@ -14485,7 +14485,7 @@ A genuine circularity, and I've hit this exact class before: a generated file ca
                       strip_rev((MANIFESTS / name).read_text()),
                       f"{name} in HEAD differs from what the registry generates now "
                       f"(revision columns excluded). Regenerate and commit: "
-                      f"python3 tools/build_restore_manifests.py")'''
+                      f"python3 tools/build/build_restore_manifests.py")'''
 
   assert old in t, "Idempotent class not found"
   p.write_text(t.replace(old, new))
@@ -14607,7 +14607,7 @@ Shell cwd was reset to /home/google
 The bundle is at ec5e6d2f — it predates the restore commits, so it doesn't contain the control plane. That's a real staleness finding: the bundle must be regenerated at the final HEAD or the restore plan isn't in the backup. Regenerating and redoing the rehearsal properly:
 
 ● Bash(cd /home/google/Symoneural
-  python3 tools/build_recovery_root.py --release r20260908 --only git-bundle 2>&1 | tail -12
+  python3 tools/build/build_recovery_root.py --release r20260908 --only git-bundle 2>&1 | tail -12
   echo
   R=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal
   rm -rf "$R"; mkdir -p "$R"
@@ -14652,7 +14652,7 @@ Bundle regenerated at the current HEAD, git fsck PASS, bundle verify okay, 31 re
   ./restore/symoneural-restore dependencies --check 2>&1 | tail -6
   echo
   echo "############ 6. upstream reacquisition: what does the clone know? ############"
-  tools/restore-upstream.sh --check 2>&1; echo "  exit=$? (non-zero expected: MIT trees absent here)")
+  tools/sh/restore-upstream.sh --check 2>&1; echo "  exit=$? (non-zero expected: MIT trees absent here)")
 ############ 4. does the restore plane run from a bare clone? ############
   OK referential integrity across 18 components, 15 applications, 14 smokes
   OK restore order is acyclic with satisfied prerequisites (12 steps)
@@ -14686,7 +14686,7 @@ The rehearsal proves the mechanism: from a bundle-only clone with no external/, 
 ● Bash(R=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal/Symoneural
   cd "$R"
   echo "############ 7. REACQUIRE a pinned upstream from the public remote ############"
-  timeout 900 tools/restore-upstream.sh whisper.cpp 2>&1 | tail -20
+  timeout 900 tools/sh/restore-upstream.sh whisper.cpp 2>&1 | tail -20
   echo "  exit=$?"
   echo
   echo "############ 8. did it land at the pinned revision? ############"
@@ -14708,7 +14708,7 @@ The rehearsal proves the mechanism: from a bundle-only clone with no external/, 
     cloning
     verified at 1fe009caeda75f69bc864d6370b10674e45a92bd
 
-Now build:  tools/fork_engines.sh <llm|diffuse|listen>
+Now build:  tools/sh/fork_engines.sh <llm|diffuse|listen>
   exit=0
 
 ############ 8. did it land at the pinned revision? ############
@@ -14727,7 +14727,7 @@ Now the strongest available evidence: an actual clean rebuild from reacquired so
 
 ● Bash(R=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal/Symoneural
   cd "$R"
-  nohup bash -c 'tools/fork_engines.sh listen > /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal-build.log 2>&1; echo "EXIT=$?" >> /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal-build.log' >/dev/null 2>&1 &
+  nohup bash -c 'tools/sh/fork_engines.sh listen > /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal-build.log 2>&1; echo "EXIT=$?" >> /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal-build.log' >/dev/null 2>&1 &
   echo "  started clean rebuild of symoneural-listen in the rehearsal clone (pid $!)"
   sleep 20
   echo
@@ -14824,7 +14824,7 @@ cannot tell the difference.
 ```
 restore/lib/registry.py   ─┐
    judgements                │
-                             ├──►  tools/build_restore_manifests.py  ──►  restore/manifests/*.tsv
+                             ├──►  tools/build/build_restore_manifests.py  ──►  restore/manifests/*.tsv
 restore/lib/measure.py    ─┘                                              restore/RELEASE.json
    measurements                                                           FIRST-PARTY-CLOSURE.tsv
                                                                           THIRD-PARTY-REBUILD-MANIFEST.tsv
@@ -14874,7 +14874,7 @@ environment would make the file wrong.
 **`external/` is 149 GB and is not in the backup, but three production engines are built out
 of it.** That is not a contradiction and it is not hidden.
 
-`tools/fork_engines.sh` builds `symoneural-llm`, `symoneural-diffuse` and `symoneural-listen`
+`tools/sh/fork_engines.sh` builds `symoneural-llm`, `symoneural-diffuse` and `symoneural-listen`
 from upstream source in `external/referencestochatgpt/`. It is a real, load-bearing
 build-time dependency. Claiming otherwise to make a gate go green would be a lie the next
 restore would discover.
@@ -14885,8 +14885,8 @@ still there to verify against. So the dependency is on an *upstream*, which is r
 not on a *local directory*, which is not:
 
 ```bash
-tools/restore-upstream.sh --check     # what is here, what is missing, at which revision
-tools/restore-upstream.sh all         # fetch the three MIT engines at their exact pins
+tools/sh/restore-upstream.sh --check     # what is here, what is missing, at which revision
+tools/sh/restore-upstream.sh all         # fetch the three MIT engines at their exact pins
 ```
 
 This was rehearsed, not assumed. A clone taken from the Git bundle alone — no `external/`,
@@ -14922,7 +14922,7 @@ No component is called first-party because it was renamed. The classification is
 | `symoneural-adaptive-fabric` | `DECLARED_NOT_IMPLEMENTED` | README and LICENCE, no code. The plan must not appear to restore something that was never built. |
 | the rest | `FIRST_PARTY` | ours |
 
-`tools/fork_engines.sh` already refuses to stamp the SyMoNeuRaL licence on a copyleft
+`tools/sh/fork_engines.sh` already refuses to stamp the SyMoNeuRaL licence on a copyleft
 upstream. Nothing here may undo that refusal by writing a friendlier word in a column.
 
 ---
@@ -14930,8 +14930,8 @@ upstream. Nothing here may undo that refusal by writing a friendlier word in a c
 ## Regenerating
 
 ```bash
-python3 tools/build_restore_manifests.py     # then run it AGAIN and diff
-python3 tools/build_dependency_locks.py      # or --check
+python3 tools/build/build_restore_manifests.py     # then run it AGAIN and diff
+python3 tools/build/build_dependency_locks.py      # or --check
 cd backend && python3 -m pytest apps/test_restore_manifests.py \
                                 apps/test_no_external_source_dependency.py -q
 ```
@@ -15099,7 +15099,7 @@ That is the strongest form this gate can take. Recording it as durable evidence:
 
   ## The reacquisition, performed for real
 
-  \`whisper.cpp\` was fetched from its public remote by \`tools/restore-upstream.sh\` and landed
+  \`whisper.cpp\` was fetched from its public remote by \`tools/sh/restore-upstream.sh\` and landed
   at the pinned revision:
 
       expected  1fe009caeda75f69bc864d6370b10674e45a92bd
@@ -15111,7 +15111,7 @@ That is the strongest form this gate can take. Recording it as durable evidence:
 
   ## The clean rebuild
 
-  \`tools/fork_engines.sh listen\` was run inside the clone against the reacquired source.
+  \`tools/sh/fork_engines.sh listen\` was run inside the clone against the reacquired source.
 
       exit status          0
       artefact             symoneural-listen/build/bin/symoneural-listen
@@ -15353,8 +15353,8 @@ Another stray character slipped into a docstring — fixing it, plus the caddy u
 
   # 3. symoneural-ui claims a rebuild path it does not have: there is no fork_ui() in
   #    fork_engines.sh, so "buildable" must not read YES off the presence of a revision pin.
-  t = t.replace('''        build_authority="manual fork; NOT built by tools/fork_engines.sh",''',
-  '''        build_authority="NONE -- there is no fork_ui() in tools/fork_engines.sh",''')
+  t = t.replace('''        build_authority="manual fork; NOT built by tools/sh/fork_engines.sh",''',
+  '''        build_authority="NONE -- there is no fork_ui() in tools/sh/fork_engines.sh",''')
   p.write_text(t)
   print("registry.py: added Service.unit_name, pinned caddy.service, corrected UI build authority")
 
@@ -15374,7 +15374,7 @@ Another stray character slipped into a docstring — fixing it, plus the caddy u
               # A revision pin alone does not make a tree buildable. symoneural-ui is pinned
               # and has NO scripted build path -- no fork_ui() exists -- so reading YES off
               # the pin would promise a rebuild that nothing can perform.
-              scripted = c.build_authority.startswith("tools/fork_engines.sh")
+              scripted = c.build_authority.startswith("tools/sh/fork_engines.sh")
               if c.upstream_rev == NUL:
                   buildable = "NO (no upstream pin)"
               elif not scripted:
@@ -16421,9 +16421,9 @@ Python 3.13.5
 
 Seven Python environments: the serving system interpreter (196 distributions) plus six per-application venvs. Writing a tracked generator that produces a pinned lock for each — so a restore reconstructs every environment from a lock rather than from an archived venv.
 
-● Write(/home/google/Symoneural/tools/build_dependency_locks.py)
+● Write(/home/google/Symoneural/tools/build/build_dependency_locks.py)
 
-Wrote 197 lines to /home/google/Symoneural/tools/build_dependency_locks.py
+Wrote 197 lines to /home/google/Symoneural/tools/build/build_dependency_locks.py
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -16459,8 +16459,8 @@ pin is decoration. `pip install --require-hashes` would reject the file anyway u
 transitive dependency carried one. Where hashes exist they come from the package manager, and
 the manifest says which manager -- rather than this tool inventing a column it cannot fill.
 
-    python3 tools/build_dependency_locks.py            # write the locks
-    python3 tools/build_dependency_locks.py --check    # fail if any lock is out of date
+    python3 tools/build/build_dependency_locks.py            # write the locks
+    python3 tools/build/build_dependency_locks.py --check    # fail if any lock is out of date
 """
 from __future__ import annotations
 
@@ -16483,12 +16483,12 @@ OUT = ROOT / "restore" / "locks"
 # (lock name, interpreter, what this environment is for).
 #
 # The serving interpreter is FIRST and is the one that matters most: it is what
-# `ops/symoneural-api.service` execs, measured from the running unit as
+# `ops/units/symoneural-api.service` execs, measured from the running unit as
 # `/usr/bin/python3 /home/google/Symoneural/backend/server.py`.
 ENVIRONMENTS: list[tuple[str, str, str]] = [
     ("serving-system", "/usr/bin/python3",
      "The API. Debian system interpreter, deliberately not a virtualenv -- "
-     "ops/symoneural-api.service execs it directly."),
+     "ops/units/symoneural-api.service execs it directly."),
     ("training", "training/.venv/bin/python3",
      "LoRA training and evaluation (torch, transformers, peft, trl, datasets)."),
     ("sigils", "backend/apps/sigils/.venv/bin/python3", "The Sigils render path."),
@@ -16550,7 +16550,7 @@ def render(name: str, interp: str, purpose: str, version: str, pins: list[str]) 
         f"# Distributions: {len(pins)}\n"
         f"# Measured    : {stamp} at HEAD {head}\n"
         f"#\n"
-        f"# GENERATED by tools/build_dependency_locks.py -- do not hand-edit. This is a\n"
+        f"# GENERATED by tools/build/build_dependency_locks.py -- do not hand-edit. This is a\n"
         f"# reading of an environment, not a wish list: every line was read from the\n"
         f"# interpreter above with importlib.metadata, not copied from another file.\n"
         f"#\n"
@@ -16606,7 +16606,7 @@ def main(argv: list[str]) -> int:
     if check:
         if stale:
             print(f"\nSTALE: {', '.join(stale)}")
-            print("Run: python3 tools/build_dependency_locks.py")
+            print("Run: python3 tools/build/build_dependency_locks.py")
             return 1
         print("\nall locks match their environments")
         return 0
@@ -16624,10 +16624,10 @@ if __name__ == "__main__":
 
  Bash(cd /home/google/Symoneural
   echo "############ generating dependency locks ############"
-  python3 tools/build_dependency_locks.py
+  python3 tools/build/build_dependency_locks.py
   echo
   echo "############ idempotence: --check immediately after ############"
-  python3 tools/build_dependency_locks.py --check
+  python3 tools/build/build_dependency_locks.py --check
   echo
   echo "############ serving lock head ############"
   sed -n '1,20p' restore/locks/serving-system.lock.txt
@@ -16658,14 +16658,14 @@ all locks match their environments
 ############ serving lock head ############
 # SyMoNeuRaL dependency lock -- serving-system
 #
-# The API. Debian system interpreter, deliberately not a virtualenv -- ops/symoneural-api.service execs it directly.
+# The API. Debian system interpreter, deliberately not a virtualenv -- ops/units/symoneural-api.service execs it directly.
 #
 # Interpreter : /usr/bin/python3
 # Python      : 3.13.5
 # Distributions: 196
 # Measured    : 2026-09-08T18:29:20-04:00 at HEAD ec5e6d2f
 #
-# GENERATED by tools/build_dependency_locks.py -- do not hand-edit. This is a
+# GENERATED by tools/build/build_dependency_locks.py -- do not hand-edit. This is a
 # reading of an environment, not a wish list: every line was read from the
 # interpreter above with importlib.metadata, not copied from another file.
 #
@@ -16688,14 +16688,14 @@ all locks match their environments
 ############ serving lock head ############
 # SyMoNeuRaL dependency lock -- serving-system
 #
-# The API. Debian system interpreter, deliberately not a virtualenv -- ops/symoneural-api.service execs it directly.
+# The API. Debian system interpreter, deliberately not a virtualenv -- ops/units/symoneural-api.service execs it directly.
 #
 # Interpreter : /usr/bin/python3
 # Python      : 3.13.5
 # Distributions: 196
 # Measured    : 2026-09-08T18:29:20-04:00 at HEAD ec5e6d2f
 #
-# GENERATED by tools/build_dependency_locks.py -- do not hand-edit. This is a
+# GENERATED by tools/build/build_dependency_locks.py -- do not hand-edit. This is a
 # reading of an environment, not a wish list: every line was read from the
 # interpreter above with importlib.metadata, not copied from another file.
 #
@@ -16745,7 +16745,7 @@ useless `UNKNOWN` that setuptools writes by default. Where neither exists the ce
 would put a legal claim in a manifest on the strength of a base rate.
 
 **Per-package rows for the serving environment only.** The serving interpreter is what
-`ops/symoneural-api.service` execs, so its 196 distributions each get a row. The six
+`ops/units/symoneural-api.service` execs, so its 196 distributions each get a row. The six
 per-application venvs get one row each pointing at their lock file, because 594 rows whose
 licence column was filled by the same weak inference would look like more diligence and be
 less. The locks carry the exact pins either way, and `REINSTALL_METHOD` names them.
@@ -16780,14 +16780,14 @@ PLATFORM: list[tuple[str, str, str, str, str, str]] = [
     ("dep-node", "Node.js", "node", "nodejs", "BUILD_TOOL", "frontend,tests"),
     ("dep-npm", "npm", "npm", "npm", "BUILD_TOOL", "frontend,tests"),
     ("dep-rsync", "rsync", "rsync", "rsync", "BUILD_TOOL",
-     "tools/fork_engines.sh, restore-state"),
+     "tools/sh/fork_engines.sh, restore-state"),
     ("dep-sqlite", "SQLite CLI", "sqlite3", "sqlite3", "RUNTIME",
      "accounts-db consistent backup and integrity_check"),
     ("dep-nvcc", "CUDA toolkit", "nvcc", "cuda-toolkit (NVIDIA repository)",
      "PLATFORM_RUNTIME",
      "symoneural-llm,symoneural-diffuse,symoneural-listen,symoneural-miner"),
     ("dep-ccache", "ccache", "ccache", "ccache", "BUILD_TOOL",
-     "tools/fork_engines.sh (optional; makes an unchanged rebuild cheap)"),
+     "tools/sh/fork_engines.sh (optional; makes an unchanged rebuild cheap)"),
     ("dep-ninja", "Ninja", "ninja", "ninja-build", "BUILD_TOOL", "optional cmake generator"),
 ]
 
@@ -17390,9 +17390,9 @@ Now creating the private recovery root and the state-backup tool that honours th
 
 Now creating the private recovery root and the state-backup tool that honours the consistency method per store.
 
-● Write(/home/google/Symoneural/tools/build_private_state.py)
+● Write(/home/google/Symoneural/tools/build/build_private_state.py)
 
-Wrote 226 lines to /home/google/Symoneural/tools/build_private_state.py
+Wrote 226 lines to /home/google/Symoneural/tools/build/build_private_state.py
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -17421,8 +17421,8 @@ session databases, an env file and the owner's private ledgers. The archive that
 carries them is 0600 too. The one thing this script will not do is widen a mode to make a
 copy easier.
 
-    python3 tools/build_private_state.py --release r20260908 --dry-run
-    python3 tools/build_private_state.py --release r20260908
+    python3 tools/build/build_private_state.py --release r20260908 --dry-run
+    python3 tools/build/build_private_state.py --release r20260908
 """
 from __future__ import annotations
 
@@ -17623,7 +17623,7 @@ if __name__ == "__main__":
 
 ● Bash(cd /home/google/Symoneural
   echo "############ DRY RUN first ############"
-  python3 tools/build_private_state.py --release r20260908 --dry-run 2>&1 | head -30)
+  python3 tools/build/build_private_state.py --release r20260908 --dry-run 2>&1 | head -30)
 ############ DRY RUN first ############
 store                method             status             detail
 ----------------------------------------------------------------------------------------
@@ -17848,9 +17848,9 @@ registry.py: STATE_STORES rewritten from measurement (11 rows)
 
 Now creating the private recovery root and the state-backup tool that honours the consistency method per store.
 
-● Write(/home/google/Symoneural/tools/build_private_state.py)
+● Write(/home/google/Symoneural/tools/build/build_private_state.py)
 
-Wrote 226 lines to /home/google/Symoneural/tools/build_private_state.py
+Wrote 226 lines to /home/google/Symoneural/tools/build/build_private_state.py
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -17879,8 +17879,8 @@ session databases, an env file and the owner's private ledgers. The archive that
 carries them is 0600 too. The one thing this script will not do is widen a mode to make a
 copy easier.
 
-    python3 tools/build_private_state.py --release r20260908 --dry-run
-    python3 tools/build_private_state.py --release r20260908
+    python3 tools/build/build_private_state.py --release r20260908 --dry-run
+    python3 tools/build/build_private_state.py --release r20260908
 """
 from __future__ import annotations
 
@@ -18081,7 +18081,7 @@ if __name__ == "__main__":
 
 ● Bash(cd /home/google/Symoneural
   echo "############ DRY RUN first ############"
-  python3 tools/build_private_state.py --release r20260908 --dry-run 2>&1 | head -30)
+  python3 tools/build/build_private_state.py --release r20260908 --dry-run 2>&1 | head -30)
 ############ DRY RUN first ############
 store                method             status             detail
 ----------------------------------------------------------------------------------------
@@ -18155,7 +18155,7 @@ What genuinely needs a private copy is only what needs a transform: the SQLite d
 
   python3 - <<'PY'
   import pathlib
-  p = pathlib.Path("tools/build_private_state.py"); t = p.read_text()
+  p = pathlib.Path("tools/build/build_private_state.py"); t = p.read_text()
   old = '''            if a.skip_large and s.state_id in ("models", "training-adapters"):
                   results.append({"path": rel, "status": "SKIPPED (--skip-large)"})
                   continue'''
@@ -18190,7 +18190,7 @@ What genuinely needs a private copy is only what needs a transform: the SQLite d
   PY
   echo
   echo "############ REAL RUN ############"
-  python3 tools/build_private_state.py --release r20260908)
+  python3 tools/build/build_private_state.py --release r20260908)
 registry.py: backup_policy added
 build_private_state.py: CARRIED_IN_ARCHIVE policy honoured
 
@@ -18216,9 +18216,9 @@ all stores backed up and verified
 
 All four SQLite databases produced consistent images that pass PRAGMA integrity_check = ok — proved by opening them, not by hashing them. Now the rest of the private recovery root: upstream patches, host snapshot, git bundle, source bundles and verified runtime artefacts.
 
-● Write(/home/google/Symoneural/tools/build_recovery_root.py)
+● Write(/home/google/Symoneural/tools/build/build_recovery_root.py)
 
-Wrote 403 lines to /home/google/Symoneural/tools/build_recovery_root.py
+Wrote 403 lines to /home/google/Symoneural/tools/build/build_recovery_root.py
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -18253,8 +18253,8 @@ inode: the original is untouched, no space is consumed, and GNU tar stores the s
 as a link rather than a second copy. If the link cannot be made the script COPIES and says
 so, rather than silently doing something else.
 
-    python3 tools/build_recovery_root.py --release r20260908 --dry-run
-    python3 tools/build_recovery_root.py --release r20260908 --only git-bundle
+    python3 tools/build/build_recovery_root.py --release r20260908 --dry-run
+    python3 tools/build/build_recovery_root.py --release r20260908 --only git-bundle
 """
 from __future__ import annotations
 
@@ -18626,7 +18626,7 @@ if __name__ == "__main__":
 
 ● Bash(cd /home/google/Symoneural
   echo "############ DRY RUN ############"
-  python3 tools/build_recovery_root.py --release r20260908 --dry-run 2>&1 | tail -50)
+  python3 tools/build/build_recovery_root.py --release r20260908 --dry-run 2>&1 | tail -50)
 ############ DRY RUN ############
   ~/.config/systemd/user/symoneural-*                  DRY_RUN
 
@@ -18717,7 +18717,7 @@ Models are not tracked (2 files), so the bundle is small — but a different pro
 ● Bash(cd /home/google/Symoneural
   python3 - <<'PY'
   import pathlib
-  p = pathlib.Path("tools/build_recovery_root.py"); t = p.read_text()
+  p = pathlib.Path("tools/build/build_recovery_root.py"); t = p.read_text()
 
   old = '''        if c.first_party_status not in (R.FIRST_PARTY, R.CLEAN_ROOM):
               result[c.component_id] = {
@@ -18767,7 +18767,7 @@ Models are not tracked (2 files), so the bundle is small — but a different pro
   PY
   echo
   echo "############ DRY RUN — source bundles only ############"
-  python3 tools/build_recovery_root.py --release r20260908 --dry-run --only source-bundles 2>&1 | tail -25)
+  python3 tools/build/build_recovery_root.py --release r20260908 --dry-run --only source-bundles 2>&1 | tail -25)
 build_recovery_root.py: source bundles now exclude vendored trees, and say how many
 
 ############ DRY RUN — source bundles only ############
@@ -18798,11 +18798,11 @@ DRY RUN -- nothing was written.
 symoneural-api drops from 15,704 files to 407 once the vendored SDKs are excluded — the bundle is now genuinely first-party. Running for real:
 
   Bash(cd /home/google/Symoneural
-  python3 tools/build_recovery_root.py --release r20260908 2>&1 | tail -60)
+  python3 tools/build/build_recovery_root.py --release r20260908 2>&1 | tail -60)
 
 
 ● Bash(cd /home/google/Symoneural
-  python3 tools/build_recovery_root.py --release r20260908 2>&1 | tail -60)
+  python3 tools/build/build_recovery_root.py --release r20260908 2>&1 | tail -60)
   /usr/local/sbin/symoneural-root                      CAPTURED               sha256 cdd460ae4a22ad94…
   /etc/symoneural                                      ABSENT
   ~/.config/systemd/user/symoneural-*                  CAPTURED
@@ -18974,7 +18974,7 @@ Defect: mode violations. mkdir(parents=True) created intermediate directories at
   echo "############ hardening the tools so this cannot recur ############"
   python3 - <<'PY'
   import pathlib
-  for rel, anchor in [("tools/build_recovery_root.py", "def secure(p: pathlib.Path, mode: int = 0o700) -> pathlib.Path:\n    p.mkdir(parents=True, exist_ok=True)\n    os.chmod(p, mode)\n    return p")]:
+  for rel, anchor in [("tools/build/build_recovery_root.py", "def secure(p: pathlib.Path, mode: int = 0o700) -> pathlib.Path:\n    p.mkdir(parents=True, exist_ok=True)\n    os.chmod(p, mode)\n    return p")]:
       p = pathlib.Path(rel); t = p.read_text()
       new = '''def secure(p: pathlib.Path, mode: int = 0o700) -> pathlib.Path:
       """Create a directory and every parent at 0700 -- not just the leaf.
@@ -18999,7 +18999,7 @@ Defect: mode violations. mkdir(parents=True) created intermediate directories at
       print(f"  {rel}: secure() now walks parents")
 
   # and always 0600 files, even when copy2 carried a wider source mode across
-  p = pathlib.Path("tools/build_recovery_root.py"); t = p.read_text()
+  p = pathlib.Path("tools/build/build_recovery_root.py"); t = p.read_text()
   t = t.replace('''            for n in found:
                   shutil.copy2(user_units / n, d / n)''',
   '''            for n in found:
@@ -19010,7 +19010,7 @@ Defect: mode violations. mkdir(parents=True) created intermediate directories at
                   # restore actually needs.
                   os.chmod(d / n, 0o600)''')
   p.write_text(t)
-  print("  tools/build_recovery_root.py: user units forced to 0600, source mode recorded")
+  print("  tools/build/build_recovery_root.py: user units forced to 0600, source mode recorded")
   PY)
 ############ BEFORE ############
   dirs not 700:  17
@@ -19045,8 +19045,8 @@ Defect: mode violations. mkdir(parents=True) created intermediate directories at
   mode=600 links=2 inode=15896551  /home/google/claude-backup-20260908-035459.zip
 
 ############ hardening the tools so this cannot recur ############
-  tools/build_recovery_root.py: secure() now walks parents
-  tools/build_recovery_root.py: user units forced to 0600, source mode recorded
+  tools/build/build_recovery_root.py: secure() now walks parents
+  tools/build/build_recovery_root.py: user units forced to 0600, source mode recorded
 
 
 Clean: 0 directories off 0700, 0 files off 0600, and the original checkpoint untouched at mode 600 on the same inode. Now the centrepiece — the single restore entry point.
@@ -19155,7 +19155,7 @@ def load(name: str) -> list[dict[str, str]]:
     p = MANIFESTS / name
     if not p.is_file():
         die(f"required manifest {name} is missing from {MANIFESTS}.\n"
-            f"  Regenerate with: python3 tools/build_restore_manifests.py\n"
+            f"  Regenerate with: python3 tools/build/build_restore_manifests.py\n"
             f"  Refusing to continue: an absent manifest would make every check below "
             f"pass for the wrong reason.")
     lines = p.read_text(encoding="utf-8").splitlines()
@@ -19361,7 +19361,7 @@ def cmd_dependencies(a) -> int:
         print(f"    serving interpreter: pip install -r "
               f"restore/locks/serving-system.lock.txt")
         print(f"\n{BOLD}Engine upstreams{OFF}  (see THIRD-PARTY-REBUILD-MANIFEST.tsv)")
-        print(f"    tools/restore-upstream.sh all")
+        print(f"    tools/sh/restore-upstream.sh all")
         return 0
 
     missing, present = [], []
@@ -19677,7 +19677,7 @@ The verifier is doing its job — it caught four genuine gaps in my own registry
   p.write_text(t)
   print("registry.py: interpreted runtimes now declare their absence of a build step")
   PY
-  python3 tools/build_restore_manifests.py 2>/dev/null || python3 -c "
+  python3 tools/build/build_restore_manifests.py 2>/dev/null || python3 -c "
   import sys, datetime; sys.path.insert(0,'/home/google/Symoneural/restore')
   from lib import generate as G
   G.generate_all('r20260908', {'created_at': datetime.datetime.now().astimezone().isoformat(timespec='seconds')})
@@ -19748,11 +19748,11 @@ PERSISTENT_STATE_ROOT          present  14 entries
 HOST_SNAPSHOT_ROOT             present  20 entries
 CLAUDE_BACKUP_ROOT             present  3 entries
 
-RESTORE_VERIFY=PASS. Two paths my recipes reference still don't exist — tools/restore-upstream.sh and tools/build_restore_manifests.py. The first is load-bearing: it's the tool that makes "omit 149 GB of external/" actually work.
+RESTORE_VERIFY=PASS. Two paths my recipes reference still don't exist — tools/sh/restore-upstream.sh and tools/build/build_restore_manifests.py. The first is load-bearing: it's the tool that makes "omit 149 GB of external/" actually work.
 
-● Write(/home/google/Symoneural/tools/restore-upstream.sh)
+● Write(/home/google/Symoneural/tools/sh/restore-upstream.sh)
 
-Wrote 189 lines to /home/google/Symoneural/tools/restore-upstream.sh
+Wrote 189 lines to /home/google/Symoneural/tools/sh/restore-upstream.sh
 #!/usr/bin/env bash
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -19761,7 +19761,7 @@ Wrote 189 lines to /home/google/Symoneural/tools/restore-upstream.sh
 # restore-upstream.sh -- reacquire the pinned engine upstreams on a machine that does not
 # have `external/`.
 #
-# THIS IS THE SCRIPT THAT MAKES THE BACKUP SMALL. `tools/fork_engines.sh` builds the five
+# THIS IS THE SCRIPT THAT MAKES THE BACKUP SMALL. `tools/sh/fork_engines.sh` builds the five
 # runtimes out of `external/referencestochatgpt/`, which is 149 GB of third-party source
 # that the owner does not want to carry through a machine reset -- and should not have to,
 # because every one of those trees is a clean clone of a public remote at a known revision.
@@ -19772,9 +19772,9 @@ Wrote 189 lines to /home/google/Symoneural/tools/restore-upstream.sh
 # assumed: `--check` re-reads the pin out of THIRD-PARTY-REBUILD-MANIFEST.tsv and compares
 # it against whatever is on disk, and a mismatch is an error rather than a warning.
 #
-#     tools/restore-upstream.sh --check          # what is here, what is missing
-#     tools/restore-upstream.sh all              # fetch everything a build needs
-#     tools/restore-upstream.sh llama.cpp        # fetch one
+#     tools/sh/restore-upstream.sh --check          # what is here, what is missing
+#     tools/sh/restore-upstream.sh all              # fetch everything a build needs
+#     tools/sh/restore-upstream.sh llama.cpp        # fetch one
 #
 # WHAT THIS DOES NOT DO. It does not fetch the GPL-3.0 upstreams unless asked for by name.
 # symoneural-miner (kawpowminer) and symoneural-ui (ComfyUI) are DISABLED for this reset --
@@ -19789,7 +19789,7 @@ DEST_ROOT="${SYMONEURAL_UPSTREAM_ROOT:-$ROOT/external/referencestochatgpt}"
 
 [ -f "$MANIFEST" ] || {
     echo "restore-upstream: $MANIFEST is missing." >&2
-    echo "  Regenerate it: python3 tools/build_restore_manifests.py" >&2
+    echo "  Regenerate it: python3 tools/build/build_restore_manifests.py" >&2
     echo "  Refusing to guess an upstream revision." >&2
     exit 2
 }
@@ -19938,22 +19938,22 @@ main() {
         exit 2
     fi
     echo
-    echo "Now build:  tools/fork_engines.sh <llm|diffuse|listen>"
+    echo "Now build:  tools/sh/fork_engines.sh <llm|diffuse|listen>"
 }
 
 main "$@"
 
 ● Bash(cd /home/google/Symoneural
-  chmod 755 tools/restore-upstream.sh
-  cat > tools/build_restore_manifests.py <<'PY'
+  chmod 755 tools/sh/restore-upstream.sh
+  cat > tools/build/build_restore_manifests.py <<'PY'
   #!/usr/bin/env python3
   # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
   # Copyright (c) 2026 SymonSays LLC. All rights reserved.
   # SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repository root.
   """Regenerate every restore manifest from the registry joined against measured disk state.
 
-      python3 tools/build_restore_manifests.py
-      python3 tools/build_restore_manifests.py --release r20260908
+      python3 tools/build/build_restore_manifests.py
+      python3 tools/build/build_restore_manifests.py --release r20260908
 
   Run it TWICE and diff. Generators in this repository re-read their own output and one that
   does not recognise something it emits accumulates a copy per run -- that has happened three
@@ -19994,9 +19994,9 @@ main "$@"
   if __name__ == "__main__":
       raise SystemExit(main(sys.argv[1:]))
   PY
-  chmod 755 tools/build_restore_manifests.py
+  chmod 755 tools/build/build_restore_manifests.py
   echo "############ upstream pin check (the claim that lets external/ be omitted) ############"
-  tools/restore-upstream.sh --check; echo "  exit=$?")
+  tools/sh/restore-upstream.sh --check; echo "  exit=$?")
 ############ upstream pin check (the claim that lets external/ be omitted) ############
 NAME                     LICENCE    STATE          DETAIL
 llama.cpp                MIT        PIN_OK         4df29be4f4c3
@@ -20088,13 +20088,13 @@ being present -- and the honest situation is more interesting than "nothing does
 
 ## The real dependency, and why it is allowed
 
-`tools/fork_engines.sh` reads `external/referencestochatgpt/{llama.cpp,
+`tools/sh/fork_engines.sh` reads `external/referencestochatgpt/{llama.cpp,
 stable-diffusion.cpp,whisper.cpp}` and builds the three engines that serve chat, image and
 ASR. That is a genuine build-time dependency on `external/`, it is load-bearing, and
 pretending otherwise to make a gate go green would be a lie the next restore would discover.
 
 What makes it omittable is that each of those trees is a clean `git clone` of a public
-remote at a pinned revision -- measured, and re-checked by `tools/restore-upstream.sh
+remote at a pinned revision -- measured, and re-checked by `tools/sh/restore-upstream.sh
 --check`. So the dependency is on an UPSTREAM, which is reacquirable, not on a local
 directory, which is not. `THIRD-PARTY-REBUILD-MANIFEST.tsv` carries the pins and
 `restore-upstream.sh` fetches them.
@@ -20109,7 +20109,7 @@ backup does not carry.
 
 **Does not count:**
 
-  * `tools/fork_engines.sh` and `tools/restore-upstream.sh`. These are BUILD AUTHORITY and
+  * `tools/sh/fork_engines.sh` and `tools/sh/restore-upstream.sh`. These are BUILD AUTHORITY and
     ACQUISITION tooling. Their whole job is to consume an upstream; a build script that
     names its input is not a hidden dependency, it is a recipe. Both are covered by the
     manifest, which records the pin that makes the input reacquirable.
@@ -20159,8 +20159,8 @@ RETIRED = (
 #: THIRD-PARTY-REBUILD-MANIFEST.tsv, which records the pin that makes the input
 #: reacquirable. Short on purpose: a long exempt list is how a guard stops guarding.
 EXEMPT_PREFIXES = (
-    "tools/fork_engines.sh",                 # the build authority for the five forks
-    "tools/restore-upstream.sh",             # the acquisition tool for their upstreams
+    "tools/sh/fork_engines.sh",                 # the build authority for the five forks
+    "tools/sh/restore-upstream.sh",             # the acquisition tool for their upstreams
     "restore/lib/registry.py",               # records where the upstreams live
     "restore/lib/deps.py",                   # verifies the pins against those trees
     "backend/apps/test_no_external_source_dependency.py",
@@ -20312,7 +20312,7 @@ class ExternalSourceDependency(unittest.TestCase):
         for name in sorted(consumed):
             with self.subTest(upstream=name):
                 self.assertIn(name, pins,
-                              f"tools/fork_engines.sh builds from '{name}' and it has no "
+                              f"tools/sh/fork_engines.sh builds from '{name}' and it has no "
                               f"row in THIRD-PARTY-REBUILD-MANIFEST.tsv. Without a pin, "
                               f"omitting external/ from the backup makes this engine "
                               f"unrebuildable.")
@@ -20335,29 +20335,29 @@ E             scripts/build-deb.sh:18  [external]  # 104 GiB of `backend/models/
 E             scripts/symoneural-ui.sh:10  [external]  # vendored upstream tree in `external/`. It is a derived tree and gitignored, exactly like
 E             scripts/symoneural-ui.sh:13  [external]  # `external/`, which is read by people and never by code.
 E             tests/sigils_http.py:47  [external]  #: `external/` -- where task #74 says nothing may read from. One fixture path now, ours,
-E             tools/fork_render_ui.sh:3  [external]  # ComfyUI tree in `external/`.
-E             tools/fork_render_ui.sh:12  [external]  # there any more -- the 2026-08 restructure swept it into `external/ComfyUI`, and the venv
-E             tools/fork_render_ui.sh:22  [external]  # `external/` is read by people, never by code -- Garrett: "we cannot use code in
-E             tools/fork_render_ui.sh:28  [external]  # into `external/` at all.
-E             tools/fork_render_ui.sh:83  [external]  # pattern is `external/<name>/` -- a path that indexes INTO a reference tree is a code path
-E             tools/fork_render_ui.sh:85  [external]  # `tools/fork_engines.sh` uses for `external/contrib`.
-E             tools/fork_render_ui.sh:86  [external]  SRC="$ROOT/external/ComfyUI"
-E             tools/index_references.py:2  [external]  r"""Bind `external/` to `PROJECT-TASKS.md`, so reference material becomes behaviour.
-E             tools/index_references.py:4  [external]  `external/` is 109 GB across 88 entries and nothing in this repo pointed at any of it.
-E             tools/index_references.py:66  [external]  Handles the three shapes actually present in `external/`: `key: value`,
-E             tools/index_references.py:112  [external]  #: Entries under `external/` that are *collections* of repos rather than one repo.
-E             tools/index_references.py:156  [external]  #: A route decorator in any of the three web frameworks present in `external/`, plus
-E             tools/index_references.py:178  [external]  in `external/` are download artefacts -- `drive-download-20260817T185705Z-1-001`
-E             tools/index_references.py:357  [external]  #: the bleeding-edge betas and the first-party work, and `external/` also holds 68 other
-E             tools/index_references.py:391  [external]  L.append("# What is in `external/`, and which open task each part bears on")
-E             tools/index_references.py:395  [external]  L.append("`external/` is read-only material: *\"we cannot use code in references its for")
-E             tools/index_references.py:501  [external]  Copy, never move. `external/` is the provenance; destroying it to satisfy a rule
-E             tools/index_references.py:524  [external]  **Adopted from `external/{rel}` by `tools/index_references.py adopt`.**
-E             tools/index_references.py:526  [external]  `external/` is read-only material -- *"we cannot use code in references its for
-E             tools/index_references.py:531  [external]  The original is still at `external/{rel}` and was **copied, not moved**. That is
-E             tools/index_references.py:537  [external]  | origin | `external/{rel}` |
-E             tools/index_references.py:736  [external]  `external/` whose name contains `sdk`.
-E             tools/index_references.py:738  [external]  `external/` is `/references` in `.gitignore`, so none of this was version-controlled by us
+E             tools/sh/fork_render_ui.sh:3  [external]  # ComfyUI tree in `external/`.
+E             tools/sh/fork_render_ui.sh:12  [external]  # there any more -- the 2026-08 restructure swept it into `external/ComfyUI`, and the venv
+E             tools/sh/fork_render_ui.sh:22  [external]  # `external/` is read by people, never by code -- Garrett: "we cannot use code in
+E             tools/sh/fork_render_ui.sh:28  [external]  # into `external/` at all.
+E             tools/sh/fork_render_ui.sh:83  [external]  # pattern is `external/<name>/` -- a path that indexes INTO a reference tree is a code path
+E             tools/sh/fork_render_ui.sh:85  [external]  # `tools/sh/fork_engines.sh` uses for `external/contrib`.
+E             tools/sh/fork_render_ui.sh:86  [external]  SRC="$ROOT/external/ComfyUI"
+E             tools/lib/index_references.py:2  [external]  r"""Bind `external/` to `PROJECT-TASKS.md`, so reference material becomes behaviour.
+E             tools/lib/index_references.py:4  [external]  `external/` is 109 GB across 88 entries and nothing in this repo pointed at any of it.
+E             tools/lib/index_references.py:66  [external]  Handles the three shapes actually present in `external/`: `key: value`,
+E             tools/lib/index_references.py:112  [external]  #: Entries under `external/` that are *collections* of repos rather than one repo.
+E             tools/lib/index_references.py:156  [external]  #: A route decorator in any of the three web frameworks present in `external/`, plus
+E             tools/lib/index_references.py:178  [external]  in `external/` are download artefacts -- `drive-download-20260817T185705Z-1-001`
+E             tools/lib/index_references.py:357  [external]  #: the bleeding-edge betas and the first-party work, and `external/` also holds 68 other
+E             tools/lib/index_references.py:391  [external]  L.append("# What is in `external/`, and which open task each part bears on")
+E             tools/lib/index_references.py:395  [external]  L.append("`external/` is read-only material: *\"we cannot use code in references its for")
+E             tools/lib/index_references.py:501  [external]  Copy, never move. `external/` is the provenance; destroying it to satisfy a rule
+E             tools/lib/index_references.py:524  [external]  **Adopted from `external/{rel}` by `tools/lib/index_references.py adopt`.**
+E             tools/lib/index_references.py:526  [external]  `external/` is read-only material -- *"we cannot use code in references its for
+E             tools/lib/index_references.py:531  [external]  The original is still at `external/{rel}` and was **copied, not moved**. That is
+E             tools/lib/index_references.py:537  [external]  | origin | `external/{rel}` |
+E             tools/lib/index_references.py:736  [external]  `external/` whose name contains `sdk`.
+E             tools/lib/index_references.py:738  [external]  `external/` is `/references` in `.gitignore`, so none of this was version-controlled by us
 E             training/project-history/build_history_corpus.py:688  [external]  "external/IPTV/IPTV/iptv_gateway_server.py, and the Xtream Codes protocol reference was "
 E
 E           Either replace the reference with first-party code or a reinstallable package dependency, or -- if it is genuinely build authority consuming a pinned upstream -- add it to EXEMPT_PREFIXES with its reason and record the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.
@@ -20488,7 +20488,7 @@ detector: backtick no longer a quote; comments and docstrings masked
 "pinned upstream -- add it to EXEMPT_PREFIXES with its reason and record "
                 "the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.")
 E           AssertionError: 2 production reference(s) to a tree that will not survive the reset:
-E             tools/fork_render_ui.sh:86  [external]  SRC="$ROOT/external/ComfyUI"
+E             tools/sh/fork_render_ui.sh:86  [external]  SRC="$ROOT/external/ComfyUI"
 E             training/project-history/build_history_corpus.py:688  [external]  "external/IPTV/IPTV/iptv_gateway_server.py, and the Xtream Codes protocol reference was "
 E
 E           Either replace the reference with first-party code or a reinstallable package dependency, or -- if it is genuinely build authority consuming a pinned upstream -- add it to EXEMPT_PREFIXES with its reason and record the pin in THIRD-PARTY-REBUILD-MANIFEST.tsv.
@@ -20511,8 +20511,8 @@ Down to two, and both need a real decision rather than a wider rule. Looking at 
   echo "############ training/project-history/build_history_corpus.py around 688 ############"
   sed -n '680,695p' training/project-history/build_history_corpus.py
   echo
-  echo "############ tools/fork_render_ui.sh around 86 ############"
-  sed -n '80,95p' tools/fork_render_ui.sh)
+  echo "############ tools/sh/fork_render_ui.sh around 86 ############"
+  sed -n '80,95p' tools/sh/fork_render_ui.sh)
 ############ training/project-history/build_history_corpus.py around 688 ############
 "No. external/ contains no axolotl, no unsloth, no LLaMA-Factory, no text-generation-webui "
 "and no LM Studio capture -- searched by name to depth 3 across every tree. If somebody "
@@ -20531,13 +20531,13 @@ q("negative",
 "No, deliberately. Everything that can drive an Antminer hashboard is GPLv3 -- cgminer by "
 "its own COPYING, bmminer as a cgminer fork, bosminer as Braiins' rewrite -- so a fork is a "
 
-############ tools/fork_render_ui.sh around 86 ############
+############ tools/sh/fork_render_ui.sh around 86 ############
 [ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 # No trailing slash after the directory name, deliberately. `test_references_boundary.py`'s
 # pattern is `external/<name>/` -- a path that indexes INTO a reference tree is a code path
 # into it, while naming the tree as an input is what this whole script is. Same spelling
-# `tools/fork_engines.sh` uses for `external/contrib`.
+# `tools/sh/fork_engines.sh` uses for `external/contrib`.
 SRC="$ROOT/external/ComfyUI"
 DST="$ROOT/symoneural-ui"
 NODE_SRC="$ROOT/backend/apps/studio/custom_nodes/symoneural_gguf"
@@ -20548,7 +20548,7 @@ VERIFY_ONLY=0
 say() { printf '%s\n' "$*"; }
 die() { printf 'fork_render_ui: %s\n' "$*" >&2; exit 1; }
 
-Both resolved, and the second corrects my registry. tools/fork_render_ui.sh exists — so symoneural-ui does have a scripted build authority; I had recorded "no fork_ui() in fork_engines.sh", which was true but incomplete, and the manifest inherited the wrong conclusion. The training-corpus hit is a recorded Q&A string, data rather than a path resolution.
+Both resolved, and the second corrects my registry. tools/sh/fork_render_ui.sh exists — so symoneural-ui does have a scripted build authority; I had recorded "no fork_ui() in fork_engines.sh", which was true but incomplete, and the manifest inherited the wrong conclusion. The training-corpus hit is a recorded Q&A string, data rather than a path resolution.
 
 ● Bash(cd /home/google/Symoneural
   python3 - <<'PY'
@@ -20565,9 +20565,9 @@ Both resolved, and the second corrects my registry. tools/fork_render_ui.sh exis
       markdown emphasis in a comment, and accepting it made this detector report 33
       docstrings that explain why external/ is reference-only -- flagging the documentation
       of the rule as a violation of the rule.''')
-  t = t.replace('''    "tools/restore-upstream.sh",             # the acquisition tool for their upstreams''',
-  '''    "tools/restore-upstream.sh",             # the acquisition tool for their upstreams
-      "tools/fork_render_ui.sh",               # build authority for symoneural-ui; its
+  t = t.replace('''    "tools/sh/restore-upstream.sh",             # the acquisition tool for their upstreams''',
+  '''    "tools/sh/restore-upstream.sh",             # the acquisition tool for their upstreams
+      "tools/sh/fork_render_ui.sh",               # build authority for symoneural-ui; its
                                                # ComfyUI pin is in the rebuild manifest
       "training/project-history/",             # the history CORPUS: recorded question and
                                                # answer text about what was and was not in
@@ -20577,8 +20577,8 @@ Both resolved, and the second corrects my registry. tools/fork_render_ui.sh exis
 
   # 2. registry: symoneural-ui DOES have a scripted build authority
   p = pathlib.Path("restore/lib/registry.py"); t = p.read_text()
-  t = t.replace('''        build_authority="NONE -- there is no fork_ui() in tools/fork_engines.sh",''',
-  '''        build_authority="tools/fork_render_ui.sh",''')
+  t = t.replace('''        build_authority="NONE -- there is no fork_ui() in tools/sh/fork_engines.sh",''',
+  '''        build_authority="tools/sh/fork_render_ui.sh",''')
   t = t.replace('''        blocker="GPL-3.0 upstream (ComfyUI). Same refusal as the miner. There is no "
                   "fork_ui() in fork_engines.sh, so this tree has no scripted rebuild path "
                   "at all -- it is a hand-made fork, which is a second reason not to carry "
@@ -20587,31 +20587,31 @@ Both resolved, and the second corrects my registry. tools/fork_render_ui.sh exis
                   "upstream cannot be relicensed by editing files, so this tree can never "
                   "be first-party. DISABLED for the reset rather than carried.",''')
   t = t.replace('''        build_command="python3 -m pip install -r symoneural-ui/requirements.txt",''',
-  '''        build_command="tools/fork_render_ui.sh",''')
+  '''        build_command="tools/sh/fork_render_ui.sh",''')
   t = t.replace('''        notes="No rack row points here. Studio's GPU work goes through the API's own "
                 "engines, not through this tree.",''',
   '''        notes="No rack row points here; Studio's GPU work goes through the API's own "
                 "engines, not through this tree. It DOES have a scripted rebuild path -- "
-                "tools/fork_render_ui.sh -- which an earlier draft of this registry denied. "
+                "tools/sh/fork_render_ui.sh -- which an earlier draft of this registry denied. "
                 "Buildable and disabled are different facts and both are recorded.",''')
   p.write_text(t)
-  print("registry.py: symoneural-ui build authority corrected to tools/fork_render_ui.sh")
+  print("registry.py: symoneural-ui build authority corrected to tools/sh/fork_render_ui.sh")
 
   # 3. generator: any tools/fork_*.sh is a scripted build authority, not just fork_engines
   p = pathlib.Path("restore/lib/generate.py"); t = p.read_text()
-  t = t.replace('''            scripted = c.build_authority.startswith("tools/fork_engines.sh")''',
+  t = t.replace('''            scripted = c.build_authority.startswith("tools/sh/fork_engines.sh")''',
   '''            # Any tools/fork_*.sh is a scripted build authority. Hard-coding the one
               # filename claimed symoneural-ui had no rebuild path, when in fact
-              # tools/fork_render_ui.sh builds it -- a false NO is as bad as a false YES.
+              # tools/sh/fork_render_ui.sh builds it -- a false NO is as bad as a false YES.
               scripted = c.build_authority.startswith("tools/fork_")''')
   p.write_text(t)
   print("generate.py: build authority detection generalised to tools/fork_*")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "manifests regenerated"
   echo
   cd backend && python3 -m pytest apps/test_no_external_source_dependency.py -q 2>&1 | tail -12)
 detector: two reasoned exemptions added; docstring warning fixed
-registry.py: symoneural-ui build authority corrected to tools/fork_render_ui.sh
+registry.py: symoneural-ui build authority corrected to tools/sh/fork_render_ui.sh
 generate.py: build authority detection generalised to tools/fork_*
 manifests regenerated
 
@@ -21371,7 +21371,7 @@ Three real findings, all worth acting on. Checking the idempotence failure first
   mkdir -p /tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
   S=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
   for f in restore/manifests/*.tsv; do cp "$f" "$S/$(basename $f).a"; done
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo "############ which manifests differ across two runs? ############"
   for f in restore/manifests/*.tsv; do
     b=$(basename "$f")
@@ -21388,8 +21388,8 @@ No differences — so idempotence is sound. The earlier failure was the test cor
 
 ● Bash(cd /home/google/Symoneural
   echo "############ what will be committed ############"
-  git add -A restore tools/build_dependency_locks.py tools/build_private_state.py \
-    tools/build_recovery_root.py tools/build_restore_manifests.py tools/restore-upstream.sh \
+  git add -A restore tools/build/build_dependency_locks.py tools/build/build_private_state.py \
+    tools/build/build_recovery_root.py tools/build/build_restore_manifests.py tools/sh/restore-upstream.sh \
     backend/apps/test_no_external_source_dependency.py backend/apps/test_restore_manifests.py \
     FIRST-PARTY-CLOSURE.tsv THIRD-PARTY-REBUILD-MANIFEST.tsv .gitignore
   git status --short
@@ -21426,11 +21426,11 @@ A  restore/manifests/SERVICES.tsv
 A  restore/manifests/SMOKES.tsv
 A  restore/manifests/SOURCE-CLOSURE.tsv
 A  restore/symoneural-restore
-A  tools/build_dependency_locks.py
-A  tools/build_private_state.py
-A  tools/build_recovery_root.py
-A  tools/build_restore_manifests.py
-A  tools/restore-upstream.sh
+A  tools/build/build_dependency_locks.py
+A  tools/build/build_private_state.py
+A  tools/build/build_recovery_root.py
+A  tools/build/build_restore_manifests.py
+A  tools/sh/restore-upstream.sh
 
 ############ confirm .private is NOT staged ############
   .private paths staged: 0
@@ -21603,7 +21603,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
 
   THE FINDING THAT SHAPED IT
 
-  tools/fork_engines.sh builds the three engines behind chat, image and ASR out of
+  tools/sh/fork_engines.sh builds the three engines behind chat, image and ASR out of
   external/referencestochatgpt/ -- 149 GB the owner does not want to carry. That is a
   real, load-bearing dependency and claiming otherwise to make a gate go green would
   be a lie the next restore would discover.
@@ -21612,7 +21612,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
   public remote at a pinned revision, verified against the checkout while the
   checkout is still here to verify against. 149 GB of source custody collapses into
   five URLs and five forty-hex strings. THIRD-PARTY-REBUILD-MANIFEST.tsv carries the
-  pins; tools/restore-upstream.sh fetches them and refuses on a mismatch.
+  pins; tools/sh/restore-upstream.sh fetches them and refuses on a mismatch.
 
   kawpowminer is the exception that proves the rule: three uncommitted local edits,
   including a real #include <cstdint> fix for gcc 13+. A revision pin cannot restore
@@ -21642,7 +21642,7 @@ Confirmed clean — all five hits are the literal marker list inside my own "no 
     * the state table named run/accounts.db and run/api.env. Neither exists.
     * the first-party source bundle for the API was 97% vendored Anthropic and
       OpenAI SDK -- 15,704 files, now 407.
-    * symoneural-ui was recorded as having no rebuild path. tools/fork_render_ui.sh
+    * symoneural-ui was recorded as having no rebuild path. tools/sh/fork_render_ui.sh
       builds it. Buildable and disabled are different facts; both are now recorded.
 
   A PRODUCTION FINDING, NOT FIXED HERE
@@ -21669,7 +21669,7 @@ I committed with three tests red — I ran the commit and the tests in the same 
 ● Bash(cd /home/google/Symoneural
   S=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad
   for f in restore/manifests/*.tsv restore/RELEASE.json; do cp "$f" "$S/$(basename $f).b"; done
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo "############ idempotence diff ############"
   for f in restore/manifests/*.tsv restore/RELEASE.json; do
     b=$(basename "$f")
@@ -21726,7 +21726,7 @@ The manifests are stable; only RELEASE.json's created_at moves. Two consequences
   # 2. An exclusion list is a protection rule, not a dependency -- the archive-guard case.
   p = pathlib.Path("backend/apps/test_no_external_source_dependency.py"); t = p.read_text()
   t = t.replace('''    "training/project-history/",             # the history CORPUS: recorded question and''',
-  '''    "tools/build_recovery_root.py",          # its "external/" is an EXCLUSION list -- the
+  '''    "tools/build/build_recovery_root.py",          # its "external/" is an EXCLUSION list -- the
                                                # rule that keeps vendored trees OUT of a
                                                # first-party source bundle. Deleting it
                                                # because the detector fired would put
@@ -21735,11 +21735,11 @@ The manifests are stable; only RELEASE.json's created_at moves. Two consequences
   p.write_text(t)
   print("detector: exclusion list exempted as a protection rule")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   echo
   echo "############ RELEASE.json now stable across two runs? ############"
   sha1=$(sha256sum restore/RELEASE.json | cut -c1-16)
-  python3 tools/build_restore_manifests.py >/dev/null
+  python3 tools/build/build_restore_manifests.py >/dev/null
   sha2=$(sha256sum restore/RELEASE.json | cut -c1-16)
   printf '  run1=%s run2=%s  %s\n' "$sha1" "$sha2" "$([ "$sha1" = "$sha2" ] && echo IDENTICAL || echo DIFFERS)")
 
@@ -22037,7 +22037,7 @@ Move complete at zero cost, evidence ZIP identical and still 0600, and MANIFEST.
   p.write_text(t)
   print("registry.py: buildv2 notes updated to the measured consolidation")
   PY
-  python3 tools/build_restore_manifests.py >/dev/null && echo "manifests regenerated")
+  python3 tools/build/build_restore_manifests.py >/dev/null && echo "manifests regenerated")
   
   141 of 141 entries verify, 0 failed, 0 missing — buildv2 survived the move intact. Re-running the tests that were red:
 
@@ -22079,7 +22079,7 @@ Move complete at zero cost, evidence ZIP identical and still 0600, and MANIFEST.
 
   THE FINDING THAT SHAPED IT
 
-  tools/fork_engines.sh builds the three engines behind chat, image and ASR out of
+  tools/sh/fork_engines.sh builds the three engines behind chat, image and ASR out of
   external/referencestochatgpt/ -- 149 GB the owner does not want to carry. That is a
   real, load-bearing dependency and claiming otherwise to make a gate go green would
   be a lie the next restore would discover.
@@ -22088,7 +22088,7 @@ Move complete at zero cost, evidence ZIP identical and still 0600, and MANIFEST.
   public remote at a pinned revision, verified against the checkout while the
   checkout is still here to verify against. 149 GB of source custody collapses into
   five URLs and five forty-hex strings. THIRD-PARTY-REBUILD-MANIFEST.tsv carries the
-  pins; tools/restore-upstream.sh fetches them and refuses on a mismatch.
+  pins; tools/sh/restore-upstream.sh fetches them and refuses on a mismatch.
 
   kawpowminer is the exception that proves the rule: three uncommitted local edits,
   including a real #include <cstdint> fix for gcc 13+. A revision pin cannot restore
@@ -22117,7 +22117,7 @@ Move complete at zero cost, evidence ZIP identical and still 0600, and MANIFEST.
       stores are a directory deeper and two had a live writer attached.
     * the API source bundle was 97% vendored Anthropic and OpenAI SDK -- 15,704
       files, now 407.
-    * symoneural-ui was recorded as having no rebuild path. tools/fork_render_ui.sh
+    * symoneural-ui was recorded as having no rebuild path. tools/sh/fork_render_ui.sh
       builds it. Buildable and disabled are different facts; both are now recorded.
     * RELEASE.json stamped a wall clock, so every regeneration dirtied the tree. It
       is now the commit date of repository_head -- a function of the release, not of
@@ -22239,7 +22239,7 @@ A genuine circularity, and I've hit this exact class before: a generated file ca
                       strip_rev((MANIFESTS / name).read_text()),
                       f"{name} in HEAD differs from what the registry generates now "
                       f"(revision columns excluded). Regenerate and commit: "
-                      f"python3 tools/build_restore_manifests.py")'''
+                      f"python3 tools/build/build_restore_manifests.py")'''
 
   assert old in t, "Idempotent class not found"
   p.write_text(t.replace(old, new))
@@ -22341,7 +22341,7 @@ Clean tree, RESTORE_VERIFY=PASS. Now the gate that can't be faked — the source
 The bundle is at ec5e6d2f — it predates the restore commits, so it doesn't contain the control plane. That's a real staleness finding: the bundle must be regenerated at the final HEAD or the restore plan isn't in the backup. Regenerating and redoing the rehearsal properly:
 
  Bash(cd /home/google/Symoneural
-  python3 tools/build_recovery_root.py --release r20260908 --only git-bundle 2>&1 | tail -12
+  python3 tools/build/build_recovery_root.py --release r20260908 --only git-bundle 2>&1 | tail -12
   echo
   R=/tmp/claude-1000/-home-google/0d019856-dbe0-49b4-ad80-0c3d9779a69b/scratchpad/rehearsal
   rm -rf "$R"; mkdir -p "$R"
@@ -22384,12 +22384,12 @@ And one finding that is not my bug and matters: all three installed systemd unit
   done)
 ############ how DIVERGED are the installed units? ############
 ===== symoneural-api =====
---- ops/symoneural-api.service     2026-09-03 20:27:27.369361154 -0400
+--- ops/units/symoneural-api.service     2026-09-03 20:27:27.369361154 -0400
 +++ /etc/systemd/system/symoneural-api.service     2026-09-01 14:19:28.306653756 -0400
 @@ -1,15 +1,8 @@
  [Unit]
--# TEMPLATE. @@ROOT@@ is replaced with the repo root by ops/install-service.sh at
-+# TEMPLATE. /home/google/Symoneural is replaced with the repo root by ops/install-service.sh at
+-# TEMPLATE. @@ROOT@@ is replaced with the repo root by ops/deploy/install-service.sh at
++# TEMPLATE. /home/google/Symoneural is replaced with the repo root by ops/deploy/install-service.sh at
  # install time. systemd has no notion of a relative path, so this is the only way the
  # unit can live in a repo that gets cloned anywhere.
  Description=SyMoNeuRaL inference API (chat, image, calc, remix)
@@ -22455,11 +22455,11 @@ And one finding that is not my bug and matters: all three installed systemd unit
  Environment=SYMONEURAL_PORT=8800
 
 ===== symoneural-web =====
---- ops/symoneural-web.service     2026-08-26 15:44:30.926469072 -0400
+--- ops/units/symoneural-web.service     2026-08-26 15:44:30.926469072 -0400
 +++ /etc/systemd/system/symoneural-web.service     2026-09-02 17:01:30.619282560 -0400
 @@ -1,8 +1,8 @@
--# TEMPLATE. @@ROOT@@ is replaced with the repository root by ops/install-runtime.sh.
-+# TEMPLATE. /home/google/Symoneural is replaced with the repository root by ops/install-runtime.sh.
+-# TEMPLATE. @@ROOT@@ is replaced with the repository root by ops/deploy/install-runtime.sh.
++# TEMPLATE. /home/google/Symoneural is replaced with the repository root by ops/deploy/install-runtime.sh.
  #
  # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
  # Copyright (c) 2026 SymonSays LLC. All rights reserved.
@@ -22492,14 +22492,14 @@ And one finding that is not my bug and matters: all three installed systemd unit
  LimitNOFILE=1048576
 
 ===== symoneural-gateway =====
---- ops/symoneural-gateway.service 2026-09-03 20:27:27.369361154 -0400
+--- ops/units/symoneural-gateway.service 2026-09-03 20:27:27.369361154 -0400
 +++ /etc/systemd/system/symoneural-gateway.service 2026-09-02 17:00:12.830877274 -0400
 @@ -1,18 +1,11 @@
  [Unit]
 -# TEMPLATE. @@ROOT@@ is replaced with the repo root by scripts/install-gateway.sh at install
 +# TEMPLATE. /home/google/Symoneural is replaced with the repo root by scripts/install-gateway.sh at install
  # time. systemd has no notion of a relative path, so this is the only way the unit can live in
- # a repo that gets cloned anywhere. Same shape as ops/symoneural-api.service.
+ # a repo that gets cloned anywhere. Same shape as ops/units/symoneural-api.service.
  Description=SyMoNeuRaL HTTP gateway (routing, WebSocket relay, payload validation)
 -# StartLimit* live in [Unit], NOT [Service], and this pair sat in [Service] until 2026-09-03
 -# where systemd silently ignored them -- `systemd-analyze verify` says "Unknown key
@@ -23465,7 +23465,7 @@ rather than reduced to a boolean:
 
 Note what is missing: there is no value meaning "first-party because we renamed it". The
 owner's instruction was *"we cannot use code in references its for reference only we must
-rebrand if we want to use it"*, and the licence-stamping block in `tools/fork_engines.sh`
+rebrand if we want to use it"*, and the licence-stamping block in `tools/sh/fork_engines.sh`
 already encodes the legal half of that -- it REFUSES to stamp the SyMoNeuRaL licence on a
 copyleft upstream. This file must not undo that refusal by writing a friendlier word in a
 column.
@@ -23473,7 +23473,7 @@ column.
 ## `EXTERNAL_SOURCE_CAN_BE_OMITTED` is about reacquisition, not about disuse
 
 The reset gate wants `ACTIVE_EXTERNAL_SOURCE_DEPENDENCIES=0`, and the tempting way to get
-there is to claim nothing uses `external/`. That claim is false: `tools/fork_engines.sh`
+there is to claim nothing uses `external/`. That claim is false: `tools/sh/fork_engines.sh`
 reads `external/referencestochatgpt/{llama.cpp,stable-diffusion.cpp,whisper.cpp}` and those
 three builds are what serve chat, image and ASR.
 
@@ -23586,7 +23586,7 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="symoneural-llm",
         language="C++/CUDA",
         build_system="cmake",
-        build_authority="tools/fork_engines.sh llm",
+        build_authority="tools/sh/fork_engines.sh llm",
         production_status=PRODUCTION,
         first_party_status=DERIV_PERMISSIVE,
         primary_artifact="symoneural-llm/build/bin/symoneural-llm",
@@ -23594,8 +23594,8 @@ COMPONENTS: tuple[Component, ...] = (
         toolchain="gcc/g++, cmake, nvcc",
         target_arch="x86_64 + sm_120",
         build_profile="Release, -fstack-protector-strong, -Wl,-z,relro -Wl,-z,now",
-        prep_command="tools/restore-upstream.sh llama.cpp",
-        build_command="tools/fork_engines.sh llm",
+        prep_command="tools/sh/restore-upstream.sh llama.cpp",
+        build_command="tools/sh/fork_engines.sh llm",
         test_command="cd backend && python3 -m pytest apps/test_probes.py -q",
         output_artifact="symoneural-llm/build/bin/symoneural-llm",
         install_command="(none -- api.py执 execs it in place from the repository)",
@@ -23606,7 +23606,7 @@ COMPONENTS: tuple[Component, ...] = (
         upstream_license="MIT",
         upstream_local_path="external/referencestochatgpt/llama.cpp",
         tracked_in_git="NO",
-        generated_from="pinned upstream + tools/fork_engines.sh",
+        generated_from="pinned upstream + tools/sh/fork_engines.sh",
         notes="Serves /api/chat. RUNPATH is $ORIGIN so every library it loads is one this "
               "build produced. GGML_BACKEND_DL must stay OFF or the OUTPUT_NAME renaming "
               "makes the CUDA backend undiscoverable at runtime.",
@@ -23619,7 +23619,7 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="symoneural-diffuse",
         language="C++/CUDA",
         build_system="cmake",
-        build_authority="tools/fork_engines.sh diffuse",
+        build_authority="tools/sh/fork_engines.sh diffuse",
         production_status=PRODUCTION,
         first_party_status=DERIV_PERMISSIVE,
         primary_artifact="symoneural-diffuse/build/bin/symoneural-diffuse",
@@ -23627,8 +23627,8 @@ COMPONENTS: tuple[Component, ...] = (
         toolchain="gcc/g++, cmake, nvcc",
         target_arch="x86_64 + sm_120",
         build_profile="Release, hardened",
-        prep_command="tools/restore-upstream.sh stable-diffusion.cpp",
-        build_command="tools/fork_engines.sh diffuse",
+        prep_command="tools/sh/restore-upstream.sh stable-diffusion.cpp",
+        build_command="tools/sh/fork_engines.sh diffuse",
         test_command="cd backend && python3 -m pytest apps/test_probes.py -q",
         output_artifact="symoneural-diffuse/build/bin/symoneural-diffuse",
         install_path="symoneural-diffuse/build/bin/symoneural-diffuse",
@@ -23638,7 +23638,7 @@ COMPONENTS: tuple[Component, ...] = (
         upstream_license="MIT",
         upstream_local_path="external/referencestochatgpt/stable-diffusion.cpp",
         tracked_in_git="NO",
-        generated_from="pinned upstream + tools/fork_engines.sh",
+        generated_from="pinned upstream + tools/sh/fork_engines.sh",
         notes="Serves /api/image. Silently rounds unsupported dimensions; api.py documents "
               "the clamp at its call site.",
     ),
@@ -23650,15 +23650,15 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="symoneural-listen",
         language="C++/CUDA",
         build_system="cmake",
-        build_authority="tools/fork_engines.sh listen",
+        build_authority="tools/sh/fork_engines.sh listen",
         production_status=EXPERIMENTAL,
         first_party_status=DERIV_PERMISSIVE,
         primary_artifact="symoneural-listen/build/bin/symoneural-listen",
         toolchain="gcc/g++, cmake, nvcc",
         target_arch="x86_64 + sm_120",
         build_profile="Release, hardened",
-        prep_command="tools/restore-upstream.sh whisper.cpp",
-        build_command="tools/fork_engines.sh listen",
+        prep_command="tools/sh/restore-upstream.sh whisper.cpp",
+        build_command="tools/sh/fork_engines.sh listen",
         test_command="cd backend && python3 -m pytest apps/test_probes.py -q",
         output_artifact="symoneural-listen/build/bin/symoneural-listen",
         install_path="symoneural-listen/build/bin/symoneural-listen",
@@ -23668,7 +23668,7 @@ COMPONENTS: tuple[Component, ...] = (
         upstream_license="MIT",
         upstream_local_path="external/referencestochatgpt/whisper.cpp",
         tracked_in_git="NO",
-        generated_from="pinned upstream + tools/fork_engines.sh",
+        generated_from="pinned upstream + tools/sh/fork_engines.sh",
         notes="ASR. EXPERIMENTAL rather than PRODUCTION: `voice` has no page, so no rack "
               "row points at it and nothing user-facing depends on it today.",
     ),
@@ -23680,7 +23680,7 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="symoneural-miner",
         language="C++/CUDA",
         build_system="cmake",
-        build_authority="tools/fork_engines.sh miner",
+        build_authority="tools/sh/fork_engines.sh miner",
         production_status=DISABLED,
         first_party_status=DERIV_COPYLEFT,
         primary_artifact="symoneural-miner/build/kawpowminer/symoneural-miner",
@@ -23691,9 +23691,9 @@ COMPONENTS: tuple[Component, ...] = (
         toolchain="gcc/g++, cmake, nvcc",
         target_arch="x86_64 + sm_120 (COMPUTE=120)",
         build_profile="Release, HUNTER_ENABLED=OFF, ETHASHCUDA=ON",
-        prep_command="tools/restore-upstream.sh kawpowminer  # then build the static "
+        prep_command="tools/sh/restore-upstream.sh kawpowminer  # then build the static "
                      "dependency prefix -- see NOTES",
-        build_command="tools/fork_engines.sh miner",
+        build_command="tools/sh/fork_engines.sh miner",
         test_command="-",
         output_artifact="symoneural-miner/build/kawpowminer/symoneural-miner",
         clean_build_supported="NO",
@@ -23704,7 +23704,7 @@ COMPONENTS: tuple[Component, ...] = (
         upstream_local_path="external/referencestochatgpt/kawpowminer",
         local_patch=".private/upstream-patches/kawpowminer-local.patch",
         tracked_in_git="NO",
-        generated_from="pinned upstream + tools/fork_engines.sh",
+        generated_from="pinned upstream + tools/sh/fork_engines.sh",
         notes="Additionally needs external/referencestochatgpt/kawpow-deps, a PREBUILT "
               "static prefix (boost/jsoncpp/ethash) produced by "
               "external/contrib/build-kawpowminer.sh -- so a clean rebuild is a ~40 minute "
@@ -23723,7 +23723,7 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="symoneural-ui",
         language="Python",
         build_system="pip",
-        build_authority="manual fork; NOT built by tools/fork_engines.sh",
+        build_authority="manual fork; NOT built by tools/sh/fork_engines.sh",
         production_status=DISABLED,
         first_party_status=DERIV_COPYLEFT,
         primary_artifact="symoneural-ui/main.py",
@@ -23734,7 +23734,7 @@ COMPONENTS: tuple[Component, ...] = (
                 "it through the reset.",
         toolchain="python3, pip",
         target_arch="x86_64",
-        prep_command="tools/restore-upstream.sh ComfyUI",
+        prep_command="tools/sh/restore-upstream.sh ComfyUI",
         build_command="python3 -m pip install -r symoneural-ui/requirements.txt",
         test_command="-",
         clean_build_supported="NO",
@@ -23775,7 +23775,7 @@ COMPONENTS: tuple[Component, ...] = (
         build_command="(interpreted -- no build step)",
         test_command="cd backend && python3 -m pytest -q",
         output_artifact="backend/server.py",
-        install_command="sudo install -m0644 ops/symoneural-api.service "
+        install_command="sudo install -m0644 ops/units/symoneural-api.service "
                         "/etc/systemd/system/ && sudo systemctl daemon-reload",
         install_path="/etc/systemd/system/symoneural-api.service",
         notes="The rack. Serves every /api/* route, owns the GPU lease, and spawns the "
@@ -23810,16 +23810,16 @@ COMPONENTS: tuple[Component, ...] = (
         source_root="site",
         language="HTML/CSS/JS",
         build_system="python generators (tools/build_*.py)",
-        build_authority="tools/build_rack.py, tools/build_cachebust.py",
+        build_authority="tools/build/build_rack.py, tools/build/build_cachebust.py",
         production_status=PRODUCTION,
         first_party_status=FIRST_PARTY,
         primary_artifact="site/",
         service="symoneural-web.service + Caddy",
         prep_command="-",
-        build_command="python3 tools/build_rack.py && python3 tools/build_cachebust.py",
+        build_command="python3 tools/build/build_rack.py && python3 tools/build/build_cachebust.py",
         test_command="cd backend && python3 -m pytest apps/test_build_progress.py -q",
         output_artifact="site/",
-        install_command="sudo install -m0644 ops/symoneural-web.service "
+        install_command="sudo install -m0644 ops/units/symoneural-web.service "
                         "/etc/systemd/system/ && sudo systemctl daemon-reload",
         install_path="/etc/systemd/system/symoneural-web.service",
         notes="This is the PUBLIC WEB SERVER for symoneural.com and it has no fallback. "
@@ -23844,7 +23844,7 @@ COMPONENTS: tuple[Component, ...] = (
         blocker="No contract, no wallet, no key material. Its rack LED has never been "
                 "anything but grey. Disabled by configuration, not by defect.",
         test_command="cd backend && python3 -m pytest apps/gateway -q",
-        install_command="sudo install -m0644 ops/symoneural-gateway.service "
+        install_command="sudo install -m0644 ops/units/symoneural-gateway.service "
                         "/etc/systemd/system/",
         install_path="/etc/systemd/system/symoneural-gateway.service",
         notes="Thirteen TRON settlement modules. Folded into the `miner` rack row as a "
@@ -24158,11 +24158,11 @@ class Service:
 SERVICES: tuple[Service, ...] = (
     Service(
         "symoneural-api", "symoneural-api",
-        "ops/symoneural-api.service", "/etc/systemd/system/symoneural-api.service",
+        "ops/units/symoneural-api.service", "/etc/systemd/system/symoneural-api.service",
         "google", "google", "/home/google/Symoneural",
         "127.0.0.1:8800", "network-online.target",
         "enabled",
-        "sudo install -m0644 ops/symoneural-api.service /etc/systemd/system/ && "
+        "sudo install -m0644 ops/units/symoneural-api.service /etc/systemd/system/ && "
         "sudo systemctl daemon-reload && sudo systemctl enable symoneural-api",
         "sudo systemctl start symoneural-api",
         "curl -fsS http://127.0.0.1:8800/api/status",
@@ -24170,28 +24170,28 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "symoneural-web", "symoneural-web",
-        "ops/symoneural-web.service", "/etc/systemd/system/symoneural-web.service",
+        "ops/units/symoneural-web.service", "/etc/systemd/system/symoneural-web.service",
         "google", "google", "/home/google/Symoneural",
         "(behind Caddy on 80/443)", "symoneural-api.service",
         "enabled",
-        "sudo install -m0644 ops/symoneural-web.service /etc/systemd/system/ && "
+        "sudo install -m0644 ops/units/symoneural-web.service /etc/systemd/system/ && "
         "sudo systemctl daemon-reload && sudo systemctl enable symoneural-web",
         "sudo systemctl start symoneural-web",
         "curl -fsS -o /dev/null -w '%{http_code}' http://127.0.0.1/",
     ),
     Service(
         "symoneural-gateway", "symoneural-gateway",
-        "ops/symoneural-gateway.service", "/etc/systemd/system/symoneural-gateway.service",
+        "ops/units/symoneural-gateway.service", "/etc/systemd/system/symoneural-gateway.service",
         "google", "google", "/home/google/Symoneural",
         "-", "symoneural-api.service",
         "disabled (deliberate -- no contract, no wallet, no key material)",
-        "sudo install -m0644 ops/symoneural-gateway.service /etc/systemd/system/",
+        "sudo install -m0644 ops/units/symoneural-gateway.service /etc/systemd/system/",
         "(do not start -- disabled by design)",
         "-",
     ),
     Service(
         "symoneural-progress", "symoneural-web",
-        "ops/symoneural-progress.timer",
+        "ops/units/symoneural-progress.timer",
         "~/.config/systemd/user/symoneural-progress.timer",
         "google", "google", "/home/google/Symoneural",
         "-", "-",
@@ -24437,8 +24437,8 @@ RESTORE_ORDER: tuple[Step, ...] = (
          "restore/symoneural-restore restore-state --dry-run",
          "YES", "NO", "STOP"),
     Step(40, "upstreams", "Reacquire the pinned engine upstreams", "git-repo",
-         "tools/restore-upstream.sh all",
-         "tools/restore-upstream.sh --check",
+         "tools/sh/restore-upstream.sh all",
+         "tools/sh/restore-upstream.sh --check",
          "NO", "NO", "CONTINUE -- record which engines cannot be built"),
     Step(50, "build-native", "Build the native engines", "upstreams",
          "restore/symoneural-restore build all",

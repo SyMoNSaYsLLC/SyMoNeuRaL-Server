@@ -16,8 +16,8 @@ AUDIT; this is that finding, measured properly and now re-runnable.
 **Re-measure, do not read:**
 
 ```bash
-python3 tools/modelops_inventory.py            # the table below
-python3 tools/modelops_inventory.py --json     # the same, machine-readable
+python3 tools/lib/modelops_inventory.py            # the table below
+python3 tools/lib/modelops_inventory.py --json     # the same, machine-readable
 scripts/modelops/symoneural-modelops-stage.sh --inventory    # plus disk
 ```
 
@@ -50,7 +50,7 @@ them · a status · a smoke path · a rollback.
 
 **`unknown-blocked` is not "probably fine".** `docs/ops/LICENSE-AUDIT.md`'s vocabulary says an
 unrecorded licence is a blocker until provenance exists, because you cannot ship what you cannot
-describe. `tools/modelops_inventory.py::_classify` returns it for any file the manifest does not
+describe. `tools/lib/modelops_inventory.py::_classify` returns it for any file the manifest does not
 know, and `test_an_unmanifested_weight_is_unknown_blocked` pins that.
 
 ## 3. Active defaults — 7 files, read from source not assumed

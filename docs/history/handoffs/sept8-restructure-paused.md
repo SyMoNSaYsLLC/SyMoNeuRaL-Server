@@ -25,7 +25,7 @@ trees   4 worktrees
 | `c6b1414e` | the five runtimes promoted to top-level folders, and ignored before anything could sweep 11 GB into history. |
 
 Also done, not a commit: **`symoneural-llm` pid 7138 stopped**, releasing 8,330 MiB of VRAM.
-It was running because *this session* ran `tools/probe_apps.py` at 00:54:23, which made real
+It was running because *this session* ran `tools/audit/probe_apps.py` at 00:54:23, which made real
 chat-surface requests; `api.py` spawned the engine 42 seconds later and kept the model
 resident. Owned rather than explained away.
 

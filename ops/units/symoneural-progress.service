@@ -1,0 +1,67 @@
+[Unit]
+# TEMPLATE, and a USER unit -- not a system one. @@ROOT@@ is replaced with the repo root by
+# ops/deploy/install-service.sh at install time.
+#
+# This is a user unit on purpose. The system units beside it need root to install, and this
+# job needs nothing root can give: it reads four files in the repo and writes one HTML file
+# into run/. Making it a user unit means it installs with no password, and it cannot touch
+# anything outside the user's own tree if it goes wrong.
+Description=SyMoNeuRaL intake, task archive and progress page
+Documentation=file://@@ROOT@@/run/progress.html
+
+[Service]
+Type=oneshot
+WorkingDirectory=@@ROOT@@
+
+# Three steps, and the ORDER is the contract. Garrett, 2026-08-20: "i need all that automated
+# so you can focus on pending tasks", and "you need to make done items like 61 and 62 go away
+# automatically". Doing any of this by hand means it is accurate exactly as often as somebody
+# remembers, which is the failure this unit exists to end.
+#
+#   1. build_intake   refresh INTAKE.md from the ledger, AUDIT.md and the audit surface,
+#                     merging Garrett's ticks and answers back over the top.
+#   2. archive_tasks  move finished tasks out of PROJECT-TASKS.md into review/CLOSED-TASKS.md.
+#   3. build_progress render the page.
+#
+# 2 before 3 so the page is rendered from the list as it will be LEFT, never from one still
+# holding rows that are about to be archived -- otherwise every second tick shows a task that
+# no longer exists. 1 before both so a barrier cleared this minute is not reported as open.
+ExecStart=/usr/bin/python3 @@ROOT@@/tools/build/build_intake.py
+ExecStart=/usr/bin/python3 @@ROOT@@/tools/lib/archive_tasks.py
+ExecStart=/usr/bin/python3 @@ROOT@@/tools/build/build_progress.py
+
+# All three read the repo's own text files and `git log`, and rewrite files under the repo.
+# Each is idempotent -- run twice, byte-identical -- and two of them write nothing at all when
+# nothing changed, so a tick that finds no work costs almost nothing and leaves `git status`
+# untouched.
+#
+# No GPU, no lock, no network. It must never be able to interfere with a render, so it takes
+# nothing from gpu-governor.sh and holds no lease. If that ever stops being true, this stops
+# being safe to run on a timer.
+
+# It renders a page; it does not deploy one. If it fails, the last good page stays on disk and
+# keeps serving, which is why nothing here restarts or escalates.
+TimeoutStartSec=60
+
+Nice=10
+IOSchedulingClass=idle
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=symoneural-progress
+
+# --- hardening -------------------------------------------------------------------------
+# Stricter than the API's, because this one genuinely needs almost nothing. ProtectSystem
+# is set to strict rather than full: the only writable path it requires is the repo, and
+# ReadWritePaths grants exactly that.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=@@ROOT@@
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryMax=512M
+TasksMax=32

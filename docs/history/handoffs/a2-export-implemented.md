@@ -20,7 +20,7 @@
 
 ## What was built — 2 files, both new
 
-**`tools/export_snapshot.sh`** — the exporter. Named by policy rule 4 as the only sanctioned way a snapshot leaves the box. Did not exist before.
+**`tools/data/export_snapshot.sh`** — the exporter. Named by policy rule 4 as the only sanctioned way a snapshot leaves the box. Did not exist before.
 
 **`backend/apps/test_export_snapshot.py`** — 7 tests. Repo convention is `unittest` (48 of 49 suites).
 
@@ -110,7 +110,7 @@ The manifest format is newline-delimited repo-relative paths, `#` comments ignor
 
 ```
 AUTHORIZED SCOPE TOUCHED:
-  tools/export_snapshot.sh              (new)
+  tools/data/export_snapshot.sh              (new)
   backend/apps/test_export_snapshot.py  (new)
 
 UNAUTHORIZED SCOPE TOUCHED: NONE

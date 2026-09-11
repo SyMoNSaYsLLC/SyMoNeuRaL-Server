@@ -60,7 +60,7 @@ say "Engines"
 # the promoted one, both executable, both resolving every library. So where a manifest exists
 # the check is against the manifest, and this reports identity rather than existence.
 #
-# It also no longer says "run tools/fork_engines.sh" for the LLM engine. That instruction was
+# It also no longer says "run tools/sh/fork_engines.sh" for the LLM engine. That instruction was
 # wrong: `ops/manifests/llm-engine.json` records the promoted artifact as NOT reproducible
 # from source -- no commit identity, no build record -- so rebuilding it does not produce it.
 # The right answer is to restore the verified copy, and the manifest carries that command.
@@ -106,7 +106,7 @@ DIFFUSE=symoneural-diffuse/build/bin/symoneural-diffuse
 if [ -x "$DIFFUSE" ]; then
   engine_links_ok "$DIFFUSE" "$DIFFUSE" && note "$DIFFUSE present but UNVERIFIED — no manifest in ops/manifests/"
 else
-  bad "$DIFFUSE not built — run tools/fork_engines.sh"
+  bad "$DIFFUSE not built — run tools/sh/fork_engines.sh"
 fi
 
 say "Weights"

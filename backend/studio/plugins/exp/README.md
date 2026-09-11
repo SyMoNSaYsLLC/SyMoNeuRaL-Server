@@ -89,8 +89,8 @@ deliberate pre-launch state, not a cleared posture — see request ledger R-98, 
 
 ## The page
 
-`page.html` + `page.js` → `python3 tools/build_exp.py` → `site/exp.html` + `site/exp.js`, then
-`python3 tools/build_cachebust.py` **last** (every generator run strips the stamps). Reached from
+`page.html` + `page.js` → `python3 tools/build/build_exp.py` → `site/exp.html` + `site/exp.js`, then
+`python3 tools/build/build_cachebust.py` **last** (every generator run strips the stamps). Reached from
 the rack row on the dashboard; there is no sitewide NAV entry, following studio and reinforce —
 `NAV` is baked into every page at generation time, so editing it makes every already-generated
 page stale.

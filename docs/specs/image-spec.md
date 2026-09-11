@@ -1,6 +1,6 @@
 # Restyling `site/image.html` — implementation brief
 
-Scope: the image surface. Implemented by editing `tools/build_pages.py` (`IMAGE_BODY`,
+Scope: the image surface. Implemented by editing `tools/build/build_pages.py` (`IMAGE_BODY`,
 `IMAGE_JS`, `SHELL`), `site/symoneural.css`, and `site/ui.js`. No new files, no new
 generator.
 
@@ -20,7 +20,7 @@ All measurements below were taken in system Chrome against the live local site a
 
 **D1 — the result caption is one 12px blob carrying three unrelated things.**
 
-`tools/build_pages.py:377-381` concatenates the prompt, a newline, and the whole provenance
+`tools/build/build_pages.py:377-381` concatenates the prompt, a newline, and the whole provenance
 chain into a single text node and leans on `white-space:pre-line`:
 
 ```js
@@ -48,7 +48,7 @@ image page is the only place a render appears without that split.
 
 **D2 — `.shot`/`.cap` is press-ganged into being an empty state.**
 
-`tools/build_pages.py:296-300`:
+`tools/build/build_pages.py:296-300`:
 
 ```html
 <div class="shot" style="grid-column:1/-1;border-style:dashed">
@@ -427,7 +427,7 @@ attribute hook cannot be styled by accident.
 
 > "The strip along the bottom is printed into the file, not added by this page."
 
-That is **false for API renders**. The watermark strip is drawn by `tools/build_gallery.py`
+That is **false for API renders**. The watermark strip is drawn by `tools/build/build_gallery.py`
 (`ImageDraw`, lines 115-126) for the front-page art only; `api.py`'s sd-cli invocation writes
 no strip. Reusing the lightbox unchanged would print a false provenance claim on the one page
 whose entire job is honest provenance.
@@ -503,9 +503,9 @@ faint run into its own line, which strengthens rather than weakens the Apache-2.
 
 ## 6. Order of work, and verification
 
-1. Edit `tools/build_pages.py` (`SHELL`, `IMAGE_BODY`, `IMAGE_JS`), `site/symoneural.css`,
+1. Edit `tools/build/build_pages.py` (`SHELL`, `IMAGE_BODY`, `IMAGE_JS`), `site/symoneural.css`,
    `site/ui.js`.
-2. `python3 tools/build_pages.py` — **then `python3 tools/build_cachebust.py`**, which stamps
+2. `python3 tools/build/build_pages.py` — **then `python3 tools/build/build_cachebust.py`**, which stamps
    `?v=<hash>` onto the changed `symoneural.css` and `ui.js`. `build_pages.py` emits bare
    paths; without the second step a warm browser gets new markup against a week-old
    stylesheet, which is the exact failure that generator was written for. Run both **twice and

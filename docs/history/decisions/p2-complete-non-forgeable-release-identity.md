@@ -88,7 +88,7 @@ manifest was confirmed passing with the tree dirty.
 
 ### P2-c — signed release-tag binding, deliberately outside the exporter
 
-New tool: `tools/verify_release_identity.sh`.
+New tool: `tools/audit/verify_release_identity.sh`.
 
 **Why separate.** The exporter must stay runnable with **zero keys** — its allow-list,
 protected-class, P1 and P2 refusals are controls that must work *today*, on this box. Folding
@@ -216,7 +216,7 @@ refusal — it is not among the 7 candidates. P2 checks run **before** the dry-r
 HEAD                       1f6b3ca9      previous HEAD  d73b74af
 git status --short          M docs/ops/EXPORTS.md   (pre-existing, untouched, unstaged)
 git diff --cached           Sept1.md, backend/apps/test_export_snapshot.py,
-                           tools/export_snapshot.sh, tools/verify_release_identity.sh
+                           tools/data/export_snapshot.sh, tools/audit/verify_release_identity.sh
 EXPORTS.md staged          0
 tests                      43 passed (7 + 15 + 21)
 sabotage                   3 of 3 prongs demonstrated against the pre-P2 implementation

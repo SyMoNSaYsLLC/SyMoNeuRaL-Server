@@ -334,7 +334,7 @@ virtualenv by design.
 ## 10. Wiring — NOT applied, for whoever owns `api.py`
 
 Guide is a library. It is deliberately not wired in: `backend/server.py`, `backend/apps/streamer/`,
-`tools/build_pages.py` and `site/` all belong to other agents in this session.
+`tools/build/build_pages.py` and `site/` all belong to other agents in this session.
 
 The two-export contract mirrors `apps/streamer/__init__.py`:
 

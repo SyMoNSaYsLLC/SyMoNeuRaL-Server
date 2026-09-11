@@ -32,7 +32,7 @@ The honest summary: **adopt the data layers, skip the orchestration layers.**
 | API / gateway | Envoy, Kong, Traefik | **Caddy** (TLS, WS upgrade, no rewrites) + **`symon-gateway`** (Rust, payload validation, forwards `/api/*` opaquely) | done, and smaller |
 | Service framework | FastAPI / NestJS | **FastAPI**, one process, `backend/server.py` | done |
 | LLM serving | vLLM, Triton, BentoML, KServe | **llama.cpp** `llama-server` + persona LoRA, started on demand inside `gpu.hold("chat")` | done — see the vLLM note below, and the BentoML note |
-| Model registry | MLflow, BentoML | **`run/registry.json`**, built out-of-band by `tools/build_registry.py`, read by `/api/studio/models` | done, deliberately minimal |
+| Model registry | MLflow, BentoML | **`run/registry.json`**, built out-of-band by `tools/build/build_registry.py`, read by `/api/studio/models` | done, deliberately minimal |
 | Image models | diffusers, A1111, ComfyUI, InvokeAI | **ComfyUI** (+ `ComfyUI-GGUF`, `custom_nodes/symoneural_gguf`) and **stable-diffusion.cpp** | done |
 | Agents / tools | LangChain, AutoGen, Semantic Kernel | **`apps/studio/agent.py`** + a stdlib tool registry + FastMCP | done, no framework |
 | Orchestration | Temporal, Ray, Celery, Airflow | **`scripts/gpu-governor.sh`** — a mutex, because there is one worker | see below |
@@ -77,7 +77,7 @@ an OCI image for a small `text_gen_runner` service that holds no weights, takes 
 and forwards to the `llama-server` this stack already runs. What it actually buys is a
 generated Dockerfile — the image's build recipe comes from `bentofile.yaml` rather than from a
 hand-maintained file that drifts, which is the one thing BentoML does here that the existing
-`ops/Containerfile` does not.
+`ops/deploy/Containerfile` does not.
 
 Two things to know before touching it: the workflow that drives it
 (`.github/workflows/bento-containerize.yml`) **has never run**, because this repository has no

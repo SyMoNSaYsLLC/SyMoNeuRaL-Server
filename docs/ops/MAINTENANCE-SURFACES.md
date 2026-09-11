@@ -62,5 +62,5 @@ still listed here is exactly the false claim described above. Note the rack call
 ## Taking it down
 
 Delete the row from the table here and the matching entry in `site/ui.js`, run the test, run
-`python3 tools/build_cachebust.py` twice (the second run must be a no-op), and deploy. The
+`python3 tools/build/build_cachebust.py` twice (the second run must be a no-op), and deploy. The
 banner disappears with the row; there is no separate switch to remember, which is the point.

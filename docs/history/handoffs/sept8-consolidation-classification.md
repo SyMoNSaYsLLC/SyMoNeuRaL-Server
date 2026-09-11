@@ -59,7 +59,7 @@ Verified twice on disk: `engines/symoneural-ui/LICENSE` and `ComfyUI-Installs/Te
 
 **MIT permits relicensing the combined work as proprietary provided the notice is retained — GPL-3.0 does not.** The Caddy pattern that `symoneural-web` uses (import Apache-2.0 upstream as a library, proprietary licence on the wrapper only, `THIRD_PARTY_NOTICES.md` for the 157 linked modules) is available for Apache/MIT and **unavailable for GPL-3.0**.
 
-The codebase already knows this. `tools/fork_engines.sh` defines `fork_llm`, `fork_diffuse`, `fork_listen`, `fork_miner` — **there is no `fork_ui`.** The pattern was never extended to it, and it cannot be.
+The codebase already knows this. `tools/sh/fork_engines.sh` defines `fork_llm`, `fork_diffuse`, `fork_listen`, `fork_miner` — **there is no `fork_ui`.** The pattern was never extended to it, and it cannot be.
 
 What *is* available: ComfyUI runs as **its own Python process** (proxied at `127.0.0.1:8188` in `ops/Caddyfile`; no systemd unit yet). Separate-process invocation is aggregation, not linking, so the project can ship and drive it under GPL-3.0 terms — first-party code calling it across a process boundary, GPL notice intact, no proprietary claim over ComfyUI itself.
 
@@ -127,7 +127,7 @@ services            symoneural-api      :8000    active/enabled
                     ComfyUI render      :8188    proxied in ops/Caddyfile; HANDOVER records
                                                  "Studio inference answers; render service 8188 does not"
 
-build path          tools/fork_engines.sh   references/contrib -> engines/
+build path          tools/sh/fork_engines.sh   references/contrib -> engines/
                     fork_llm | fork_diffuse | fork_listen | fork_miner    (no fork_ui)
 ```
 

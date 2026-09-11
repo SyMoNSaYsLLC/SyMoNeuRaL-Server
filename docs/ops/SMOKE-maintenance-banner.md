@@ -26,7 +26,7 @@ correct until the next reboot silently reverted it.
                                                                   -> ui.js?v=9972072f21
 
 The cache-bust stamp is not decoration: Caddy sets `Cache-Control: max-age=604800` on `*.js`,
-so an unstamped `ui.js` change is invisible for a week. `tools/build_cachebust.py` was run
+so an unstamped `ui.js` change is invisible for a week. `tools/build/build_cachebust.py` was run
 twice — 335 asset links across 26 pages, second run byte-identical.
 
 ## It renders — proved in a real browser, not by grep

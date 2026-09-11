@@ -79,7 +79,7 @@ Include at minimum existing tooling related to:
 Explicitly inspect existing locations including:
 
     control/
-    tools/modelops_inventory.py
+    tools/lib/modelops_inventory.py
     scripts/modelops/
     training/
     backend model-management code
@@ -327,7 +327,7 @@ Customer export must be:
     custody recorded
 
 Before proposing implementation, determine the current state of the sanctioned
-export tooling, including whether tools/export_snapshot.sh now exists or is
+export tooling, including whether tools/data/export_snapshot.sh now exists or is
 still only specified.
 
 The plan must define:
@@ -757,7 +757,7 @@ At minimum verify coverage of:
 
   control/
   control/models planning
-  tools/modelops_inventory.py
+  tools/lib/modelops_inventory.py
   scripts/modelops/
   training/
   backend model-management code
@@ -897,7 +897,7 @@ and must account for protected content such as:
 
 Confirm the actual state of:
 
-  tools/export_snapshot.sh
+  tools/data/export_snapshot.sh
 
 Do not state that it exists if it is only specified.
 Do not state that it is missing if it now exists.

@@ -1,7 +1,7 @@
 # Application verification — 2026-09-08
 
 Every declared surface, checked against what the box actually does. Measured with
-`tools/probe_apps.py` at HEAD `cf3fa6b1`, 22 surfaces, 155 routes, 105 OpenAPI paths,
+`tools/audit/probe_apps.py` at HEAD `cf3fa6b1`, 22 surfaces, 155 routes, 105 OpenAPI paths,
 124 boundary probes, 44 latency samples. Suite at the same HEAD: **2333 passed, 0 failed**.
 
 The vocabulary is the repo's own: **DEFINED** (named, no implementation claim) ·

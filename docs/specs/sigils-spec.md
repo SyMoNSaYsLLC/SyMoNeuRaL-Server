@@ -45,7 +45,7 @@ constrained variant of SyMoNeuRaL Image, not a new agent — the same FLUX.1-sch
 weights, the same `sd-cli`, a fixed prompt suffix, a smaller canvas — plus one genuinely new
 step: **producing an alpha channel, which FLUX does not give you.** Output is PNG with alpha,
 written to `backend/output/` and served as `/api/gen/<name>` (HANDOVER §3.3). The
-`tools/build_gallery.py` watermark bar is **not** applied; §5.6 says what replaces it, because
+`tools/build/build_gallery.py` watermark bar is **not** applied; §5.6 says what replaces it, because
 "do not apply it" on its own loses the provenance the bar exists to carry.
 
 ---
@@ -394,7 +394,7 @@ two traps in doing that naively.
 
 ### 5.6 The watermark, resolved rather than merely forbidden
 
-HANDOVER §5 item 13 says `tools/build_gallery.py`'s bar must not be applied. Mechanically that
+HANDOVER §5 item 13 says `tools/build/build_gallery.py`'s bar must not be applied. Mechanically that
 is already true — `build_gallery.py` is a separate script for homepage art and never touches
 `/api/image` output — so the real instruction is: **do not reuse `stamp()`, and do not let a
 later change add a caption pass to this surface.**

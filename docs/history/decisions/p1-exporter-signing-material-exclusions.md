@@ -184,7 +184,7 @@ contains them and is not in any manifest.
 ```
 HEAD                     bb9230f4
 git status --short        M docs/ops/EXPORTS.md   (pre-existing, untouched, never staged)
-git diff --cached         tools/export_snapshot.sh, backend/apps/test_export_snapshot.py
+git diff --cached         tools/data/export_snapshot.sh, backend/apps/test_export_snapshot.py
 EXPORTS.md staged        0        Sept1.md staged   0
 tests                    22 passed (7 A-2 + 15 P1)
 sabotage check           13/15 P1 tests fail against pre-P1 exporter

@@ -9,7 +9,7 @@ because the central question — *does a voice surface have to queue behind the 
 answered by measurement rather than by argument. **It does not.**
 
 > **Written against a moving tree, 2026-08-17 ~15:25.** Thirteen agent sessions were writing
-> this repo while this was measured. `backend/server.py` (2,167 lines), `tools/build_pages.py`,
+> this repo while this was measured. `backend/server.py` (2,167 lines), `tools/build/build_pages.py`,
 > `site/tuner.html`, `site/tuner-watch.html` and `site/project.html` were all in flight, so
 > **every `file:line` below must be re-grepped before it is trusted.** Nothing outside
 > `docs/specs/` was touched to produce this. The load average during every measurement was
@@ -238,7 +238,7 @@ comprehension at `:477` drops any pair that is not `> 0` on both, and `check_rat
 missing limiter as **unmetered** (deliberately — the comment there explains that building a
 zero-capacity bucket instead would deny every request forever). So the pair above is
 documentation of an intended budget; the operative change is `SYMONEURAL_RATE_VOICE=60/900` in
-`ops/symoneural-api.service`, and that needs a service restart, which is Garrett's to run.
+`ops/units/symoneural-api.service`, and that needs a service restart, which is Garrett's to run.
 Adding the row and stopping there gives you a route that throttles nothing and reports no error.
 
 ### 4.4 Concurrency: a blocking subprocess on an async loop, and 8 threads twice over

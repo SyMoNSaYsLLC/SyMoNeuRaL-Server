@@ -7,7 +7,7 @@ the hand-written `Unit(...)` rows in `api.py:build_status()`, `apps/controlboard
 disagree is the three-state-documents failure with a different filename.
 
 This file does **not** replace those. It is the fourth copy made deliberate: read by
-`tools/build_rack.py` so the pre-JS fallback stops carrying rows by hand, and reconciled
+`tools/build/build_rack.py` so the pre-JS fallback stops carrying rows by hand, and reconciled
 against `api.py` and the directory by `apps/test_roster.py`. The other copies stay
 independent on purpose — a tripwire wired to the thing it is watching is not a tripwire.
 
@@ -182,7 +182,7 @@ A directory here is not a claim to a row on the front page. These are not omissi
 2. Add the line here, in emit order.
 3. Type the new id into `EXPECTED` in `apps/test_status_rack.py` **and** the new count into
    the comment above it. That is the tripwire, and typing the number is the point of it.
-4. Run `python3 tools/build_rack.py` twice, diff, then `python3 tools/build_cachebust.py`.
+4. Run `python3 tools/build/build_rack.py` twice, diff, then `python3 tools/build/build_cachebust.py`.
 5. Check the one-screen budget: `.claude/HANDOVER.md` §0. Measure with a cloned `.unit`,
    never with `scrollHeight` — it floors at `clientHeight`, so it says "fits" and nothing
    about by how much.

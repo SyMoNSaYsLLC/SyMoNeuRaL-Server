@@ -34,7 +34,7 @@ cd symon-gateway && cargo build --release
 | `SYMON_GATEWAY_BIND` | `127.0.0.1:8000` | listen address |
 | `SYMON_API_UPSTREAM` | `http://127.0.0.1:8800` | where `/api/*` goes |
 | `SYMON_ENGINE_UPSTREAM` | `http://127.0.0.1:8800` | where `/v1/*` goes — see below |
-| `SYMON_WASM_LIMITER` | `ops/middleware/limiter.wasm` | validator module |
+| `SYMON_WASM_LIMITER` | `ops/gateway/middleware/limiter.wasm` | validator module |
 | `SYMON_MAX_TOKENS` | `100000` | ceiling, estimated by whitespace |
 | `SYMON_MAX_CHAT_BODY` | `8388608` | byte ceiling on `/v1/chat/completions` **only** |
 | `SYMON_TRUST_FORWARDED` | `0` | set to `1` **only** when Caddy is in front — see below |
@@ -138,14 +138,14 @@ to take the lock.
 
 ### 2. The WASM validator is not compiled
 
-Go is not installed here, so `ops/middleware/limiter.wasm` does not exist. The gateway loads it
+Go is not installed here, so `ops/gateway/middleware/limiter.wasm` does not exist. The gateway loads it
 if present and otherwise enforces the same ceiling natively, reporting
 `"validator": "native-fallback"` on `/healthz` rather than quietly appearing to be sandboxed.
 
 Build it with **`GOOS=wasip1`**, not `GOOS=js`:
 
 ```bash
-GOOS=wasip1 GOARCH=wasm go build -o ops/middleware/limiter.wasm ./ops/middleware
+GOOS=wasip1 GOARCH=wasm go build -o ops/gateway/middleware/limiter.wasm ./ops/middleware
 ```
 
 `GOOS=js GOARCH=wasm` emits a module that imports the `gojs` namespace and expects

@@ -204,7 +204,7 @@ def read_app_config(name: str) -> dict:
 def list_models() -> dict:
     """The model inventory, read from run/registry.json.
 
-    This is the pre-computed list tools/build_registry.py writes out-of-band. It is read
+    This is the pre-computed list tools/build/build_registry.py writes out-of-band. It is read
     rather than scanned on purpose: walking the HF cache and parsing GGUF headers is a
     control-plane job that has to stay off the live request path.
     """
@@ -214,7 +214,7 @@ def list_models() -> dict:
     f = run / "registry.json"
     if not f.is_file():
         return {"error": "no_registry", "expected": str(f),
-                "detail": "run python3 tools/build_registry.py to produce it"}
+                "detail": "run python3 tools/build/build_registry.py to produce it"}
     try:
         doc = json.loads(f.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:

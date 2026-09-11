@@ -75,7 +75,7 @@ status is `unknown-blocked` and the entry is wrong today.
 
 ## 2a. ML-3 — the manifest covers 11 of 28 weight files
 
-**Measured 2026-08-22 by `tools/modelops_inventory.py`, which did not exist when §1 was
+**Measured 2026-08-22 by `tools/lib/modelops_inventory.py`, which did not exist when §1 was
 written.** §1's eleven rows are complete *as a reading of the manifest*. They are not a reading
 of the disk.
 

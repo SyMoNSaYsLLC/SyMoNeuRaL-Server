@@ -63,7 +63,7 @@ unchanged and remains the authority on what `ready` would take.
 ---
 
 > **Re-grep every `file:line` below before trusting it.** `backend/server.py` and
-> `tools/build_pages.py` were being edited by other agents *during* this audit — `GATEWAY_BODY`
+> `tools/build/build_pages.py` were being edited by other agents *during* this audit — `GATEWAY_BODY`
 > moved from 1221 to 1224 and the gateway `Unit(...)` from 1391 to 1405 while it was being
 > written. Line numbers are given as a courtesy; **the symbol name is the real citation**, and
 > `backend/apps/gateway/__init__.py` is the one file here that nobody else was touching.
@@ -378,7 +378,7 @@ a commit on its own.
 false**, and this repo's recurring failure class is a live page contradicting the API. Two
 things compound it:
 
-- **`site/gateway.html` is generated**, from `GATEWAY_BODY` in `tools/build_pages.py` (line 1224
+- **`site/gateway.html` is generated**, from `GATEWAY_BODY` in `tools/build/build_pages.py` (line 1224
   at time of writing, and already moved once during this audit).
   Editing the HTML directly is thrown away on the next generator run.
 - **Static files do not reach a visitor until `sudo scripts/deploy.sh --prune` runs**, which an
@@ -391,7 +391,7 @@ second half needs Garrett. It is item 8b below for exactly that reason.
 
 `gateway.html:97–112` — "This is a 16 GB consumer card, and it is a test bench", explaining that
 chat and image cannot co-reside and that you may be queued behind someone. It comes from the
-shared `SHELL` in `tools/build_pages.py:72–73` and appears on all seven surface pages.
+shared `SHELL` in `tools/build/build_pages.py:72–73` and appears on all seven surface pages.
 
 The Gateway is `bus="net"` (in that same `Unit(id="gateway", ...)`, `backend/server.py:1406`). It never takes the GPU lock and can never
 queue behind a render. Nothing in the callout is false about the machine; it is simply not
@@ -474,7 +474,7 @@ measured thing this surface has ever produced.
 Free, but it is a company key with an owner, and HANDOVER §5 item 0 sets the precedent that key
 generation is Garrett's call and not an agent's. **Not in `/tmp` this time — that is what lost
 the last one.** The private key goes on Garrett's own machine and never into
-`ops/symoneural-api.service` or any web-process environment; the module's docstring (49–51) is
+`ops/units/symoneural-api.service` or any web-process environment; the module's docstring (49–51) is
 already explicit and item 9 depends on it.
 
 **8. (b) Write and deploy the licensing contract to Nile.** A TRC-20-denominated licensing
@@ -484,12 +484,12 @@ dependency). An agent can draft the Solidity **(a)**; deploying it under a compa
 
 **8b. (b, coupled to 8) Update `GATEWAY_BODY` and redeploy the page.** Per flag 2:
 `gateway.html:89–91` asserts "no deployed contract", which item 8 makes false. Edit
-`GATEWAY_BODY`, `tools/build_pages.py:1224` **(a)**, run the generator twice and diff **(a)**, then
+`GATEWAY_BODY`, `tools/build/build_pages.py:1224` **(a)**, run the generator twice and diff **(a)**, then
 `sudo scripts/deploy.sh --prune` **(b)**. This is not optional cleanup — a live page
 contradicting the API is this repo's most-repeated failure.
 
 **9. (b) Set `SYMONEURAL_GATEWAY_ENABLED=1`, `SYMONEURAL_GATEWAY_NETWORK=nile`, `SYMONEURAL_GATEWAY_CONTRACT=T…`.**
-Needs an edit to the `@@ROOT@@` template in `ops/symoneural-api.service` and a reinstall plus
+Needs an edit to the `@@ROOT@@` template in `ops/units/symoneural-api.service` and a reinstall plus
 `sudo systemctl restart symoneural-api`. Contract address and network name are fine there.
 **A private key never is.**
 

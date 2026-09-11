@@ -135,7 +135,7 @@ One file changed: **`Sept1.md` §22.3** — the P3 block, which previously read 
 *recommendation*, now records the confirmed ruling plus the build-deb finding and the
 `--prune` precondition. `+76 / -10`.
 
-**Verified untouched and byte-identical:** `tools/export_snapshot.sh`,
+**Verified untouched and byte-identical:** `tools/data/export_snapshot.sh`,
 `backend/apps/test_export_snapshot.py` (**P1 byte-identical**; 22 tests re-run, all pass),
 `docs/ops/EXPORTS.md` (unstaged, `EXPORTS.md staged: 0`), `site/`, `scripts/deploy.sh`, git
 signing configuration, service and runtime configuration, release feeds, customer manifests.

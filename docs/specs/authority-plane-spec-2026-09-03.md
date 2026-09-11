@@ -93,7 +93,7 @@ Classification per the mission: `DOCUMENTATION_ONLY` (prose an agent is asked to
 |---|---|---|
 | `◻ #NN — Title` block with `owner:` / `check:` / `note:` lines | `PROJECT-TASKS.md` | DOCUMENTATION_ONLY |
 | `TASK: / ROLE: / MUTATION AUTHORITY:` preamble an agent types | `AGENTS.md` | DOCUMENTATION_ONLY |
-| Percentage recomputed from declared checks | `tools/build_progress.py`, `tools/archive_tasks.py` | DURABLE (measures *checks*, not authority) |
+| Percentage recomputed from declared checks | `tools/build/build_progress.py`, `tools/lib/archive_tasks.py` | DURABLE (measures *checks*, not authority) |
 | A task id reaching any effectful code path | — | **ABSENT** |
 
 **Required:** `TaskRecord` with a stable id that is presented on every mutating call and recorded in

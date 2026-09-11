@@ -175,7 +175,7 @@ In order, and none of it is done:
 2. **A browser run** establishing responsive and visual parity against the legacy surface.
 3. **A serving decision.** `/demo/dispatchos` is currently a FastAPI route. Pointing it at Next
    means `ops/Caddyfile` routing that path to a Next process, which means a new systemd unit
-   and a new listener — neither exists, and `ops/install-runtime.sh`'s `UNITS` array does not
+   and a new listener — neither exists, and `ops/deploy/install-runtime.sh`'s `UNITS` array does not
    mention one.
 4. **Keep the basicauth block.** Whatever serves the path, the door must not move.
 5. **A rollback** that is one Caddyfile change back to the FastAPI route.

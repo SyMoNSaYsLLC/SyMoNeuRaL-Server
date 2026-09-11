@@ -340,7 +340,7 @@ header/footer and inline account controller. Implemented behavior:
    symonsayadmin@symoneural.com. That is unusual enough that a visitor must be told before
    they choose a password, and it is exactly the kind of thing this site says out loud.
 
-5. **The forms need inline JS**, which means `tools/build_pages.py` conventions apply if it
+5. **The forms need inline JS**, which means `tools/build/build_pages.py` conventions apply if it
    is ever generated there. **THE ESCAPING BUG (HANDOVER §2f):** those JS blocks are normal
    triple-quoted Python strings, not raw — write `\\n`, not `\n`, or the emitted JavaScript
    contains a real newline inside a string literal and the whole page's script dies

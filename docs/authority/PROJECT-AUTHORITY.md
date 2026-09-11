@@ -121,7 +121,7 @@ do"*. Everything you need is on disk. Read it, then say what you are picking up 
 state of this project" without a single question.
 
 ```bash
-python3 tools/build_progress.py     # rebuild the page from the disk -- never trust a stale one
+python3 tools/build/build_progress.py     # rebuild the page from the disk -- never trust a stale one
 xdg-open run/progress.html          # or open file:///home/google/Symoneural/run/progress.html
 sed -n '1,80p' PROJECT-TASKS.md     # the standing rules for the task list itself
 ```
@@ -180,7 +180,7 @@ never turned on. Whether that was deliberate is with the owner (QUESTIONS-FOR-OW
 17). Until it is answered, **regenerate before you read the number**:
 
 ```bash
-python3 tools/build_intake.py && python3 tools/archive_tasks.py && python3 tools/build_progress.py
+python3 tools/build/build_intake.py && python3 tools/lib/archive_tasks.py && python3 tools/build/build_progress.py
 ```
 
 The instruction above is still right — do not write a barrier count into this file. It just
@@ -195,7 +195,7 @@ to make the number smaller is the third state this file already rejects.
 ### Working a task
 
 Tasks live in `PROJECT-TASKS.md` as `◻ #41 — Title` with an **indented** detail block. The
-indentation is structural, not cosmetic: `tools/archive_tasks.py` ends a task's block at the
+indentation is structural, not cosmetic: `tools/lib/archive_tasks.py` ends a task's block at the
 first non-blank column-zero line, so an unindented line silently truncates its own task and
 takes every line under it out of the task.
 
@@ -233,8 +233,8 @@ saying what judged it finished. Nothing is deleted; the list stays a reading of 
 ### Completing a task — the sequence, every time
 
 ```bash
-python3 tools/build_intake.py        # assignments  -> INTAKE.md (+ review/RETIRED-*.md)
-python3 tools/build_progress.py      # everything   -> run/progress.html
+python3 tools/build/build_intake.py        # assignments  -> INTAKE.md (+ review/RETIRED-*.md)
+python3 tools/build/build_progress.py      # everything   -> run/progress.html
 # run BOTH twice and diff: these generators re-read their own output, and one that does
 # not recognise something it emits will accumulate it, one copy per run. That bug has
 # now happened three times in this repo. Two runs with no diff is the check that catches it.

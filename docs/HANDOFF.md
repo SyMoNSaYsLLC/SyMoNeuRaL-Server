@@ -20,16 +20,16 @@ against a measured ~5 MB/s ceiling, so it takes hours, and it is designed to sur
 session ending.
 
 ```bash
-python3 tools/storage_reorg.py status          # the ledger
-python3 tools/storage_reorg_supervisor.py --status
-python3 tools/storage_final_report.py          # every gate, measured, ~10 min
+python3 tools/data/storage_reorg.py status          # the ledger
+python3 tools/data/storage_reorg_supervisor.py --status
+python3 tools/data/storage_final_report.py          # every gate, measured, ~10 min
 tail -f .private/storage-reorg/latest.log
 ```
 
 ### What will bite you
 
-1. **EXACTLY ONE storage mutation owner may exist.** `tools/storage_reorg.py` is it, and
-   `tools/storage_reorg_supervisor.py` keeps one alive across restarts (it starts no
+1. **EXACTLY ONE storage mutation owner may exist.** `tools/data/storage_reorg.py` is it, and
+   `tools/data/storage_reorg_supervisor.py` keeps one alive across restarts (it starts no
    transfers itself). Before any storage action, check `--status`. **Do not start a second
    owner and do not kill the running one** — an upload interrupted mid-flight costs the
    whole transfer again unless the remote already happens to hold it.
@@ -91,7 +91,7 @@ tail -f .private/storage-reorg/latest.log
 
 11. **`cd backend && pytest apps -q` runs an eleven-minute, 48 GB whole-disk scan, and
     rewrites nine tracked files.** `apps/test_restore_manifests.py:158` shells out to
-    `tools/build_restore_manifests.py` — twice, because `_generate()` is called for both the
+    `tools/build/build_restore_manifests.py` — twice, because `_generate()` is called for both the
     determinism check and the HEAD comparison. That is correct behaviour for that test and a
     trap for anyone who just wants a suite number: the run does not print for ten minutes, it
     looks hung (the process sits in `do_sys_poll`, which is the scan, not a deadlock), and it
@@ -111,7 +111,7 @@ tail -f .private/storage-reorg/latest.log
         apps/test_runtimes_registry.py apps/test_governor_paths.py -q
     ```
 
-    If you do want the manifests regenerated, run `tools/build_restore_manifests.py` on
+    If you do want the manifests regenerated, run `tools/build/build_restore_manifests.py` on
     purpose and commit the result, rather than discovering it in `git status` afterwards. Note
     that it is currently *due*: the manifests record nvcc 13.3 and driver 610.57.04, and the
     box was upgraded to 13.4 / 615.71.09 on 2026-09-09 — see `docs/ops/RUNTIMES.md`.
@@ -180,8 +180,8 @@ tail -f .private/storage-reorg/latest.log
 ### What is deliberately not done yet
 
 The post-transfer stages are gated on the transfers finishing, in this order: Drive dedupe
-(`tools/drive-dedupe.py`, after organization, per the spec), cross-root audit
-(`tools/cross_root_audit.py scan`), catalogue publication (`tools/drive_catalog.py build`
+(`tools/data/drive-dedupe.py`, after organization, per the spec), cross-root audit
+(`tools/audit/cross_root_audit.py scan`), catalogue publication (`tools/data/drive_catalog.py build`
 then `upload`), then repository closure — final commit, manifests, tests, `git fsck`, one
 bundle regeneration, clone, restore-verify. **Do not regenerate the bundle before the
 tracked storage changes stop.**

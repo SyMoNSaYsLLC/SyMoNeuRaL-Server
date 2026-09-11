@@ -26,7 +26,7 @@
 Add fail-closed snapshot exporter
 
   backend/apps/test_export_snapshot.py | 162 +++++
-  tools/export_snapshot.sh             | 192 +++++
+  tools/data/export_snapshot.sh             | 192 +++++
   2 files changed, 354 insertions(+)
 ```
 
@@ -92,7 +92,7 @@ Tracked modifications 0 · staged 0 · planning file still untracked · both A-2
 
 ```
 COMMITTED PATHS:
-  tools/export_snapshot.sh
+  tools/data/export_snapshot.sh
   backend/apps/test_export_snapshot.py
 
 UNAUTHORIZED PATHS COMMITTED: NONE

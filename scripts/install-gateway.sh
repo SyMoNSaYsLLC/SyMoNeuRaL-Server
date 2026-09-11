@@ -44,7 +44,7 @@ if [ ! -x "$BIN" ]; then
 fi
 
 echo "installing unit -> $UNIT"
-sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/symoneural-gateway.service" > "$UNIT.tmp"
+sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/units/symoneural-gateway.service" > "$UNIT.tmp"
 install -m 644 -o root -g root "$UNIT.tmp" "$UNIT"
 rm -f "$UNIT.tmp"
 echo "  unit points at $ROOT"

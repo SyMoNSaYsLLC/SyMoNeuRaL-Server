@@ -41,7 +41,7 @@ every other surface**; the two blast radii should not fall together.
 ### Where the variables go — this surface differs from `asicminer`
 
 `miner.env` is read by this module itself, on every status poll. So unlike the ASIC surface,
-you do **not** need `Environment=` lines in `ops/symoneural-api.service`: edit the file and
+you do **not** need `Environment=` lines in `ops/units/symoneural-api.service`: edit the file and
 watch the rack unit move `offline → ready` without restarting the API.
 
 An **exported variable always wins.** `miner.env` never overwrites a variable already in the

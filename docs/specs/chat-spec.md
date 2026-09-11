@@ -3,13 +3,13 @@
 **Goal:** the llama.cpp web UI *layout* (slim left icon rail, centred empty state, one large
 rounded composer) rendered in the SyMoNeuRaL palette and component vocabulary.
 
-**Scope of the change:** `tools/build_pages.py` → `CHAT_BODY` (and two named lines in `CHAT_JS`),
+**Scope of the change:** `tools/build/build_pages.py` → `CHAT_BODY` (and two named lines in `CHAT_JS`),
 plus one appended block in `site/symoneural.css`. **`SHELL` is not touched** — it is shared by
 `image.html`, `ravencalc.html`, `remix.html` and `miner.html`, and every one of them would
 inherit the change.
 
 > **Before you start — this spec was written against a moving tree.** Concurrent agents were
-> editing `tools/build_pages.py`, `site/chat.html`, `site/console.js`, `backend/server.py` and
+> editing `tools/build/build_pages.py`, `site/chat.html`, `site/console.js`, `backend/server.py` and
 > `tests/frontend.mjs` while it was being written. Two consequences, both verified at the time
 > of writing:
 > - Every `build_pages.py` line number cited below is **still correct**: the concurrent change
@@ -114,7 +114,7 @@ two sizes only: **9999px** for every circular control, **24px** for the composer
 
 ## 3. Markup skeleton
 
-Replaces `CHAT_BODY` in `tools/build_pages.py` (~line 143). **Every existing `id` is preserved
+Replaces `CHAT_BODY` in `tools/build/build_pages.py` (~line 143). **Every existing `id` is preserved
 byte-for-byte**, so `CHAT_JS` keeps working; only classes and nesting change.
 
 ```html
@@ -220,13 +220,13 @@ every file in `site/` and the generator:
 $ grep -rn "\.cu\b\|\.cu-" site/symoneural.css site/rack-detail.css site/swagger-dark.css
   (no matches — namespace free)
 
-$ grep -rn 'class="[^"]*cu-' site/ tools/build_pages.py
+$ grep -rn 'class="[^"]*cu-' site/ tools/build/build_pages.py
   (no matches)
 
 $ for n in cu-shell cu-rail cu-railbtn cu-main cu-col cu-empty cu-log \
            cu-box cu-field cu-tools cu-send cu-model cu-head cu-params; do
     grep -rn -- "$n" site/symoneural.css site/rack-detail.css site/*.html \
-                     site/console.js site/ui.js tools/build_pages.py | wc -l
+                     site/console.js site/ui.js tools/build/build_pages.py | wc -l
   done
   0 0 0 0 0 0 0 0 0 0 0 0 0 0
 ```
@@ -391,7 +391,7 @@ describe the redesign as "keeping" one.
 
 The live behaviour is entirely `CHAT_JS` plus the `status()`/`api()` helpers inlined by `SHELL`.
 
-All line numbers below are **`tools/build_pages.py`** (the file you are editing), not `site/chat.html`.
+All line numbers below are **`tools/build/build_pages.py`** (the file you are editing), not `site/chat.html`.
 
 | Binding | `build_pages.py` | Survives? |
 |---|---|---|

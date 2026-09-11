@@ -6,10 +6,10 @@
 #   symoneural-ui.sh status    up/down, pid, port, and what the card looks like
 #   symoneural-ui.sh log       recent server output
 #
-# The server is `symoneural-ui`, produced by `tools/fork_render_ui.sh` from the
+# The server is `symoneural-ui`, produced by `tools/sh/fork_render_ui.sh` from the
 # vendored upstream tree in `external/`. It is a derived tree and gitignored, exactly like
 # the two engines beside it: the tracked artefact is the script that makes it. If it is not
-# on disk, `tools/fork_render_ui.sh` puts it there -- do not go looking for it in
+# on disk, `tools/sh/fork_render_ui.sh` puts it there -- do not go looking for it in
 # `external/`, which is read by people and never by code.
 #
 # Loopback only, deliberately. The public surface is FastAPI's -- the Studio page reaches
@@ -55,7 +55,7 @@ free_vram() {
 case "${1:-status}" in
   start)
     if running; then echo "already up (pid $(cat "$PIDFILE")) on $HOST:$PORT"; exit 0; fi
-    [ -x "$VENV" ] || { echo "no server at $COMFY -- run tools/fork_render_ui.sh" >&2; exit 1; }
+    [ -x "$VENV" ] || { echo "no server at $COMFY -- run tools/sh/fork_render_ui.sh" >&2; exit 1; }
     # Relink our custom node before every start. engines/ is gitignored in full, so the
     # source of truth for `symoneural_gguf` lives in the repo and this is what puts it where
     # the server looks. Delete symoneural-ui and re-fork it and the node comes back

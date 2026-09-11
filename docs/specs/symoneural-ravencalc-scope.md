@@ -83,7 +83,7 @@ There is a **standing SymPy rebrand request**, which #84 names and deliberately 
 *"Same page as the standing SymPy rebrand request, and deliberately not doing it: that is its own
 task, and re-typing the word here is the edit that would hide it."* The repo also carries a vendor
 facade and its guards — `symbolic.py`, `backend/apps/test_brand_boundary.py`,
-`tools/prove_vendor_facade.py`.
+`tools/audit/prove_vendor_facade.py`.
 
 So the choice is **not** technical, and it should not be made by whoever next edits the page:
 

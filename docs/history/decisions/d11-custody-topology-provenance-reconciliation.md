@@ -110,8 +110,8 @@ media. Measured:**
 
 ```
 backend/ ops/ site/  files referencing removable|luks|cryptsetup   0
-tools/export_snapshot.sh  references                              0
-tools/verify_release_identity.sh  references                      0
+tools/data/export_snapshot.sh  references                              0
+tools/audit/verify_release_identity.sh  references                      0
 ```
 
 The exporter, the verifier, every launcher, the API, the entitlement path — **none** has any

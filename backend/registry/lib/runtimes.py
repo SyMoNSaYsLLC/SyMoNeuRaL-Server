@@ -14,7 +14,7 @@ its port in `ops/PORTS.tsv`, and nothing asserted that those four agreed.
 **It stores no measurements.** Sizes, build dates and resolved library paths are readings
 that go stale on the next rebuild or `update-alternatives`, and a stale reading in a
 hand-maintained file is the carried-forward figure this repository has been bitten by.
-`tools/build_runtimes.py` measures those fresh and dates them in the generated Markdown.
+`tools/build/build_runtimes.py` measures those fresh and dates them in the generated Markdown.
 
 **It stores no line numbers.** A call site is a file plus a literal fragment, and
 `call_site()` resolves the current line by reading the file. A pinned line number would go

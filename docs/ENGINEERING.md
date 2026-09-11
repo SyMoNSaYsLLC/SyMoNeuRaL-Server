@@ -15,8 +15,8 @@ not spent watching a progress bar. Launch subagents in one message so they actua
 parallel. The GPU is available to agents that genuinely need it.
 
 Scope agents to files nobody else is writing. The real hazard here is the generator scripts:
-`tools/build_pages.py`, `tools/build_rack.py`, `tools/build_console.py`, `tools/build_cost.py`, `tools/build_stack.py`,
-`tools/build_training.py` and `tools/build_gallery.py` all rewrite files under `site/`, so two writers in
+`tools/build/build_pages.py`, `tools/build/build_rack.py`, `tools/build/build_console.py`, `tools/build/build_cost.py`, `tools/build/build_stack.py`,
+`tools/build/build_training.py` and `tools/build/build_gallery.py` all rewrite files under `site/`, so two writers in
 that directory will clobber each other. Safe parallel
 tracks are read-only audits, brand-new standalone files, docs, and tests.
 
@@ -112,16 +112,16 @@ the protecting. If one is ever added, audit what is tracked first.
 
 ```bash
 ./scripts/fetch-models.sh            # weights -> models/ (ungated, Apache-2.0 sources)
-python3 tools/build_pages.py       # chat/image/calc/remix   -> site/*.html
-python3 tools/build_rack.py        # live rack               -> site/index.html
-python3 tools/build_console.py     # control board           -> site/index.html
-python3 tools/build_cost.py        # Owned vs Rented         -> site/documentation.html
-python3 tools/build_stack.py       # Inference Architecture  -> site/documentation.html
-python3 tools/build_training.py    # manual                  -> site/training.html
-python3 tools/build_tabs.py        # one-screen front page   -> site/index.html
-python3 tools/build_gallery.py     # homepage art (uses GPU) -> site/art-*.png
-python3 tools/build_gallery.py --restamp   # redraw the watermark bar only -- NO GPU
-python3 tools/build_cachebust.py   # ALWAYS LAST -- see below
+python3 tools/build/build_pages.py       # chat/image/calc/remix   -> site/*.html
+python3 tools/build/build_rack.py        # live rack               -> site/index.html
+python3 tools/build/build_console.py     # control board           -> site/index.html
+python3 tools/build/build_cost.py        # Owned vs Rented         -> site/documentation.html
+python3 tools/build/build_stack.py       # Inference Architecture  -> site/documentation.html
+python3 tools/build/build_training.py    # manual                  -> site/training.html
+python3 tools/build/build_tabs.py        # one-screen front page   -> site/index.html
+python3 tools/build/build_gallery.py     # homepage art (uses GPU) -> site/art-*.png
+python3 tools/build/build_gallery.py --restamp   # redraw the watermark bar only -- NO GPU
+python3 tools/build/build_cachebust.py   # ALWAYS LAST -- see below
 ./scripts/symoneural.sh on|off|status   # the live API (off is the kill switch)
 sudo ./scripts/deploy.sh                # site/ -> /var/www/symoneural (needs a password)
 ```
@@ -135,7 +135,7 @@ assets are cacheable for a week with no way to invalidate them. This is not theo
 So: **regenerate, then stamp, then look at `git status`** — if a page you did not touch is still
 modified, you skipped the stamper. It is idempotent and cheap; there is no reason not to run it.
 
-The generator scripts are idempotent and must stay that way — `tools/build_console.py` once nested
+The generator scripts are idempotent and must stay that way — `tools/build/build_console.py` once nested
 folds inside folds when run twice. **Run every generator twice and `diff` before committing.**
 The BEGIN/END marker strings are the contract: change a marker in a generator and you must
 change it in the HTML in the same commit, or the generator stops finding its block and appends

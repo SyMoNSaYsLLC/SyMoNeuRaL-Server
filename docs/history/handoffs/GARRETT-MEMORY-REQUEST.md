@@ -171,7 +171,7 @@ Dispositions are exactly: `SUMMARIZED_AND_INDEXED`, `AUTHORITATIVE_IN_GIT`,
 | S02 | tracked working tree | current source | now | HEAD tree | clean | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | none | 0 modifications |
 | S03 | `external/` | third-party reference | — | 149 GB, 82 entries | ignored | `PRIVATE_BACKUP_ONLY` | yes | no | not archived — see notes | third-party licences | read-only by owner rule; **not** in any backup; recoverable from upstreams |
 | S04 | `archive/` | bulk, evidence, transcripts | — | 285 GB | ignored | `PRIVATE_BACKUP_ONLY` | yes | no | not archived | mixed | too large; contents indexed in `docs/ops/CONSOLIDATION-20260908.md` |
-| S05 | the five derived engine trees | derived binaries | — | 11 GB | ignored | `AUTHORITATIVE_IN_GIT` (recipe) | yes | recipe only | no | GPL-3.0 for 2 of 5 | rebuilt by `tools/fork_engines.sh` |
+| S05 | the five derived engine trees | derived binaries | — | 11 GB | ignored | `AUTHORITATIVE_IN_GIT` (recipe) | yes | recipe only | no | GPL-3.0 for 2 of 5 | rebuilt by `tools/sh/fork_engines.sh` |
 | S06 | worktrees + stash | uncommitted work | — | 4 worktrees, 0 stashes | 7 carried uncommitted state | `PRIVATE_BACKUP_ONLY` | yes | no | `metadata/git/worktree-*` | none | status + diff + diff-binary + untracked captured |
 | S07 | `/home/google/.claude` | Claude Code state | 2026-07 → now | 18,204 files | live | `PRIVATE_BACKUP_ONLY` | yes | no | in pre-migration ZIP | **credentials** | 194 transcripts, 3 memory files |
 | S08 | `/home/google/.config/Claude` | Claude Desktop state | — | 14 GB (≈120 MB unique) | live | `PRIVATE_BACKUP_ONLY` | yes | no | in pre-migration ZIP | **credentials** | 12 GB `vm_bundles` + caches excluded by name |
@@ -354,7 +354,7 @@ different purpose — do not delete them too.
 **`symoneural-miner/` — a working miner, not first-party.** Class 3: a derivative of GPL-3.0
 `kawpowminer`. Evidence: its `LICENSE` is the GNU GPL v3 text, and
 `external/contrib/build-kawpowminer.sh` clones `RavenCommunity/kawpowminer` at 1.2.4 and
-compiles from that tree. `tools/fork_engines.sh` **refuses** to stamp the SyMoNeuRaL licence
+compiles from that tree. `tools/sh/fork_engines.sh` **refuses** to stamp the SyMoNeuRaL licence
 on it, and that refusal is tested.
 
 **`symoneural-miner-core/` — first-party, and not a miner.** Written from published

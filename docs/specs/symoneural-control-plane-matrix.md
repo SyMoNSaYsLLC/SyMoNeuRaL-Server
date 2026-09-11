@@ -117,7 +117,7 @@ nobody reads its absence as an oversight.
 | **OpenEmbedded / Yocto** | customer image build | **local/dev only** — `docs/ops/YOCTO-LAYER-LICENSES.md`; no customer artefact |
 | **wizard** | guided setup that asks rather than assumes | **available** — streamer guide setup asks, does not geolocate |
 | **tuner** | supervised adapter/LoRA training | **built** — `backend/apps/studio/plugins/reinforce`; `train` reads `ready` |
-| **tester** | blinded probe harness | **built** — `tools/bootcamp_referee.py` |
+| **tester** | blinded probe harness | **built** — `tools/lib/bootcamp_referee.py` |
 | **by-the-book** | refuses undocumented shortcuts and unreviewed promotion | **enforced** — six activation gates, exit 3 |
 | **off-the-record** | bypass audit / security / provenance | **FORBIDDEN.** Bootcamp §4a. No implementation, and none is wanted |
 
@@ -369,7 +369,7 @@ step; paperwork is.
 
 Bootcamp §5 rates Option 1 (metadata-only inspection) a **STARTER**, and this matrix agrees for a
 reason worth stating: the reader is **already built and already total**. `api.py:197 _gguf_arch`
-and `tools/bootcamp_scout.py:46 gguf_arch` both parse GGUF headers and return `None` rather than
+and `tools/lib/bootcamp_scout.py:46 gguf_arch` both parse GGUF headers and return `None` rather than
 raising on a truncated file, a non-GGUF file or an unknown value type. Measured today: it reads
 `clip`, `gpt-oss`, `qwen2`, `qwen3`, `qwen35` across 54 files.
 

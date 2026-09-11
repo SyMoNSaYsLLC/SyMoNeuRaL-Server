@@ -38,7 +38,7 @@ learned model payloads  0
 ## Three findings that changed the recommendations
 
 **1. Wrong generator named (affects A-3 and A-6).**
-`Sept1.md` says `tools/build_stack.py` owns `livestack.html`. Measured: that file has **zero** `livestack` references and generates `documentation.html`. The real owner is **`tools/build_split.py`**. As written, A-3's third check can never pass meaningfully.
+`Sept1.md` says `tools/build/build_stack.py` owns `livestack.html`. Measured: that file has **zero** `livestack` references and generates `documentation.html`. The real owner is **`tools/build/build_split.py`**. As written, A-3's third check can never pass meaningfully.
 
 **2. Three check lines are already green.**
 They would pass with no work done and prove nothing:

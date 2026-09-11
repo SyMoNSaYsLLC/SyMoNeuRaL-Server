@@ -75,7 +75,7 @@ name, so this process can never be pointed at an arbitrary host.
 
 ## Switching it on -- the whole operator procedure
 
-The three values above go in a systemd drop-in rather than in `ops/symoneural-api.service`,
+The three values above go in a systemd drop-in rather than in `ops/units/symoneural-api.service`,
 because a drop-in is one command, is reversible by deleting one file, and does not modify a
 tracked template for what is still a testnet experiment. When a real mainnet contract exists,
 move them into the `@@ROOT@@` template so a reinstall carries them.

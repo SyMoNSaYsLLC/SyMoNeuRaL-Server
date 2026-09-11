@@ -236,7 +236,7 @@ Two constraints on the `hardware` block, both from rules already in force:
   table `plugins/reinforce/registry.py` exists to prevent, and it goes stale the first time a
   quantisation changes. Each figure carries its label.
 - **A node's docs page is public output** and inherits the assertions
-  `tools/build_studio.py` already makes: no `corpus.jsonl`, no `build_dataset`, no filesystem
+  `tools/build/build_studio.py` already makes: no `corpus.jsonl`, no `build_dataset`, no filesystem
   paths off this box.
 
 ---

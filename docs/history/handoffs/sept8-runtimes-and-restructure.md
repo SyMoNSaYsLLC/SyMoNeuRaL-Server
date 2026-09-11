@@ -94,7 +94,7 @@ for this and the second one caught two more, both consistent.
 
 ```
 HEAD 0c3e0777, tree clean, suite 2333/0.
-Next: first-party miner. Adopt Apache-2.0 cpp-kawpow via tools/index_references.py adopt,
+Next: first-party miner. Adopt Apache-2.0 cpp-kawpow via tools/lib/index_references.py adopt,
 stand up a CPU path that passes its own progpow test vectors, then the CUDA kernel.
 Do not move /var/lib/caddy state -- copy it.
 ```

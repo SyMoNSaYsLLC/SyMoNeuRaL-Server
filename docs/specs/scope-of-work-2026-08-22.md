@@ -22,7 +22,7 @@ the repo's own standing re-measure instruction.
 | Step | What | Gate |
 |---|---|---|
 | 0.1 | **Gateway fold verification** (R-175). The block is written; the two readings that decide it: `rows: 13` with no top-level `gateway`, and `miner subs` ending `('gateway','net','offline')`; then `frontend.mjs`'s *"gateway page prints the API's own state verbatim"* — the assertion that catches a bad `sub` lookup rendering "not present" to every visitor. | all suites green + that line |
-| 0.2 | **Commit A** — fold: `backend/server.py`, `backend/apps/ROSTER.md`, `test_status_rack.py`, `test_roster.py`, `tools/build_pages.py`, `tests/frontend.mjs`, `site/gateway.html` (generated output ships with its generator — #81's lesson) | `git diff --cached --check` |
+| 0.2 | **Commit A** — fold: `backend/server.py`, `backend/apps/ROSTER.md`, `test_status_rack.py`, `test_roster.py`, `tools/build/build_pages.py`, `tests/frontend.mjs`, `site/gateway.html` (generated output ships with its generator — #81's lesson) | `git diff --cached --check` |
 | 0.3 | **Commit B** — `docs/studio-harness-gap.md` (#89 → 50%, does not archive) | — |
 | 0.4 | **Commit C** — closure evidence: `PROJECT-TASKS.md`, `review/CLOSED-TASKS.md` | — |
 | 0.5 | **Full-suite re-measure.** CLAUDE.md's own instruction: the 1758 reading has no SHA because the ravencalc repair was uncommitted; `ce4fb27c` landed it. Run both invocations from `backend/`, plus `apps/remix`, stamp the counts with the SHA, extend the ladder. | counts + SHA in CLAUDE.md |
@@ -74,7 +74,7 @@ every later phase cheaper to ship safely.
    publicly 404 from #87 landing until tonight, with a green suite throughout. Extend #86's
    `check_deployed.py` scope: compare the *running service* against the tree (a `/api/status`
    build stamp, or route-probe), and put the restart into the deploy sequence or
-   `ops/symoneural-deploy.service`. This is the highest-leverage single item in this file.
+   `ops/units/symoneural-deploy.service`. This is the highest-leverage single item in this file.
 2. **#102 — rotate the spent Studio token** (R-174). Garrett's half is the root-owned edit;
    the coder half is the probe-not-environ lesson already written into the ledger.
 3. **#75 — secrets.** Rotate → untrack `remix/.env` and `cryptominer/miner.env` → archive-path
@@ -86,7 +86,7 @@ every later phase cheaper to ship safely.
    hand-authored examples) and `training/build_dataset.py`, because both are tracked and the
    exports were built from tracked files. Trade secret exists only while reasonable measures
    keep it in; zips into third-party sandboxes are the erosion CLAUDE.md warns cannot be
-   pulled back. Fix: an export script (`tools/export_snapshot.sh`) that excludes the two
+   pulled back. Fix: an export script (`tools/data/export_snapshot.sh`) that excludes the two
    protected artefacts, the mode-600 ledgers, and adapter weights — and make it the only
    sanctioned way a snapshot leaves this box.
 4. **#92 — `check_figures.py`.** Every published figure carries the SHA it was read on. The
