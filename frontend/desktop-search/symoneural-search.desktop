@@ -1,0 +1,16 @@
+[Desktop Entry]
+# KRunner reads the runner metadata out of this file. NoDisplay because this is
+# not an application anybody launches -- it answers Alt+Space.
+Type=Service
+Name=SyMoNeuRaL rack
+Comment=Open a SyMoNeuRaL surface by name
+Icon=symoneural
+NoDisplay=true
+X-KDE-ServiceTypes=Plasma/Runner
+X-KDE-PluginInfo-Name=symoneural-rack
+X-KDE-PluginInfo-Author=SyMoNSaYs LLC
+X-KDE-PluginInfo-License=LicenseRef-SyMoNeuRaL-Proprietary
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-API=DBus
+X-Plasma-DBusRunner-Service=com.symoneural.SearchProvider
+X-Plasma-DBusRunner-Path=/com/symoneural/SearchProvider

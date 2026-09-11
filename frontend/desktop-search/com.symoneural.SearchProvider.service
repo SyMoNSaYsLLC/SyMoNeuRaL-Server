@@ -1,0 +1,5 @@
+[D-BUS Service]
+# D-Bus activation: the desktop asks for this name, this starts. Nothing runs at
+# boot, and the service exits after two idle minutes.
+Name=com.symoneural.SearchProvider
+Exec=@SEARCH_PY@
