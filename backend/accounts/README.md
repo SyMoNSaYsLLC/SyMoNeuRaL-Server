@@ -28,6 +28,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`accounts-spec.md`](docs/accounts-spec.md)
 
 <!-- end generated -->

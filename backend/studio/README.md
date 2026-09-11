@@ -385,6 +385,7 @@ package already does in `ops/registry/integration-sources.md`.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`qlora-27b-measured.md`](docs/qlora-27b-measured.md)
 - [`qlora-upgrade.md`](docs/qlora-upgrade.md)
 - [`studio-harness-gap.md`](docs/studio-harness-gap.md)

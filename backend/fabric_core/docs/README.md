@@ -1,0 +1,14 @@
+# `backend/fabric_core/docs/` — Documents for `fabric_core`
+
+The spec and scope for this surface, beside the surface. There is no top-level `docs/`
+in this tree and there will not be one -- a document that lives away from the thing it
+describes goes stale without anybody noticing.
+
+Operational records go to `ops/registry/`; dated findings go to `ops/audits/`.
+
+| file |  |
+|---|---|
+| [`symoneural-moe.md`](symoneural-moe.md) |  |
+| [`symoneural-parameters.md`](symoneural-parameters.md) |  |
+
+See [`../README.md`](../README.md) for what `fabric_core` is and why.

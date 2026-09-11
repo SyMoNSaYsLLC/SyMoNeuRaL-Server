@@ -393,6 +393,7 @@ None. This component is a library for others, or is driven from the desktop sess
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`code-client-spec.md`](docs/code-client-spec.md)
 - [`coder-spec.md`](docs/coder-spec.md)
 - [`symoneural-coder-project-cli-scope.md`](docs/symoneural-coder-project-cli-scope.md)

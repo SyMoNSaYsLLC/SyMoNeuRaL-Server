@@ -18,6 +18,7 @@ None. This component is a library for others, or is driven from the desktop sess
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-moe.md`](docs/symoneural-moe.md)
 - [`symoneural-parameters.md`](docs/symoneural-parameters.md)
 

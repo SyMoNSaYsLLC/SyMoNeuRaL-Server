@@ -45,5 +45,7 @@ None. This component is a library for others, or is driven from the desktop sess
 ## Documents
 
 - [`MODEL-CALL-TRACE-20260911.md`](docs/MODEL-CALL-TRACE-20260911.md)
+- [`README.md`](docs/README.md)
+- [`RUNTIME-EVENTS.md`](docs/RUNTIME-EVENTS.md)
 
 <!-- end generated -->

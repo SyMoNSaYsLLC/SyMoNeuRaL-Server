@@ -172,6 +172,7 @@ interpreter and is not covered.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`YOCTO-LAYER-LICENSES.md`](docs/YOCTO-LAYER-LICENSES.md)
 - [`antminer-firmware-upgrade.md`](docs/antminer-firmware-upgrade.md)
 - [`custom-antminer-firmware-options.md`](docs/custom-antminer-firmware-options.md)

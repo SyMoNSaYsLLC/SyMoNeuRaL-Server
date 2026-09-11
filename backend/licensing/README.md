@@ -18,6 +18,7 @@ None. This component is a library for others, or is driven from the desktop sess
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-entitlements.md`](docs/symoneural-entitlements.md)
 
 <!-- end generated -->

@@ -48,6 +48,7 @@ honestly rather than promising a gain it cannot deliver.
 ## Documents
 
 - [`HARDWARE-PROFILES.md`](docs/HARDWARE-PROFILES.md)
+- [`README.md`](docs/README.md)
 - [`RUNTIME-PROFILES.md`](docs/RUNTIME-PROFILES.md)
 - [`cuda-audit.md`](docs/cuda-audit.md)
 - [`nim-on-one-card.md`](docs/nim-on-one-card.md)

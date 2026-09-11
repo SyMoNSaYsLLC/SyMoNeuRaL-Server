@@ -198,6 +198,7 @@ does not risk the live site.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`gateway-completion.md`](docs/gateway-completion.md)
 
 <!-- end generated -->

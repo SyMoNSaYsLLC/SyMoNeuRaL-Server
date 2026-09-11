@@ -107,6 +107,43 @@ def generated(d: pathlib.Path, app) -> str:
     return "\n".join(out)
 
 
+#: What each subdirectory is FOR, stated where somebody standing in it will read it. Short on
+#: purpose: the component README is the one place that describes the component, and a long
+#: file here would become a second one. Each carries the rule that directory exists to hold.
+SUBDIR = {
+ "lib": ("Library for `{comp}`",
+         "No routes. **No side effects on import** -- a module here may be imported by a test, a\n"
+         "tool, or another component, and one that opens a socket or reads a config file at import\n"
+         "time makes all three unpredictable.\n\n"
+         "Anything that needs the app, the lease or a request belongs in `../{comp}.py`."),
+ "apps": ("Programs for `{comp}`",
+          "Runnable, or driven by a route. **Not imported by the router** -- these may spawn a\n"
+          "subprocess, hold a file, or run for minutes, none of which belongs on a request path.\n\n"
+          "A program invoked by a route is invoked as a subprocess or a task, never imported and\n"
+          "called inline."),
+ "docs": ("Documents for `{comp}`",
+          "The spec and scope for this surface, beside the surface. There is no top-level `docs/`\n"
+          "in this tree and there will not be one -- a document that lives away from the thing it\n"
+          "describes goes stale without anybody noticing.\n\n"
+          "Operational records go to `ops/registry/`; dated findings go to `ops/audits/`."),
+ "models": ("Request and response models for `{comp}`",
+            "Pydantic only. **Every field bounded** -- an unbounded field is a denial of service,\n"
+            "and bounds are enforced here rather than trusted from the client.\n\n"
+            "Out-of-range values are clamped; something oversized hard-fails, because answering a\n"
+            "truncated question is worse than refusing it."),
+}
+
+
+def subdir_readme(comp: str, sub: str, files: list) -> str:
+    head, body = SUBDIR[sub]
+    lines = [f"# `backend/{comp}/{sub}/` — {head.format(comp=comp)}",
+             "", body.format(comp=comp), ""]
+    if files:
+        lines += table(files, ("file", "")) + [""]
+    lines += [f"See [`../README.md`](../README.md) for what `{comp}` is and why.", ""]
+    return "\n".join(lines)
+
+
 STUB = """# backend/{name}/
 
 > **Write this paragraph.** What is this surface for, who calls it, and what will bite
@@ -128,6 +165,7 @@ def main() -> int:
     for d in sorted(BACKEND.iterdir()):
         if not d.is_dir() or d.name.startswith((".", "__")) or d.name in SKIP:
             continue
+        directory = d
         block = generated(d, server.app)
         readme = d / "README.md"
         old = readme.read_text(encoding="utf-8") if readme.is_file() else ""
@@ -137,13 +175,33 @@ def main() -> int:
             new = head + block + tail
         else:
             new = (old.rstrip() + "\n\n" if old else STUB.format(name=d.name)) + block + "\n"
-        if new == old:
-            continue
-        if args.check:
-            stale.append(str(readme.relative_to(ROOT)))
-        else:
-            readme.write_text(new, encoding="utf-8")
-            written += 1
+        if new != old:
+            if args.check:
+                stale.append(str(readme.relative_to(ROOT)))
+            else:
+                readme.write_text(new, encoding="utf-8")
+                written += 1
+
+        # Every subdirectory that holds something says what it is for, where somebody
+        # standing in it will read it. Generated, so it cannot drift from the tree.
+        for sub in SUBDIR:
+            d = directory / sub
+            if not d.is_dir() or not any(f.is_file() and f.name != "README.md"
+                                         for f in d.iterdir()):
+                continue
+            sub_readme = d / "README.md"
+            want = subdir_readme(directory.name, sub,
+                                 modules(directory, sub) if sub != "docs" else
+                                 [(f"[`{f.name}`]({f.name})", "") for f in sorted(d.iterdir())
+                                  if f.is_file() and f.name != "README.md"])
+            have = sub_readme.read_text(encoding="utf-8") if sub_readme.is_file() else ""
+            if want == have:
+                continue
+            if args.check:
+                stale.append(str(sub_readme.relative_to(ROOT)))
+            else:
+                sub_readme.write_text(want, encoding="utf-8")
+                written += 1
 
     if args.check:
         if stale:

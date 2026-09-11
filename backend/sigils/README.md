@@ -35,6 +35,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`sigils-spec.md`](docs/sigils-spec.md)
 - [`symoneural-sigils-scope.md`](docs/symoneural-sigils-scope.md)
 

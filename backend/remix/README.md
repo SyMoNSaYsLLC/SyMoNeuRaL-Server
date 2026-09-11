@@ -157,6 +157,7 @@ Written plainly, in the house style:
 - [`DEPLOY.md`](docs/DEPLOY.md)
 - [`LICENSING.md`](docs/LICENSING.md)
 - [`PRODUCTION-READINESS.md`](docs/PRODUCTION-READINESS.md)
+- [`README.md`](docs/README.md)
 - [`symoneural-remix-scope.md`](docs/symoneural-remix-scope.md)
 
 <!-- end generated -->

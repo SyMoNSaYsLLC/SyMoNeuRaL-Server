@@ -21,6 +21,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-api-surface.md`](docs/symoneural-api-surface.md)
 
 <!-- end generated -->

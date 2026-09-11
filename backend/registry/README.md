@@ -41,6 +41,7 @@ None. This component is a library for others, or is driven from the desktop sess
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-generic-contracts.md`](docs/symoneural-generic-contracts.md)
 - [`symoneural-runtime-registry.md`](docs/symoneural-runtime-registry.md)
 - [`symoneural-sentinel-spec.md`](docs/symoneural-sentinel-spec.md)

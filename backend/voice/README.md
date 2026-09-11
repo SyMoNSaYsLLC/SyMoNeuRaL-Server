@@ -88,6 +88,7 @@ Neither is a design question. Both are one decision or one file away.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`voice-spec.md`](docs/voice-spec.md)
 
 <!-- end generated -->

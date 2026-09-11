@@ -21,6 +21,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-control-board.md`](docs/symoneural-control-board.md)
 - [`symoneural-control-plane-matrix.md`](docs/symoneural-control-plane-matrix.md)
 

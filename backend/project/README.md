@@ -543,6 +543,7 @@ Blunt list. Nothing here is hidden behind a "coming soon".
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`project-spec.md`](docs/project-spec.md)
 
 <!-- end generated -->

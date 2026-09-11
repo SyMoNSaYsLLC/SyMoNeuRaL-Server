@@ -29,6 +29,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-ravencalc-scope.md`](docs/symoneural-ravencalc-scope.md)
 
 <!-- end generated -->

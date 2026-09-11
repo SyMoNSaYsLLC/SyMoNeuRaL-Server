@@ -35,6 +35,7 @@ persona adapter does not apply to the model currently loaded.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`chat-spec.md`](docs/chat-spec.md)
 - [`symoneural-chat-scope.md`](docs/symoneural-chat-scope.md)
 

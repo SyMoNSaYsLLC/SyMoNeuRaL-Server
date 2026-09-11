@@ -20,6 +20,7 @@
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`coder-rotation-launcher-spec.md`](docs/coder-rotation-launcher-spec.md)
 
 <!-- end generated -->

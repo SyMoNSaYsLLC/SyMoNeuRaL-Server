@@ -12,6 +12,7 @@ None. This component is a library for others, or is driven from the desktop sess
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`authority-plane-spec-2026-09-03.md`](docs/authority-plane-spec-2026-09-03.md)
 
 <!-- end generated -->

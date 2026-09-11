@@ -253,6 +253,7 @@ machine that wrote it — the worst way for a test to be broken.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`miner-preemption.md`](docs/miner-preemption.md)
 - [`symoneural-miner-scope.md`](docs/symoneural-miner-scope.md)
 

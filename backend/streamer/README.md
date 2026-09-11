@@ -500,6 +500,7 @@ Nothing else in `public()` changed, and it still has no field that can hold a cr
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-streamer-scope.md`](docs/symoneural-streamer-scope.md)
 
 <!-- end generated -->

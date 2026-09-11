@@ -275,6 +275,7 @@ a preference, and it already cost this repo one round.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`symoneural-live-scope.md`](docs/symoneural-live-scope.md)
 - [`symoneural-live-stack.md`](docs/symoneural-live-stack.md)
 

@@ -27,6 +27,7 @@ that is illegal to produce. Everything else renders.
 
 ## Documents
 
+- [`README.md`](docs/README.md)
 - [`image-spec.md`](docs/image-spec.md)
 - [`symoneural-image-scope.md`](docs/symoneural-image-scope.md)
 
