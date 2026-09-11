@@ -23,7 +23,7 @@ import sys
 import tomllib
 from typing import Iterable
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 
 REQUIREMENTS = (
     "backend/remix/requirements.txt",

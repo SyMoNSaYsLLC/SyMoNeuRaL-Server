@@ -42,7 +42,7 @@ import json
 import os
 import pathlib
 
-ROOT = pathlib.Path(__file__).resolve().parents[3]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "scripts" / "gpu-governor.sh").is_file(), (
     f"{ROOT / 'scripts' / 'gpu-governor.sh'} is not a file. Either that script is "
     f"missing, or ROOT is wrong (computed {ROOT}). Same wording as api.py:58 and the "

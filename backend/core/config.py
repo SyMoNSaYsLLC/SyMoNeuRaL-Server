@@ -76,7 +76,7 @@ LLM_ENGINE = _engine_path(
 DIFFUSE_ENGINE = _engine_path(
     "SYMONEURAL_DIFFUSE_ENGINE",
     ROOT / "symoneural-diffuse" / "build" / "bin" / "symoneural-diffuse")
-MODELS = HERE / "models"  # weights are a backend concern; backend/models/
+MODELS = ROOT / "models"   # real weight files, not symlinks -- see models/README.md
 SITE = ROOT / "site"          # the website: static files Caddy serves and deploy.sh publishes
 RENDERS = HERE / "output"
 CHAT_MODEL = MODELS / "llm" / "symon-1.0-30b-a3b-q2_k_l.gguf"

@@ -51,7 +51,7 @@ from pathlib import Path
 # Nothing here hardcodes its own location: the root is derived from this file, the way
 # `backend/server.py` derives it from `__file__` and the scripts derive it from `$0`. That
 # calculation has been wrong four times in this repo, so it is asserted below.
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 
 # Our engine, under our name, built by `tools/sh/fork_engines.sh listen`. The default used to

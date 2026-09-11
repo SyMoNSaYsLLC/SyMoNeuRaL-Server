@@ -44,7 +44,7 @@ import pathlib
 import shutil
 from typing import Any
 
-REPO = pathlib.Path(__file__).resolve().parent.parent.parent
+REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = REPO / "backend"
 MEASUREMENTS = REPO / "docs" / "ops" / "MEASUREMENTS.md"
 RESULTS = REPO / "performance" / "results"

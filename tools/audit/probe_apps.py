@@ -86,7 +86,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 sys.path.insert(0, str(ROOT / "backend"))
 
 BASE = "http://127.0.0.1:8800"

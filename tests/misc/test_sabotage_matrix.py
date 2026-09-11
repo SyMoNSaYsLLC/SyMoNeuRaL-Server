@@ -13,7 +13,7 @@ So this file checks the harness is *runnable and honest* while mutating nothing:
     review that found four hand-typed Safety cells.
 
 Deliberately does NOT invoke the tool. A test that mutates tracked documents mid-suite would be a
-side effect in `pytest apps/`, and `test_modelops.py` already demonstrates how surprising that is:
+side effect in `pytest apps/`, and `test_model_staging.py` already demonstrates how surprising that is:
 it rewrites a staging ROLLBACK.md by design. Run the harness by hand:
 
     python3 tools/lib/sabotage_matrix.py

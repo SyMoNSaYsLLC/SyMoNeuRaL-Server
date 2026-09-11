@@ -27,7 +27,7 @@ import subprocess
 name = "gpu"
 schema = {"timeout": (float, 3.0)}
 
-_ROOT = pathlib.Path(__file__).resolve().parents[3]      # .../Symoneural
+_ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())      # .../Symoneural
 
 
 def _int_or_none(text: str) -> int | None:

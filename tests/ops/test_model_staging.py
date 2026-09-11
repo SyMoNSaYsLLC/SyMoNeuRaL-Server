@@ -24,12 +24,12 @@ import unittest
 from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-TOOL = ROOT / "tools" / "modelops_inventory.py"
-SCRIPT = ROOT / "scripts" / "modelops" / "symoneural-modelops-stage.sh"
+TOOL = ROOT / "tools" / "lib" / "model_inventory.py"
+SCRIPT = ROOT / "scripts" / "model-staging" / "symoneural-model-stage.sh"
 MODELS = ROOT / "backend" / "models"
 
-sys.path.insert(0, str(ROOT / "tools"))
-import modelops_inventory as inv                                        # noqa: E402
+sys.path.insert(0, str(ROOT / "tools" / "lib"))
+import model_inventory as inv                                        # noqa: E402
 
 
 def run_script(*args, cwd=None):
@@ -45,11 +45,11 @@ class ActiveModelParseTests(unittest.TestCase):
 
         Pinning the literal would make this test pass a rename that broke the tool, and fail a
         rename that the tool handled correctly — exactly backwards."""
-        text = (ROOT / "backend" / "server.py").read_text(encoding="utf-8")
+        text = (ROOT / "backend" / "core" / "config.py").read_text(encoding="utf-8")
         want = {}
         for var, role in (("CHAT_MODEL", "chat"), ("DRAFT_MODEL", "chat-draft")):
             m = re.search(rf'^{var}\s*=\s*MODELS\s*/\s*"([^"]+)"\s*/\s*"([^"]+)"', text, re.M)
-            self.assertIsNotNone(m, f"{var} is no longer a two-segment MODELS path in api.py")
+            self.assertIsNotNone(m, f"{var} is no longer a two-segment MODELS path in core/config.py")
             want[f"{m.group(1)}/{m.group(2)}"] = role
 
         got = inv.active_from_source()

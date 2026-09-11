@@ -65,7 +65,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 API = "http://127.0.0.1:8800"
 
 #: Fields excluded from the serving-surface scan, each because the codebase has

@@ -46,7 +46,7 @@ import subprocess
 import sys
 import time
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 STATE = ROOT / "run" / "watch-state.json"
 PUBLIC_HOST = "symoneural.com"
 LOCAL_API = "http://127.0.0.1:8800/api/status"

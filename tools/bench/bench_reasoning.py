@@ -71,7 +71,7 @@ Use `--qwen-only` to measure the incumbent without touching the card at all.
   August run found *both* models answered "What is SyMoNeuRaL?" wrongly, which measured
   fluency and not knowledge -- a scoring function here would have hidden that.
 * **It does not promote anything.** Promotion is `--activate-candidate` in
-  `scripts/modelops/symoneural-modelops-stage.sh`, behind six gates, and it is a decision.
+  `scripts/model-staging/symoneural-model-stage.sh`, behind six gates, and it is a decision.
 """
 from __future__ import annotations
 
@@ -86,7 +86,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 CANDIDATE = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
 QWEN = ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf"

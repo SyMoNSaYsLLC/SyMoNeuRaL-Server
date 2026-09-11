@@ -57,7 +57,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 GOV = ROOT / "scripts" / "gpu-governor.sh"
 PORT = 8099

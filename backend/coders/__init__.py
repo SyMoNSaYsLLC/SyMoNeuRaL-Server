@@ -113,7 +113,7 @@ def enabled() -> bool:
 # so two runs of the same text are provably the same text without storing it twice.
 
 #: Repo root: backend/coders/__init__.py -> parents[3].
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 
 
 def state_dir() -> pathlib.Path:

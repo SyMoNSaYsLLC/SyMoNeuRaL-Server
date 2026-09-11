@@ -43,7 +43,7 @@ import re
 import subprocess
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 sys.path.insert(0, str(ROOT / "backend"))
 from registry.lib import runtimes  # noqa: E402
 

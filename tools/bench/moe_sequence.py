@@ -48,7 +48,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 EVALCB = ROOT / "symoneural-llm" / "build-evalcb" / "bin" / "llama-eval-callback"
 GPTOSS = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
 

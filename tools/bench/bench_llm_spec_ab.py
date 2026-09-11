@@ -45,7 +45,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 CHAT = ROOT / "backend" / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
 DRAFT = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"

@@ -57,7 +57,7 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 sys.path.insert(0, str(ROOT / "symoneural-llm" / "gguf-py"))
 
 import numpy as np                                                    # noqa: E402

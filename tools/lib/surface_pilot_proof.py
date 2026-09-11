@@ -41,7 +41,7 @@ import time
 import urllib.error
 import urllib.request
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = ROOT / "backend"
 SCRATCH_API_PORT = 8899          # never 8800: production keeps serving throughout
 SURFACE = "ravencalc"

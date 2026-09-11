@@ -47,7 +47,7 @@ from __future__ import annotations
 import pathlib
 from typing import Any
 
-REPO = pathlib.Path(__file__).resolve().parent.parent.parent
+REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 COMPONENT_MAP = REPO / "docs" / "architecture" / "COMPONENT-MAP.tsv"
 ALIASES = REPO / "docs" / "architecture" / "ALIASES.tsv"
 FABRIC_DIR = REPO / "symoneural-adaptive-fabric"

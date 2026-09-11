@@ -35,7 +35,7 @@ import pathlib
 import subprocess
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = ROOT / "backend"
 SUITE = "apps/test_control_plane_matrix.py"
 

@@ -34,7 +34,7 @@ import shutil
 import subprocess
 import sys
 
-REPO = pathlib.Path(__file__).resolve().parents[1]
+REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 REFS = REPO / "external"
 TASKS = REPO / "PROJECT-TASKS.md"
 OUT = REPO / "docs" / "REFERENCE-INDEX.md"

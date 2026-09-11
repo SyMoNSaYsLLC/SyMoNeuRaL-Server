@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# symoneural-modelops-stage.sh -- stage, smoke, promote and roll back a model bundle.
+# symoneural-model-stage.sh -- stage, smoke, promote and roll back a model bundle.
 #
 # ## What this is for
 #
@@ -22,7 +22,7 @@
 # ## Modes
 #
 #   --dry-run                      say what each mode would do; change nothing
-#   --inventory                    the measured model inventory (tools/lib/modelops_inventory.py)
+#   --inventory                    the measured model inventory (tools/lib/model_inventory.py)
 #   --stage-openai-gpt-oss-20b     prepare staging for the LLM candidate; no download
 #   --write-docs                   regenerate the inventory block in the ops docs
 #   --smoke-plan                   print the smoke steps a candidate must pass
@@ -52,7 +52,7 @@ ENGINE="symoneural-llm/build/bin/symoneural-llm"
 # ---------------------------------------------------------------------------- guardrail 1
 # Run from the repo root or not at all. Every path below is relative, and a script like this
 # run from the wrong directory is how a staging tree lands somewhere nobody looks again.
-if [[ ! -f "backend/server.py" || ! -f "tools/lib/modelops_inventory.py" ]]; then
+if [[ ! -f "backend/server.py" || ! -f "tools/lib/model_inventory.py" ]]; then
   echo "refusing: run this from the repository root (backend/server.py not found here)" >&2
   exit 2
 fi
@@ -82,7 +82,7 @@ show_disk() {
 
 # ---------------------------------------------------------------------------- inventory
 mode_inventory() {
-  python3 tools/lib/modelops_inventory.py
+  python3 tools/lib/model_inventory.py
   say ""
   show_disk
 }
@@ -130,8 +130,8 @@ The active chat default is set in **`backend/server.py`**:
 
 ## If a promotion has been applied and you want it undone
 
-1. `scripts/modelops/symoneural-modelops-stage.sh --rollback` — restores
-   `backend/server.py` from the `.modelops-backup` written at promotion time.
+1. `scripts/model-staging/symoneural-model-stage.sh --rollback` — restores
+   `backend/server.py` from the `.model-stage-backup` written at promotion time.
 2. Restart the API. A file swap is not live until the process re-reads it.
 3. Confirm with `/api/status` that `model` reads the Qwen file again.
 
@@ -225,7 +225,7 @@ mode_stage_gpt_oss() {
   },
   "runtime_compatibility": "UNRECORDED -- see docs/ops/OPENAI-GPT-OSS-MIGRATION.md",
   "license": "UNRECORDED -- upstream licence must be read and stored before activation",
-  "notes": "Written by scripts/modelops/symoneural-modelops-stage.sh. No weights fetched."
+  "notes": "Written by scripts/model-staging/symoneural-model-stage.sh. No weights fetched."
 }
 JSON
 
@@ -398,8 +398,8 @@ mode_activate() {
     return 0
   fi
   # Backup first, always, and never in place.
-  cp backend/server.py "backend/server.py.modelops-backup"
-  dim "  backed up backend/server.py -> backend/server.py.modelops-backup"
+  cp backend/server.py "backend/server.py.model-stage-backup"
+  dim "  backed up backend/server.py -> backend/server.py.model-stage-backup"
   warn "  the CHAT_MODEL rewrite is deliberately not implemented in this script."
   warn "  Promotion edits a source file that the API reads at import; it belongs in a"
   warn "  reviewed commit with a test, not in a shell one-liner. The gate above is the"
@@ -413,12 +413,12 @@ mode_rollback() {
   say "  active chat default is set in backend/server.py:"
   grep -nE '^(CHAT_MODEL|DRAFT_MODEL)\s*=' backend/server.py | sed 's/^/    /'
   say ""
-  if [[ -f "backend/server.py.modelops-backup" ]]; then
+  if [[ -f "backend/server.py.model-stage-backup" ]]; then
     if (( DRY_RUN )); then
-      dim "  dry run: would restore backend/server.py from backend/server.py.modelops-backup"
+      dim "  dry run: would restore backend/server.py from backend/server.py.model-stage-backup"
     else
-      cp "backend/server.py.modelops-backup" backend/server.py
-      dim "  restored backend/server.py from backend/server.py.modelops-backup"
+      cp "backend/server.py.model-stage-backup" backend/server.py
+      dim "  restored backend/server.py from backend/server.py.model-stage-backup"
       warn "  restart the API -- a file swap is not live until the process re-reads it."
     fi
   else
@@ -441,8 +441,8 @@ mode_write_docs() {
   say "  section it does not fully own is how this repo grew its accumulate bug three times."
   say "  Regenerate the numbers and paste them deliberately:"
   say ""
-  say "    python3 tools/lib/modelops_inventory.py > /tmp/modelops-inventory.txt"
-  say "    python3 tools/lib/modelops_inventory.py --json > /tmp/modelops-inventory.json"
+  say "    python3 tools/lib/model_inventory.py > /tmp/model-inventory.txt"
+  say "    python3 tools/lib/model_inventory.py --json > /tmp/model-inventory.json"
 }
 
 # ---------------------------------------------------------------------------- main

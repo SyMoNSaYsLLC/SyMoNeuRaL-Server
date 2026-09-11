@@ -9,9 +9,9 @@ four documents cannot quietly stop being true:
   * `docs/ops/VLLM-BENCH-PARITY.md`
 
 **Everything here is pure parse plus `stat`.** Nothing is imported from the app, no subprocess is
-launched, and in particular nothing under `scripts/modelops/` is invoked -- that script rewrites
+launched, and in particular nothing under `scripts/model-staging/` is invoked -- that script rewrites
 `ROLLBACK.md` on its refusal path, so a test that shelled out to it would have a filesystem side
-effect. Measured 2026-08-23: running `test_modelops.py` does exactly that, by design.
+effect. Measured 2026-08-23: running `test_model_staging.py` does exactly that, by design.
 
 The four assertions worth having are the ones a document cannot satisfy by being well written:
 

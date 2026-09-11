@@ -84,7 +84,7 @@ class ControlModelsStructureTests(unittest.TestCase):
         # models-compat.sh legitimately wraps no MODEL authority -- runtime capability is
         # independent of model presence, which is why it can answer with zero payloads.
         # It still must name what it probes rather than inventing a capability claim.
-        authorities = ("modelops_inventory", "symoneural-modelops-stage", "gpu-governor",
+        authorities = ("model_inventory", "symoneural-model-stage", "gpu-governor",
                        "train_lora", "PROVENANCE", "gpu.sh", "api/status", "LICENSE",
                        "nvidia-smi", "engines/", "training/adapter")
         for name in READ_LAUNCHERS + WRITE_LAUNCHERS:

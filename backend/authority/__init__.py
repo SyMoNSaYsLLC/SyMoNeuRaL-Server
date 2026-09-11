@@ -49,7 +49,7 @@ import time
 from dataclasses import dataclass, field, asdict
 from typing import Any, Iterator
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 
 #: All authority state. Sibling of `run/gpu.lock.d`, deliberately: an operator looking for
 #: "what currently owns something on this box" finds both in one place.

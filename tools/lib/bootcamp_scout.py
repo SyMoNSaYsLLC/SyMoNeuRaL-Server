@@ -33,7 +33,7 @@ import re
 import struct
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = ROOT / "backend"
 APPS = BACKEND / "apps"
 API_PY = BACKEND / "api.py"

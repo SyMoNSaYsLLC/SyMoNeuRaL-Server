@@ -29,7 +29,7 @@ import sys
 
 log = logging.getLogger("symoneural.api")
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 #: The governor. Spelled from the repository root rather than relative to this file, because
 #: this module may be imported from `backend/` or from `backend/` depending on the caller.
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"

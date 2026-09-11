@@ -61,7 +61,7 @@ import tempfile
 import threading
 import time
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 #: 0.40 GB. Deliberately the smallest weight on the box: two resident at once is ~1.3 GB

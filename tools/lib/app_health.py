@@ -27,7 +27,7 @@ import subprocess
 import sys
 import time
 
-REPO = pathlib.Path(__file__).resolve().parents[1]
+REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = REPO / "backend"
 APPS = BACKEND / "apps"
 

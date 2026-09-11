@@ -110,7 +110,7 @@ def parse(text: str) -> dict[str, str]:
 #: The repo root, derived from this file. That calculation has been wrong four times here and
 #: it fails silently -- the wrong parent is usually a directory that exists -- so it is asserted
 #: at import rather than trusted.
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 
 #: Inside the repository, under `run/`, and both halves of that are deliberate.
 #:
