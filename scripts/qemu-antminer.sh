@@ -52,8 +52,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(dirname "$HERE")"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 
 PKG="${1:-}"
 [ -n "$PKG" ] && [ -f "$PKG" ] || {

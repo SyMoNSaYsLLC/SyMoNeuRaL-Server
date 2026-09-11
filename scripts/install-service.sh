@@ -61,8 +61,7 @@ echo "installing unit -> $UNIT"
 # The unit in the repo is a template: systemd cannot express a relative path, so the
 # repo root is substituted at install time from where this script actually lives. That
 # is what lets the checkout be cloned anywhere and still produce a correct unit.
-ROOT="$(cd "$HERE/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/units/symoneural-api.service" > "$UNIT.tmp"
 install -m 644 -o root -g root "$UNIT.tmp" "$UNIT"
 rm -f "$UNIT.tmp"

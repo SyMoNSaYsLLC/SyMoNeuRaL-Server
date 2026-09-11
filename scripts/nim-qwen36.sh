@@ -121,8 +121,7 @@ esac
 # NIM owns the layout in here and it is not a GGUF.
 CACHE="${SYMONEURAL_NIM_CACHE:-${SYM_NIM_CACHE:-$HOME/.cache/nim}}"
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 
 say()  { printf '%s\n' "$*"; }
 ok()   { printf '  ok    %s\n' "$*"; }

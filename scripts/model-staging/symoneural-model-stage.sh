@@ -50,19 +50,15 @@ SMOKE_PORT="${SYMONEURAL_SMOKE_PORT:-8099}"
 ENGINE="symoneural-llm/build/bin/symoneural-llm"
 
 # ---------------------------------------------------------------------------- guardrail 1
-# Run from the repo root or not at all. Every path below is relative, and a script like this
-# run from the wrong directory is how a staging tree lands somewhere nobody looks again.
-if [[ ! -f "backend/server.py" || ! -f "tools/lib/model_inventory.py" ]]; then
-  echo "refusing: run this from the repository root (backend/server.py not found here)" >&2
-  exit 2
-fi
-ROOT="$(pwd)"
-
-BOLD=$'\033[1m'; DIM=$'\033[2m'; AMBER=$'\033[33m'; OFF=$'\033[0m'
-say()  { printf '%s\n' "$*"; }
-head_() { printf '%s%s%s\n' "$BOLD" "$*" "$OFF"; }
-warn() { printf '%s%s%s\n' "$AMBER" "$*" "$OFF" >&2; }
-dim()  { printf '%s%s%s\n' "$DIM" "$*" "$OFF"; }
+# Find the repository, then work in it. This used to be `ROOT="$(pwd)"` behind a refusal, so
+# the highest-consequence script on this box -- it swaps the model a live surface loads --
+# worked only if you happened to be standing in the repository root and refused from
+# anywhere else. It had already moved one level deeper into model-staging/ by then.
+. "$(dirname -- "${BASH_SOURCE[0]}")/../lib/repo.sh"
+. "$ROOT/scripts/lib/say.sh"
+. "$ROOT/scripts/lib/require.sh"
+cd -- "$ROOT" || exit 1
+need_file "$ROOT/tools/lib/model_inventory.py" "the inventory this script reads"
 
 DRY_RUN=0
 

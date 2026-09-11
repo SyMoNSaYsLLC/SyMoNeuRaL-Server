@@ -19,8 +19,7 @@
 # Using `git ls-files` rather than `find` means those cannot be re-included by accident.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 cd "$ROOT"
 
 OUT="$HOME/Downloads"

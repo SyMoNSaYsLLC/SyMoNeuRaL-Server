@@ -36,8 +36,7 @@ set -uo pipefail
 # RUN in particular is the GPU mutex: gpu.lock.d lives in it. Point this at the
 # wrong directory and the lock silently stops being shared -- two tenants both acquire,
 # both load weights, and ~12 GB of models hit a 16 GB card.
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 # HERE is the repo ROOT, not this script's directory, and the two call sites below spell
 # their paths from the root accordingly. They did not until 2026-08-20: they read
 # "$HERE/symoneural" and "$HERE/<launcher>.sh", neither of which has ever existed at the

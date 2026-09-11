@@ -10,7 +10,7 @@
 # writes into run/ and site/ come out owned by you rather than by root.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 IMAGE="${SYMONEURAL_IMAGE:-symoneural-api}"
 NAME="symoneural-api"
 PORT=8800

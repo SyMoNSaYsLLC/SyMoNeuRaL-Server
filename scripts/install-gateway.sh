@@ -9,11 +9,10 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$HERE/.." && pwd)"
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 UNIT=/etc/systemd/system/symoneural-gateway.service
 
 [ "$(id -u)" -eq 0 ] || { echo "run me with sudo" >&2; exit 1; }
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 # ---------------------------------------------------------------- which binary
 #

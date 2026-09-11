@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(git rev-parse --show-toplevel)"
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 cd "$ROOT"
 
 echo "================ SyMoNeuRaL agent bootstrap ================"

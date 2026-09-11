@@ -25,10 +25,9 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "$HERE/.." && pwd)"
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 # The root calculation has been wrong four times in this repo and it fails silently, because
 # the wrong parent is usually a directory that exists. Asserted, not assumed.
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 
 SRC=/etc/symoneural
 DST="$ROOT/run/config"

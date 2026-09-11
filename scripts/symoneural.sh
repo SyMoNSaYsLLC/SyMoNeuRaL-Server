@@ -20,8 +20,7 @@ set -uo pipefail
 # been wrong three times in this repo (the demo/ flatten, the tools/ move, here) and
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 HERE="$ROOT"
 RUN="$ROOT/run"; mkdir -p "$RUN"
 PIDFILE="$RUN/api.pid"

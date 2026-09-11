@@ -34,9 +34,8 @@ set -euo pipefail
 # been wrong three times in this repo (the demo/ flatten, the tools/ move, here) and
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
-SRC="$ROOT/site"
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
+SRC="$ROOT/frontend/site"   # the webroot moved under frontend/ on 2026-09-11
 DST=/var/www/symoneural
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
@@ -59,8 +58,40 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 # `json` silently dropped every .json file: find's -regex must match the whole path, `js`
 # matched, the trailing `on` did not, and it did not back up to try `json`.
 PUBLISH='.*\.\(html\|css\|jpeg\|jpg\|js\|png\|svg\|ico\|webp\|woff2\|txt\|xml\)'
-skipped="$(find "$SRC" -maxdepth 1 -type f ! -regex "$PUBLISH" -printf '%f\n' | sort)"
-echo "staged:  $SRC  ($(find "$SRC" -maxdepth 1 -type f -regex "$PUBLISH" | wc -l) files)"
+
+# ---------------------------------------------------------------------------- the layout
+# `frontend/site/` is not flat and has not been since 2026-09-11:
+#
+#     pages/   the HTML. Published at the webroot -- pages/chat.html -> /chat.html
+#     css/     published at /css/
+#     js/      published at /js/
+#     assets/  published at /assets/
+#
+# This walked `-maxdepth 1` only, which was right when every file sat at the top of site/.
+# After the restructure it matched NOTHING: "staged: ... (0 files)" followed by "deployed",
+# which is the worst possible pair of lines -- a deploy that reports success and publishes
+# an empty set. Caught by running the script from /tmp, not by reading it.
+#
+# The pages flatten and the asset directories do not, because that is what the HTML expects:
+# every page links /js/app.js and /css/symoneural.css absolutely.
+
+pages_n=0 assets_n=0
+[ -d "$SRC/pages" ] && pages_n=$(find "$SRC/pages" -maxdepth 1 -type f -regex "$PUBLISH" | wc -l)
+for d in css js assets; do
+  [ -d "$SRC/$d" ] && assets_n=$(( assets_n + $(find "$SRC/$d" -type f -regex "$PUBLISH" | wc -l) ))
+done
+
+echo "staged:  $SRC"
+echo "         $pages_n pages -> $DST/   ·   $assets_n assets -> $DST/{css,js,assets}/"
+
+# A deploy that publishes nothing is a failure, not a quiet success. This is the check that
+# would have caught the restructure the day it happened.
+if [ "$pages_n" -eq 0 ]; then
+  echo "refusing: no pages matched under $SRC/pages -- the layout moved, or SRC is wrong" >&2
+  exit 1
+fi
+
+skipped="$(find "$SRC/pages" -maxdepth 1 -type f ! -regex "$PUBLISH" -printf '%f\n' 2>/dev/null | sort)"
 if [ -n "$skipped" ]; then
   echo "skipped: not a web asset --"
   printf '  %s\n' $skipped
@@ -71,9 +102,17 @@ if [ -f "$DST/index.html" ]; then
   echo "backup:  index.prev-$STAMP.html"
 fi
 
-# Top-level files.
-find "$SRC" -maxdepth 1 -type f -regex "$PUBLISH" \
+# Pages flatten to the webroot.
+find "$SRC/pages" -maxdepth 1 -type f -regex "$PUBLISH" \
   -exec install -o www-data -g www-data -m 644 {} "$DST/" \;
+
+# css/, js/ and assets/ keep their directory, because every page links them absolutely.
+for d in css js assets; do
+  [ -d "$SRC/$d" ] || continue
+  install -o www-data -g www-data -d -m 755 "$DST/$d"
+  find "$SRC/$d" -type f -regex "$PUBLISH" \
+    -exec install -o www-data -g www-data -m 644 {} "$DST/$d/" \;
+done
 
 # There is deliberately no /docs case here any more. Caddy proxies /docs and /openapi.json
 # to FastAPI, which generates them, so a static copy in the webroot would be shadowed by the

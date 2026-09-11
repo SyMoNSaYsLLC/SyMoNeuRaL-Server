@@ -31,8 +31,7 @@
 # needs the card.
 set -uo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 COMFY="$ROOT/symoneural-ui"
 VENV="$COMFY/.venv/bin/python"
 RUN="$ROOT/run"; mkdir -p "$RUN"

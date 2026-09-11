@@ -699,7 +699,7 @@ if [ "$SITEDEPLOY" -eq 1 ]; then
   fi
   say ""
   say "  VERIFY -- the page, not the repo:"
-  say "    md5sum $ROOT/site/console.js /var/www/symoneural/console.js   # must match"
+  say "    md5sum $ROOT/frontend/site/js/console.js /var/www/symoneural/console.js   # must match"
   say "    grep -c unreachable /var/www/symoneural/console.js            # expect 4"
   say "    # and the behaviour, not the string:"
   say "    node -e \"\$(sed -n '/var LIVE = {/,/function powered/p' /var/www/symoneural/console.js); console.log(powered('unreachable'), powered('ready'))\"   # false true"

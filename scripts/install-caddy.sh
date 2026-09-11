@@ -28,8 +28,7 @@
 set -euo pipefail
 
 DOMAIN="symoneural.com"
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
+. "$(dirname -- "${BASH_SOURCE[0]}")/lib/repo.sh"
 WEBROOT="/var/www/symoneural"
 API="127.0.0.1:8800"
 
