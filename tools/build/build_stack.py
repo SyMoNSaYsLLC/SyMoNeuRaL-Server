@@ -78,7 +78,7 @@ LAYERS = [
         ("Collective communication", "&mdash;", "na",
          "NCCL coordinates multiple GPUs. There is one GPU; the P2P test is waived."),
      ]),
-    ("Infrastructure Access", "/terminal-64.png",
+    ("Infrastructure Access", "/assets/icons/terminal-64.png",
      "Hardware access without managing device instruction sets directly", [
         ("GPU", "CUDA 13.3 &middot; sm_120", "impl",
          "Blackwell, driver 610.57.04. Every measured figure on this page came through it."),

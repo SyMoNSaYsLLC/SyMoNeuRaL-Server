@@ -167,7 +167,7 @@ main :is(p,li,dd,dt,blockquote,td,th,h1,h2,h3,h4,h5,h6){overflow-wrap:break-word
 #    page. `/` now 302s to `/overview` and the sections have their own URLs, so both tabs
 #    landed somewhere with no such anchor and did nothing at all.
 BAR = """<div class="sn-bar">
-  <a class="brand" href="/"><img src="/mark-32.png" alt="" width="22" height="22"><b>SyMoNeu<i>RaL</i></b></a>
+  <a class="brand" href="/"><img src="/assets/brand/mark-32.png" alt="" width="22" height="22"><b>SyMoNeu<i>RaL</i></b></a>
   <a class="hide" href="/documentation.html">Documentation</a>
   <a class="hide" href="/training.html">Manuals</a>
   <a class="hide" href="/livestack">Live stack</a>

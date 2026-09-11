@@ -47,9 +47,9 @@ FOLDS = {
 }
 
 ICONS = {
-    "hardware": "/mark-32.png", "interconnect": "/sync-64.png", "kernels": "/calc-64.png",
+    "hardware": "/assets/brand/mark-32.png", "interconnect": "/assets/icons/sync-64.png", "kernels": "/assets/icons/calc-64.png",
     "inference": "/reinforce-64.png", "architecture": "/studio-64.png",
-    "environment": "/terminal-64.png",
+    "environment": "/assets/icons/terminal-64.png",
 }
 
 
@@ -79,7 +79,7 @@ def module(src: str, tag: str, value: str, unit: str, sub: str,
 CONSOLE = f"""{BEGIN}
 <section id="console" style="padding-top:34px">
   <div class="wrap">
-    <p class="shead"><img src="/terminal-64.png" alt="" width="22" height="22">Control Board</p>
+    <p class="shead"><img src="/assets/icons/terminal-64.png" alt="" width="22" height="22">Control Board</p>
     <h2>Everything this machine is, on one screen</h2>
     <p class="sub">
       Live sensors, measured benchmarks and projections &mdash; labelled as such. The detail
@@ -163,7 +163,7 @@ def wrap_folds(html: str) -> tuple[str, int]:
         # collapsed page feel longer than the one it replaced.
         inner = re.sub(r'<p class="shead">.*?</p>\s*', "", inner, count=1, flags=re.S)
         inner = re.sub(r"<h2>.*?</h2>\s*", "", inner, count=1, flags=re.S)
-        icon = ICONS.get(sid, "/mark-32.png")
+        icon = ICONS.get(sid, "/assets/brand/mark-32.png")
         folded = (
             f'{head}\n    <details class="fold" id="fold-{sid}">\n'
             f'      <summary><img src="{icon}" alt="">{label}<span>{spec}</span></summary>\n'

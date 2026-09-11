@@ -692,7 +692,7 @@ def main() -> int:
         "TITLE": "SyMoNeuRaL Project — a workspace you and the local models share",
         "DESC": ("Projects, work items, file references and session history, held on this "
                  "machine. CPU only, so it answers while the GPU is busy."),
-        "ICON": "/mark-64.png",
+        "ICON": "/assets/brand/mark-64.png",
         "EYEBROW": "Live surface · CPU",
         "HEADING": "A workspace you and the models share.",
         "LEDE": ("Somewhere to keep what you are working on across sessions — the projects, "

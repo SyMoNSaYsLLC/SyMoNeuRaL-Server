@@ -171,7 +171,7 @@ COST = f"""{BEGIN}
 
     <div class="grid g2" style="margin-top:28px">
       <div class="card" style="border-color:rgba(46,224,138,.4)">
-        <img class="ico" src="/mark-64.png" alt="" width="38" height="38">
+        <img class="ico" src="/assets/brand/mark-64.png" alt="" width="38" height="38">
         <h3>RTX 5070 Ti &mdash; this machine</h3>
         <p><code>15.92 GiB</code> &middot; 8,960 CUDA cores &middot; <b>752 GB/s measured</b><br>
            PCIe Gen&nbsp;3 &times;8 host cap &middot; 300 W &middot; sm_120</p>

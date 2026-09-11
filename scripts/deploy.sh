@@ -106,12 +106,21 @@ fi
 find "$SRC/pages" -maxdepth 1 -type f -regex "$PUBLISH" \
   -exec install -o www-data -g www-data -m 644 {} "$DST/" \;
 
-# css/, js/ and assets/ keep their directory, because every page links them absolutely.
+# css/, js/ and assets/ keep their directory, AND everything under it.
+#
+# This installed every file directly into "$DST/$d/", which kept the top level
+# and flattened the rest: assets/brand/mark-32.png landed at /assets/mark-32.png
+# while all 25 pages link /assets/brand/mark-32.png. 69 files sit below the first
+# level, across brand/, icons/ and art/, and every one of them would have 404'd.
+# The comment two blocks up already said the asset directories do not flatten;
+# the code disagreed with it. `install -D` builds the intermediate directories,
+# so the tree arrives as it is in the repository.
 for d in css js assets; do
   [ -d "$SRC/$d" ] || continue
-  install -o www-data -g www-data -d -m 755 "$DST/$d"
-  find "$SRC/$d" -type f -regex "$PUBLISH" \
-    -exec install -o www-data -g www-data -m 644 {} "$DST/$d/" \;
+  ( cd "$SRC" && find "$d" -type f -regex "$PUBLISH" -print0 ) |
+  while IFS= read -r -d "" rel; do
+    install -o www-data -g www-data -D -m 644 "$SRC/$rel" "$DST/$rel"
+  done
 done
 
 # There is deliberately no /docs case here any more. Caddy proxies /docs and /openapi.json

@@ -138,7 +138,7 @@ def main() -> int:
         "DESC": ("A service container with reversible registrations: mount a plugin into the "
                  "running API, watch its fiber resolve, unmount it and watch every effect it "
                  "registered come undone in reverse order."),
-        "ICON": "/mark-64.png",
+        "ICON": "/assets/brand/mark-64.png",
         "EYEBROW": "Live surface · in-process · operator token required for writes",
         "HEADING": "Composition, taken apart while it runs.",
         # The lede has to say what this is before it says what it is for, because "plugin

@@ -152,7 +152,7 @@ def main() -> int:
         "DESC": ("A training bay on one RTX 5070 Ti: four predetermined tuning methods, each "
                  "costed before it runs. Every figure says whether it was measured here or is "
                  "arithmetic."),
-        "ICON": "/mark-64.png",
+        "ICON": "/assets/brand/mark-64.png",
         "EYEBROW": "Live surface · GPU · operator token required",
         "HEADING": "Fine-tune the model that answers here.",
         # The lede states the two things a visitor has to know before anything else on the page

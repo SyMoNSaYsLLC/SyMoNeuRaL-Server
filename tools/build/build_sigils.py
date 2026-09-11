@@ -1018,7 +1018,7 @@ def main() -> int:
         "DESC": ("Stickers from text, from a photograph, or from speech — one subject, cut "
                  "out of its background on this machine. Every figure on the page was "
                  "measured here."),
-        "ICON": "/image-64.png",
+        "ICON": "/assets/icons/image-64.png",
         "EYEBROW": "Live surface · GPU",
         "HEADING": "Stickers, cut out properly.",
         "LEDE": ("Type it, upload a picture, or say it out loud. One subject, hard edges, "

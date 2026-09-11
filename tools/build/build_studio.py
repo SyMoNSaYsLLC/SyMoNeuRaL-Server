@@ -145,7 +145,7 @@ def main() -> int:
         "DESC": ("A tool-calling agent running on this machine's own 7B, and ComfyUI's node "
                  "editor behind the same GPU mutex everything else here waits on. No cloud "
                  "inference, no hosted queue."),
-        "ICON": "/mark-64.png",
+        "ICON": "/assets/brand/mark-64.png",
         "EYEBROW": "Live surface · GPU · operator token required",
         "HEADING": "An agent that can touch the machine it runs on.",
         # The lede has to say three things before anything else on the page parses: what the

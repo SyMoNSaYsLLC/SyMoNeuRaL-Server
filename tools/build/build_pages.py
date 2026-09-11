@@ -56,7 +56,7 @@ SHELL = """<!doctype html>
 <header>
   <div class="wrap bar">
     <a class="logo" href="/">
-      <img src="/mark-64.png" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <img src="/assets/brand/mark-64.png" srcset="/assets/brand/mark-32.png 1x, /assets/brand/mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
       <b>SyMoNeu<i>RaL</i></b>
     </a>
     <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
@@ -106,7 +106,7 @@ SHELL = """<!doctype html>
 <footer>
   <div class="wrap foot">
     <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
-      <img src="/mark-32.png" alt="" width="22" height="22">
+      <img src="/assets/brand/mark-32.png" alt="" width="22" height="22">
       <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
     </a>
     <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
@@ -6039,7 +6039,7 @@ def main() -> int:
     page("chat.html", app=True, gpu=True, surface="Chat",
          title="SyMoNeuRaL Chat — talk to the box",
          desc="A 7B running locally on an RTX 5070 Ti. Nothing leaves the machine.",
-         icon="/chat-64.png", eyebrow="Live surface",
+         icon="/assets/icons/chat-64.png", eyebrow="Live surface",
          heading="Ask SyMon.",
          lede="This is a 7B at Q4 on the RTX 5070 Ti described on the home page, streaming "
               "tokens as the card produces them. The tokens-per-second under each answer is "
@@ -6049,7 +6049,7 @@ def main() -> int:
     page("image.html", app=True, gpu=True, surface="Image",
          title="SyMoNeuRaL Image — make it draw",
          desc="FLUX.1-schnell in four steps, rendered locally on a consumer GPU.",
-         icon="/image-64.png", eyebrow="Live surface",
+         icon="/assets/icons/image-64.png", eyebrow="Live surface",
          heading="Make it draw something.",
          lede="FLUX.1-schnell, quantized to q4_k and rendered on the card in this machine. "
               "Every image below prints the wall-clock it actually took.",
@@ -6062,7 +6062,7 @@ def main() -> int:
     page("ravencalc.html", app=True, gpu=False, surface="RavenCalc",
          title="SyMoNeuRaL RavenCalc — exact mathematics",
          desc="Exact symbolic computation that checks its own work.",
-         icon="/calc-64.png", eyebrow="Live surface · CPU",
+         icon="/assets/icons/calc-64.png", eyebrow="Live surface · CPU",
          heading="Mathematics, computed rather than predicted.",
          lede="RavenCalc is an exact symbolic engine, not a language model guessing at algebra. It "
               "runs on the CPU, so it is the one surface here that never waits for the GPU.",
@@ -6087,7 +6087,7 @@ def main() -> int:
          title="SyMoNeuRaL Miner — the GPU in this box, and ASIC rigs on your network",
          desc="The GPU + ASIC operator surface for mining experiments and hardware control. "
               "Measured readings only, and a benchmark says it is a benchmark.",
-         icon="/terminal-64.png", eyebrow="Operator surface · GPU + ASIC",
+         icon="/assets/icons/terminal-64.png", eyebrow="Operator surface · GPU + ASIC",
          heading="Mining hardware, read the same way as the card.",
          lede="SyMoNeuRaL Miner is the GPU + ASIC operator surface for mining experiments "
               "and hardware control. Two units answer here. The GPU half is the intended "
@@ -6114,7 +6114,7 @@ def main() -> int:
     page("gateway.html", app=True, gpu=False, surface="Gateway",
          title="SyMoNeuRaL Gateway — stablecoin licensing, honestly labelled",
          desc="A TRON/USDT licensing and validation gateway. Its status is read from the chain.",
-         icon="/terminal-64.png", eyebrow="Surface · network · TRON",
+         icon="/assets/icons/terminal-64.png", eyebrow="Surface · network · TRON",
          heading="Licensing that settles on-chain, and says whose number that is.",
          lede="A licensing gateway on the TRON Virtual Machine, settling in USDT, with a "
               "local daemon that makes a human approve the configuration before anything "
@@ -6126,7 +6126,7 @@ def main() -> int:
     page("streamer.html", app=True, gpu=False, surface="Streamer",
          title="SyMoNeuRaL Streamer — your playlist, your credentials",
          desc="IPTV over ffmpeg stream copy. Credentials stay in your browser.",
-         icon="/terminal-64.png", eyebrow="Live surface · network",
+         icon="/assets/icons/terminal-64.png", eyebrow="Live surface · network",
          heading="Bring your own playlist.",
          lede="Load an M3U or Xtream Codes subscription and the box will copy the stream "
               "rather than re-encode it. Your credentials stay in this browser and are "
