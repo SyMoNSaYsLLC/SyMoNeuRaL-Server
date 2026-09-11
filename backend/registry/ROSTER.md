@@ -21,18 +21,18 @@ Read in the order `build_status()` emits them, which is the order the rack rende
 
 | id | label | slot | bus | href | implementation | toggle |
 |---|---|---|---|---|---|---|
-| chat | SyMoNeuRaL Chat | 1U | gpu | /chat.html | backend/server.py | yes |
-| image | SyMoNeuRaL Image | 2U | gpu | /image.html | backend/server.py | yes |
-| remix | SyMoNeuRaL Remix | 1U | gpu | /remix.html | backend/apps/remix | yes |
-| ravencalc | SyMoNeuRaL RavenCalc | 1U | cpu | /ravencalc.html | backend/apps/ravencalc | yes |
-| miner | SyMoNeuRaL Miner | 6U | gpu | /miner.html | backend/apps/cryptominer | no |
-| streamer | SyMoNeuRaL Streamer | 1U | net | /streamer.html | backend/apps/streamer | no |
-| coder | SyMoNeuRaL Coder | 1U | cpu | /livestack/coder | backend/apps/coder | no |
-| project | SyMoNeuRaL Project | 1U | cpu | /project.html | backend/apps/project | no |
-| sigils | SyMoNeuRaL Sigils | 1U | gpu | /sigils.html | backend/apps/sigils | yes |
-| studio | SyMoNeuRaL Studio | 1U | gpu | /studio | backend/apps/studio | no |
-| live | SyMoNeuRaL Live | 1U | net | /livestack/live | backend/apps/live | no |
-| dispatchos | SyMoNeuRaL DispatchOS | 1U | cpu | /demo/dispatchos | backend/apps/dispatchos | no |
+| chat | SyMoNeuRaL Chat | 1U | gpu | /chat.html | backend/chat/chat.py | yes |
+| image | SyMoNeuRaL Image | 2U | gpu | /image.html | backend/image/image.py | yes |
+| remix | SyMoNeuRaL Remix | 1U | gpu | /remix.html | backend/remix/remix.py | yes |
+| ravencalc | SyMoNeuRaL RavenCalc | 1U | cpu | /ravencalc.html | backend/ravencalc/lib/math.py | yes |
+| miner | SyMoNeuRaL Miner | 6U | gpu | /miner.html | backend/cryptominer/cryptominer.py | no |
+| streamer | SyMoNeuRaL Streamer | 1U | net | /streamer.html | backend/streamer/streamer.py | no |
+| coder | SyMoNeuRaL Coder | 1U | cpu | /livestack/coder | backend/coder/__init__.py | no |
+| project | SyMoNeuRaL Project | 1U | cpu | /project.html | backend/project/project.py | no |
+| sigils | SyMoNeuRaL Sigils | 1U | gpu | /sigils.html | backend/sigils/sigils.py | yes |
+| studio | SyMoNeuRaL Studio | 1U | gpu | /studio | backend/studio/studio.py | no |
+| live | SyMoNeuRaL Live | 1U | net | /livestack/live | backend/live/live.py | no |
+| dispatchos | SyMoNeuRaL DispatchOS | 1U | cpu | /demo/dispatchos | backend/dispatchos/dispatchos.py | no |
 
 Twelve rows, eighteen rack units. The slot figures are what the one-screen budget is
 spent on; `.claude/HANDOVER.md` §0 has the viewport table and says fourteen rows fit

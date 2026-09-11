@@ -21,7 +21,14 @@ from __future__ import annotations
 import pathlib
 import re
 
-ROSTER = pathlib.Path(__file__).resolve().parent / "ROSTER.md"
+# Anchored by walking for a marker, not by counting parents. `parent` was right
+# while this module sat beside ROSTER.md and became wrong the moment the
+# restructure moved it into `lib/` -- and it failed for every caller, silently,
+# because nothing ran the parser afterwards. Parent-counting breaks exactly like
+# this: the wrong directory usually exists, so the error surfaces far from the
+# cause. The marker is the roster's own package, which cannot drift from it.
+ROSTER = next(p for p in pathlib.Path(__file__).resolve().parents
+              if (p / "ROSTER.md").is_file()) / "ROSTER.md"
 
 FIELDS = ("id", "label", "slot", "bus", "href", "implementation", "toggle")
 
