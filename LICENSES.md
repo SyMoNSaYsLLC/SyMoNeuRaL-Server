@@ -1,6 +1,6 @@
 # What this project is made of, and what each piece obliges
 
-**720 components**, measured at `f2ef52c 2026-09-11`. This file is generated from `ops/LICENSES.tsv` by `tools/build/build_licenses.py`; the TSV is generated from the disk by `tools/audit/license_inventory.py`. **Do not hand-edit either** — re-run them.
+**720 components**, measured at `6aaa84d 2026-09-11`. This file is generated from `ops/LICENSES.tsv` by `tools/build/build_licenses.py`; the TSV is generated from the disk by `tools/audit/license_inventory.py`. **Do not hand-edit either** — re-run them.
 
 The reason it is generated: a licence inventory typed by hand is wrong within a week, and every figure here has to be something a person can re-measure rather than trust.
 
