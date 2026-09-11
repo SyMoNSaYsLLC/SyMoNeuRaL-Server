@@ -29,7 +29,7 @@ set -euo pipefail
 
 DOMAIN="symoneural.com"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 WEBROOT="/var/www/symoneural"
 API="127.0.0.1:8800"
 

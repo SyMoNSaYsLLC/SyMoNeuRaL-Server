@@ -9,7 +9,7 @@ because the central question — *does a voice surface have to queue behind the 
 answered by measurement rather than by argument. **It does not.**
 
 > **Written against a moving tree, 2026-08-17 ~15:25.** Thirteen agent sessions were writing
-> this repo while this was measured. `backend/api.py` (2,167 lines), `tools/build_pages.py`,
+> this repo while this was measured. `backend/server.py` (2,167 lines), `tools/build_pages.py`,
 > `site/tuner.html`, `site/tuner-watch.html` and `site/project.html` were all in flight, so
 > **every `file:line` below must be re-grepped before it is trusted.** Nothing outside
 > `docs/specs/` was touched to produce this. The load average during every measurement was
@@ -194,12 +194,12 @@ POST /api/voice/speak         {"text": "..."}  -> audio/wav
 ```
 
 Speech-to-speech is `transcribe` → **the existing `/api/chat`** → `speak`. It is not a third
-route and it is not an audio-native model. `backend/api.py:1769` already streams SSE and
+route and it is not an audio-native model. `backend/server.py:1769` already streams SSE and
 already accepts a `history` array; a voice turn is a client-side composition of three calls,
 which is also what makes it usable by something that is not this site (see §4.5).
 
 **The one thing a voice path must not become.** `Turn.role` is
-`Literal["user", "assistant"]` (`backend/api.py:246`, used at `:259`) *on purpose* — it is what
+`Literal["user", "assistant"]` (`backend/server.py:246`, used at `:259`) *on purpose* — it is what
 stops a client injecting a `system` turn and overriding the trained persona and the pricing
 refusal. That refusal is trained into `training/corpus.jsonl`, not prompted. Any voice route
 that assembles a chat request must go through the same model, with the same `Literal`, and must
@@ -207,7 +207,7 @@ not grow a parameter that reaches the system prompt.
 
 ### 4.2 The rack unit is `bus="cpu"`
 
-Like RavenCalc (`backend/api.py:1477`). The honest `spec` line is something close to
+Like RavenCalc (`backend/server.py:1477`). The honest `spec` line is something close to
 *"whisper.cpp base.en on the CPU — never waits for the GPU"*, and the honest `state` is `ready`
 only while the binary and the weights are both present; absent either, it is `offline` and says
 which is missing. No decorative indicator: if the surface reports a latency, it must be one it
@@ -220,7 +220,7 @@ already exists in this repo (`backend/apps/asicminer/__init__.py`): `SYMONEURAL_
 `SYMONEURAL_VOICE_TOKEN`, both required, `hmac.compare_digest`, 503 with a body naming both variables
 when off. Fails closed on a public box.
 
-Add a `voice` entry to `_RATE_SUGGESTED` (`backend/api.py:169`) and use
+Add a `voice` entry to `_RATE_SUGGESTED` (`backend/server.py:169`) and use
 `throttled_for("voice")` (`:504`). The comment above that table is worth re-reading first: on
 one GPU a rate limit never bought throughput because the queue rations the card. **Voice is the
 first surface where that reasoning does not apply** — it is CPU work with no queue in front of
@@ -244,7 +244,7 @@ Adding the row and stopping there gives you a route that throttles nothing and r
 ### 4.4 Concurrency: a blocking subprocess on an async loop, and 8 threads twice over
 
 `whisper-cli` is a blocking subprocess and uvicorn is single-threaded per worker, so it must go
-through `asyncio.to_thread` — the same shape RavenCalc already uses at `backend/api.py:1795`.
+through `asyncio.to_thread` — the same shape RavenCalc already uses at `backend/server.py:1795`.
 
 And it needs a small semaphore. At `-t 8`, two concurrent transcriptions are 16 threads of 20,
 and a third makes every one of them slower than serving them in turn would have been. **Cap

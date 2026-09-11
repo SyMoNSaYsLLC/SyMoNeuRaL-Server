@@ -320,7 +320,7 @@ publish a ComfyUI admin surface.** #88 comes after.
 
 ### 3.3 Swagger is real; Studio's half of it is not wired
 
-- `/docs` **exists and is public.** It is a hand-registered route at `backend/api.py:1808`
+- `/docs` **exists and is public.** It is a hand-registered route at `backend/server.py:1808`
   with local assets — which is why `FastAPI(...)` at `api.py:1384` sets `docs_url=None,
   redoc_url=None` while keeping `openapi_url="/openapi.json"`. `ops/Caddyfile:101` proxies
   `/docs*`; `:104` proxies `/openapi.json`. `backend/apps/test_api_reference.py` guards it.

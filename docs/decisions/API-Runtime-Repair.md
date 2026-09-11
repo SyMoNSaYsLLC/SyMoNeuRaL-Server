@@ -556,7 +556,7 @@ Runtime verification table
 │ symoneural-gateway      │ EXISTING        │ .rs)                         │ :8000                    │ forwarding, policy, routing │ limiter.wasm absent │ built                   │ No                   │
 │                         │ RUNTIME         │                              │                          │                             │  → native-fallback  │                         │                      │
 ├─────────────────────────┼─────────────────┼──────────────────────────────┼──────────────────────────┼─────────────────────────────┼─────────────────────┼─────────────────────────┼──────────────────────┤
-│                         │ VERIFIED        │ backend/api.py +             │ python3.13 + api.py, pid │                             │ FastAPI, uvicorn,   │                         │                      │
+│                         │ VERIFIED        │ backend/server.py +             │ python3.13 + api.py, pid │                             │ FastAPI, uvicorn,   │                         │                      │
 │ symoneural-api          │ EXISTING        │ backend/apps/*               │  77203, :8800            │ control/orchestration plane │ pydantic            │ none as a runtime       │ No                   │
 │                         │ RUNTIME         │                              │                          │                             │                     │                         │                      │
 ├─────────────────────────┼─────────────────┼──────────────────────────────┼──────────────────────────┼─────────────────────────────┼─────────────────────┼─────────────────────────┼──────────────────────┤

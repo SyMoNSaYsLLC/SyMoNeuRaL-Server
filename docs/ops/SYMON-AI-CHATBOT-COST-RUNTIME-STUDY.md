@@ -20,9 +20,9 @@ is candidate-only and is not activated by this document.
 
 | Path | Where | Notes |
 |---|---|---|
-| `POST /api/chat` | `backend/api.py:2479` | The chat surface. Streams SSE deltas; final event carries `tokens`, `seconds`, `tok_per_s`, `model`, `adapter` |
-| `GET /api/status` | `backend/api.py:2291` | Live rack state, including whether the chat surface is up |
-| `GET /api/ws` | `backend/api.py:2319` | WebSocket status feed |
+| `POST /api/chat` | `backend/server.py:2479` | The chat surface. Streams SSE deltas; final event carries `tokens`, `seconds`, `tok_per_s`, `model`, `adapter` |
+| `GET /api/status` | `backend/server.py:2291` | Live rack state, including whether the chat surface is up |
+| `GET /api/ws` | `backend/server.py:2319` | WebSocket status feed |
 | `POST /v1/chat/completions` | gateway, `src/router.rs:54` | OpenAI-**compatible** surface we *serve*. Not an outbound call |
 
 ### Model paths and config names

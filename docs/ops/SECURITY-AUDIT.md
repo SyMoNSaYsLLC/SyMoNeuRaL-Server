@@ -214,7 +214,7 @@ Written as prohibitions because each is a plausible mis-summary of what follows:
 - **Do NOT say `/studio/editor/ws` is missing token checks.** It has them. Verified below.
 
 **What is true across all three:** **no `Origin` check exists.** Measured —
-`grep -n 'origin\|Origin' backend/api.py` finds no request-origin handling. That matters more for
+`grep -n 'origin\|Origin' backend/server.py` finds no request-origin handling. That matters more for
 sockets than for ordinary routes, because **a WebSocket handshake is not subject to CORS**: a
 third-party page can open one from a visitor's browser with no preflight to stop it.
 
@@ -343,7 +343,7 @@ authorized."*
 
 ## A. Public route inventory
 
-Measured 2026-08-22 from `backend/api.py` and the mounted routers.
+Measured 2026-08-22 from `backend/server.py` and the mounted routers.
 
 ### Delegated by Caddy — internet-facing
 
@@ -361,7 +361,7 @@ Measured 2026-08-22 from `backend/api.py` and the mounted routers.
 
 ### `/api/*` — public prefix. **123 routes total, expanded**
 
-**In `backend/api.py` — 32 routes** (`@app.*` decorators):
+**In `backend/server.py` — 32 routes** (`@app.*` decorators):
 
 `GET /` · `GET /api/status` · `GET /api/gen/{name}` · `GET /api/studio/models` ·
 `GET /api/gpuminer/status` · `GET /api/asicminer/firmware` · `POST /api/chat` · `POST /api/image` ·

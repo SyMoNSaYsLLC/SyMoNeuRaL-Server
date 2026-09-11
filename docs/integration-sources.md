@@ -30,7 +30,7 @@ The honest summary: **adopt the data layers, skip the orchestration layers.**
 | Blueprint row | Their pick | What is already here | Verdict |
 |---|---|---|---|
 | API / gateway | Envoy, Kong, Traefik | **Caddy** (TLS, WS upgrade, no rewrites) + **`symon-gateway`** (Rust, payload validation, forwards `/api/*` opaquely) | done, and smaller |
-| Service framework | FastAPI / NestJS | **FastAPI**, one process, `backend/api.py` | done |
+| Service framework | FastAPI / NestJS | **FastAPI**, one process, `backend/server.py` | done |
 | LLM serving | vLLM, Triton, BentoML, KServe | **llama.cpp** `llama-server` + persona LoRA, started on demand inside `gpu.hold("chat")` | done — see the vLLM note below, and the BentoML note |
 | Model registry | MLflow, BentoML | **`run/registry.json`**, built out-of-band by `tools/build_registry.py`, read by `/api/studio/models` | done, deliberately minimal |
 | Image models | diffusers, A1111, ComfyUI, InvokeAI | **ComfyUI** (+ `ComfyUI-GGUF`, `custom_nodes/symoneural_gguf`) and **stable-diffusion.cpp** | done |

@@ -8,9 +8,9 @@ approximation of those rules silently under-reports: the first version of that w
 every `from . import x` in the tree and so reported four startup dependencies when there
 were more.
 
-So this measures the same thing the other way round: it imports `backend/api.py` in a
+So this measures the same thing the other way round: it imports `backend/server.py` in a
 subprocess set up exactly as the unit sets it up -- `sys.path[0] = backend/` because
-`ExecStart` is `python3 backend/api.py` -- and reports the third-party distributions that
+`ExecStart` is `python3 backend/server.py` -- and reports the third-party distributions that
 ended up in `sys.modules`. `uvicorn.run` is behind `if __name__ == "__main__"`, so importing
 builds the app without binding the port.
 
@@ -31,14 +31,14 @@ from pathlib import Path
 def _repo_root() -> Path:
     """Find the root by its marker, not by counting parents.
 
-    `backend/apps/test_path_fragility.py` enforces this and explains why: a `parents[N]`
+    `backend/test_path_fragility.py` enforces this and explains why: a `parents[N]`
     root is silent when it is wrong, because the wrong parent usually exists too.
     """
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()
@@ -143,7 +143,7 @@ def main(argv: list[str]) -> int:
         return 0 if r["status"]["imported"] else 1
 
     st = r["status"]
-    print(f"imported backend/api.py with sys.path[0]={BACKEND}")
+    print(f"imported backend/server.py with sys.path[0]={BACKEND}")
     print(f"  result: {'OK' if st['imported'] else 'FAILED -- ' + str(st['error'])}")
     print(f"  modules in sys.modules: {r['modules_total']}  "
           f"(first-party top-level: {r['first_party_count']})")

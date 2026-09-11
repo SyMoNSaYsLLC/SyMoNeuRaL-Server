@@ -58,7 +58,7 @@ measured inputs, and the inputs are printed beside the result in §4.
 Inputs, and each is a reading of source rather than a judgement:
 
 - **exposure** — `public` = a path in `ops/Caddyfile` reaches it, **including everything under
-  `handle /api/*`**, which covers every router mounted with an `/api/…` prefix in `backend/api.py`
+  `handle /api/*`**, which covers every router mounted with an `/api/…` prefix in `backend/server.py`
   · `loopback` = reachable only from this box · `none` = **no route exists at all**
 - **gate** — `token` · `flag-only` · `none`
 - **blast** — `read` · `write-local` · `device-or-money`
@@ -212,7 +212,7 @@ Footnotes are the derivation, not decoration:
 
 **The four corrections, each with the source that settles it:**
 
-10. **Voice exposure was `none`. It is `public`.** `backend/api.py:2932` mounts
+10. **Voice exposure was `none`. It is `public`.** `backend/server.py:2932` mounts
     `voice.router` at **`prefix="/api/voice"`**, and `ops/Caddyfile:50` delegates the whole
     `handle /api/*` subtree — so the routes are internet-reachable. `public · read` → **`S-med`**.
     **The ASR runtime status is unchanged and still dead:** the surface answers off because

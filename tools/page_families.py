@@ -9,7 +9,7 @@ the layout does not depend on JavaScript having run.
 
 The families were about to exist in four places at once -- the generators that emit the
 markup, the hand-authored pages that carry it, `site/shell.js`, and the test that checks it.
-Four hand-maintained copies of one fact is the failure `backend/apps/ROSTER.md` was written
+Four hand-maintained copies of one fact is the failure `backend/ROSTER.md` was written
 about, arriving in the frontend.
 
 So: this file is the authored source. The generators IMPORT it and emit `data-family` from it.

@@ -138,7 +138,7 @@ def collect() -> dict:
         v.get("raw_bytes", 0) for v in ops.values() if v.get("state") == "COMPLETE")
     # DEST_VERIFIED resume is proven by a test, not by an anecdote.
     t = sh([sys.executable, "-m", "pytest",
-            "backend/apps/test_storage_reorg_resume.py", "-q"], 900)
+            "backend/test_storage_reorg_resume.py", "-q"], 900)
     d["RESUME_TESTS"] = ("PASS" if t.returncode == 0 else "FAIL") + (
         f" ({[l for l in t.stdout.splitlines() if 'passed' in l or 'failed' in l][-1:]})"
         if t.stdout else "")

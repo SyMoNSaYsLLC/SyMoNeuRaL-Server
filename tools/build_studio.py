@@ -8,7 +8,7 @@
 The Studio is the local agent (tool-calling, over llama.cpp) plus the image bench (ComfyUI,
 behind the GPU governor), on one page. The bench is **ComfyUI's own node editor**, in an
 iframe, served same-origin through `/studio/editor/` by a reverse proxy in
-`backend/apps/studio/routes.py`.
+`backend/studio/routes.py`.
 
 That last point is the largest single decision in this app, so it is written down here as well
 as in the routes: **no node canvas was written for this page.** An earlier draft had one --
@@ -62,7 +62,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 APP = ROOT / "backend" / "apps" / "studio"
 sys.path.insert(0, str(ROOT / "tools"))
@@ -212,7 +212,7 @@ def main() -> int:
     # surgery against source this repository is not authorized to read as an editable file
     # would be guessing at code rather than changing it.
     #
-    # The authored source is `backend/apps/.../page.js`, which is outside 6.2's frontend
+    # The authored source is `backend/.../page.js`, which is outside 6.2's frontend
     # allowlist. The outline defect on this page is therefore RECORDED as out-of-scope rather
     # than papered over. See the 6.2 evidence root.
     (SITE / "studio.js").write_text(js)

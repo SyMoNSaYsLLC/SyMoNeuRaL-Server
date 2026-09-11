@@ -17,7 +17,7 @@ set -uo pipefail
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 cd "$ROOT"
 
 ok=0; warn=0; fail=0

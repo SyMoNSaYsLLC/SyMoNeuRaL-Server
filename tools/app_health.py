@@ -94,7 +94,7 @@ def collected(rel: str) -> int:
 def wired(name: str) -> bool:
     """Does anything outside the app reach it? A router nobody mounts is not shipped."""
     hits = git("grep", "-l", "-E", f"apps[./]{re.escape(name)}", "--",
-               "backend/api.py", "backend/apps", "tools", "tests")
+               "backend/server.py", "backend", "tools", "tests")
     external = [h for h in hits.splitlines() if f"apps/{name}/" not in h]
     return bool(external)
 

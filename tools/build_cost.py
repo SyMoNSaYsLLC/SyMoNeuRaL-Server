@@ -21,7 +21,7 @@ import re
 # flattened and once here -- and it fails *silently*, because the wrong parent is
 # usually a directory that exists. Assert rather than trust it.
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 INDEX = SITE / "documentation.html"
 

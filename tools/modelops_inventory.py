@@ -13,7 +13,7 @@ So this reads three sources and cross-checks them:
 
     disk            -- what is actually there, with real byte counts
     PROVENANCE.json -- what we can say where it came from
-    backend/api.py  -- which of them the running server actually loads
+    backend/server.py  -- which of them the running server actually loads
 
 and the interesting output is the disagreement, not the agreement.
 
@@ -22,7 +22,7 @@ and the interesting output is the disagreement, not the agreement.
 `api.py` builds a FastAPI app, reads the environment, and resolves governor paths at module
 scope. Importing it to learn four filenames would run all of that, and in a tool that is meant
 to be safe to run on a broken box. So the active set is read out of the source text, and
-`backend/apps/test_modelops.py` asserts the patterns still match -- a structural assertion,
+`backend/test_modelops.py` asserts the patterns still match -- a structural assertion,
 because a regex that silently stops matching would report "no active model" rather than fail.
 
 Stdlib only, and no network. This tool downloads nothing, activates nothing, deletes nothing.
@@ -38,7 +38,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = ROOT / "backend" / "models"
 MANIFEST = MODELS / "PROVENANCE.json"
-API = ROOT / "backend" / "api.py"
+API = ROOT / "backend" / "server.py"
 
 # Every place a model path is chosen. Not just api.py: `voice/asr.py` picks the whisper model
 # itself, and a first draft of this tool read only api.py and therefore reported the listen
@@ -46,8 +46,8 @@ API = ROOT / "backend" / "api.py"
 # one active model misclassified, so the list is explicit and `test_modelops.py` asserts each
 # entry still parses to something.
 LOADER_SITES = (
-    ("backend/api.py", "api"),
-    ("backend/apps/voice/asr.py", "voice"),
+    ("backend/server.py", "api"),
+    ("backend/voice/asr.py", "voice"),
 )
 TRAINING = ROOT / "training"
 
@@ -78,7 +78,7 @@ def active_from_source() -> dict[str, str]:
     """
     found: dict[str, str] = {}
 
-    api = ROOT / "backend" / "api.py"
+    api = ROOT / "backend" / "server.py"
     if api.is_file():
         text = api.read_text(encoding="utf-8", errors="replace")
         # CHAT_MODEL = MODELS / "llm" / "symon-1.0-7b-q4_k_m.gguf"

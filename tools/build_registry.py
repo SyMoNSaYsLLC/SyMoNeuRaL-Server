@@ -55,12 +55,12 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-# `apps.studio.plugins.reinforce.registry` resolves the same way it does for the serving API, which puts
-# `backend/` on the path and imports `apps.studio.plugins.reinforce`. Matching that import shape means this
+# `studio.plugins.reinforce.registry` resolves the same way it does for the serving API, which puts
+# `backend/` on the path and imports `studio.plugins.reinforce`. Matching that import shape means this
 # script and the API are looking at one module, not two copies with drifting behaviour.
 sys.path.insert(0, str(ROOT / "backend"))
 
-from apps.studio.plugins.reinforce import registry  # noqa: E402
+from studio.plugins.reinforce import registry  # noqa: E402
 
 OUT = ROOT / "run" / "registry.json"
 

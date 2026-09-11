@@ -24,7 +24,7 @@ Each row was asked for two things: the page at its `href`, and one **read-only**
 Three rows are `POST only` (chat, image, remix) and were not exercised, because a POST to any
 of them takes the GPU; `coder` has **no route by design** — `ops/Caddyfile` delegates the whole
 `/api/*` subtree to the internet, so an `/api/coder/...` route would be publicly reachable the
-instant it existed (`backend/api.py:1712-1726`).
+instant it existed (`backend/server.py:1712-1726`).
 
 Reproduce with `tests/../` — see `backend/apps/test_server_ready.py`, which asserts this
 document covers every roster row and can re-take the live half on demand.
@@ -114,7 +114,7 @@ environments and on the live service.**
 
 Confirmed on `:8800` as well, so this is what visitors to the live site see today.
 
-The cause is at `backend/api.py:1671-1678`. The row's state is derived from a file existing:
+The cause is at `backend/server.py:1671-1678`. The row's state is derived from a file existing:
 
 ```python
 state="busy" if holder == "train" else

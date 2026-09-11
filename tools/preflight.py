@@ -4,7 +4,7 @@
     python3 tools/preflight.py            # human-readable, exits non-zero on any hard failure
     python3 tools/preflight.py --json     # same findings, machine-readable
 
-The failure mode this replaces: `backend/api.py` dies at import with a traceback naming one
+The failure mode this replaces: `backend/server.py` dies at import with a traceback naming one
 module, which tells an operator what Python could not find but not what to install, and stops
 at the first problem so a box missing three packages takes three attempts to diagnose. This
 checks everything, then reports every gap at once with the `apt` line that fixes it.
@@ -12,7 +12,7 @@ checks everything, then reports every gap at once with the `apt` line that fixes
 Two classes of requirement, and the distinction is the useful part:
 
   * **start** -- the process cannot come up without it. Measured: these are the distributions
-    that end up in `sys.modules` when `backend/api.py` is imported.
+    that end up in `sys.modules` when `backend/server.py` is imported.
   * **serve** -- the process comes up fine and one surface 500s on first request. `sympy` is
     the live case: `import ravencalc` is inside a function at `api.py:1166`, so a box with no
     sympy starts green and fails the moment somebody uses the calculator. Reporting a green
@@ -31,7 +31,7 @@ real confusion on 2026-09-09:
 Neither fails the check. They are not the same thing.
 
 The declared lists below are checked against live measurement by
-`backend/apps/test_preflight.py`, so adding an import to the serving path without adding it
+`backend/test_preflight.py`, so adding an import to the serving path without adding it
 here turns that test red rather than silently weakening this one.
 """
 
@@ -50,9 +50,9 @@ def _repo_root() -> Path:
     """Find the root by its marker, not by counting parents."""
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()
@@ -114,9 +114,9 @@ ELSEWHERE = {
     "datasets": ("training/.venv", "the reinforce trainer (data)"),
     "torch": ("training/.venv", "the reinforce trainer, and the GGUF custom node"),
     "accelerate": ("training/.venv", "the reinforce trainer (device placement)"),
-    "rembg": ("backend/apps/sigils/.venv", "the sigils cut-out worker"),
-    "onnxruntime": ("backend/apps/sigils/.venv", "the sigils cut-out worker (inference)"),
-    "pyasic": ("backend/apps/asicminer/.venv", "the ASIC rig probe"),
+    "rembg": ("backend/sigils/.venv", "the sigils cut-out worker"),
+    "onnxruntime": ("backend/sigils/.venv", "the sigils cut-out worker (inference)"),
+    "pyasic": ("backend/asicminer/.venv", "the ASIC rig probe"),
 }
 
 #: Genuinely gates a surface: absent everywhere on this box, so the surface cannot run.

@@ -75,7 +75,7 @@ defect 2).
 
 ## 4. A defect this verification found in my own work
 
-Nine Python files — including **`backend/api.py`, the live service** — and two shell scripts
+Nine Python files — including **`backend/server.py`, the live service** — and two shell scripts
 still resolved engines through the old path, spelled as separate components:
 
 ```python

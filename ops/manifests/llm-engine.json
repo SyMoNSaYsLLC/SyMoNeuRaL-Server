@@ -1,0 +1,242 @@
+{
+  "_comment": [
+    "Artifact manifest for the canonical inference engine. Written by ops/manifests/regenerate.sh.",
+    "",
+    "THE ENGINE IS A TREE, NOT A FILE. The launcher is 17,952 bytes and links 23 shared objects",
+    "beside it; a manifest naming only its hash cannot restore a working runtime. So this records",
+    "the whole directory -- every file with its own sha256, every symlink with its target -- and",
+    "names the bundle in the local release store that carries the bytes.",
+    "",
+    "GIT CANNOT REBUILD THIS ARTIFACT AND THIS FILE DOES NOT PRETEND OTHERWISE. engines/ is",
+    "gitignored, the engine source carries no commit identity, and Handshake 4.2 recorded",
+    "STOP -- NOT REPRODUCIBLE after building it twice from one verified snapshot. The bundle is",
+    "the artifact of record BECAUSE it cannot be rebuilt. `bundle_sha256` is reproducible;",
+    "`source_reproducible` is false, and those are different claims.",
+    "",
+    "Custody follows the archives/ convention already used for the DispatchOS preview archives:",
+    "a gitignored local release store holding <name>-<short>.tar.gz beside a key=value",
+    "MANIFEST.txt. This JSON is the half that lives in Git and points at it."
+  ],
+  "artifact_role": "inference-engine-runtime-tree",
+  "relative_path": "symoneural-llm/build/bin",
+  "canonical_absolute_path": "/home/google/Symoneural/symoneural-llm/build/bin",
+  "path_is_directory": true,
+  "entry_count": 25,
+  "total_size_bytes": 89213713,
+  "server": {
+    "name": "symoneural-llm",
+    "relative_path": "symoneural-llm/build/bin/symoneural-llm",
+    "size_bytes": 17952,
+    "sha256": "619b918f3f0ac3629c1270320460893627fb8c78d0d4cb22f08e827380d0f35a",
+    "build_id": "22570837ba0a18e8a7e0dcca832f40401da5c805",
+    "elf_interpreter": "/lib64/ld-linux-x86-64.so.2",
+    "rpath": "",
+    "runpath": "$ORIGIN",
+    "unresolved_deps": 0,
+    "promoted_on": "2026-08-26",
+    "promotion_evidence": "symoneural-gateway-publish-migration-20260826-122026/CANDIDATE-SHA256SUMS",
+    "serving_proof": "Handshake #108 phase 2 -- /proc/43122/exe hashed to this value while serving"
+  },
+  "cli": {
+    "name": "symoneural-llm-cli",
+    "relative_path": "symoneural-llm/build/bin/symoneural-llm-cli",
+    "size_bytes": 1339456,
+    "sha256": "4216a62be146264b62d229af4008147f4c3a78c546cce5de05f69c84eafeac8e",
+    "build_id": "cbfad125b865cb652482d42770a3c4760c9c3099",
+    "rpath": "",
+    "runpath": "/home/google/Symoneural/symoneural-llm/build/bin:",
+    "generation": "2026-08-20 -- RETAINED, not promoted",
+    "same_build_as_server": false,
+    "skew_note": "bounded accepted skew; see docs/ops/SERVING-PATH.md. No matching CLI could be built."
+  },
+  "custody": {
+    "store": "archives/",
+    "store_is_gitignored": true,
+    "bundle": "archives/symoneural-llm-engine-619b918f.tar.gz",
+    "bundle_sha256": "54a124a7c6b968b1f9f0938edcc6f218fdd83da9f646dba0b333e5b09d3a7afa",
+    "bundle_manifest": "archives/symoneural-llm-engine-619b918f.MANIFEST.txt",
+    "bundle_is_deterministic": true,
+    "restore": "tar -C symoneural-llm/build -xzf archives/symoneural-llm-engine-619b918f.tar.gz",
+    "verify_after_restore": "ops/verify-runtime.sh --artifacts",
+    "not_custody": "the Handshake 1A rollback tree is audit evidence and is NOT a release store",
+    "distribution": {
+      "_comment": [
+        "WHERE the bundle can be obtained. Not what makes it acceptable.",
+        "",
+        "This block is transport. `custody.bundle_sha256` above is the acceptance criterion,",
+        "and it is checked against the DOWNLOADED bytes -- a consumer resolves",
+        "",
+        "    manifest identity -> release artifact -> sha256 verification -> restore",
+        "",
+        "and never 'GitHub says this is the right binary'. If a download and this manifest",
+        "disagree, the manifest is right and the download is rejected. Keeping it that way",
+        "round is what lets custody be replaced without renegotiating identity.",
+        "",
+        "The release is PUBLIC and deliberately so. A private one would work, but retrieving",
+        "it needs a GitHub credential provisioned onto the rebuilt machine, which moves half",
+        "of disaster recovery into a second custody problem. The bundle is compiled runtime",
+        "binaries; the protected artefacts named in docs/ENGINEERING.md -- training/corpus.jsonl,",
+        "training/build_dataset.py and training/adapter/ -- are not in it, checked member by",
+        "member and by scanning the binaries for corpus text before publication.",
+        "",
+        "NO CREDENTIAL BELONGS IN THIS BLOCK. Retrieval is anonymous HTTPS; that is the point.",
+        "",
+        "The tag names the runtime identity, not a source version. This engine has no commit",
+        "identity and no build record -- `source_reproducible` is false above -- so a semantic",
+        "version would assert a provenance nobody can demonstrate."
+      ],
+      "provider": "github-release",
+      "repository": "SyMoNSaYsLLC/SyMoNeuRaL-Runtime-Artifacts",
+      "release_tag": "llm-engine-619b918f",
+      "asset_name": "symoneural-llm-engine-619b918f.tar.gz",
+      "url": "https://github.com/SyMoNSaYsLLC/SyMoNeuRaL-Runtime-Artifacts/releases/download/llm-engine-619b918f/symoneural-llm-engine-619b918f.tar.gz",
+      "requires_authentication": false,
+      "immutable": "one asset per tag; a corrected artifact gets a NEW tag naming its new hash and never replaces an existing one",
+      "verified_by_independent_download": "2026-08-29"
+    },
+    "extract_into": "symoneural-llm/build",
+    "restore_note": "`restore` below is the LOCAL convenience form and assumes archives/ is already populated. A rebuilt machine has no archives/ -- it fetches the bundle to wherever it likes -- so tooling must use `extract_into` with the path it actually downloaded to. Found by reconstructing from a fresh clone: the recorded command worked only on a machine that already had the artifact, which is the one machine that does not need it."
+  },
+  "source_reproducible": false,
+  "source_reproducible_note": "Handshake 4.2: STOP -- NOT REPRODUCIBLE. No commit identity, no build record, no preserved configuration.",
+  "consumed_by": "backend/api.py LLM_ENGINE (default path; no environment override is set)",
+  "tree": [
+    {
+      "name": "libsymoneural_llm.so",
+      "type": "symlink",
+      "target": "libsymoneural_llm.so.0"
+    },
+    {
+      "name": "libsymoneural_llm.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_llm.so.0.1.0"
+    },
+    {
+      "name": "libsymoneural_llm.so.0.1.0",
+      "type": "file",
+      "size_bytes": 4323784,
+      "sha256": "5eab3b679ef486c9010581a03fdf9dfff8a2397a89b5d78445a1d7abad53b4f1"
+    },
+    {
+      "name": "libsymoneural_llm_cli_impl.so",
+      "type": "file",
+      "size_bytes": 424192,
+      "sha256": "d932a0dae075e641a44bad7fe1e9fd7b1df7eba315010be438d3fcc6fcdc20c9"
+    },
+    {
+      "name": "libsymoneural_llm_common.so",
+      "type": "symlink",
+      "target": "libsymoneural_llm_common.so.0"
+    },
+    {
+      "name": "libsymoneural_llm_common.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_llm_common.so.0.1.0"
+    },
+    {
+      "name": "libsymoneural_llm_common.so.0.1.0",
+      "type": "file",
+      "size_bytes": 6025096,
+      "sha256": "c92c77a789e5e121e837c673abfa840b8411da07ca2c816c8e20248b86bef118"
+    },
+    {
+      "name": "libsymoneural_llm_server_impl.so",
+      "type": "file",
+      "size_bytes": 7471528,
+      "sha256": "919b4ea43d8e9a6f69cab861f4d35df86b055f6d978656f9480b0a80bd0418f1"
+    },
+    {
+      "name": "libsymoneural_multimodal.so",
+      "type": "symlink",
+      "target": "libsymoneural_multimodal.so.0"
+    },
+    {
+      "name": "libsymoneural_multimodal.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_multimodal.so.0.1.0"
+    },
+    {
+      "name": "libsymoneural_multimodal.so.0.1.0",
+      "type": "file",
+      "size_bytes": 1842824,
+      "sha256": "b6efcdb9f1b5e9f1eaaa6de4287ac8396def9c439612b7b6650b558d0c48306c"
+    },
+    {
+      "name": "libsymoneural_tensor.so",
+      "type": "symlink",
+      "target": "libsymoneural_tensor.so.0"
+    },
+    {
+      "name": "libsymoneural_tensor.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_tensor.so.0.20.0"
+    },
+    {
+      "name": "libsymoneural_tensor.so.0.20.0",
+      "type": "file",
+      "size_bytes": 55560,
+      "sha256": "777215e3e9d3e17c0382f87b7d4ff7903914a0a4ccc3e7fba93f177d7fab3eb4"
+    },
+    {
+      "name": "libsymoneural_tensor_base.so",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_base.so.0"
+    },
+    {
+      "name": "libsymoneural_tensor_base.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_base.so.0.20.0"
+    },
+    {
+      "name": "libsymoneural_tensor_base.so.0.20.0",
+      "type": "file",
+      "size_bytes": 918017,
+      "sha256": "abe531dcc7049f67039f5c680f606009f07a92b4b8ecbd5ddafd881bf4cb6576"
+    },
+    {
+      "name": "libsymoneural_tensor_cpu.so",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_cpu.so.0"
+    },
+    {
+      "name": "libsymoneural_tensor_cpu.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_cpu.so.0.20.0"
+    },
+    {
+      "name": "libsymoneural_tensor_cpu.so.0.20.0",
+      "type": "file",
+      "size_bytes": 1139368,
+      "sha256": "d92a3b1dd84646b613e6f744650a2719471bae503d716c689e7ae80c4bebd641"
+    },
+    {
+      "name": "libsymoneural_tensor_cuda.so",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_cuda.so.0"
+    },
+    {
+      "name": "libsymoneural_tensor_cuda.so.0",
+      "type": "symlink",
+      "target": "libsymoneural_tensor_cuda.so.0.20.0"
+    },
+    {
+      "name": "libsymoneural_tensor_cuda.so.0.20.0",
+      "type": "file",
+      "size_bytes": 65655936,
+      "sha256": "8b5e63e35f78bab7c903ea5d70b3b52ba8a8d36763efb96a1221b16f8012c361"
+    },
+    {
+      "name": "symoneural-llm",
+      "type": "file",
+      "size_bytes": 17952,
+      "sha256": "619b918f3f0ac3629c1270320460893627fb8c78d0d4cb22f08e827380d0f35a"
+    },
+    {
+      "name": "symoneural-llm-cli",
+      "type": "file",
+      "size_bytes": 1339456,
+      "sha256": "4216a62be146264b62d229af4008147f4c3a78c546cce5de05f69c84eafeac8e"
+    }
+  ],
+  "verified_on": "2026-08-29"
+}

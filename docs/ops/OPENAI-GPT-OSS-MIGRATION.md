@@ -37,7 +37,7 @@ authorization, live-smoked and benchmarked — see §3a-§3d.
 |---|---|
 | active chat | `backend/models/llm/symon-1.0-7b-q4_k_m.gguf` — 4.36 GiB, `bartowski/Qwen2.5-7B-Instruct-GGUF`, Apache-2.0, licence text on disk |
 | active draft | `backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf` — 0.37 GiB, speculative decode |
-| set at | `backend/api.py:187`, `:191` |
+| set at | `backend/server.py:187`, `:191` |
 | runtime | llama.cpp-family engine, `-ngl 99` (`api.py:1163`) |
 
 **Qwen remains active and is not deleted.** It becomes `rollback` **only** after a smoke record
@@ -402,7 +402,7 @@ alongside other work. Whoever promotes it still owes that reading through the no
 | response attributable to this engine | `model` = candidate path, `system_fingerprint` = `b296-2246ab7` |
 | only GPU tenant | the smoke engine, 12,664 MiB; nothing else held the card |
 
-> **One thing worth stating plainly, because "isolated" invites over-reading:** `backend/api.py`
+> **One thing worth stating plainly, because "isolated" invites over-reading:** `backend/server.py`
 > **was running throughout** (pid 1849, up 1h44m). It was neither used nor disturbed — it held no
 > model file and no GPU memory, because it spawns an engine on demand and had not. Saying "nothing
 > else was running" would have been false; saying "nothing else served this request" is what was

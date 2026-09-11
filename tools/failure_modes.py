@@ -47,9 +47,9 @@ def _repo_root() -> Path:
     """Find the root by its marker, not by counting parents."""
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()
@@ -133,7 +133,7 @@ def start_foreground(port: int = TEST_PORT, extra_env: dict[str, str] | None = N
     try:
         with log.open("wb") as fh:
             proc = subprocess.Popen(
-                [sys.executable, "backend/api.py"],
+                [sys.executable, "backend/server.py"],
                 cwd=str(ROOT), env=unit_env(port, extra_env),
                 stdout=fh, stderr=subprocess.STDOUT,
                 start_new_session=True,      # its own process group; never signals ours

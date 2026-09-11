@@ -345,7 +345,7 @@ Upgrade/Candidate, Future/Blocked — plus the competition record. Extras go in 
 
 **Option 1 — Current / Proven**
 - **model/runtime** `symon-1.0-7b-q4_k_m.gguf` (qwen2, 4.36 GiB) + `symon-1.0-draft-0.5b` speculative + `symoneural-lora.gguf` persona adapter · engine `build 296, commit 2246ab7`
-- **route/file** `backend/api.py:187` · launch argv `:1181-1197` · `-c 65536 -cb -np 2`
+- **route/file** `backend/server.py:187` · launch argv `:1181-1197` · `-c 65536 -cb -np 2`
 - **proof** live, serving, adapter applied (arch-matched, asserted). Bench 147.6 tok/s gen, 1807.1 prompt, 25 tokens for a one-sentence answer, **5,259 MiB peak**, 2.02 s load
 - **blockers** none
 - **risk** low. GPU starvation risk **moderate** — holds the card during generation

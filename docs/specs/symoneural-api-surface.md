@@ -7,7 +7,7 @@
 
 FastAPI on loopback `:8800`, behind `symon-gateway`, behind Caddy. `ops/Caddyfile:46` records
 the rule that matters: **the gateway forwards every `/api` path to FastAPI verbatim and rewrites
-nothing, so `backend/api.py` still owns the path.**
+nothing, so `backend/server.py` still owns the path.**
 
 | Reading, measured at `api.py:1385-1391` | |
 |---|---|

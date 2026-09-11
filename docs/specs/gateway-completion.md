@@ -62,7 +62,7 @@ unchanged and remains the authority on what `ready` would take.
 
 ---
 
-> **Re-grep every `file:line` below before trusting it.** `backend/api.py` and
+> **Re-grep every `file:line` below before trusting it.** `backend/server.py` and
 > `tools/build_pages.py` were being edited by other agents *during* this audit — `GATEWAY_BODY`
 > moved from 1221 to 1224 and the gateway `Unit(...)` from 1391 to 1405 while it was being
 > written. Line numbers are given as a courtesy; **the symbol name is the real citation**, and
@@ -93,8 +93,8 @@ Verified by reading, not assumed:
 - **There is no `try`/`except` in the file.** Nothing swallows an exception into a default.
   Were one to occur it would surface as a 500 on `/api/status`, not as a granted licence.
 - **Most importantly: the Gateway makes no authorization decision at all.** Its single
-  consumer is `backend/api.py:1321`, which puts the returned strings into the rack `Unit(id="gateway", ...)` at
-  `backend/api.py:1405`. The output is a *display string*. Nothing is gated on it, nothing is
+  consumer is `backend/server.py:1321`, which puts the returned strings into the rack `Unit(id="gateway", ...)` at
+  `backend/server.py:1405`. The output is a *display string*. Nothing is gated on it, nothing is
   unlocked by it, no file is decrypted by it. There is nothing for a fail-open to open.
 
 ### The flaw is ahead of this code, not behind it. That is the real finding.
@@ -393,7 +393,7 @@ second half needs Garrett. It is item 8b below for exactly that reason.
 chat and image cannot co-reside and that you may be queued behind someone. It comes from the
 shared `SHELL` in `tools/build_pages.py:72–73` and appears on all seven surface pages.
 
-The Gateway is `bus="net"` (in that same `Unit(id="gateway", ...)`, `backend/api.py:1406`). It never takes the GPU lock and can never
+The Gateway is `bus="net"` (in that same `Unit(id="gateway", ...)`, `backend/server.py:1406`). It never takes the GPU lock and can never
 queue behind a render. Nothing in the callout is false about the machine; it is simply not
 about this surface, and on a licensing page it implies the Gateway is a GPU tenant.
 `tuner.html` — also a `net` surface — at least passes `gpu=False` to `page()`, which adds a
@@ -440,11 +440,11 @@ dependency, turns a class of typo into an honest "malformed".
 `wallet/getnowblock` and `wallet/getcontract` over plain `requests`, per §5. Three hard
 constraints:
 
-- **It must never be called inline from `unit_state()`.** `backend/api.py:1324` states the
+- **It must never be called inline from `unit_state()`.** `backend/server.py:1324` states the
   rule: *"`/api/status` is polled and drives the websocket, so nothing in here may block."*
   The measured latencies are 0.69–2.64 s. Inline, that is added to every status poll and every
   WebSocket frame for every visitor.
-- **Follow the precedent one line above.** `backend/api.py:1320` is
+- **Follow the precedent one line above.** `backend/server.py:1320` is
   `asicminer.unit_state(_asic_cache.get())` — the ASIC surface takes its reading as an argument
   from a cache and does no I/O in the status path. `gateway.unit_state()` should gain the same
   shape: `unit_state(reading)`, with a background/TTL cache supplying it, and `None` meaning

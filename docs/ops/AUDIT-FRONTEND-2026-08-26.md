@@ -39,7 +39,7 @@ geometry. The llama.cpp reference is likewise taken from §3's written descripti
 
 ## 1. Application / page / route inventory
 
-26 HTML surfaces. `backend/api.py:3802` mounts `StaticFiles(directory=site/, html=True)` at
+26 HTML surfaces. `backend/server.py:3802` mounts `StaticFiles(directory=site/, html=True)` at
 `/`, with clean-URL routes declared *before* the mount. `ops/Caddyfile` has no rewrites.
 
 | # | Page | Clean route | Function | Loads |

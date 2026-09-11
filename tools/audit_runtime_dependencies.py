@@ -26,21 +26,21 @@ from typing import Iterable
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 REQUIREMENTS = (
-    "backend/apps/remix/requirements.txt",
-    "backend/apps/studio/requirements.txt",
-    "backend/apps/studio/plugins/discovery/symoneural-discovery.requirements.txt",
-    "backend/apps/studio/plugins/reinforce/requirements.txt",
-    "backend/apps/cryptominer/SyMon_MinerGPUWorker_PROD_20260102-1818/requirements.txt",
+    "backend/remix/requirements.txt",
+    "backend/studio/requirements.txt",
+    "backend/studio/plugins/discovery/symoneural-discovery.requirements.txt",
+    "backend/studio/plugins/reinforce/requirements.txt",
+    "backend/cryptominer/SyMon_MinerGPUWorker_PROD_20260102-1818/requirements.txt",
 )
 
 PYPROJECTS = (
-    "backend/apps/remix/pyproject.toml",
-    "backend/apps/studio/plugins/reinforce/pyproject.toml",
+    "backend/remix/pyproject.toml",
+    "backend/studio/plugins/reinforce/pyproject.toml",
     "yocto/oematch/pyproject.toml",
 )
 
 LOCKS = (
-    "backend/apps/gateway/Cargo.lock",
+    "backend/gateway/Cargo.lock",
     "desktop-client/src-tauri/Cargo.lock",
     "tests/package-lock.json",
 )
@@ -148,7 +148,7 @@ def imports_for(roots: Iterable[pathlib.Path]) -> dict[str, list[str]]:
 
 def asr_path_references() -> list[dict[str, object]]:
     hits: list[dict[str, object]] = []
-    for rel in ("backend/apps/voice/asr.py", "backend/apps/sigils/listen.py",
+    for rel in ("backend/voice/asr.py", "backend/sigils/listen.py",
                 "scripts/fetch-whisper.sh"):
         path = ROOT / rel
         if not path.exists():

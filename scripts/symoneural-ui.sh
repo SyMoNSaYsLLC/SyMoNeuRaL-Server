@@ -13,7 +13,7 @@
 # `external/`, which is read by people and never by code.
 #
 # Loopback only, deliberately. The public surface is FastAPI's -- the Studio page reaches
-# this server through `/studio/comfy/*`, which is proxied by `backend/apps/studio`.
+# this server through `/studio/comfy/*`, which is proxied by `backend/studio`.
 # Binding 0.0.0.0 here would put an unauthenticated node editor with filesystem access on a
 # box with a public IP.
 #
@@ -32,7 +32,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 COMFY="$ROOT/symoneural-ui"
 VENV="$COMFY/.venv/bin/python"
 RUN="$ROOT/run"; mkdir -p "$RUN"
@@ -63,7 +63,7 @@ case "${1:-status}" in
     # A loop over the directory rather than a named pack: `symoneural_cleanroom` was added
     # second and a hardcoded name would have left it unlinked, which fails as "the node is
     # not in the menu" with nothing anywhere to read.
-    for NODE_SRC in "$ROOT"/backend/apps/studio/custom_nodes/*; do
+    for NODE_SRC in "$ROOT"/backend/studio/custom_nodes/*; do
       [ -d "$NODE_SRC" ] || continue
       NODE_DST="$COMFY/custom_nodes/$(basename "$NODE_SRC")"
       if [ ! -e "$NODE_DST" ]; then

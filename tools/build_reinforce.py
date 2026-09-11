@@ -5,8 +5,8 @@
 
 ## This generator writes almost nothing of its own. It is wiring.
 
-`backend/apps/studio/plugins/reinforce/page.html` and `page.js` were written by the author of
-`backend/apps/studio/plugins/reinforce/routes.py`, committed in `170692e`, and then referenced by **nothing**.
+`backend/studio/plugins/reinforce/page.html` and `page.js` were written by the author of
+`backend/studio/plugins/reinforce/routes.py`, committed in `170692e`, and then referenced by **nothing**.
 No generator built them into a page, no script copied them, no test loaded them. `page.js` says
 in its own second line where it was meant to go:
 
@@ -58,7 +58,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 APP = ROOT / "backend" / "apps" / "studio" / "plugins" / "reinforce"
 sys.path.insert(0, str(ROOT / "tools"))
@@ -178,7 +178,7 @@ def main() -> int:
     # shaped this way -- a placeholder added to SHELL would have broken the assert two lines
     # above on a correct page, which is exactly what `@@PAGECSS@@` did here once already.
     # ---- fixes whose SOURCE lives outside the frontend allowlist -------------------
-    # `backend/apps/studio/plugins/reinforce/page.html` is this page's authored fragment, and
+    # `backend/studio/plugins/reinforce/page.html` is this page's authored fragment, and
     # it is under `backend/`, which Handshake 6.2 does not permit writing. Two corrections
     # made in 6.1 were applied to the GENERATED `site/reinforce.html` and were therefore
     # reverted the moment this generator next ran -- which is exactly what happened on

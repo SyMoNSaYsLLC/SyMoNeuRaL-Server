@@ -8,7 +8,7 @@
 ## Why this exists
 
 Nineteen documents under `docs/03-playbooks/`, `docs/04-cuda-curriculum/` and again under
-`backend/apps/studio/plugins/reinforce/docs/` said in their own third line:
+`backend/studio/plugins/reinforce/docs/` said in their own third line:
 
     > Sliced from the consolidated manual at `../symoneural-manual.md`, which remains the
     > canonical single file.
@@ -54,7 +54,7 @@ MANUAL = ROOT / "docs" / "symoneural-manual.md"
 TREES = {
     ROOT / "docs": ("SyMoNeuRaL documentation set", "../README.md",
                     "../symoneural-manual.md"),
-    ROOT / "backend/apps/studio/plugins/reinforce/docs":
+    ROOT / "backend/studio/plugins/reinforce/docs":
         ("symoneural_reinforce documentation set", "README.md",
          "../../../../../docs/symoneural-manual.md"),
 }

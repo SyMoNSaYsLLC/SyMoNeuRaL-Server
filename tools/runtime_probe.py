@@ -29,7 +29,7 @@ a divergence.
 **3. `acquire`/`release`, never `gpu-governor.sh with`.** The `with` form's eviction arm is
 `pkill -f 'bin/symoneural-llm'`, and `pkill -f` matches the whole command line -- so it
 matches `bin/symoneural-llm-cli`, and it matches any argv that merely *contains* the engine
-path, including the governor's own. `backend/apps/sigils/render.py:16-27` records sixteen
+path, including the governor's own. `backend/sigils/render.py:16-27` records sixteen
 consecutive renders dying at rc 143 to exactly that. This takes the lock, runs, and releases
 from a `finally`.
 
@@ -61,7 +61,7 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from apps import runtimes  # noqa: E402
+from registry import runtimes  # noqa: E402
 
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 
@@ -321,7 +321,7 @@ def probe_llm_server() -> None:
     """The binary production actually runs, on a transient port, with a seeded completion.
 
     `probe_llm_cli` tests a different entry point. This one starts `symoneural-llm` -- the
-    same executable `backend/api.py` spawns -- and asks it for a completion with a fixed
+    same executable `backend/server.py` spawns -- and asks it for a completion with a fixed
     seed, so the report cannot read as "the production engine is deterministic" on the
     strength of a CLI run.
     """
@@ -776,13 +776,13 @@ def probe_ravencalc() -> None:
     if not svc.is_file():
         record("symoneural-ravencalc", "own-uvicorn", SKIP, "service absent")
         return
-    from apps import ports
+    from registry import ports
     port = ports.port_of("ravencalc")
     if port is None:
         record("symoneural-ravencalc", "own-uvicorn", SKIP, "no port in ops/PORTS.tsv")
         return
     proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "apps.ravencalc.service:app",
+        [sys.executable, "-m", "uvicorn", "ravencalc.service:app",
          "--host", "127.0.0.1", "--port", str(port), "--log-level", "warning"],
         cwd=str(ROOT / "backend"), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         env=env_for(ENV_PROD))

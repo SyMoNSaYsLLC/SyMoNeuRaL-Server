@@ -30,7 +30,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 
 # Alternation is ordered longest-first. Python's re backtracks, so `js` before `json`

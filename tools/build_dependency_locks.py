@@ -46,7 +46,7 @@ import sys
 
 def find_root(start: pathlib.Path) -> pathlib.Path:
     for cand in (start, *start.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
     raise SystemExit("build_dependency_locks: no repository root found")
 
@@ -58,17 +58,17 @@ OUT = ROOT / "restore" / "locks"
 #
 # The serving interpreter is FIRST and is the one that matters most: it is what
 # `ops/symoneural-api.service` execs, measured from the running unit as
-# `/usr/bin/python3 /home/google/Symoneural/backend/api.py`.
+# `/usr/bin/python3 /home/google/Symoneural/backend/server.py`.
 ENVIRONMENTS: list[tuple[str, str, str]] = [
     ("serving-system", "/usr/bin/python3",
      "The API. Debian system interpreter, deliberately not a virtualenv -- "
      "ops/symoneural-api.service execs it directly."),
     ("training", "training/.venv/bin/python3",
      "LoRA training and evaluation (torch, transformers, peft, trl, datasets)."),
-    ("sigils", "backend/apps/sigils/.venv/bin/python3", "The Sigils render path."),
-    ("studio", "backend/apps/studio/.venv/bin/python3",
+    ("sigils", "backend/sigils/.venv/bin/python3", "The Sigils render path."),
+    ("studio", "backend/studio/.venv/bin/python3",
      "Studio and its reinforce/exp/discovery plugins."),
-    ("asicminer", "backend/apps/asicminer/.venv/bin/python3",
+    ("asicminer", "backend/asicminer/.venv/bin/python3",
      "ASIC-side miner telemetry (pyasic)."),
     ("symoneural-ui", "symoneural-ui/.venv/bin/python3",
      "The GPL-3.0 ComfyUI fork. DISABLED for the reset; the lock is recorded for "

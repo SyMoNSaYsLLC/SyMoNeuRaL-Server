@@ -32,7 +32,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 
 REPO="/home/google/symoneural-apt"
 BUILD=0

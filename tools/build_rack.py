@@ -19,7 +19,7 @@ what we distribute, not repeated on every surface -- but it only works while the
 there, so do not drop it. Note that the per-unit detail lines come from `/api/status`, not
 from this file.
 
-**The `<noscript>` fallback is generated from `backend/apps/ROSTER.md`, not typed here.** It
+**The `<noscript>` fallback is generated from `backend/ROSTER.md`, not typed here.** It
 used to carry exactly one row, `chat`, with a hardcoded `data-state="ready"` -- a claim about
 this machine made by a file that has taken no reading, which is the decorative-indicator rule
 above broken in the one place nobody looks. It now lists every row in the roster and asserts
@@ -40,7 +40,7 @@ import re
 # flattened and once here -- and it fails *silently*, because the wrong parent is
 # usually a directory that exists. Assert rather than trust it.
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 INDEX = SITE / "index.html"
 
@@ -48,12 +48,12 @@ import sys as _sys
 _sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import _art  # noqa: E402
 
-# One reader for the roster, shared with `backend/apps/test_roster.py`. Safe to import from a
-# generator because there is no `backend/apps/__init__.py` -- `apps` is a namespace package,
+# One reader for the roster, shared with `backend/test_roster.py`. Safe to import from a
+# generator because there is no `backend/__init__.py` -- `apps` is a namespace package,
 # so this pulls in a parser and nothing else. Importing `api.py` here would build every rate
 # limiter, resolve the GPU governor and mount `site/`.
 _sys.path.insert(0, str(ROOT / "backend"))
-from apps import roster  # noqa: E402
+from registry import roster  # noqa: E402
 
 # The two renders that flank the rack. They are here rather than in a row of their own for
 # the same reason the masthead's two are: the rack is 1120px wide inside a 1900px viewport
@@ -120,7 +120,7 @@ RACK = f"""{BEGIN}
 
       <div class="units" id="units">
         <!-- Units are rendered from /api/status. Below is the pre-JS fallback, generated
-             from backend/apps/ROSTER.md: every row, identity only. No unit carries a
+             from backend/ROSTER.md: every row, identity only. No unit carries a
              data-state or a state word here, because this markup has measured nothing --
              the em dash is the same "no reading yet" mark the gauges below use. An unlit
              .led is the honest LED for a row whose state is unknown. -->

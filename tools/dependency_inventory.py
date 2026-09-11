@@ -45,7 +45,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from apps import runtimes  # noqa: E402
+from registry import runtimes  # noqa: E402
 
 LOCKS = ROOT / "restore" / "locks"
 MANIFEST = ROOT / "restore" / "manifests" / "DEPENDENCIES.tsv"
@@ -286,10 +286,10 @@ def layer_a() -> dict:
 VENV_PURPOSE = {
     "training/.venv": ("the Reinforce training bay", "training", "subprocess",
                        "runner.py runs here, never in the API: cu128 torch for sm_120"),
-    "backend/apps/studio/.venv": ("Studio's plugin host", "symoneural-api", "subprocess", ""),
-    "backend/apps/sigils/.venv": ("rembg/onnxruntime for photographic matting",
+    "backend/studio/.venv": ("Studio's plugin host", "symoneural-api", "subprocess", ""),
+    "backend/sigils/.venv": ("rembg/onnxruntime for photographic matting",
                                   "symoneural-api", "subprocess", ""),
-    "backend/apps/asicminer/.venv": ("pyasic, for talking to ASIC rigs",
+    "backend/asicminer/.venv": ("pyasic, for talking to ASIC rigs",
                                      "symoneural-api", "subprocess", ""),
     "symoneural-ui/.venv": ("ComfyUI's own environment", "symoneural-ui", "subprocess",
                             "hand-started; nothing routes to it"),

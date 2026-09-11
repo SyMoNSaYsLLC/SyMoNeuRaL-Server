@@ -21,7 +21,7 @@ import sys
 
 def find_root(start: pathlib.Path) -> pathlib.Path:
     for cand in (start, *start.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
     raise SystemExit("build_restore_manifests: no repository root found")
 

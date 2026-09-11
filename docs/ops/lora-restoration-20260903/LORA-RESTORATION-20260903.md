@@ -29,7 +29,7 @@ without any restart, and the inference engine was launched with the restored pay
  M .claude/HANDOVER.md
  M .claude/settings.local.json
  M PROJECT-TASKS.md
- M backend/api.py
+ M backend/server.py
  M backend/apps/ROSTER.md
  M docs/ops/EXPORTS.md
  M docs/ops/MEASUREMENTS.md
@@ -149,13 +149,13 @@ Per-payload detail is in `LORA-PAYLOADS.tsv`. Summary:
 Proven from current source, not from documentation:
 
 ```
-backend/api.py:237   CHAT_ADAPTER = ROOT / "training" / "adapter" / "symoneural-lora.gguf"
-backend/api.py:306   if not CHAT_ADAPTER.exists(): return False        # inside adapter_applies()
-backend/api.py:309   adapter_arch = _gguf_arch(CHAT_ADAPTER)
-backend/api.py:312   return model_arch == adapter_arch
-backend/api.py:1320  if adapter_applies():
-backend/api.py:1321      argv += ["--lora", str(CHAT_ADAPTER)]
-backend/api.py:2212  spec=CHAT_MODEL_LABEL + (" + persona adapter" if adapter_applies() else " · Q4_K_M")
+backend/server.py:237   CHAT_ADAPTER = ROOT / "training" / "adapter" / "symoneural-lora.gguf"
+backend/server.py:306   if not CHAT_ADAPTER.exists(): return False        # inside adapter_applies()
+backend/server.py:309   adapter_arch = _gguf_arch(CHAT_ADAPTER)
+backend/server.py:312   return model_arch == adapter_arch
+backend/server.py:1320  if adapter_applies():
+backend/server.py:1321      argv += ["--lora", str(CHAT_ADAPTER)]
+backend/server.py:2212  spec=CHAT_MODEL_LABEL + (" + persona adapter" if adapter_applies() else " · Q4_K_M")
 ```
 
 **Exact expected destination:** `/home/google/Symoneural/training/adapter/symoneural-lora.gguf`.
@@ -511,7 +511,7 @@ No other canonical filesystem mutation was performed.
 
 ## 17. Prohibited actions not performed
 
-- **No source-code mutation.** `backend/api.py` untouched — it remains the pre-existing ` M`
+- **No source-code mutation.** `backend/server.py` untouched — it remains the pre-existing ` M`
   from the reconciled tree. Its `_gguf_arch` was read and executed in a **scratch namespace
   via AST extraction**, which does not modify the file.
 - **No adapter configuration changed.** `adapter_config.json` in both directories was read

@@ -28,7 +28,7 @@ untraced edit cannot happen (`_journal`, line 421), backups including `.absent` 
 rollback can undo a *creation* (`_snapshot`, line 494), and an undoable `restore` that snapshots the
 current state first (line 813). This is the shape the plan below needs.
 
-It is mounted at `/local/coder/*` **read-only**. `backend/api.py:3885` states it in terms:
+It is mounted at `/local/coder/*` **read-only**. `backend/server.py:3885` states it in terms:
 
 > `write_file`, `patch_file`, `delete_file`, `restore` and `run` are [not exposed]
 
@@ -45,7 +45,7 @@ and `backend/apps/studio/__init__.py:37`:
 > no content filter, no path allow-list, no command blocklist -- `run_command` and `write_file`
 > reach the whole host
 
-That surface is mounted at `/api/studio` (`backend/api.py:3220`) and `ops/Caddyfile:50` proxies the
+That surface is mounted at `/api/studio` (`backend/server.py:3220`) and `ops/Caddyfile:50` proxies the
 entire `/api/*` subtree to the public internet. `POST /api/studio/tool/run_command` is therefore a
 publicly-routable path to arbitrary host command execution whose sole authority check is a shared
 bearer token compared in constant time. The token is correct, the constant-time compare is correct,
@@ -1008,7 +1008,7 @@ Refusal codes, uniform across every route, `403` unless noted: `no_session`, `re
    become thin adapters onto the `coder` primitives. They stop being independent implementations —
    which also removes the second `write_file` in the codebase.
 
-### Changed: `backend/api.py`
+### Changed: `backend/server.py`
 
 1. Include the authority router at `/local/authority` with the same `_require_local` dependency
    `/local/coders` uses.
@@ -1198,7 +1198,7 @@ owner executing this plan must make those updates within each focused commit.**
 
 Governance: `AGENTS.md`, `GUARDRAILS.md`, `CLAUDE.md`, `.claude/CLAUDE.md`, `PROJECT-TASKS.md`.
 
-Runtime: `backend/api.py`, `backend/apps/coder/__init__.py`, `backend/apps/coders/__init__.py`,
+Runtime: `backend/server.py`, `backend/apps/coder/__init__.py`, `backend/apps/coders/__init__.py`,
 `backend/apps/coders/routes.py`, `backend/apps/studio/__init__.py`, `studio/gate.py`,
 `studio/registry.py`, `studio/agent.py`, `studio/routes.py`, `studio/workspace.py`,
 `studio/tools_impl/fs.py`, `studio/tools_impl/host.py`, `backend/apps/controlboard/__init__.py`,

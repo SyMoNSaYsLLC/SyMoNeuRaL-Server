@@ -47,7 +47,7 @@ SCRATCH_API_PORT = 8899          # never 8800: production keeps serving througho
 SURFACE = "ravencalc"
 
 sys.path.insert(0, str(BACKEND))
-from apps.ports import port_of                                  # noqa: E402
+from registry.ports import port_of                                  # noqa: E402
 
 SURFACE_PORT = port_of(SURFACE)
 
@@ -86,7 +86,7 @@ def wait_for(url: str, deadline_s: float = 25.0) -> bool:
 
 def spawn_surface() -> subprocess.Popen:
     return subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "apps.ravencalc.service:app",
+        [sys.executable, "-m", "uvicorn", "ravencalc.service:app",
          "--host", "127.0.0.1", "--port", str(SURFACE_PORT), "--log-level", "warning"],
         cwd=BACKEND, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         start_new_session=True)

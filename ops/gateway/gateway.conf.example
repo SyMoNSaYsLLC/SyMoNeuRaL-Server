@@ -1,0 +1,34 @@
+# systemd drop-in for the SyMoNeuRaL Gateway surface.
+#
+#   sudo install -d /etc/systemd/system/symoneural-api.service.d
+#   sudo cp ops/gateway/gateway.conf.example \
+#           /etc/systemd/system/symoneural-api.service.d/gateway.conf
+#   # edit SYMONEURAL_GATEWAY_CONTRACT below, then:
+#   sudo systemctl daemon-reload && sudo systemctl restart symoneural-api
+#
+# A drop-in rather than an edit to ops/symoneural-api.service: it is one file, it is undone by
+# deleting that one file, and it does not modify a tracked template for what is still a testnet
+# rehearsal. When a real mainnet contract exists, move these into the @@ROOT@@ template so a
+# reinstall carries them.
+#
+# ## NO PRIVATE KEY GOES IN THIS FILE, OR IN ANY FILE systemd READS
+#
+# Reading the chain -- which is all the web process does -- is unauthenticated: no address, no
+# key, no signature. A wallet is only needed to *receive* a payment and a private key only to
+# *sign* one, and neither belongs in a public-facing web process. Signing lives in
+# ops/gateway/gateway-cli.py, on the operator's own machine. The contract address and the
+# network name are public data and are fine here.
+#
+# There is also deliberately no SYMONEURAL_GATEWAY_NODE_URL. Endpoints come from chain.NODES, keyed by
+# the validated network name, so this process cannot be pointed at an arbitrary host.
+
+[Service]
+Environment=SYMONEURAL_GATEWAY_ENABLED=1
+
+# shasta | nile | mainnet. Mainnet moves real USDT and is never the default; every detail line
+# the rack prints names the network for exactly that reason.
+Environment=SYMONEURAL_GATEWAY_NETWORK=nile
+
+# The deployed licensing contract, base58check, 34 characters beginning with T. Validated by
+# checksum -- a transposed character is reported as malformed rather than silently accepted.
+Environment=SYMONEURAL_GATEWAY_CONTRACT=REPLACE_ME_WITH_THE_DEPLOYED_ADDRESS

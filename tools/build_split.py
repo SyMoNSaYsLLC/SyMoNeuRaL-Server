@@ -32,7 +32,7 @@ rather than replace the first.
 
 ## Routing
 
-The clean URLs are served by FastAPI in `backend/api.py`, which is where all routing lives —
+The clean URLs are served by FastAPI in `backend/server.py`, which is where all routing lives —
 `ops/Caddyfile` has no rewrites and must not grow any. The `.html` files stay reachable too;
 the routes are an addition, not a redirect.
 """
@@ -42,7 +42,7 @@ import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 
 # The authored page-family map -- see tools/page_families.py for why it is not restated here.

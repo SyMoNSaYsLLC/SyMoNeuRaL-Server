@@ -129,7 +129,7 @@ def main() -> int:
 
     # Imported here rather than at module scope so --show-path works without the backend
     # importing cleanly, which is the one thing you want when something is already wrong.
-    from apps.dispatchos import store
+    from dispatchos import store
 
     store.init_db()
 
@@ -163,7 +163,7 @@ def main() -> int:
     # identity subcommands above must keep working when it is absent or switched off.
     if args.grant or args.revoke or args.list_entitlements is not None:
         try:
-            from apps import accounts as shared
+            import accounts as shared
         except Exception as exc:
             print(f"error: shared accounts unavailable: {exc}", file=sys.stderr)
             return 1

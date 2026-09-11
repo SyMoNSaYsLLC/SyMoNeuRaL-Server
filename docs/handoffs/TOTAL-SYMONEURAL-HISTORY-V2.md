@@ -68,7 +68,7 @@ Consolidated from all attached SyMoNeuRaL Markdown history/status/correction/reg
       SyMoNeuRaL-transfer-20260826-224447/SyMoNeuRaL-working-tree-20260826-224447.patch
       16,424 bytes, 6 files touched, +175/-19
 
-  It is a working-tree snapshot from 2026-08-26 touching `backend/api.py`,
+  It is a working-tree snapshot from 2026-08-26 touching `backend/server.py`,
   `backend/apps/gateway/Cargo.{toml,lock}`, `ops/symoneural-gateway.service`, `.gitignore` and
   `LICENSES.md`. All six are tracked in Git today and have evolved since, so the patch is
   superseded by history rather than unique.
@@ -2346,7 +2346,7 @@ Three failures, and all three are mine — the repository's own tripwires catchi
     apps/test_references_boundary.py::ReferencesAreNotOnAnyCodePath::test_no_source_file_names_a_third_party_working_tree \
     apps/test_runtime_names.py::TheComponentMapCoversWhatIsOnDisk::test_every_declared_source_root_exists \
     -q 2>&1 | grep -E '^E ' | head -40)
-E       AssertionError: 82 not less than or equal to 81 : 82 files now compute a repo root by counting parents with no marker assertion, up from 81. Resolve the root by searching upward for backend/api.py instead -- see symoneural-audit/README.md
+E       AssertionError: 82 not less than or equal to 81 : 82 files now compute a repo root by counting parents with no marker assertion, up from 81. Resolve the root by searching upward for backend/server.py instead -- see symoneural-audit/README.md
 E       AssertionError: Lists differ: ['backend/apps/test_no_external_source_dep[171 chars]\','] != []
 E
 E       First list contains 2 additional elements.
@@ -3825,13 +3825,13 @@ Suite: 2 failed, 2395 passed, 59 skipped — and both failures are my own restor
   echo
   echo "############ which models does CURRENT production actually reference? ############"
   for m in symon-1.0-7b-q4_k_m symon-1.0-draft-0.5b-q4_k_m symon-1.0-14b-q4_k_m symon-1.0-27b-q2_k_xl symon-1.0-27b-vision-f16 symon-1.0-32b-q2__k symoneural-image-t5-q8_0 symoneural-image-vae symoneural-image-clip symoneural-listen-base-en; do
-    n=$(grep -rl "$m" --include='*.py' --include='*.sh' --include='*.env' --include='*.json' backend/api.py backend/apps run/config scripts 2>/dev/null | grep -v test_ | wc -l)
+    n=$(grep -rl "$m" --include='*.py' --include='*.sh' --include='*.env' --include='*.json' backend/server.py backend/apps run/config scripts 2>/dev/null | grep -v test_ | wc -l)
     ondisk=$([ -f "backend/models/llm/$m.gguf" ] || [ -f "backend/models/image/$m.gguf" ] || [ -f "backend/models/image/$m.safetensors" ] || [ -bin" ] && echo yes || echo NO)
     printf '  %-32s referenced_by=%s  on_disk=%s\n' "$m" "$n" "$ondisk"
   done
   echo
   echo "############ where api.py names its models ############"
-  grep -nE 'models/(llm|image|whisper)/' backend/api.py | head -8)
+  grep -nE 'models/(llm|image|whisper)/' backend/server.py | head -8)
 ############ does PROVENANCE.json carry hashes? ############
   fields present: ['bytes_on_disk', 'license', 'license_text', 'modified_by_us', 'path', 'role', 'sha256', 'upstream_file', 'upstream_repo', 'upstream_revision']
   entries with a sha256-ish field: 5
@@ -5130,19 +5130,19 @@ Zero UNCLASSIFIED items across 50 rows. And the 14B landed at 8,988,110,976 byte
   PY)
 models.py: five-way reference taxonomy
   symoneural-image-clip.safetensors      CURRENT_PRODUCTION req=YES
-      refs: backend/api.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
+      refs: backend/server.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
   symoneural-image-t5-q8_0.gguf          CURRENT_PRODUCTION req=YES
-      refs: backend/api.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/README.md[DOCUMENTATION_ONLY];backend/apps/st
+      refs: backend/server.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/README.md[DOCUMENTATION_ONLY];backend/apps/st
   symoneural-image-unet-q4_k.gguf        CURRENT_PRODUCTION req=YES
-      refs: backend/api.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
+      refs: backend/server.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
   symoneural-image-vae.safetensors       CURRENT_PRODUCTION req=YES
-      refs: backend/api.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
+      refs: backend/server.py[CURRENT_PRODUCTION];backend/apps/sigils/render.py[CURRENT_PRODUCTION];backend/apps/studio/workflows.py[CURRENT_PRODUCTION];backend/apps
   symon-1.0-14b-q4_k_m.gguf              OPTIONAL           req=NO
       refs: backend/apps/studio/plugins/reinforce/registry.py[TRAINING_TARGET_OPTION];backend/apps/test_control_plane_matrix.py[TEST_ONLY];backend/apps/test_model
   symon-1.0-7b-q4_k_m.gguf               CURRENT_PRODUCTION req=YES
-      refs: PROJECT-TASKS.md[DOCUMENTATION_ONLY];backend/api.py[CURRENT_PRODUCTION];backend/apps/studio/SMOKE-cleanroom.md[DOCUMENTATION_ONLY];backend/apps/test_b
+      refs: PROJECT-TASKS.md[DOCUMENTATION_ONLY];backend/server.py[CURRENT_PRODUCTION];backend/apps/studio/SMOKE-cleanroom.md[DOCUMENTATION_ONLY];backend/apps/test_b
   symon-1.0-draft-0.5b-q4_k_m.gguf       CURRENT_PRODUCTION req=YES
-      refs: backend/api.py[CURRENT_PRODUCTION];backend/apps/studio/plugins/reinforce/registry.py[TRAINING_TARGET_OPTION];backend/apps/test_bootcamp_scout.py[TEST_
+      refs: backend/server.py[CURRENT_PRODUCTION];backend/apps/studio/plugins/reinforce/registry.py[TRAINING_TARGET_OPTION];backend/apps/test_bootcamp_scout.py[TEST_
   symoneural-listen-base-en.bin          CURRENT_PRODUCTION req=YES
       refs: PROJECT-TASKS.md[DOCUMENTATION_ONLY];backend/SMOKE-listen-asr.md[DOCUMENTATION_ONLY];backend/apps/sigils/listen.py[CURRENT_PRODUCTION];backend/apps/vo
   adapter                                CURRENT_PRODUCTION req=YES
@@ -8997,7 +8997,7 @@ Decisive result: external/ contains ZERO first-party-licensed files — 3.1 mill
   additions: 175  deletions: 19
 
 ############ which files does it touch? ############
-    backend/api.py
+    backend/server.py
     backend/apps/gateway/Cargo.lock
     backend/apps/gateway/Cargo.toml
     .gitignore
@@ -9038,7 +9038,7 @@ All 6 files it touches are tracked in Git today — it's a 2026-08-26 working-tr
       SyMoNeuRaL-transfer-20260826-224447/SyMoNeuRaL-working-tree-20260826-224447.patch
       16,424 bytes, 6 files touched, +175/-19
 
-  It is a working-tree snapshot from 2026-08-26 touching `backend/api.py`,
+  It is a working-tree snapshot from 2026-08-26 touching `backend/server.py`,
   `backend/apps/gateway/Cargo.{toml,lock}`, `ops/symoneural-gateway.service`, `.gitignore` and
   `LICENSES.md`. All six are tracked in Git today and have evolved since, so the patch is
   superseded by history rather than unique.
@@ -11778,7 +11778,7 @@ Three failures, and all three are mine — the repository's own tripwires catchi
     apps/test_references_boundary.py::ReferencesAreNotOnAnyCodePath::test_no_source_file_names_a_third_party_working_tree \
     apps/test_runtime_names.py::TheComponentMapCoversWhatIsOnDisk::test_every_declared_source_root_exists \
     -q 2>&1 | grep -E '^E ' | head -40)
-E       AssertionError: 82 not less than or equal to 81 : 82 files now compute a repo root by counting parents with no marker assertion, up from 81. Resolve the root by searching upward for backend/api.py instead -- see symoneural-audit/README.md
+E       AssertionError: 82 not less than or equal to 81 : 82 files now compute a repo root by counting parents with no marker assertion, up from 81. Resolve the root by searching upward for backend/server.py instead -- see symoneural-audit/README.md
 E       AssertionError: Lists differ: ['backend/apps/test_no_external_source_dep[171 chars]\','] != []
 E
 E       First list contains 2 additional elements.
@@ -13255,13 +13255,13 @@ No conflict — the repository already anticipated this exact case. archive-guar
   echo
   echo "############ which models does CURRENT production actually reference? ############"
   for m in symon-1.0-7b-q4_k_m symon-1.0-draft-0.5b-q4_k_m symon-1.0-14b-q4_k_m symon-1.0-27b-q2_k_xl symon-1.0-27b-vision-f16 symon-1.0-32b-q2_k_xl symoneural-image-unet-q4_k symoneural-image-t5-q8_0 symoneural-image-vae symoneural-image-clip symoneural-listen-base-en; do
-    n=$(grep -rl "$m" --include='*.py' --include='*.sh' --include='*.env' --include='*.json' backend/api.py backend/apps run/config scripts 2>/dev/null | grep -v test_ | wc -l)
+    n=$(grep -rl "$m" --include='*.py' --include='*.sh' --include='*.env' --include='*.json' backend/server.py backend/apps run/config scripts 2>/dev/null | grep -v test_ | wc -l)
     ondisk=$([ -f "backend/models/llm/$m.gguf" ] || [ -f "backend/models/image/$m.gguf" ] || [ -f "backend/models/image/$m.safetensors" ] || [ -f "backend/models/whisper/$m.bin" ] && echo yes || echo NO)
     printf '  %-32s referenced_by=%s  on_disk=%s\n' "$m" "$n" "$ondisk"
   done
   echo
   echo "############ where api.py names its models ############"
-  grep -nE 'models/(llm|image|whisper)/' backend/api.py | head -8)
+  grep -nE 'models/(llm|image|whisper)/' backend/server.py | head -8)
 ############ does PROVENANCE.json carry hashes? ############
   fields present: ['bytes_on_disk', 'license', 'license_text', 'modified_by_us', 'path', 'role', 'sha256', 'upstream_file', 'upstream_repo', 'upstream_revision']
   entries with a sha256-ish field: 5
@@ -13460,7 +13460,7 @@ Now I have the real surface. Checking coder, which serves no /api route at all �
 
 ● Bash(cd /home/google/Symoneural
   echo "############ coder routes in source ############"
-  grep -rnoE '"(/local|/api)/coder[a-z/]*"' backend/apps/coder backend/api.py 2>/dev/null | head -10
+  grep -rnoE '"(/local|/api)/coder[a-z/]*"' backend/apps/coder backend/server.py 2>/dev/null | head -10
   echo
   echo "############ live probe of the candidate smoke routes ############"
   for r in /api/status /api/ravencalc /api/sigils/state /api/project/state /api/studio/state \
@@ -13480,12 +13480,12 @@ backend/apps/coder/SMOKE-surface.md:114:"/api/coder/danger"
 backend/apps/coder/tests/test_coder_surface.py:177:"/api/coder"
 backend/apps/coder/tests/test_coder_surface.py:209:"/api/coder"
 backend/apps/coder/tests/test_coder_surface.py:220:"/local/coder"
-backend/api.py:4006:"/local/coder/status"
-backend/api.py:4027:"/local/coder"
-backend/api.py:4031:"/local/coder/ls"
-backend/api.py:4037:"/local/coder/file"
-backend/api.py:4042:"/local/coder/history"
-backend/api.py:4047:"/local/coder/journal"
+backend/server.py:4006:"/local/coder/status"
+backend/server.py:4027:"/local/coder"
+backend/server.py:4031:"/local/coder/ls"
+backend/server.py:4037:"/local/coder/file"
+backend/server.py:4042:"/local/coder/history"
+backend/server.py:4047:"/local/coder/journal"
 
 ############ live probe of the candidate smoke routes ############
   /api/status                  HTTP 200
@@ -13619,7 +13619,7 @@ Another stray character from me («) — but the probe answered anyway: /api/rav
 {"schema":"sigil/state/v1","installed":true,"surface":"sigil","busy":false,"keys":["green","magenta"],"matte":{"generated":"chroma key, CPU, standard library only","photographic":"chroma key -- segmen
 
 ############ studio/state ############
-{"enabled":true,"detail":null,"workspace":{"root":"/home/google/Symoneural","found_by":"walk","signature":["scripts/gpu-governor.sh","backend/api.py"],"comfyui":null,"override_env":"SYMONEURAL_STUDIO_
+{"enabled":true,"detail":null,"workspace":{"root":"/home/google/Symoneural","found_by":"walk","signature":["scripts/gpu-governor.sh","backend/server.py"],"comfyui":null,"override_env":"SYMONEURAL_STUDIO_
 
 
 Now I have measured commands. ravencalc is an ideal smoke: POST /api/ravencalc {"expression":"2+2"} returns a real symbolic computation with check.passed=true. Probing the last three bodies:
@@ -15685,7 +15685,7 @@ Now the dependency manifests. Checking what the Python side actually pins:
   echo "############ what api.py imports (third-party) ############"
   python3 - <<'PY'
   import ast, pathlib
-  src = pathlib.Path("backend/api.py").read_text(errors="replace")
+  src = pathlib.Path("backend/server.py").read_text(errors="replace")
   mods=set()
   for n in ast.walk(ast.parse(src)):
       if isinstance(n, ast.Import):
@@ -15823,7 +15823,7 @@ Generating a real lock from the interpreter that actually serves:
       print(f"    {imp:<24} {dist:<28} {ver}")
   PY)
 ############ which interpreter serves? (from the running unit) ############
- 143775 google   /usr/bin/python3 /home/google/Symoneural/backend/api.py
+ 143775 google   /usr/bin/python3 /home/google/Symoneural/backend/server.py
 
 ############ direct third-party imports across backend/ first-party code ############
 <unknown>:554: SyntaxWarning: invalid escape sequence '\.'
@@ -16505,7 +16505,7 @@ OUT = ROOT / "restore" / "locks"
 #
 # The serving interpreter is FIRST and is the one that matters most: it is what
 # `ops/symoneural-api.service` execs, measured from the running unit as
-# `/usr/bin/python3 /home/google/Symoneural/backend/api.py`.
+# `/usr/bin/python3 /home/google/Symoneural/backend/server.py`.
 ENVIRONMENTS: list[tuple[str, str, str]] = [
     ("serving-system", "/usr/bin/python3",
      "The API. Debian system interpreter, deliberately not a virtualenv -- "
@@ -20553,7 +20553,7 @@ q("negative",
 "its own COPYING, bmminer as a cgminer fork, bosminer as Braiins' rewrite -- so a fork is a "
 
 ############ tools/fork_render_ui.sh around 86 ############
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 # No trailing slash after the directory name, deliberately. `test_references_boundary.py`'s
 # pattern is `external/<name>/` -- a path that indexes INTO a reference tree is a code path
@@ -22452,9 +22452,9 @@ And one finding that is not my bug and matters: all three installed systemd unit
  # first request after a restart is not delayed by a stale-lock poll, and the rack does not
  # briefly show a holder that no longer exists.
 -ExecStartPre=-/usr/bin/env bash -c '@@ROOT@@/scripts/gpu-governor.sh release chat >/dev/null 2>&1; @@ROOT@@/scripts/gpu-governor.sh release image >/dev/null 2>&1 || true'
--ExecStart=/usr/bin/python3 @@ROOT@@/backend/api.py
+-ExecStart=/usr/bin/python3 @@ROOT@@/backend/server.py
 +ExecStartPre=-/usr/bin/env bash -c '/home/google/Symoneural/scripts/gpu-governor.sh release chat >/dev/null 2>&1; /home/google/Symoneural/scripts/gpu-governor.sh release image >/dev/null 2>&1 || true'
-+ExecStart=/usr/bin/python3 /home/google/Symoneural/backend/api.py
++ExecStart=/usr/bin/python3 /home/google/Symoneural/backend/server.py
  # Give in-flight generations a chance to finish rather than cutting a visitor off mid-answer.
  # Slightly above the 120 s job timeout so a job that is already doomed is not waited on twice.
  TimeoutStopSec=140
@@ -23786,7 +23786,7 @@ COMPONENTS: tuple[Component, ...] = (
         build_authority="-",
         production_status=PRODUCTION,
         first_party_status=FIRST_PARTY,
-        primary_artifact="backend/api.py",
+        primary_artifact="backend/server.py",
         service="symoneural-api.service",
         toolchain="python3",
         target_arch="any",
@@ -23795,7 +23795,7 @@ COMPONENTS: tuple[Component, ...] = (
                      "backend/requirements.lock.txt",
         build_command="(interpreted -- no build step)",
         test_command="cd backend && python3 -m pytest -q",
-        output_artifact="backend/api.py",
+        output_artifact="backend/server.py",
         install_command="sudo install -m0644 ops/symoneural-api.service "
                         "/etc/systemd/system/ && sudo systemctl daemon-reload",
         install_path="/etc/systemd/system/symoneural-api.service",

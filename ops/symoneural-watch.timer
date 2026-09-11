@@ -1,0 +1,29 @@
+[Unit]
+# TEMPLATE, USER unit. Installed by ops/install-service.sh.
+#
+# The public site was unreachable from 29 August and nothing said so. Two weeks is not a
+# monitoring gap, it is the absence of monitoring -- and the box was healthy throughout, which
+# is why anything checking 127.0.0.1 would have been green the whole time.
+Description=Run the SyMoNeuRaL watchdog every five minutes
+
+[Timer]
+Unit=symoneural-watch.service
+
+# Five minutes. The failure this exists to catch lasted two weeks, so the interval is not the
+# binding constraint -- being run at all is. Tighter would add nothing a human could act on
+# faster, and each run makes one outbound request.
+OnUnitActiveSec=5min
+
+# Two minutes after startup, not immediately: a check that runs while the API is still binding
+# its port reports a failure that is really a race, and a watchdog that cries wolf at every
+# boot is one nobody reads.
+OnStartupSec=2min
+
+# So a machine that was off does not silently skip its checks until the next interval.
+Persistent=true
+
+AccuracySec=30s
+RandomizedDelaySec=20s
+
+[Install]
+WantedBy=timers.target

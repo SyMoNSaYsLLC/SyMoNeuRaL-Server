@@ -172,7 +172,7 @@ real measurement whose binary lives outside version control
 - **Measured at `507e09ee` on 2026-08-23.** A reachability cell is a reading of this disk at this
   commit, **not historical proof**.
 - **404 commits between 2026-08-17 and `7a4e5c98` are not audited**, and they touched
-  `backend/api.py` (53 commits) and Studio (16). A cell here could have been different last week
+  `backend/server.py` (53 commits) and Studio (16). A cell here could have been different last week
   without any commit in the audited range saying so.
 - **Nothing was activated, moved, deleted or committed** to produce this file. `backend/models`
   holds exactly two tracked files, `NAMES.md` and `PROVENANCE.json`; `.gitignore:5` ignores the

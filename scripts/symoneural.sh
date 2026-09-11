@@ -21,7 +21,7 @@ set -uo pipefail
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 HERE="$ROOT"
 RUN="$ROOT/run"; mkdir -p "$RUN"
 PIDFILE="$RUN/api.pid"
@@ -76,7 +76,7 @@ case "${1:-status}" in
       echo "$UNIT started but nothing answers on :$PORT -- journalctl -u $UNIT -n 50" >&2
       exit 1
     fi
-    setsid python3 "$ROOT/backend/api.py" >>"$RUN/api.out" 2>&1 &
+    setsid python3 "$ROOT/backend/server.py" >>"$RUN/api.out" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 2
     if pid_alive; then

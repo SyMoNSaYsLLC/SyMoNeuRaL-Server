@@ -22,7 +22,7 @@ file.
 
 ## Delegated surfaces
 
-**None.** The monolith answers every surface; `backend/api.py` registers every inline route. A surface becomes delegated by setting `DELEGATED yes` in the TSV *and* having a port — `apps/ports.py` refuses the combination without a port, because dropping the inline route while nothing else answered would 404 the surface as if it were a routing bug.
+**None.** The monolith answers every surface; `backend/server.py` registers every inline route. A surface becomes delegated by setting `DELEGATED yes` in the TSV *and* having a port — `apps/ports.py` refuses the combination without a port, because dropping the inline route while nothing else answered would 404 the surface as if it were a routing bug.
 
 ## Notes, per row
 
@@ -30,7 +30,7 @@ file.
 - **`symoneural-web`:443** — Caddy. Public HTTPS. Site block is symoneural.com/www only -- there is no localhost site, so https://localhost returns 000 and that is not a fault.
 - **`symoneural-web`:2019** — Caddy admin API. No `admin` directive in the Caddyfile, so this is on by default. A `reload` pushes config through it.
 - **`symoneural-gateway`:8000** — symon-gateway. Forwards /api/{*path} and /v1/* verbatim to the API. Enabled 2026-09-09; it being stopped was the five-day 502.
-- **`symoneural-api`:8800** — backend/api.py. The monolith: every surface not marked DELEGATED above answers here.
+- **`symoneural-api`:8800** — backend/server.py. The monolith: every surface not marked DELEGATED above answers here.
 - **`symoneural-llm`:8081** — llama-server, started by the API under a governor lease. Not an independent unit.
 - **`symoneural-ui`:8188** — ComfyUI. Hand-started by scripts/symoneural-ui.sh; nothing starts it at boot, and studio reporting offline until then is correct.
 - **`symoneural-ravencalc`:8811** — THE PILOT. Its own uvicorn: backend/apps/ravencalc/service.py. DELEGATED stays `no` until the unit is installed -- flipping it first would 404 the surface on the live monolith.

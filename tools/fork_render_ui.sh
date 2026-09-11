@@ -21,7 +21,7 @@
 #
 # `external/` is read by people, never by code -- Garrett: "we cannot use code in
 # references its for reference only we must rebrand if we want to use it", and
-# `backend/apps/test_references_boundary.py` makes that executable. The fix is therefore the
+# `backend/test_references_boundary.py` makes that executable. The fix is therefore the
 # one `tools/fork_engines.sh` already established for llama.cpp and stable-diffusion.cpp:
 # treat the vendored tree as INPUT, the way you would treat a release tarball, and produce
 # ours as OUTPUT under a name of our own. After this runs, the serving path has no route
@@ -49,7 +49,7 @@
 #
 # `.git/` (95 MB of upstream history; ours is this repo), `output/`, `temp/`, `__pycache__/`,
 # and `custom_nodes/symoneural_gguf` -- that last one is OURS, its source of truth is
-# `backend/apps/studio/custom_nodes/symoneural_gguf/`, and `scripts/symoneural-ui.sh`
+# `backend/studio/custom_nodes/symoneural_gguf/`, and `scripts/symoneural-ui.sh`
 # symlinks it in on every start. One mechanism, not two.
 #
 # `custom_nodes/ComfyUI-GGUF` (city96) IS copied and is not optional: it registers the
@@ -61,7 +61,7 @@
 # `backend/models/image/` holds `symoneural-image-{unet-q4_k.gguf,t5-q8_0.gguf,
 # clip.safetensors,vae.safetensors}`. The vendored `extra_model_paths.yaml` documents the
 # upstream filenames it was written against, which are no longer on this box -- #74 item 3
-# renamed them and `backend/apps/test_weight_names.py` keeps them renamed. The copy is
+# renamed them and `backend/test_weight_names.py` keeps them renamed. The copy is
 # rewritten below so our tree documents what a reader will actually find in the dropdowns.
 # The `base_path` itself needs no rewriting: it is absolute, and this checks that.
 #
@@ -77,7 +77,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 # No trailing slash after the directory name, deliberately. `test_references_boundary.py`'s
 # pattern is `external/<name>/` -- a path that indexes INTO a reference tree is a code path
@@ -85,7 +85,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # `tools/fork_engines.sh` uses for `external/contrib`.
 SRC="$ROOT/external/ComfyUI"
 DST="$ROOT/symoneural-ui"
-NODE_SRC="$ROOT/backend/apps/studio/custom_nodes/symoneural_gguf"
+NODE_SRC="$ROOT/backend/studio/custom_nodes/symoneural_gguf"
 
 VERIFY_ONLY=0
 [ "${1:-}" = "--verify" ] && VERIFY_ONLY=1
@@ -164,7 +164,7 @@ if [ "$VERIFY_ONLY" -eq 0 ]; then
   # `comfyui_frontend_package` wheel in `.venv` and is wiped by any pip install, and the
   # `comfyui_version` key in `/system_stats`, which the upstream frontend's own JS reads --
   # renaming that field would break the UI this engine serves. Neither is touched here.
-  # `backend/apps/studio/comfy.py` uses `/system_stats` only as a liveness probe and never
+  # `backend/studio/comfy.py` uses `/system_stats` only as a liveness probe and never
   # reads that key, so nothing of ours depends on it either way.
   #
   # Asserted rather than sed'd blind, for the reason fork_engines.sh spells out at length: a
@@ -256,7 +256,7 @@ for w in unet-q4_k.gguf t5-q8_0.gguf clip.safetensors vae.safetensors; do
 done
 # Boundary-matched with a lookbehind, not substring-matched. `ae.safetensors` is a suffix of
 # the house name `symoneural-image-vae.safetensors`, so a plain match reports the file that
-# was correctly renamed. `backend/apps/test_weight_names.py:178` records this biting once;
+# was correctly renamed. `backend/test_weight_names.py:178` records this biting once;
 # writing the naive version here made it twice, which is why the fix is copied verbatim
 # rather than re-derived.
 check "no upstream weight name left in our yaml" \

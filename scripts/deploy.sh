@@ -35,7 +35,7 @@ set -euo pipefail
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 SRC="$ROOT/site"
 DST=/var/www/symoneural
 STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -161,7 +161,7 @@ missing=0
 # no SuccessExitStatus, so an unattended boot-time deploy would have gone red every time.
 #
 # Checked before being added, because the whole value of this list is that nothing goes in it
-# that is genuinely absent: both are `@app.get(..., include_in_schema=False)` in backend/api.py
+# that is genuinely absent: both are `@app.get(..., include_in_schema=False)` in backend/server.py
 # (/studio at :2616, /exp at :2635), both are named in ops/Caddyfile's @studio and @exp
 # matchers, and both answered 200 on the running service. site/index.html links them
 # extensionless at :265 and :272.
@@ -172,7 +172,7 @@ missing=0
 # `livestack/live` is the THIRD time this list has failed a working deploy, and the first
 # two-segment page route in the repo. Measured 2026-08-21: `MISSING livestack/live`, exit 1,
 # while the path answered 200. Verified all three ways before adding, per the paragraph above:
-# `@app.get("/livestack/live", include_in_schema=False)` at backend/api.py:2969, its own
+# `@app.get("/livestack/live", include_in_schema=False)` at backend/server.py:2969, its own
 # `@live path /livestack/live` matcher in ops/Caddyfile, and 200 on the running service.
 #
 # Listed as the exact path, NOT as `livestack/*`. A glob would exempt every future child of
@@ -196,7 +196,7 @@ is_route() {
     # does NOT appear here -- the page IS a real file in the webroot and a missing one
     # must still be reported, which is the same asymmetry `livestack` documents above.
     live-stack/coder|livestack/coder) return 0;;
-    # #81's application pages, both spellings, from backend/api.py's LIVESTACK_PAGES.
+    # #81's application pages, both spellings, from backend/server.py's LIVESTACK_PAGES.
     # Listed EXACTLY and never as `livestack/*`: a wildcard would also exempt
     # `livestack/image.html`, `livestack/anything.js` and every future typo'd reference
     # under that prefix, and an exemption that over-matches stops the check catching a
@@ -206,7 +206,7 @@ is_route() {
     # The DispatchOS application page. Listed for the fourth time this function has been
     # taught a working route -- and the first one declared on an app's OWN router
     # (`apps/dispatchos/routes.py`, `@ui_router.get("/demo/dispatchos")`) rather than as a
-    # literal `@app.get` in backend/api.py. It arrived in the published markup on 2026-08-29,
+    # literal `@app.get` in backend/server.py. It arrived in the published markup on 2026-08-29,
     # when `dispatchos` was finally written into ROSTER.md and the generated pre-JS rack
     # fallback grew an `<a class="unit" href="/demo/dispatchos">`.
     #

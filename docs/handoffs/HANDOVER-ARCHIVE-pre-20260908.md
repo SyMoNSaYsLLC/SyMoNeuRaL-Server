@@ -181,7 +181,7 @@ to symon and wire it into the backend"*, adding that existing on-disk models cou
 they were the best option. **Both premises were measured:**
 
 - **The rebrand and wiring already exist and are committed.** `scripts/fetch-models.sh:49-58,
-  64-66,124-127` maps every upstream artefact to its `symon-*` house name; `backend/api.py:236,
+  64-66,124-127` maps every upstream artefact to its `symon-*` house name; `backend/server.py:236,
   315,325-330` already reads exactly those names; `NAMES.md`/`PROVENANCE.json` carry the
   attribution. **Nothing needs rebranding or rewiring** — only the weight bytes are missing.
 - **There are no usable models on disk.** Whole-box search of `/`, `/home` and `/yocto` for
@@ -270,7 +270,7 @@ performed by this documentation update. Preserve the pre-existing docs/ops/EXPOR
 >
 > **The engine is at `engines/`, NOT `backend/engines/`** —
 > `/home/google/Symoneural/engines/symoneural-llm/build/bin/symoneural-llm`, because
-> `backend/api.py:183` computes `ROOT / "engines"`. Beware the collision: §12 of this file
+> `backend/server.py:183` computes `ROOT / "engines"`. Beware the collision: §12 of this file
 > discusses a *planned Python adapter package* also called `backend/engines/`
 > (`llamacpp.py`, `sdcpp.py`). That is a different thing and those references are correct.
 >
@@ -375,7 +375,7 @@ conversation, so every number, path and decision you need is stated here.
   check. The rack's one-screen budget was the single red and is now fixed; the measured table
   is further down this section.
 - **Three deploy commands exist and they are not interchangeable.** `site/` content needs
-  `sudo scripts/deploy.sh --prune`; `backend/api.py` needs
+  `sudo scripts/deploy.sh --prune`; `backend/server.py` needs
   `sudo systemctl restart symoneural-api`; `ops/Caddyfile` needs
   `sudo ./scripts/install-caddy.sh`. Work out which a change requires and say so — several
   rounds were lost to running the right command for the wrong file.
@@ -383,7 +383,7 @@ conversation, so every number, path and decision you need is stated here.
   states its reason**; `git log` is genuinely worth twenty minutes before you touch
   anything. Several entries below will otherwise look arbitrary.
 - **Nothing hardcodes its own location.** Scripts derive their root from their own path,
-  `backend/api.py` from `__file__`, the engine binaries via `$ORIGIN` RUNPATH, the systemd
+  `backend/server.py` from `__file__`, the engine binaries via `$ORIGIN` RUNPATH, the systemd
   unit from a `@@ROOT@@` template. Clone it anywhere and `./scripts/setup.sh` works. Keep
   it that way — the user asked for this explicitly and it has been broken four times.
 - **Caddy serves static files; FastAPI does all routing.** Apache is gone entirely. Do not
@@ -398,9 +398,9 @@ conversation, so every number, path and decision you need is stated here.
   `studio`, `exp`. `/studio` and `/exp` both answer 200 on that same process. An earlier revision
   of this line credited the reading to an invocation that started 05:09:47 EDT; the unit had
   already been restarted past it, so the process named was not the one answering.
-  **The tree and the wire agree, and that is checkable rather than asserted.** `backend/api.py`
+  **The tree and the wire agree, and that is checkable rather than asserted.** `backend/server.py`
   was last written 04:37 EDT and the running process started 05:22:39 EDT, so the code on the
-  wire *is* the code in the tree: compare `stat -c %y backend/api.py` against
+  wire *is* the code in the tree: compare `stat -c %y backend/server.py` against
   `systemctl show symoneural-api -p ExecMainStartTimestamp`. Make that comparison before you
   treat any source count as a live one, because it is the whole of what licenses it.
   **A grep of `api.py:build_status()` is not this reading.** An earlier revision of this line
@@ -1187,10 +1187,10 @@ change in general:
 
 | Legacy read | Where | Why it is there |
 |---|---|---|
-| `SYM_*` env names | `backend/apps/symoneuralenv.py` `promote()` | Copies each legacy name onto its new spelling at startup, logging a deprecation notice. Called from `backend/api.py` (above the app imports — `symoneuralstudio/inference.py` reads two variables at module scope) and from `bin/symoneural-cli` (above `STATE` and `DEFAULT_API`). |
+| `SYM_*` env names | `backend/apps/symoneuralenv.py` `promote()` | Copies each legacy name onto its new spelling at startup, logging a deprecation notice. Called from `backend/server.py` (above the app imports — `symoneuralstudio/inference.py` reads two variables at module scope) and from `bin/symoneural-cli` (above `STATE` and `DEFAULT_API`). |
 | `SYM_*` env names | `deploy/bento/bentoml_service_runner.py` `_env()` | Its own three-line helper. It cannot import the shim: it runs inside the packaged Bento container where the repo is not on disk. |
 | `SYM_*` env names | `scripts/fetch-models.sh`, `comfyui.sh`, `qemu-antminer.sh`, `nim-qwen36.sh` | Nested `${NEW:-${OLD:-default}}`, which was already the house idiom at `fetch-models.sh:90`. |
-| `X-Sym-Token` | `backend/api.py` `_operator_token()` | One reader for both asicminer and cryptominer. `request.headers` is case-insensitive, so one spelling of each name suffices here. |
+| `X-Sym-Token` | `backend/server.py` `_operator_token()` | One reader for both asicminer and cryptominer. `request.headers` is case-insensitive, so one spelling of each name suffices here. |
 | `X-Sym-Token` | `symoneuralexp/gate.py`, `symoneuralstudio/gate.py` `present_token()` | Both cases of both names, because these are handed plain dicts by their own tests, not Starlette `Headers`. |
 | `X-Sym-Token` | `project/routes.py` `_deny()`, `rackpower/routes.py` `_guard()` | `HEADER or HEADER_LEGACY`. |
 | `X-Sym-Token` | `voice/routes.py` | The odd one out: FastAPI `Header(alias=...)` binds exactly ONE name, so each gated route declares **two** parameters and passes `new or legacy`. Both therefore appear in the OpenAPI schema, which is correct — both are accepted. |
@@ -1439,7 +1439,7 @@ git log --oneline -25
 ```
 
 **The one workflow fact that has caused every misunderstanding in this project:** API
-responses change the instant you edit `backend/api.py` and restart the service; static
+responses change the instant you edit `backend/server.py` and restart the service; static
 files under `site/` do not reach a visitor until someone with root runs
 `sudo scripts/deploy.sh --prune`. You cannot run that yourself. When you finish a frontend
 change, say so plainly and hand the user the command — do not describe the change as live.
@@ -1522,7 +1522,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8800/api/status   # 20
 
 | Says | Where | Actually |
 |---|---|---|
-| `grep -c include_router backend/api.py` → **6** | §1c of this file, below | **8** — and `git show HEAD:backend/api.py` also gives 8, so HEAD ships 8. The *lesson* in that section (count the mounts after any `api.py` merge) is still right; only the constant drifted. |
+| `grep -c include_router backend/server.py` → **6** | §1c of this file, below | **8** — and `git show HEAD:backend/server.py` also gives 8, so HEAD ships 8. The *lesson* in that section (count the mounts after any `api.py` merge) is still right; only the constant drifted. |
 | pytest → **682 pass** | `docs/authority/PROJECT-AUTHORITY.md`, "Test in a real browser" | **fixed 2026-08-19** — CLAUDE.md now says 981 with a date on it, and says explicitly that the count drifts as apps land. 981 collected, 981 passed, same command, same two mandatory `--ignore`s. |
 
 Verified 2026-08-18 alongside the restore below. Frontend suites on that date:
@@ -1550,7 +1550,7 @@ NVIDIA's FastAPI fork was written over `backend/`; a clone of NVIDIA/NemoClaw la
 
 ### `/api/studio/models` — a model list that does no work (2026-08-18)
 
-`GET /api/studio/models` is declared inline in `backend/api.py`, above the StaticFiles mount.
+`GET /api/studio/models` is declared inline in `backend/server.py`, above the StaticFiles mount.
 It reads **one pre-computed file**, `run/registry.json`, written out-of-band by
 `python3 tools/build_registry.py`. It does not scan, fork, probe the network, or take the GPU
 lock — that is the point of it, and `apps/test_studio_models.py` asserts it against the
@@ -1676,7 +1676,7 @@ file is the measurement and is where the numbers live. This is the pointer and t
 `full_attention_interval`). **The 7B/dense path is untouched** — it is what produced the
 shipped `training/adapter/`, and there was no reason to re-roll it. The 27B path writes to
 `training/adapter-qwen36/`, a *different directory*; the two are not interchangeable and
-`backend/api.py` serves `adapter/`.
+`backend/server.py` serves `adapter/`.
 
 The measured fit, at seq 662 / answer 578 / r=16 / bf16 adapter / paged 8-bit:
 
@@ -1719,8 +1719,8 @@ different quant fixes. **Nothing has been evaluated at serving quality yet.** Un
 refusal has been run with the adapter on versus off against the Q2_K_XL base, "the adapter is
 upgraded" is a claim about training, not about the product. Do not put it on the site.
 
-Serving it at all needs `CHAT_MODEL`/`CHAT_ADAPTER` changed in `backend/api.py`, which is
-under Garrett's standing *"do not alter `backend/api.py`"* instruction. **That is his call, not
+Serving it at all needs `CHAT_MODEL`/`CHAT_ADAPTER` changed in `backend/server.py`, which is
+under Garrett's standing *"do not alter `backend/server.py`"* instruction. **That is his call, not
 an agent's.**
 
 ## 0b-ter. Qwen3.6-27B FITS — measured, and it retires a manual claim (2026-08-18)
@@ -1775,7 +1775,7 @@ point, and deleting the wrong row would hide it.
 One real bug was fixed on the way: `training/train_lora.py` computed `ROOT = HERE.parent.parent`,
 which resolved to `/home/google` — the directory *containing* the repo — and pointed `HF_HOME`
 at `~/models/hf`. Any 27B base download would have landed outside the project, ungitignored
-and invisible. Now `HERE.parent`, with an assert on `backend/api.py` rather than trust in the
+and invisible. Now `HERE.parent`, with an assert on `backend/server.py` rather than trust in the
 arithmetic. Same failure mode as the repo-root bug in `scripts/fetch-models.sh`.
 
 `scripts/fetch-models.sh` gained an **opt-in** `SYM_FETCH_QWEN36=1` block — 12.8 GB should not
@@ -1828,7 +1828,7 @@ directory clobber each other silently — the file just loses one of the two edi
 | per-app agents | `backend/apps/<their app>/**`, `site/<their surface>.html` and the generator that writes it |
 | nobody — coordinate first | `ops/Caddyfile`, `scripts/deploy.sh`, this file's §0c |
 
-**`backend/api.py` was edited by the tuner session at ~14:45**, for one thing only: deleting the
+**`backend/server.py` was edited by the tuner session at ~14:45**, for one thing only: deleting the
 `guide` rack unit for the Tuner+Guide merge Garrett asked for. Nothing else in that file was
 touched. It is otherwise still coordinate-first. See §2h.
 
@@ -1889,12 +1889,12 @@ and the file times agree with the names:
 | `online applications testing` | `tests/frontend.mjs` | 29-line rack-unit block added |
 | this session (handover/review) | `docs/HANDOFF.md`, `tools/build_masthead.py`, `backend/apps/accounts/routes.py`, `scripts/qemu-antminer.sh` | committed below |
 
-**`tools/build_pages.py` and `backend/api.py` are the two contended files.** Every surface needs
+**`tools/build_pages.py` and `backend/server.py` are the two contended files.** Every surface needs
 a page (`build_pages.py`) and a mount (`api.py`), so both will be edited by several sessions in
 the same hour. Rules that follow from that, and they are not optional:
 
 - **Never rewrite either file whole.** Targeted edits only, re-read immediately before writing.
-- **`python3 -c "import ast; ast.parse(open('backend/api.py').read())"` after every api.py edit.**
+- **`python3 -c "import ast; ast.parse(open('backend/server.py').read())"` after every api.py edit.**
   A half-applied concurrent edit there takes the entire site down on the next restart, and
   nobody can restart it — `sudo systemctl restart symoneural-api` needs a password no agent has.
 - Commit your own paths as you finish. Never `git add -A`: it will stage nine other sessions'
@@ -1924,8 +1924,8 @@ ellipsis violations.
 | Branch | Conflicts with `main` now |
 |---|---|
 | `worktree-reinforce-rl` | **0** — it has merged `main` into itself three times (`dd9107d`, `c9dba85`, and the catch-up that resolved this row). Was 10, then 1: that last one was `site/reinforce.html`, which is generator output. |
-| `worktree-stickers` | 3 — `backend/api.py`, `apps/sigils/test_sigils.py`, `site/sigils.html` |
-| `worktree-coder-online` | 8 — incl. `docs/authority/PROJECT-AUTHORITY.md`, `backend/api.py`, `tools/build_pages.py` |
+| `worktree-stickers` | 3 — `backend/server.py`, `apps/sigils/test_sigils.py`, `site/sigils.html` |
+| `worktree-coder-online` | 8 — incl. `docs/authority/PROJECT-AUTHORITY.md`, `backend/server.py`, `tools/build_pages.py` |
 | `worktree-gateway-online` | 7 — incl. `apps/gateway/__init__.py`, `site/gateway.html`, `build_pages.py` |
 
 Reinforce collapsing from 10 conflicts to 1 is the whole argument for merging in this order:
@@ -1996,7 +1996,7 @@ two merges actually found, which is the part worth carrying forward:
   `include_router(reinforce.router, prefix="/api/train")`, in different places in the file, so
   git kept **both** and merged clean. FastAPI accepts that silently — it registers all seven
   routes twice and doubles them in the OpenAPI schema, and the surface still answers. **Count the
-  mounts after any `api.py` merge**: `grep -c include_router backend/api.py` should be 6, and
+  mounts after any `api.py` merge**: `grep -c include_router backend/server.py` should be 6, and
   `grep -c reinforce.router` should be 1. That count is the only thing that catches it.
 - **A generator merged from one side and its input from the other is an untested pair.**
   `tools/build_reinforce.py` came from `main`, written against the supervised-only `page.html`;
@@ -2008,7 +2008,7 @@ two merges actually found, which is the part worth carrying forward:
   `site/reinforce.html` and read a computed colour (`.rf-lab-measured` → `rgb(127,215,164)`),
   proven against a negative control: dropping the id fails exactly those two and nothing else.
 
-**Merging `worktree-reinforce-rl`'s `backend/api.py` wholesale reverts four surfaces.** Kept as
+**Merging `worktree-reinforce-rl`'s `backend/server.py` wholesale reverts four surfaces.** Kept as
 the general lesson, though the branch's own copy is now current: it forked at `595835d` with
 **two** `include_router` calls where `main` had five, so accepting that side silently un-mounted
 accounts, gateway, guide and project. Take the import and the mount by hand; `ast.parse` after.
@@ -2040,11 +2040,11 @@ near-fullscreen with PiP and guide settings.
   no Caddy change is needed and no `sudo ./scripts/install-caddy.sh` is owed.** The warning was
   right about the mechanism and wrong about what got built: the watch surface shipped as
   `site/tuner-watch.html`, a static file, and `grep` finds no `/tuner/watch` route in
-  `backend/api.py`. Caddy's `@sections` matcher is still exactly `/ /overview /livestack
+  `backend/server.py`. Caddy's `@sections` matcher is still exactly `/ /overview /livestack
   /controlboard /receipts`, and `handle { file_server }` serves any new `.html` off the webroot
   with no config at all. Same for `site/reinforce.html`. The rule that remains true, and it is
   the one to carry forward: only a new top-level *section* path costs four files
-  (`ops/Caddyfile`, `tools/build_split.py`, `backend/api.py`, `tests/frontend.mjs`).
+  (`ops/Caddyfile`, `tools/build_split.py`, `backend/server.py`, `tests/frontend.mjs`).
 - Guide AI: `backend/apps/guide/` exists with 50 tests. Location-aware means asking, not
   geolocating — do not add IP geolocation to a box whose whole argument is that it measures
   rather than infers.
@@ -2071,14 +2071,14 @@ queue to pick up.
 **~~Still true and owned by nobody, so somebody must do it:~~ RETRACTED — both halves of this
 were done in `8770676` and are live.** The paragraph used to say `apps.reinforce` had no
 `include_router` and that the `train` rack unit was hand-rolled with `href="/training.html"`.
-Neither is true as of 2026-08-17 15:30: `backend/api.py:2185` is
+Neither is true as of 2026-08-17 15:30: `backend/server.py:2185` is
 `app.include_router(reinforce.router, prefix="/api/train", tags=["reinforce"])`, the unit at
 `api.py:1539` carries `href="/reinforce.html"`, and the **running** API confirms it —
 `train ready /reinforce.html` on the live rack, with `/api/train/status` answering `503` (gated)
 rather than `404` (absent).
 
 **Do not act on this paragraph by adding a mount.** It is being kept rather than deleted only
-because it is the kind of instruction a fresh agent acts on immediately, and `backend/api.py` is
+because it is the kind of instruction a fresh agent acts on immediately, and `backend/server.py` is
 one of the two most contended files in the repo — a duplicate `include_router` added to a live
 file by someone following a stale note is exactly the half-applied edit §1b warns takes the site
 down.
@@ -2094,7 +2094,7 @@ neither — that was stale bytecode, settled in `f9f3546`. See §1.)
 What each one actually needs, established by reading the code rather than assuming:
 
 - **Reinforce** — `backend/apps/reinforce/routes.py` is complete, and its docstring says it is
-  "Mounted at `/api/train` by `backend/api.py`". **It is not mounted**; there is no
+  "Mounted at `/api/train` by `backend/server.py`". **It is not mounted**; there is no
   `include_router` for it. The gate is already right: `enabled()` needs both
   `SYM_REINFORCE_ENABLED=1` and `SYM_REINFORCE_TOKEN`, reads are open once enabled, writes always
   need the token in an `x-reinforce-token` header via `hmac.compare_digest`. There is no studio
@@ -2169,7 +2169,7 @@ tokens, and the page says so).
   so a duplicate check passed them; the defect was that one name read as the general case of the
   other. Watched fail against the live API: `"SyMoNeuRaL Miner" is a prefix of "SyMoNeuRaL Miner
   GPU"`, 32/33.
-- **This now needs an API restart as well as a deploy** (`backend/api.py` changed — it did not
+- **This now needs an API restart as well as a deploy** (`backend/server.py` changed — it did not
   in the first commit):
   ```
   sudo scripts/deploy.sh --prune && sudo systemctl restart symoneural-api
@@ -2285,7 +2285,7 @@ finished write-up, so commit early — but if a remote is ever added, audit what
 | Webroot orphans | 0 (35 pruned across two deploys) |
 | Generators | **14 in the chain**, plus `build_gallery.py` which is separate (it is the only one that can take the GPU). The three added since the count of 11 — `build_reinforce.py`, `build_project.py`, `build_sigils.py` — each write one file they own outright, so they add no ordering constraint beyond running before the stamper. |
 | `/overview` `/livestack` `/controlboard` `/receipts` | 200, each fitting one screen |
-| Pending deploy | **One, and only one: `sudo scripts/deploy.sh --prune`.** Still one command, and as of `26cb58e` it carries more: `site/ui.js` and `site/symoneural.css` now hold the Symon Say News bar (§2i) and 307 asset links were re-stamped, so the bar cannot appear in production until this runs — and **setting `SYMONEURAL_NEWS_ENABLED=1` first would show a bar built from new markup against the old stylesheet**, which is the worst of the three states. Deploy, then the env var, then the restart; `GARRETT-INBOX.md` has the order. The row's original text, still true of what it describes: this commit edits `site/symoneural.css` (the rack's one-screen fix) and re-stamps the cache-bust hash across all 23 pages, so `/var/www/symoneural/` is behind again. It matters more than it looks: `/livestack` is a FastAPI route reading `<root>/site/` and so is already current, but `/symoneural.css` is a plain static path **Caddy serves off the webroot**, and the query string is only a cache key — the old stylesheet still answers a request for `?v=<new hash>`. Until the deploy runs, production serves the new page against the old CSS and the rack still overflows there. Nothing under `ops/` changed, so **no `install-caddy.sh` and no `install-gateway.sh` this time**. All three of those ran 2026-08-19 08:02-08:0x EDT and production was verified green after them — read the rest of this row for what the list got wrong, because the ordering cost an outage. Verified after the fact, from this box: `ss -lptn` shows `symon-gateway` PID 136848 on :8000 and the API PID 90295 on :8800; `https://symoneural.com/api/status` answers **200 with thirteen units**, the same count as `:8000` and `:8800` direct; `/studio`, `/exp`, `/studio.js` and `/exp.js` all answer **200** through Caddy and the served `/studio.js` is byte-identical to `site/studio.js`; `/swagger-ui/` answers 200. `/v1/models` answers **404, and that is the API's route table, not a gateway fault** — `:8800` direct 404s it identically; the gateway registers `/v1/{*path}` and forwards verbatim (`symon-gateway/src/router.rs:55`), and `/v1/chat/completions` answers 400 to a GET, which is a route that exists rejecting a method. The history below is kept because the ordering finding is the reusable part. Originally measured 2026-08-19 05:20 EDT. The service has restarted past the `api.py` rewrite — the invocation running at 06:30 EDT entered active state 05:22:39 EDT — and runs `backend/api.py` out of this repo, so the backend half is live: `/api/status` answers thirteen units and `/studio` and `/exp` both return 200 on 127.0.0.1:8800. What is owed, Garrett only: **(1) `sudo scripts/deploy.sh --prune`** — `/var/www/symoneural/` has no `studio.html`, no `exp.html`, no `studio.js`, no `exp.js`, and its `symoneural.css` predates the masthead change. The two pages would answer through the API even so, because `/studio` and `/exp` are FastAPI routes reading `<root>/site/`; their **scripts** would not, because `/studio.js` and `/exp.js` are plain static paths Caddy serves off the webroot. A page that loads and does nothing is the failure mode here. **(2) `sudo ./scripts/install-caddy.sh`** — the `@studio` and `@exp` delegation blocks in `ops/Caddyfile` are written and `caddy validate` passes, but until they are installed production resolves both paths against the webroot and 404s without asking the API. Neither block is exercised against localhost, which is why local 200s prove nothing about it. Order stays `deploy.sh` first. **(3) `sudo ./scripts/install-gateway.sh` — this row missed it, and the omission took production down at 08:03 EDT on 2026-08-19.** The Caddyfile that `install-caddy.sh` installs routes `/api/*`, `/v1/*`, `/swagger-ui*` and `/api-docs/*` to **`127.0.0.1:8000`** (`symon-gateway`), not to `:8800`. The unit was never installed — `/etc/systemd/system/symoneural-gateway.service` did not exist and nothing listened on :8000 — so the moment the new Caddyfile loaded, every `/api` path returned **502 connection refused**, including `/api/status` and `/api/ws`. The previous installed file (kept as `/etc/caddy/Caddyfile.prev-20260819-080305`) had `/api/*` on `:8800`, which is why this was invisible until the install. `install-caddy.sh` does not check for the gateway and says so in its own header — *it does not touch Caddy's peers, so the two changes fail independently*. **The correct order is `deploy.sh`, then `install-gateway.sh`, then `install-caddy.sh`**: the Caddyfile is the only thing that points at :8000, so installing it before its upstream exists is the outage. The binary is present and works — run as `google` on a spare `:8001` against the live API 2026-08-19, `/healthz` answers `{"status":"ok",...,"validator":"native-fallback"}` and a proxied `/api/status` returns the same **thirteen units** as `:8800` direct, so this is an install, not a build. `limiter.wasm` is absent (Go is not on this box) and the gateway degrades to `native-fallback` by design at `symon-gateway/src/middleware.rs:82` — a warning, not a failure. |
+| Pending deploy | **One, and only one: `sudo scripts/deploy.sh --prune`.** Still one command, and as of `26cb58e` it carries more: `site/ui.js` and `site/symoneural.css` now hold the Symon Say News bar (§2i) and 307 asset links were re-stamped, so the bar cannot appear in production until this runs — and **setting `SYMONEURAL_NEWS_ENABLED=1` first would show a bar built from new markup against the old stylesheet**, which is the worst of the three states. Deploy, then the env var, then the restart; `GARRETT-INBOX.md` has the order. The row's original text, still true of what it describes: this commit edits `site/symoneural.css` (the rack's one-screen fix) and re-stamps the cache-bust hash across all 23 pages, so `/var/www/symoneural/` is behind again. It matters more than it looks: `/livestack` is a FastAPI route reading `<root>/site/` and so is already current, but `/symoneural.css` is a plain static path **Caddy serves off the webroot**, and the query string is only a cache key — the old stylesheet still answers a request for `?v=<new hash>`. Until the deploy runs, production serves the new page against the old CSS and the rack still overflows there. Nothing under `ops/` changed, so **no `install-caddy.sh` and no `install-gateway.sh` this time**. All three of those ran 2026-08-19 08:02-08:0x EDT and production was verified green after them — read the rest of this row for what the list got wrong, because the ordering cost an outage. Verified after the fact, from this box: `ss -lptn` shows `symon-gateway` PID 136848 on :8000 and the API PID 90295 on :8800; `https://symoneural.com/api/status` answers **200 with thirteen units**, the same count as `:8000` and `:8800` direct; `/studio`, `/exp`, `/studio.js` and `/exp.js` all answer **200** through Caddy and the served `/studio.js` is byte-identical to `site/studio.js`; `/swagger-ui/` answers 200. `/v1/models` answers **404, and that is the API's route table, not a gateway fault** — `:8800` direct 404s it identically; the gateway registers `/v1/{*path}` and forwards verbatim (`symon-gateway/src/router.rs:55`), and `/v1/chat/completions` answers 400 to a GET, which is a route that exists rejecting a method. The history below is kept because the ordering finding is the reusable part. Originally measured 2026-08-19 05:20 EDT. The service has restarted past the `api.py` rewrite — the invocation running at 06:30 EDT entered active state 05:22:39 EDT — and runs `backend/server.py` out of this repo, so the backend half is live: `/api/status` answers thirteen units and `/studio` and `/exp` both return 200 on 127.0.0.1:8800. What is owed, Garrett only: **(1) `sudo scripts/deploy.sh --prune`** — `/var/www/symoneural/` has no `studio.html`, no `exp.html`, no `studio.js`, no `exp.js`, and its `symoneural.css` predates the masthead change. The two pages would answer through the API even so, because `/studio` and `/exp` are FastAPI routes reading `<root>/site/`; their **scripts** would not, because `/studio.js` and `/exp.js` are plain static paths Caddy serves off the webroot. A page that loads and does nothing is the failure mode here. **(2) `sudo ./scripts/install-caddy.sh`** — the `@studio` and `@exp` delegation blocks in `ops/Caddyfile` are written and `caddy validate` passes, but until they are installed production resolves both paths against the webroot and 404s without asking the API. Neither block is exercised against localhost, which is why local 200s prove nothing about it. Order stays `deploy.sh` first. **(3) `sudo ./scripts/install-gateway.sh` — this row missed it, and the omission took production down at 08:03 EDT on 2026-08-19.** The Caddyfile that `install-caddy.sh` installs routes `/api/*`, `/v1/*`, `/swagger-ui*` and `/api-docs/*` to **`127.0.0.1:8000`** (`symon-gateway`), not to `:8800`. The unit was never installed — `/etc/systemd/system/symoneural-gateway.service` did not exist and nothing listened on :8000 — so the moment the new Caddyfile loaded, every `/api` path returned **502 connection refused**, including `/api/status` and `/api/ws`. The previous installed file (kept as `/etc/caddy/Caddyfile.prev-20260819-080305`) had `/api/*` on `:8800`, which is why this was invisible until the install. `install-caddy.sh` does not check for the gateway and says so in its own header — *it does not touch Caddy's peers, so the two changes fail independently*. **The correct order is `deploy.sh`, then `install-gateway.sh`, then `install-caddy.sh`**: the Caddyfile is the only thing that points at :8000, so installing it before its upstream exists is the outage. The binary is present and works — run as `google` on a spare `:8001` against the live API 2026-08-19, `/healthz` answers `{"status":"ok",...,"validator":"native-fallback"}` and a proxied `/api/status` returns the same **thirteen units** as `:8800` direct, so this is an install, not a build. `limiter.wasm` is absent (Go is not on this box) and the gateway degrades to `native-fallback` by design at `symon-gateway/src/middleware.rs:82` — a warning, not a failure. |
 | Backend suites | **1267 passed, 0 failed at `c129d81`**, 119.25 s, measured from `backend/` with the two mandatory `--ignore`s; 117.78 s on the identical tree pre-commit. The +38 over 1229 at `d3a4040` is counted, not subtracted: `apps/test_symoneuraldiscovery.py` collects 38 on its own, and the commit's only other test-file change (`test_enable_surfaces.py`) renames one test and widens two set literals, which moves no count. Between those readings: **1229 at `d3a4040`** (1225 at the tree before its four rename-guard tests; 1200 at `74dee33`). Previous full reading in this row: **1188 passed, 0 failed at `26cb58e`**, 117.42 s, measured from `backend/` with the two mandatory `--ignore`s. The +1 over `deaa19d` is counted, not subtracted: one method in `test_project.py` (108 -> 109), asserting `bootstrap()` returns `None` rather than raising when the store cannot be created. Mutation-checked twice, because the guard has two independent halves: dropping the `except` fails it with `PermissionError`, and removing the module logger fails it with `NameError` at `store.py:493` -- which is not hypothetical, it is the bug the first version of the guard shipped with, `log.exception` in a module that had never had a logger. Previous reading: **1117 passed at `deaa19d`**, 113.10 s; +6 there was `test_project.py` 102 -> 108, four tests on `bootstrap()` and two reading `api.py`'s lifespan through `ast`. Before that: **1111 passed at `431c337`**, +18 counted as `test_yocto_layers.py` (9) and `test_enable_surfaces.py` (9), with `--collect-only` on those two files agreeing at 18; and **1102 at `11dc426`**, then 1108 -- those two are carried forward from an earlier reading of this row rather than re-run, and are labelled so because the standard this row is held to is that a figure is anchored to the tree it was measured on; the SHAs resolve, the counts were genuinely measured when written, and neither has been re-observed since. Older history, verbatim from the reading it was written at: **1093 passed, 0 failed at `e81ffa4`**, measured 2026-08-19 from `backend/` with `python3 -m pytest apps/ -q --ignore=apps/reinforce/tests --ignore=apps/remix/tests` in **109.36 s**; `--collect-only -q` collects the same **1093** in 0.81 s. The +8 over the previous reading is `backend/apps/test_cli_upgrade.py`, the first tests ever written against `bin/symoneural-cli`, and is accounted for rather than inferred: 8 test methods, 8 new passes. **The 1093 also flushed out a defect in my own new test file, which is why the count is worth running and not just quoting** — its first version did `self.cli.subprocess.run = fake_run`, mutating the one `subprocess` module the whole pytest process shares, and 27 tests in `apps/voice` and `apps/tuner` failed because they shell out to ffmpeg and were handed the stub (1061 passed, 27 failed, 5 errors). A shim bound to the module's own *name* is visible to the code under test and to nothing else. Previous reading: **1085 passed, 0 failed at `5e68ea3`** (the tree that was measured on; the two commits after it are documentation only). Run twice on that tree: **110.38 s** then **111.55 s** — the count is the reading, the wall time is a range, and quoting one second-precision figure as *the* runtime is how the last one went stale. `--collect-only -q` collected the same **1085** there (0.78 s, 0.80 s); that comparison is the check that catches a collection abort (a smaller number is a lost test, *no* number is `Interrupted`). studio + exp alone are **141 passed in 3.69 s** (63 + 78). **The apparent +22 over the morning's 1063 is not twenty-two new tests, and chasing it found a second stale number.** `git diff 0f247cd..HEAD -- '*test_*.py'` adds exactly **one** `def test_`, and the two `subTest` loops it also adds do not raise pytest's count (a `subTest` block reports as one test). So the delta was measured instead of inferred: a detached worktree at **`0f247cd`** — the commit the 1063 was published against — collects **1084**. The real movement to HEAD is **1084 → 1085, +1**, which is that one test function. **1063 was never true of the tree it was written beside**; it is a reading from an earlier tree that got carried forward onto a later commit. Reading a source diff would not have caught that, and the arithmetic +22 would have invented twenty-one tests that do not exist. Earlier figures the same day were 1062 and 1063; treat any of them as provenance-free unless a SHA is beside it, which is why one is beside this. Previous reading for contrast: **679 passed, 1 failed** at `f9f3546` (2026-08-17 14:40), excluding `reinforce/tests` and `remix/tests` — those two need venvs this interpreter does not have (`cupy`, `symoneural_dj`) and error at *collection*, which is not the same as failing. That single red was the tuner codec test, owned by a live writer at the time; today's run has no reds. **1128 at `e47c8ec` → 1188 at `26cb58e` is +60, and every one of the sixty is accounted for by a file, not by arithmetic:** `apps/test_weight_names.py` **+10** (`34c5009`), `apps/test_site_css.py` **+16** (`bd05397`), `apps/symoneuralnews/test_news.py` **+34** (`16ddfb9`). Counted by collecting each file on its own rather than by subtracting, because that is the only form of this check that names what it found. `apps/test_studio_models.py` also changed at `26cb58e` and is **not** in that sum: one expected count moved 12 → 13 for the news router, which is a figure inside a test, not a new test. Earlier rows in this table read **1118 at `1537262`** and **1093 at `e81ffa4`**; both were true of the trees they name. The commit that added §2i adds one more — `test_news.py::test_the_request_budget_in_the_comments_matches_the_source_list`, which pins the two politeness figures to the source tuples — and the suite is **1189 passed in 117.86 s at `91230b1`**, 2026-08-20 — measured on that tree before it was committed, and still 1189 at the SHA because the only thing added after the reading was this sentence. That is the honest form of the off-by-one this convention has: a count cannot name its own commit until the commit exists, so it is named one commit later, from a tree where it is still true. Nothing under `site/` changed with it, so the 49/49 frontend figure above still names the tree it was measured on and was not re-run. Re-measured after the second round of figure corrections: **1189 passed in 116.06 s at `b85002f`** — the same count, since that commit changed comment prose and added assertions to an existing test rather than a test function. This reading is exact rather than one commit late: the whole tree, including the HANDOVER edits, was written before pytest ran, and only the commit message came after. |
 | Frontend suite | **49 of 49, 0 failed, at `26cb58e`** — `node tests/frontend.mjs http://127.0.0.1:8874`, measured 2026-08-20 against a uvicorn I started on a spare port for the run, never the deployed service. Baseline held; the five `400`/`404` lines it prints under "failed requests" are the tuner endpoints refusing unconfigured probe requests, are counted as expected by the suite, and predate this commit. Previous reading: **43 of 43, 0 failed, at `e81ffa4`** — `node tests/frontend.mjs http://127.0.0.1:8875` against a uvicorn started for the run and stopped after, measured 2026-08-19. Re-measured at `e81ffa4` because the previous stamp was `8b557ac` and `site/documentation.html` changed by 16 lines in between — a page this suite asserts on (`tests/frontend.mjs:736`, `:854`), so the older stamp did not carry forward and re-labelling it would have been the softening this review is about. Same 43, including the mid-run render: `/api/gen/gen-1787185377742-1963400137.png` decoded 768x768 in the browser, served from the API and not the webroot. The red this row used to carry was `#rack` on `/livestack` at 1855x745, 599px of content in a 584px panel; two spacing rules in the `html.ns` block closed it and §0 has the measured capacity table. **This row said 42 of 43 for three commits after it stopped being true**, and asserted that `docs/authority/PROJECT-AUTHORITY.md` agreed when that file had already been corrected to 43/43 — the same one-place-only edit that produced the 1063 above, found by grepping every occurrence of the number instead of the one the diff touched. **43 → 49 at `26cb58e` is the six Symon Say News assertions being *added*, not the old 43 changing** (§2i): the bar's presence and height, the dismiss control, the reduced-motion branch, no truncation, and two that intercept `/api/news/ticker` with a fabricated payload so the stale lamp is checked in both states rather than only in the state live data happens to produce. Measured on `:8874` with `SYMONEURAL_NEWS_ENABLED=1` and 32 real items in the cache, and again on `:8876` with the route present and the surface off — **49/49 both ways**, which is the assertion that the bar degrades to absent rather than to broken. Previous reading: **43 of 43, 0 failed, at `1537262`**, and before that the same 43 at `e81ffa4`. |
 | Link check | **clean** — `python3 tools/check_links.py`, 2026-08-19: 23 pages, 993 links, 285 unique targets (69 resolve, 58 external, 158 in-page), zero dead. This is the check the Voice precedent asks for after adding a route, and `/studio` and `/exp` both resolve in it. |
@@ -2299,7 +2299,7 @@ finished write-up, so commit early — but if a remote is ever added, audit what
 | What warming the engine costs, and who pays it | **7.4 s wall, of which 0.2 s was generation** — so ~**7.1 s** is llama-server spawn plus weight load, paid once by whoever first touches the chat surface. The Studio agent never pays it and never spawns: `inference.py` *"probes and uses; it never spawns"*, and `api.py` owns the lifecycle inside `gpu.hold("chat")`. Resident cost measured here: **238 MiB idle → 8,576 MiB** with llama-server up, i.e. **8,338 MiB (8.1 GiB)** for the process, which agrees with the `~8.2 GiB` in `api.py:1119`. **The agent loop takes no GPU lease at all** — `grep hold\|acquire` across `agent.py` and `inference.py` returns only prose in comments — so `gpu-governor.sh` read `lock free` throughout every turn above while llama-server sat resident. That is the intended split: the chat surface warms the engine, the Studio agent rides it. `stop_llama()` is reachable only from the API that spawned it (shutdown, or `gpu.hold("image")` at `api.py:2052`), so **llama-server was left resident** — the box's normal warm state, not a leak, and not the 238 MiB it started at. |
 | The CLI grew the studio surface, in this repo's idiom | `bin/symoneural-cli` gained **`agent`, `tools`, `tool`, `state`, `mcp`** — a stdlib-`urllib` client for `backend/apps/symoneuralstudio`, so the 26-tool loop is reachable from a terminal instead of only a browser or a hand-written curl. `agent` reads the SSE stream and renders each frame as it arrives (`backend`, `thinking`, `tool_call`, `tool_result`, `answer`, `notice`, `error`, `done`), with `--output-format text|json|stream-json` — the last being JSONL, one frame per line, which is what makes it scriptable. **Its options are exactly the five parameters `POST /api/studio/agent` reads** — `query`, `history`, `max_steps`, `model`, `context` — and nothing else: there is no `--allowed-tools` and no permission mode, because the endpoint has no such parameters and a flag the server ignores is a lie with a help string. An unknown event name prints as raw JSON rather than being dropped. |
 | `history` was the one claim in that row that was false, and it is now wired | The first version of the row above said "no session resume, because the endpoint has no such parameters". Wrong on the second half: `routes.py:490` reads `body["history"]` when it is a list and `agent.py:266` splices it between the system prompt and the new question. The endpoint keeps no session state, but it does accept the thread — so `agent` now carries it: **`-c/--continue`** sends a transcript that `agent` itself records in **`run/agent-<session>.json`** (`--session NAME`, `--history-limit N` default 20, `--no-save`, `--forget`). The file *is* the session; there is nothing server-side to resume. The clip is announced (`history: sending the last 2 of 4 messages …`) and moves forward to the first `user` message, because a window opening on an assistant turn asks the model to continue a reply it cannot see. Discriminating check, not a smoke test: turn 1 `reply with exactly: apple` → `apple`; turn 2 `what word did you just say?` **with `-c` → `apple`**, the identical question **without `-c` → `prompt.`** The history reaches the model, and the absence of it is visible. A failed turn is not appended. |
-| The packaged CLI was run through its own symlink, not just its real path | `/usr/bin/symoneural-cli` is a symlink to `/opt/symoneural/bin/symoneural-cli`, and the repo-root calculation (`Path(__file__).resolve().parent.parent`, asserted against `backend/api.py`) had never been exercised that way — v1 was only ever run by its real path. Extracted the package, remade the link relative inside the test tree, and invoked it: `ROOT` resolves to the extracted `/opt/symoneural`, `backend/api.py` is found, `status` reads the card live (`8586 / 16303 MiB used`, lock free) and `tools --group host` imports the registry in-process from the packaged tree. The symlink is the install's entry point and it works. |
+| The packaged CLI was run through its own symlink, not just its real path | `/usr/bin/symoneural-cli` is a symlink to `/opt/symoneural/bin/symoneural-cli`, and the repo-root calculation (`Path(__file__).resolve().parent.parent`, asserted against `backend/server.py`) had never been exercised that way — v1 was only ever run by its real path. Extracted the package, remade the link relative inside the test tree, and invoked it: `ROOT` resolves to the extracted `/opt/symoneural`, `backend/server.py` is found, `status` reads the card live (`8586 / 16303 MiB used`, lock free) and `tools --group host` imports the registry in-process from the packaged tree. The symlink is the install's entry point and it works. |
 | `tools --remote` was the one unexercised branch, and now it is not | Against the test instance on 8875 it returned the same 26 tools in 4 groups over HTTP (36 rows with the group headings) and `--remote gpu_status` printed the single-tool schema. Local and remote agree, which is the claim the two code paths make about each other. |
 | v2 artifacts, and one exclusion v1 got wrong | `~/Downloads/symoneural_0.1.0+git20260819.a198eca_all-v2.deb` (12 M, 645 files, `Installed-Size: 22348`) and `~/Downloads/symoneural-repo-2026-08-19-v2.tar.gz` (86 M, 5291 entries, 4618 of them `.git`). The v1 pair is left in place — Garrett had already downloaded it. The deb now excludes `training/project-history/build_history_corpus.py`: it labels itself *INTERNAL. Trade secret.* in its own docstring and its sibling `training/build_dataset.py` was already excluded, so v1 shipping it in a distributable was inconsistent. The tarball still carries it, which is correct — it is a complete backup of this box, not a distribution. Restore-tested: extracted, `git log` reads `a198eca`, 8 untracked review files present, and the extracted CLI runs. |
 | There is now an IP vault at `/home/google/.symoneural-full` (mode 700, 499 M, **1051** files — 657 tracked, 394 not) | A **copy**, not a move — nothing was removed from the repo. Two rules chose the contents: `LICENSES.md` §7 "What is ours", and files that declare *INTERNAL. Trade secret.* about themselves (`training/project-history/build_history_corpus.py`, `backend/apps/reinforce/dataset_guard.py`). It holds the whole tracked first-party tree minus the vendored web assets §1 names as third-party, plus the things **no archive can carry**: `training/adapter/` and `adapter-qwen36/` `adapter_model.safetensors` (454 M — untracked, so the tarball has the configs and not the weights), `run/reinforce/adapters/`, `ComfyUI/custom_nodes/symoneural_gguf/`, `ComfyUI/extra_model_paths.yaml`, `contrib/build-kawpowminer.sh` and the first-party projects under `references/`. `MANIFEST.md` states what is in it and why; `REBUILD.md` is the rebuild-from-nothing runbook. `backend/apps/remix/.env` was deliberately **not** copied: duplicating live credentials widens exposure and the fix is rotation. Two corrections after checking rather than assuming: `symoneural_gguf` is **tracked** at `backend/apps/symoneuralstudio/custom_nodes/`, so the vault does not hold a `ComfyUI/`-path copy and does not need to (`scripts/comfyui.sh:60` symlinks it on `start`), and a stray `backend/apps/reinforce/.pytest_cache/` that rode along in the first copy was removed. |
@@ -2678,7 +2678,7 @@ runs.
 
 ## 2h. The guide, the watch page, and four bugs behind a black rectangle (2026-08-17 ~14:45)
 
-Everything here is **on disk and unverified live** — see the BLOCKER in §0c. `backend/api.py`,
+Everything here is **on disk and unverified live** — see the BLOCKER in §0c. `backend/server.py`,
 `backend/apps/tuner/**`, `tools/build_pages.py`, `site/tuner*.html`, `tests/tuner_*` and
 `tests/frontend.mjs` were all edited; nothing else was touched.
 
@@ -2718,7 +2718,7 @@ preference.** `scripts/deploy.sh` publishes `find "$SRC" -maxdepth 1 -type f`, s
 `site/tuner/watch/index.html` is never copied into the webroot at all; and `ops/Caddyfile`
 delegates an explicit list of top-level paths, so a new one 404s until
 `sudo ./scripts/install-caddy.sh` runs. **To get the pretty path later:** add `/tuner/watch`
-to the `@sections` matcher in `ops/Caddyfile` and a route in `backend/api.py` that serves this
+to the `@sections` matcher in `ops/Caddyfile` and a route in `backend/server.py` that serves this
 file. The page itself needs no change.
 
 **The handoff carries the live session id and the watch page ADOPTS it.** Nothing goes in the
@@ -2770,7 +2770,7 @@ on the suspect list and is fine.
 Garrett: *"symon guide and symon tuner should be migrated together"*, then *"you need to
 migrate tuner and guide to be 1"*. Two units carried the same `href`, so the rack was showing
 one page twice. `apps/tuner/routes.py::status()` now returns *SyMoNeuRaL Tuner & Guide* and
-`backend/api.py` no longer builds a `guide` unit — **the rack is 11 units, not 12.**
+`backend/server.py` no longer builds a `guide` unit — **the rack is 11 units, not 12.**
 
 Nothing was deleted: `backend/apps/guide/` is untouched and `/api/guide/*` still serves the
 page's filter. The prefix was deliberately **not** renamed to `/api/tuner/guide/*` — the page
@@ -2816,7 +2816,7 @@ and Coder and Project both link `/documentation.html` because neither has a page
 
 **`tests/frontend.mjs` scores 27/28 against the running service on :8800, and that is the
 pending restart, not a regression.** That process predates the merge and still reports 12
-units. Against a throwaway `uvicorn api:app` with the change loaded it is 28/28.
+units. Against a throwaway `uvicorn server:app` with the change loaded it is 28/28.
 
 ### Still open on this surface
 
@@ -3083,15 +3083,15 @@ presets must be **exactly** 0.0 *and* carry a rationale — the invariant tighte
 
 ### The surface is now actually reachable
 
-`backend/api.py` had **no reference to this package** — `grep -n reinforce backend/api.py`
+`backend/server.py` had **no reference to this package** — `grep -n reinforce backend/server.py`
 returned nothing — while the first line of `routes.py` read "Mounted at `/api/train` by
-`backend/api.py`". Every route was unreachable and the docstring said otherwise. Both are fixed:
+`backend/server.py`". Every route was unreachable and the docstring said otherwise. Both are fixed:
 an import beside `tuner` and one `include_router`, with the claim in `routes.py` rewritten to
 what is now true. All four gate states were exercised rather than reasoned about — shut, all
 seven routes answer 503; open, `/presets` answers 200 and `/start` answers 403 with no token and
 403 with a wrong one.
 
-> **`backend/api.py` on this branch is a stale copy.** It branched before several other sessions
+> **`backend/server.py` on this branch is a stale copy.** It branched before several other sessions
 > landed their own mounts (a peer reports `accounts`, `gateway`, `guide`, `project` at
 > api.py:2070-2074 in the live checkout; this copy has only `tuner`). **Take the two lines by
 > hand — do not merge this file wholesale**, or you will revert four other surfaces. `ast.parse`
@@ -3280,7 +3280,7 @@ and every cache-bust stamp match the front page by construction. **`index.html` 
 modified**: the other generators find their work by BEGIN/END markers, and moving a section
 out from under them makes the next run append a second copy.
 
-Routes are in `backend/api.py`, declared **before** the `StaticFiles` mount — a route added
+Routes are in `backend/server.py`, declared **before** the `StaticFiles` mount — a route added
 after a mount at `/` is unreachable. `ops/Caddyfile` is untouched and stays that way.
 
 **These fix the gate cliff, not the scrolling.** A page holding one section has exactly the
@@ -3354,13 +3354,13 @@ everything from disk except the paths it explicitly delegates:
     /api/*   /docs*   /openapi.json   /   /overview   /livestack   /controlboard   /receipts
 
 **Anything not on that list never reaches FastAPI.** The section pages shipped 404ing for
-exactly this reason: the routes existed in `backend/api.py`, `127.0.0.1:8800/overview`
+exactly this reason: the routes existed in `backend/server.py`, `127.0.0.1:8800/overview`
 returned 200, and Caddy answered the public request from the webroot without asking. `/` is
 on the list only so the redirect route can run; `path /` is an exact match and does not
 affect anything else.
 
 Adding a fifth section means touching **four** places: `tools/build_split.py`,
-`backend/api.py`, `ops/Caddyfile`, and `is_route()` in `scripts/deploy.sh` (which otherwise
+`backend/server.py`, `ops/Caddyfile`, and `is_route()` in `scripts/deploy.sh` (which otherwise
 reports `MISSING livestack`, because pages link `/livestack` while the file is
 `livestack.html` — only the extensionless form is exempted, so a genuinely missing
 `livestack.html` is still caught).
@@ -3614,7 +3614,7 @@ because they are the cheapest real work available.
     acting on the two bullets below; they predate the numbers.
 
     **The ASR half is built, mounted, gated and measured — `96e4ccb`.** Seven files in
-    `backend/apps/voice/` plus three additive lines in `backend/api.py` (an import, a rate-limit
+    `backend/apps/voice/` plus three additive lines in `backend/server.py` (an import, a rate-limit
     row, and one `include_router`). Read `backend/apps/voice/README.md` first; it is the short
     version of everything here. Times below are this box's clock (EDT); §1's `15:xx` entries are
     on a different reference, so **order by commit hash, not by the timestamps.**
@@ -4399,7 +4399,7 @@ the generators moved into `tools/` and the scripts into `scripts/` in `4b6eaba`,
 `symoneural_reinforce/` moved to `backend/apps/reinforce/` in `9b5da84`. Corrected:
 
 ```
-backend/api.py                             # the API -- 1,573 lines, see §5 item 12
+backend/server.py                             # the API -- 1,573 lines, see §5 item 12
 backend/apps/                              # the surfaces: ravencalc, remix, reinforce,
                                            #   cryptominer (GPU), asicminer (ASIC)
 backend/models/  backend/output/           # weights; generated renders
@@ -4445,13 +4445,13 @@ sudo scripts/deploy.sh --prune           # site/sigils.html -> /var/www/symoneur
 
 ### The finding that matters most: the surface was never mounted
 
-`backend/apps/sigils/` existed and was complete for the typed path. **`backend/api.py`
+`backend/apps/sigils/` existed and was complete for the typed path. **`backend/server.py`
 contained zero occurrences of the string `sigil`** — no import, no router, no rack unit, no
 rate-limit lane — while `site/sigils.html` was already live in production. Every route the
 page called had been 404ing since the day it shipped, and nothing said so, because the page
 degrades to "the surface did not answer".
 
-Four edits to `backend/api.py` (a *coordinate-first* file, so they were kept minimal):
+Four edits to `backend/server.py` (a *coordinate-first* file, so they were kept minimal):
 import at :94, rate-limit lane `"sigil"` at :178, `Unit(**sigils.status())` at :1532, router
 at :2080. The rack is 12 units → 13. `tests/stickers.mjs` asserts the mount first, so this
 cannot silently regress.
@@ -4562,7 +4562,7 @@ Two follow-ups after the commit above, both fixed and verified.
 *not* make any route consult it. No sigils route depended on `throttled_for`, so an operator
 who set `SYM_RATE_SIGIL=20/300` would have got two live `RateLimiter` objects, no error, and
 no cap. **That is worse than being openly unmetered**, because the meter reads as present.
-Fixed at `backend/api.py:2091` by mounting the router with
+Fixed at `backend/server.py:2091` by mounting the router with
 `dependencies=[Depends(throttled_for("sigil"))]` — applied at the include, not inside
 `apps/sigils/routes.py`, because `throttled_for` lives in `api.py` and `api.py` imports the
 app, so the dependency the other way is an import cycle.
@@ -4599,7 +4599,7 @@ shared dev API and does not have this worktree's code in it.** Running `node tes
 bare fails with `GET /api/sigils/state -> 404` and looks like a broken surface. Pass the port.
 
 The server-free guard for all of this is `TestMountedAndMetered` in
-`backend/apps/sigils/test_sigils.py`: it parses `backend/api.py` with `ast` rather than
+`backend/apps/sigils/test_sigils.py`: it parses `backend/server.py` with `ast` rather than
 importing it (importing the serving module from a plug-in inverts the dependency) and asserts
 the router is included *and* that the include throttles against `"sigil"` specifically.
 Confirmed to fail when the kwarg is reverted — `AssertionError: [] is not true : the sigils
@@ -4641,7 +4641,7 @@ build_masthead cost two failures in `test_the_built_page_is_the_generators_outpu
 as flaky.
 
 **Never `pkill -f` a pattern that appears in your own command line.** `pkill -f "uvicorn
-api:app --port 8877"` matched the `bash -c` that invoked it and killed the shell mid-script
+server:app --port 8877"` matched the `bash -c` that invoked it and killed the shell mid-script
 (exit 144), losing an unrelated append in the same command. CLAUDE.md already says this;
 this is the second entry because it happened anyway. Kill by pid from `ss -ltnp`, or scope
 the pattern so it cannot match the launcher.

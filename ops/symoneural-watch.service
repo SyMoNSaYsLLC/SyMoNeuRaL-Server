@@ -1,0 +1,23 @@
+[Unit]
+# TEMPLATE, and a USER unit -- not a system one. @@ROOT@@ is replaced with the repo root by
+# ops/install-service.sh at install time.
+#
+# A user unit on purpose, for the same reason symoneural-progress is one: this job needs
+# nothing root can give. It reads a URL, a systemd status, an nvidia-smi reading and a
+# certificate, and writes one JSON file into run/. Making it a user unit means it installs
+# with no password and cannot touch anything outside the user's own tree if it goes wrong.
+Description=SyMoNeuRaL watchdog -- is the site actually reachable from outside
+Documentation=file://@@ROOT@@/run/watch-state.json
+
+[Service]
+Type=oneshot
+WorkingDirectory=@@ROOT@@
+# --quiet so a healthy run is silent in the journal and a failure is not buried. The state
+# file is written on every run regardless, so "nothing in the journal" never means "nothing
+# was checked".
+ExecStart=/usr/bin/python3 @@ROOT@@/tools/watch.py --quiet
+
+# A non-zero exit is the POINT of this unit -- it means a check failed. Marking the unit
+# failed is how `systemctl --user list-units --failed` becomes a second place the outage is
+# visible, rather than something only the state file knows.
+SuccessExitStatus=0

@@ -249,7 +249,7 @@ def api_declared_limits() -> dict:
     expressed in different units -- one in characters, one in tokens, one in turns --
     which is exactly why "the context size" has no single answer here.
     """
-    src = (ROOT / "backend" / "api.py").read_text()
+    src = (ROOT / "backend" / "server.py").read_text()
     def one(pat: str) -> str | None:
         # MULTILINE, because the two module-level constants below are anchored with
         # `^` to avoid matching the same names inside the docstrings and comments

@@ -56,7 +56,7 @@ BREAKS = [
 
 def run() -> tuple[bool, str]:
     proc = subprocess.run(
-        [sys.executable, "-m", "pytest", "apps/ravencalc/test_steps.py", "-q"],
+        [sys.executable, "-m", "pytest", "ravencalc/test_steps.py", "-q"],
         cwd=BACKEND, capture_output=True, text=True)
     tail = [ln for ln in proc.stdout.splitlines() if ln.strip()]
     return proc.returncode == 0, (tail[-1] if tail else "no output")

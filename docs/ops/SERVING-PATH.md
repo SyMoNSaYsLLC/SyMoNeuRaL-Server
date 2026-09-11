@@ -31,7 +31,7 @@ or contradicted by the box.
 All three carry `WorkingDirectory=/home/google/Symoneural`, and **no enabled unit references
 `/yocto` in any directive**:
 
-    symoneural-api      ExecStart=/usr/bin/python3 /home/google/Symoneural/backend/api.py
+    symoneural-api      ExecStart=/usr/bin/python3 /home/google/Symoneural/backend/server.py
     symoneural-gateway  ExecStart=/home/google/Symoneural/backend/apps/gateway/target/release/symon-gateway
     symoneural-deploy   ExecStart=/usr/bin/env bash /home/google/Symoneural/scripts/deploy.sh --prune
     caddy               unchanged — it never referenced /yocto
@@ -158,7 +158,7 @@ moved, modified or deleted.
 - **Gateway executed from `/yocto`.** Now the canonical, independently built artifact.
 - **`symoneural-deploy` publishing from `/yocto`** — the one that would have silently reverted
   the site at every boot.
-- **`backend/engines/…` as the native engine path.** It does not exist. `backend/api.py:183`
+- **`backend/engines/…` as the native engine path.** It does not exist. `backend/server.py:183`
   computes `ROOT / "engines" / …`. Corrected here and in `docs/ops/BUILD-BOUNDARY.md`.
   *(Not to be confused with `.claude/HANDOVER.md`'s planned Python adapter package, also
   called `backend/engines/` — a different thing, correct as written.)*
@@ -269,7 +269,7 @@ the `build/bin` path. The verifier's engine checks never ran against the engine 
 
 **2. The selection depends on uncommitted behaviour.** `/etc/symoneural/api.env` sets
 `SYMONEURAL_LLM_ENGINE`, and the `_engine_path()` override that reads it exists **only in the
-dirty working tree** — 59 uncommitted lines in `backend/api.py`. From a clean checkout of
+dirty working tree** — 59 uncommitted lines in `backend/server.py`. From a clean checkout of
 `HEAD` the variable is ignored and the API resolves the *other* binary. The running production
 service therefore depends on code that is not in git.
 
@@ -359,7 +359,7 @@ The 2026-08-28 section above recorded that disagreement as a qualification. It i
 a qualification: it is now **traced to its cause**. `/etc/symoneural/api.env` lines 14 and 15
 (mode `600`, owner `root`, mtime `2026-08-26 15:52:08`) set `SYMONEURAL_LLM_ENGINE` and
 `SYMONEURAL_DIFFUSE_ENGINE` to the staged builds, and the unit reads that file through
-`EnvironmentFile=`. `backend/api.py::_engine_path()` prefers the environment variable whenever
+`EnvironmentFile=`. `backend/server.py::_engine_path()` prefers the environment variable whenever
 it names a real file, and both staged binaries are present. So this is a standing configuration
 fact, not a transient state.
 

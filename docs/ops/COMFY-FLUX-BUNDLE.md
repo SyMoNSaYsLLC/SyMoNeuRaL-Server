@@ -14,7 +14,7 @@ OpenAI weight replaces FLUX here would be false.
 
 ## 1. The four components — all present, all manifested
 
-Measured 2026-08-22. Loaded from `backend/api.py:202-205`, named in
+Measured 2026-08-22. Loaded from `backend/server.py:202-205`, named in
 `backend/apps/studio/workflows.py:48-51`. Both lists are **identical**, which is the property
 worth having and the one a migration would break first.
 

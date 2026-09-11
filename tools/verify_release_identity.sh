@@ -90,7 +90,7 @@ git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1 \
 
 # --- CONDITION 1: the tag signature must verify against the authorized release key -------
 # Canonical spelling first, legacy second, default last -- the same order every other reader
-# on this tree uses (backend/apps/symoneuralenv.py owns the rename). The legacy name is still
+# on this tree uses (backend/symoneuralenv.py owns the rename). The legacy name is still
 # honoured rather than dropped: an operator's existing key-ceremony wrapper must not start
 # silently falling back to plain `git verify-tag`, which would turn an unverifiable release
 # into a passing one. That is the one failure mode this whole script exists to prevent, so

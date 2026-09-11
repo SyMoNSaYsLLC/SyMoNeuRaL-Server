@@ -3,7 +3,7 @@
 
 ## Why this exists
 
-`backend/apps/studio/plugins/reinforce/test_reinforce.py::PresetTests::test_alpha_is_twice_rank_everywhere`
+`backend/studio/plugins/reinforce/test_reinforce.py::PresetTests::test_alpha_is_twice_rank_everywhere`
 was red for hours against a source file that was correct. `presets.py` plainly reads
 `rank=32, lora_alpha=64`; the imported module reported `lora_alpha=48`. It was recorded as an
 open owner decision about a training hyper-parameter. It was not a decision at all -- it was
@@ -18,7 +18,7 @@ to whole seconds**, and the source's **size in bytes**. Both matched:
 
 So the cache looked valid, and every interpreter on this box loaded a preset whose alpha was
 one edit out of date. `jobs.py` passes `preset.lora_alpha` to the trainer as `--alpha`, so once
-`backend/apps/studio/plugins/reinforce/routes.py` is mounted this stops being a red test and becomes a run
+`backend/studio/plugins/reinforce/routes.py` is mounted this stops being a red test and becomes a run
 that silently trains at the wrong alpha while the site publishes the right one.
 
 This is not a rare accident. Two-character numeric edits are ordinary, and an agent that edits

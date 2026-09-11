@@ -122,7 +122,7 @@ esac
 CACHE="${SYMONEURAL_NIM_CACHE:-${SYM_NIM_CACHE:-$HOME/.cache/nim}}"
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 say()  { printf '%s\n' "$*"; }
 ok()   { printf '  ok    %s\n' "$*"; }

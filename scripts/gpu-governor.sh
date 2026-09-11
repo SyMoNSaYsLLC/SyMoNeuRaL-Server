@@ -37,7 +37,7 @@ set -uo pipefail
 # wrong directory and the lock silently stops being shared -- two tenants both acquire,
 # both load weights, and ~12 GB of models hit a 16 GB card.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 # HERE is the repo ROOT, not this script's directory, and the two call sites below spell
 # their paths from the root accordingly. They did not until 2026-08-20: they read
 # "$HERE/symoneural" and "$HERE/<launcher>.sh", neither of which has ever existed at the
@@ -84,7 +84,7 @@ LOG="${SYMONEURAL_GOVERNOR_LOG:-$RUN/governor.log}"
 #             again, with 238 MiB being the card after the *process* exits. A floor
 #             under this would call a correctly-freed render engine an un-drained
 #             tenant, which is the old bug in a new unit.
-#   375 MiB   OBS's NVENC session while streaming (backend/apps/live/SMOKE.md).
+#   375 MiB   OBS's NVENC session while streaming (backend/live/SMOKE.md).
 #   222 MiB   Garrett's own ComfyUI out of external/, holding a context and nothing else.
 #
 # 1024 MiB clears the largest single one with room, clears the two likeliest pairs, and is an
@@ -124,7 +124,7 @@ vram_free() { nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2
 #
 # This was an `awk -F','` block summing nvidia-smi CSV. Parsing CSV and doing arithmetic on
 # it is where bash is worst, and the patternless-drain defect lived exactly there. It is now
-# `backend/apps/gpu.py compute_mib`, which has tests.
+# `backend/gpu.py compute_mib`, which has tests.
 #
 # **The lock did NOT move and must not.** `mkdir` is the atomic primitive, bash has no
 # runtime dependency, and a shell script can break a stale lock when `api.py` is dead. Only
@@ -138,7 +138,7 @@ vram_free() { nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2
 # a timeout, a non-numeric line: all return 1, and `drain()` then uses the CARD-WIDE reading
 # against the 1500 MiB floor rather than the 1024 MiB compute floor -- a cruder measure with a
 # STRICTER threshold. So losing Python makes this wait longer, never hand over sooner.
-GPU_PY="$ROOT/backend/apps/gpu.py"
+GPU_PY="$ROOT/backend/gpu.py"
 vram_compute_used() {
   local pat="${1:-}" out
   [ -f "$GPU_PY" ] || return 1

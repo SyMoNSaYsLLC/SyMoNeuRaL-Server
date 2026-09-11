@@ -154,9 +154,9 @@ count of five; the audit is done and the answer is that it is not thin.
 | `/api/coder/*` must not exist | **it does not exist.** `tests/test_coder_surface.py:18` asserts it: *"there is no `/api/coder/...` route at all"*, and `:172` gives the reason — *"an `/api/coder/...` endpoint is remote file read on a public host"* |
 | developer routes under `/local/*` | **yes** — `/local/coder`, `/local/coder/status`, `/local/coder/ls`, `/local/coder/file`, `/local/coder/history`, `/local/coder/journal` |
 | `/local/*` refused off-box | **yes** — loopback only unless `SYMONEURAL_CODER_ALLOW_REMOTE=1` |
-| published route `/livestack/coder` | both `/livestack/coder` and `/live-stack/coder` answer (`backend/api.py:2080`, `:3168-3169`, `:3214-3215`). The hyphenated form is compatibility; **the published link must use `/livestack/coder`** |
+| published route `/livestack/coder` | both `/livestack/coder` and `/live-stack/coder` answer (`backend/server.py:2080`, `:3168-3169`, `:3214-3215`). The hyphenated form is compatibility; **the published link must use `/livestack/coder`** |
 
-The reason is recorded in the code at `backend/api.py:2075`: *"`ops/Caddyfile` delegates the
+The reason is recorded in the code at `backend/server.py:2075`: *"`ops/Caddyfile` delegates the
 whole `/api/*` subtree"* — so every `/api` route is internet-facing unless separately blocked.
 That is why `/local/*` exists and why it is the right home.
 

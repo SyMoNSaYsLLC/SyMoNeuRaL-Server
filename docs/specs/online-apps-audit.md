@@ -289,7 +289,7 @@ would have passed before and after the fix and proved nothing. That is the vacuo
 | miner, gateway, sigils pages have no inbound links | those sessions |
 | `sigils` despill boundary — settle the correct output first | unowned, still not licence to guess |
 
-Nothing under `backend/api.py`, `ops/Caddyfile` or `scripts/deploy.sh` was edited: HANDOVER §0c
+Nothing under `backend/server.py`, `ops/Caddyfile` or `scripts/deploy.sh` was edited: HANDOVER §0c
 marks all three coordinate-first, and the ravencalc fix was deliberately shaped to stay out of
 `api.py`.
 

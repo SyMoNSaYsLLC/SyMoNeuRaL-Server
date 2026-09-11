@@ -1,0 +1,65 @@
+# SyMoNeuRaL inference API — container image
+#
+#   podman build -t symoneural-api -f ops/Containerfile .
+#
+# ---------------------------------------------------------------------------------------
+# Why Debian trixie and not nvidia/cuda:13.3.1-runtime-ubuntu24.04
+# ---------------------------------------------------------------------------------------
+# The first attempt used NVIDIA's Ubuntu 24.04 runtime image and llama-server would not
+# load inside it:
+#
+#   libgomp.so.1: cannot open shared object file
+#   /lib/x86_64-linux-gnu/libcrypto.so.3: version `OPENSSL_3.3.0' not found
+#
+# The second one is the one that matters. The engines are compiled on this host, which is
+# Debian trixie with OpenSSL 3.5.6; the Ubuntu 24.04 image carries OpenSSL 3.0.13, and the
+# symbols are simply not there. Bind-mounting host-built binaries into a container of a
+# different distribution is not a detail you can paper over -- either the libraries match
+# or the binary does not run.
+#
+# NVIDIA publishes no Debian-13 CUDA image, but it does publish a debian13 apt repo (the
+# same one already configured on this host). So this image is plain trixie with the CUDA
+# runtime added from that repo, which makes the container's libraries the same builds the
+# engines were linked against.
+#
+# The driver itself (libcuda.so.1, nvidia-smi) is injected by CDI at run time and must NOT
+# be installed here -- that is what --device nvidia.com/gpu=all does.
+FROM docker.io/library/debian:trixie
+
+# CUDA *runtime* only. Not the toolkit: nothing is compiled in this image, so nvcc and the
+# headers would be several GB of dead weight.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
+ && curl -fsSL -o /tmp/cuda-keyring.deb \
+      https://developer.download.nvidia.com/compute/cuda/repos/debian13/x86_64/cuda-keyring_1.1-1_all.deb \
+ && dpkg -i /tmp/cuda-keyring.deb && rm /tmp/cuda-keyring.deb \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      cuda-cudart-13-3 libcublas-13-3 \
+      libgomp1 \
+      procps \
+      python3 python3-fastapi python3-uvicorn python3-sympy python3-pydantic \
+      python3-multipart python3-websockets \
+ && rm -rf /var/lib/apt/lists/*
+# libgomp1  -- OpenMP, which ggml's CPU backend links against; its absence was failure one.
+# procps    -- pgrep/pkill, which gpu-governor.sh uses to evict a holder. Without them
+#              eviction silently does nothing and the next tenant OOMs.
+# python3-* -- the serving stack from Debian's own packages: the same versions the host
+#              runs, and the reason there is no virtualenv in the serving path there either.
+
+# The engines link against /usr/local/cuda/lib64; the packages install to a versioned path.
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda-13.3/targets/x86_64-linux/lib
+
+# No application code is copied in. The repo is bind-mounted at /app, and because api.py
+# derives its root from __file__ and the engine binaries were repointed to $ORIGIN, the
+# checkout can live anywhere on the host -- the container always sees it at /app.
+#
+# That also means this image is NOT yet the self-contained artefact you would hand a
+# customer: it still needs the engines and weights from outside. Baking those in is the
+# next step and is what makes the image shippable. See HANDOVER.md.
+WORKDIR /app
+
+# Loopback only, exactly as on the host: Caddy is the only thing that should reach this.
+# Run with --network host so 127.0.0.1:8800 means the same thing inside and out.
+EXPOSE 8800
+CMD ["python3", "backend/api.py"]

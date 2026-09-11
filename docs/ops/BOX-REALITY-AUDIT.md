@@ -246,7 +246,7 @@ changed by this report.**
 | App | Routes | Class |
 |---|---|---|
 | `studio` (incl. `plugins/exp`, `plugins/reinforce`) | 46 | **PROD**, with the caveats in §5 |
-| `backend/api.py` | 31 | **PROD** — the public surfaces, `/v1`, `/state`, `/local`, `/docs` |
+| `backend/server.py` | 31 | **PROD** — the public surfaces, `/v1`, `/state`, `/local`, `/docs` |
 | `project` | 17 | **PROD** |
 | `streamer` | 14 | **PROD** |
 | `accounts` | 8 | **PROD** — and it refuses to carry a price column |
@@ -257,7 +257,7 @@ changed by this report.**
 | `controlboard` | 2 | **PROD** |
 | `gateway` | 1 | **PROD** |
 | `news` | 1 | **PROD** |
-| **shipped total** | **141** | across `backend/api.py` and eleven apps |
+| **shipped total** | **141** | across `backend/server.py` and eleven apps |
 | `coder/tests/test_coder_surface.py` (2), `test_caddy_delegation.py` (2), `test_deploy_routes.py` (2), `test_studio_models.py` (1), `tests/live-harness.py` (1) | 8 | **AUDIT** — declared inside tests, not shipped surface. Listed so the 149 reconciles. |
 
 `coder` declares no shipped route of its own: its two are inside its own surface test.
@@ -390,7 +390,7 @@ code nobody has decided to keep.
 - `gpu-governor.sh`'s anchored `engines/symoneural-ui/main.py`, and `test_governor_paths.py`
 - 503-with-a-fix when the render surface is down
 - no CPU fallback in any serving path
-- 141 shipped routes across `backend/api.py` and eleven apps
+- 141 shipped routes across `backend/server.py` and eleven apps
 
 **AUDIT — needs a decision**
 
@@ -573,7 +573,7 @@ directories. The inventory (what each area is for, and the archive mapped to it)
 `REPOSITORY-PURPOSE.md` §2 names this file as their only home.
 
 **What was measured, and what was not.** Tracked-file counts come from `git ls-files` on
-2026-08-22; rack rows from `backend/api.py`. **No archive was opened, and no application's
+2026-08-22; rack rows from `backend/server.py`. **No archive was opened, and no application's
 behaviour was exercised for this section** — so a verdict below rests on presence, tests and
 rack state, and where that is not enough to judge, the row says so instead of guessing. That
 limit is the honest form of this table; a `PROD` awarded on a file count would be the same
@@ -598,7 +598,7 @@ concern.
 
 **The location is already correct.** Both are Studio plugins on disk, which corrects the
 brief's premise that Reinforce is "a disconnected side plugin". What is separate is the Live
-Stack row: `backend/api.py:2013` carries `Unit(id="train", label="SyMoNeuRaL Reinforce")` as its
+Stack row: `backend/server.py:2013` carries `Unit(id="train", label="SyMoNeuRaL Reinforce")` as its
 own unit. That is allowed during transition — see `symoneural-studio-upgrade-scope.md` §1.2.
 
 **Why still AUDIT.** Reinforce ships real machinery — `rewards.py`, `rollout.py`, `runner.py`,
@@ -636,7 +636,7 @@ beyond what one tracked file plus two test modules can be doing today.
 ### 10.4 RavenCalc — PROD direction, current implementation AUDIT before migration
 
 `backend/apps/ravencalc/` — 5 tracked files, plus `backend/apps/test_ravencalc.py` and
-`tools/prove_ravencalc_steps.py`. First-class rack row at `backend/api.py:1974`:
+`tools/prove_ravencalc_steps.py`. First-class rack row at `backend/server.py:1974`:
 `Unit(id="ravencalc", label="SyMoNeuRaL RavenCalc", slot="1U", state="ready")` — the only
 `state="ready"` written as a literal rather than derived from a GPU probe, which is itself the
 CPU-only claim expressed in code.
@@ -664,7 +664,7 @@ inspected**, and the largest of the five by a wide margin.
 ### 10.6 Miner — AUDIT / overhaul
 
 `backend/apps/cryptominer/` — 21 tracked (GPU), `backend/apps/asicminer/` — 7 (ASIC), each with
-its own tests. Rack row `backend/api.py:2041` is a **6U unit with three subunits**: `gpuminer`,
+its own tests. Rack row `backend/server.py:2041` is a **6U unit with three subunits**: `gpuminer`,
 `asicminer` and `gateway` — so the current rack model does fold Gateway under Miner.
 
 **The GPU half cannot run as shipped.** §8.3 of this file already records the cause: `contrib/`
@@ -707,7 +707,7 @@ Streamer package boundary.
 
 §10 covered the ten application areas. The master scope names more, and every one is recorded
 here so a migration cannot lose it. Same measurement limits as §10: tracked-file counts from
-`git ls-files` and rack rows from `backend/api.py`/`ROSTER.md` on 2026-08-22; **no behaviour was
+`git ls-files` and rack rows from `backend/server.py`/`ROSTER.md` on 2026-08-22; **no behaviour was
 exercised for this section.**
 
 ### 11.1 Harness — AUDIT, Studio-family tenant

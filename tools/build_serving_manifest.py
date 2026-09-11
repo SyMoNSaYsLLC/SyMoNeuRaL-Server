@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the serving dependency manifest -- the file this repo did not have.
 
-`backend/api.py`'s docstring says fastapi, uvicorn and sympy "are already present as OS
+`backend/server.py`'s docstring says fastapi, uvicorn and sympy "are already present as OS
 packages, so there is no virtualenv anywhere in the serving path". That is half a design and
 half a hope: nothing recorded WHICH packages, at which versions, so a rebuild was guesswork
 and a missing one showed up as an import traceback at boot.
@@ -10,7 +10,7 @@ This measures the answer and writes it down. Three separate environments, becaus
 architecture is a hybrid and pretending it is one environment is how the docstring got
 imprecise:
 
-  1. **The system interpreter** -- what `python3 backend/api.py` loads. Measured by importing
+  1. **The system interpreter** -- what `python3 backend/server.py` loads. Measured by importing
      the app (tools/serving_deps.py) rather than parsed, then resolved to the dpkg package
      that owns each file, because `apt` is what an operator would reinstall.
   2. **First-request dependencies** -- imported at module scope inside a module that `api.py`
@@ -41,9 +41,9 @@ def _repo_root() -> Path:
     """Find the root by its marker, not by counting parents."""
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()
@@ -52,20 +52,20 @@ OUT = ROOT / "docs" / "ops" / "SERVING-MANIFEST.md"
 #: Every venv in the serving tree, with how it is invoked and where that is documented.
 #: Recorded by hand because the *invocation* is the fact that matters and it is only
 #: discoverable by reading the call site -- but every entry here is cited, and the citations
-#: are checked by `backend/apps/test_serving_manifest.py`.
+#: are checked by `backend/test_serving_manifest.py`.
 VENVS = (
-    ("backend/apps/studio/.venv",
-     "subprocess: `.venv/bin/python -m apps.studio.mcp_server`",
-     "backend/apps/studio/__init__.py:23,67; mcp_server.py:4,6,28"),
-    ("backend/apps/sigils/.venv",
+    ("backend/studio/.venv",
+     "subprocess: `.venv/bin/python -m studio.mcp_server`",
+     "backend/studio/__init__.py:23,67; mcp_server.py:4,6,28"),
+    ("backend/sigils/.venv",
      "subprocess: `.venv/bin/python cutout_worker.py <in.png> <out.png>`",
-     "backend/apps/sigils/cutout_worker.py:1,4,7; segment.py:48; docs/specs/sigils-spec.md:139"),
-    ("backend/apps/asicminer/.venv",
+     "backend/sigils/cutout_worker.py:1,4,7; segment.py:48; docs/specs/sigils-spec.md:139"),
+    ("backend/asicminer/.venv",
      "subprocess: rig-protocol shim",
-     "backend/api.py:73-74"),
+     "backend/server.py:73-74"),
     ("training/.venv",
      "subprocess: `training/.venv/bin/python`, never imported",
-     "backend/apps/studio/plugins/reinforce/__init__.py:56; jobs.py:72,627"),
+     "backend/studio/plugins/reinforce/__init__.py:56; jobs.py:72,627"),
 )
 
 
@@ -137,7 +137,7 @@ def main() -> int:
     add("did, and committing it is optional.")
     add("")
     add("Three environments, deliberately separate. The serving interpreter never imports from")
-    add("any virtualenv; each venv is reached by subprocess. `backend/api.py:25` says \"no")
+    add("any virtualenv; each venv is reached by subprocess. `backend/server.py:25` says \"no")
     add("virtualenv anywhere in the serving path\" and `api.py:73-74` documents one 48 lines")
     add("later -- the architecture is the hybrid below, and this table is the statement of it")
     add("that the docstring does not make.")
@@ -149,7 +149,7 @@ def main() -> int:
     add("")
     add(f"`{sys.executable}` — {py_ver}")
     add("")
-    add("Measured by importing `backend/api.py` with `sys.path[0]` set the way `ExecStart`")
+    add("Measured by importing `backend/server.py` with `sys.path[0]` set the way `ExecStart`")
     add("sets it and reading `sys.modules`, then resolving each file to its owning package.")
     add("**Every one is dpkg-owned: there is no pip in the serving path.** A missing entry here")
     add("stops the process from starting.")
@@ -190,8 +190,8 @@ def main() -> int:
             f"{'`' + _cli_pkg + '`' if _cli_pkg else '**not dpkg-owned** -- a user-local pip install'} |")
     add("")
     add("The CLI wrapper being unpackaged is harmless *because nothing in the serving path")
-    add("invokes it*: the unit runs `python3 backend/api.py`. It is recorded so that a future")
-    add("reader who reaches for `uvicorn api:app` knows the wrapper is not managed by apt.")
+    add("invokes it*: the unit runs `python3 backend/server.py`. It is recorded so that a future")
+    add("reader who reaches for `uvicorn server:app` knows the wrapper is not managed by apt.")
     add("")
     add("Reinstall with:")
     add("")

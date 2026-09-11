@@ -20,7 +20,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 cd "$ROOT"
 
 OUT="$HOME/Downloads"
@@ -63,7 +63,7 @@ mkdir -p "$DEST/DEBIAN" "$DEST/opt/symoneural" "$DEST/usr/bin" "$DEST/usr/share/
 #      with a different verb. The two adapter directories carry only their configs in git (the
 #      weights are gitignored), but a `adapter_config.json` naming the rank and target modules
 #      is part of the method.
-#  backend/apps/remix/.env
+#  backend/remix/.env
 #      Tracked, and carries live-looking secrets. The v1 .deb shipped it. That is the single
 #      concrete reason this script exists rather than another hand-rolled `cp -r`.
 #  .claude/
@@ -71,7 +71,7 @@ mkdir -p "$DEST/DEBIAN" "$DEST/opt/symoneural" "$DEST/usr/bin" "$DEST/usr/share/
 #  .github/, .gitignore
 #      Repository mechanics, meaningless in /opt.
 EXCLUDE_RE='^(training/(corpus\.jsonl|build_dataset\.py|project-history/|adapter)'
-EXCLUDE_RE="$EXCLUDE_RE"'|backend/apps/remix/\.env$|\.claude/|\.github/|\.gitignore$)'
+EXCLUDE_RE="$EXCLUDE_RE"'|backend/remix/\.env$|\.claude/|\.github/|\.gitignore$)'
 
 # Source that is useful in the repository but is not part of the main runtime package.
 # Nothing is deleted from the checkout. Separate deliverables keep their own source; test
@@ -85,7 +85,7 @@ EXCLUDE_RE="$EXCLUDE_RE"'|backend/apps/remix/\.env$|\.claude/|\.github/|\.gitign
 #  tests and test_*.py   verification source, never imported by the running product
 #  root work ledgers     agent/review state rather than product or operator docs
 NONPROD_RE='^(archive/vendor-sdks/|deploy/bento/|desktop-client/|yocto/|garbo/|incoming/|tests/)'
-# `.mjs` as well as `.py`: `backend/apps/studio/plugins/reinforce/test_page.mjs` and
+# `.mjs` as well as `.py`: `backend/studio/plugins/reinforce/test_page.mjs` and
 # `ops/gateway/test_contracts.mjs` both shipped in the manifest while this rule read `.py`
 # only -- measured with `--list`. A rule that names one extension of a two-extension test
 # suite excludes the half you happened to think of.
@@ -103,7 +103,7 @@ fi
 mkdir -p "$OUT"
 command -v dpkg-deb >/dev/null || { echo "dpkg-deb not found" >&2; exit 1; }
 
-# Copy with the tree structure intact. `--parents` is what keeps backend/apps/... nested
+# Copy with the tree structure intact. `--parents` is what keeps backend/... nested
 # rather than flattening 645 files into one directory.
 tr '\n' '\0' < "$STAGE/manifest.txt" | xargs -0 cp --parents -t "$DEST/opt/symoneural"
 

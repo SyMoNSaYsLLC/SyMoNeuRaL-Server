@@ -1,0 +1,15 @@
+# Rebuildable toolchains -- ./setup.sh recreates both from scratch.
+.venv/
+.solc/
+
+# Key material. `gateway-cli.py keygen` refuses to write under /tmp and chmods 0600, but a
+# stray key landing in the repo is the failure that must be impossible rather than unlikely --
+# the contract signing key's private half was lost from /tmp once already
+# (.claude/HANDOVER.md §5 item 0). Belt and braces.
+*.key
+*.pem
+*.address
+
+# `artifacts/` is deliberately NOT ignored. Committing the compiled bytecode means a
+# deployment is reproducible without a compiler, and means the bytecode that goes on chain is
+# reviewable in a diff rather than produced fresh at deploy time.

@@ -50,7 +50,7 @@ the surface exists, it is pointed at a toy plugin graph instead of at Studio's o
 says so in its own words: *"This is a conformance contract, NOT a loader."* The registry is a
 hardcoded tuple — `PLUGINS = ("discovery", "exp", "reinforce")` at `:93` — and adding a fourth
 means editing that tuple *and* hand-writing an import and an `include_router` in
-`backend/api.py`. Required exports are two functions. There is no manifest, no registration API,
+`backend/server.py`. Required exports are two functions. There is no manifest, no registration API,
 no mount/configure/teardown, no version, and no UI.
 
 That contract was a correct decision for what it was for — the reasoning at `:17-34` is that

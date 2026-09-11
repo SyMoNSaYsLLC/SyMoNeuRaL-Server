@@ -5,7 +5,7 @@
 #
 # Swapping the model a surface loads is the highest-consequence change on this box and the
 # easiest one to do badly: the weights are 194 GB, the active default is four lines in
-# `backend/api.py`, and nothing in git records either. So the swap gets a script with the
+# `backend/server.py`, and nothing in git records either. So the swap gets a script with the
 # guardrails written as refusals rather than as comments, and every mode below is safe to run
 # on a live box.
 #
@@ -52,8 +52,8 @@ ENGINE="symoneural-llm/build/bin/symoneural-llm"
 # ---------------------------------------------------------------------------- guardrail 1
 # Run from the repo root or not at all. Every path below is relative, and a script like this
 # run from the wrong directory is how a staging tree lands somewhere nobody looks again.
-if [[ ! -f "backend/api.py" || ! -f "tools/modelops_inventory.py" ]]; then
-  echo "refusing: run this from the repository root (backend/api.py not found here)" >&2
+if [[ ! -f "backend/server.py" || ! -f "tools/modelops_inventory.py" ]]; then
+  echo "refusing: run this from the repository root (backend/server.py not found here)" >&2
   exit 2
 fi
 ROOT="$(pwd)"
@@ -123,7 +123,7 @@ write_rollback_note() {
 **The rollback is that nothing was removed.** Staging does not touch the active default, so
 the previous model is not "restored" — it never stopped being the one in use.
 
-The active chat default is set in **`backend/api.py`**:
+The active chat default is set in **`backend/server.py`**:
 
     CHAT_MODEL = MODELS / "llm" / "symon-1.0-7b-q4_k_m.gguf"
     DRAFT_MODEL = MODELS / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
@@ -131,7 +131,7 @@ The active chat default is set in **`backend/api.py`**:
 ## If a promotion has been applied and you want it undone
 
 1. `scripts/modelops/symoneural-modelops-stage.sh --rollback` — restores
-   `backend/api.py` from the `.modelops-backup` written at promotion time.
+   `backend/server.py` from the `.modelops-backup` written at promotion time.
 2. Restart the API. A file swap is not live until the process re-reads it.
 3. Confirm with `/api/status` that `model` reads the Qwen file again.
 
@@ -394,12 +394,12 @@ mode_activate() {
     exit 3
   fi
   if (( DRY_RUN )); then
-    dim "  dry run: all gates pass; would back up backend/api.py and rewrite CHAT_MODEL"
+    dim "  dry run: all gates pass; would back up backend/server.py and rewrite CHAT_MODEL"
     return 0
   fi
   # Backup first, always, and never in place.
-  cp backend/api.py "backend/api.py.modelops-backup"
-  dim "  backed up backend/api.py -> backend/api.py.modelops-backup"
+  cp backend/server.py "backend/server.py.modelops-backup"
+  dim "  backed up backend/server.py -> backend/server.py.modelops-backup"
   warn "  the CHAT_MODEL rewrite is deliberately not implemented in this script."
   warn "  Promotion edits a source file that the API reads at import; it belongs in a"
   warn "  reviewed commit with a test, not in a shell one-liner. The gate above is the"
@@ -410,15 +410,15 @@ mode_activate() {
 # ---------------------------------------------------------------------------- rollback
 mode_rollback() {
   head_ "rollback"
-  say "  active chat default is set in backend/api.py:"
-  grep -nE '^(CHAT_MODEL|DRAFT_MODEL)\s*=' backend/api.py | sed 's/^/    /'
+  say "  active chat default is set in backend/server.py:"
+  grep -nE '^(CHAT_MODEL|DRAFT_MODEL)\s*=' backend/server.py | sed 's/^/    /'
   say ""
-  if [[ -f "backend/api.py.modelops-backup" ]]; then
+  if [[ -f "backend/server.py.modelops-backup" ]]; then
     if (( DRY_RUN )); then
-      dim "  dry run: would restore backend/api.py from backend/api.py.modelops-backup"
+      dim "  dry run: would restore backend/server.py from backend/server.py.modelops-backup"
     else
-      cp "backend/api.py.modelops-backup" backend/api.py
-      dim "  restored backend/api.py from backend/api.py.modelops-backup"
+      cp "backend/server.py.modelops-backup" backend/server.py
+      dim "  restored backend/server.py from backend/server.py.modelops-backup"
       warn "  restart the API -- a file swap is not live until the process re-reads it."
     fi
   else

@@ -26,7 +26,7 @@ of it, what did the last session do, and what is next.*
 
 That question genuinely does not have a home. `.claude/HANDOVER.md` §5 is a hand-maintained
 queue in a Markdown file, and it works, but it drifts. Two drifts found while writing this
-spec, both verified directly: **§0 says eight rack units where `backend/api.py` builds
+spec, both verified directly: **§0 says eight rack units where `backend/server.py` builds
 nine**, and **§5b carries two different items both numbered 10** (HANDOVER lines 1025 and
 1090 — one about CDI and containers, one recording the `deploy.sh` subshell bug as already
 fixed). Neither is serious; both are the signature of a hand-maintained list outgrowing its
@@ -93,7 +93,7 @@ than an accident. `.claude/CLAUDE.md`:
 > RavenCalc (SymPy, CPU) deliberately never takes the lock. That is what lets it
 > speculatively pre-compute while the GPU is loading.
 
-And `backend/api.py`'s unit for it: `bus="cpu"`, `detail="cpu only, never queues"`.
+And `backend/server.py`'s unit for it: `bus="cpu"`, `detail="cpu only, never queues"`.
 
 The Tuner makes the same point from a different direction — `bus="net"`, because *"the work
 is network I/O and muxing, so it never contends for the card,"* and `Unit.bus` carries a
@@ -201,7 +201,7 @@ Routes at **`/api/project/*`**, matching the convention every surface already fo
 `/api/gpuminer/*` — and matching the Backstage plugin shape `.claude/HANDOVER.md` §5 item 13
 records as the direction of travel, where a surface answers at `/api/<pluginId>`.
 
-**Declared BEFORE the `StaticFiles` mount in `backend/api.py`.** That mount is at line 1988,
+**Declared BEFORE the `StaticFiles` mount in `backend/server.py`.** That mount is at line 1988,
 mounted at `/`, and it matches everything — a route declared after it is unreachable. Follow
 the tuner: a self-contained `APIRouter` in `backend/apps/project/routes.py`, included as
 
@@ -218,7 +218,7 @@ off disk by `file_server` and **never reaches the API**. `handle /api/*` already
 `/api/project/*`, so nothing there changes.
 
 **This has shipped broken once.** The four section pages 404'd in production while returning
-200 on `127.0.0.1:8800`, because the routes existed in `backend/api.py` and Caddy answered
+200 on `127.0.0.1:8800`, because the routes existed in `backend/server.py` and Caddy answered
 from the webroot without asking. The rule that follows:
 
 | What you add | Caddyfile change? |
@@ -227,7 +227,7 @@ from the webroot without asking. The rule that follows:
 | `site/project.html`, linked as `/project.html` | **None** — falls through to `file_server`. |
 | An extensionless `/project` | **Yes**, plus three other files. |
 
-The last row costs edits to `tools/build_split.py`, `backend/api.py`, `ops/Caddyfile` **and**
+The last row costs edits to `tools/build_split.py`, `backend/server.py`, `ops/Caddyfile` **and**
 `is_route()` in `scripts/deploy.sh` — which otherwise reports `MISSING project`, because
 pages link `/project` while the file is `project.html`. **Do not add an extensionless route.**
 
@@ -371,7 +371,7 @@ def token_ok(presented: str | None) -> bool:
     return hmac.compare_digest(presented, want)
 ```
 
-with the route dependency mirroring `_asic_auth` in `backend/api.py`: **503** when the
+with the route dependency mirroring `_asic_auth` in `backend/server.py`: **503** when the
 surface is off, **401** on a bad or missing `X-Symoneural-Token`. `X-Sym-Token`, the name it replaced,
 is still accepted.
 
@@ -410,12 +410,12 @@ argument the site makes.
 ### 4.5 Rate limiting is off, so the token is the only gate
 
 Per-endpoint rate limits were **switched off across the API on 2026-08-17 at Garrett's
-instruction**. `backend/api.py` builds `LIMITS` from `SYMONEURAL_RATE_*` environment variables; unset
+instruction**. `backend/server.py` builds `LIMITS` from `SYMONEURAL_RATE_*` environment variables; unset
 yields `(0, 0)`, which means **no limiter object at all** — a surface with no configured
 budget is unmetered rather than getting a zero-capacity bucket, which the code notes would be
 the exact inversion of "no limit."
 
-`backend/api.py` states the consequence plainly for the GPU miner gate: *"The token IS the
+`backend/server.py` states the consequence plainly for the GPU miner gate: *"The token IS the
 gate now… there is no second layer catching a brute-force attempt."* The same is true here.
 
 **This is not an argument to turn rate limiting back on.** Garrett's reasoning is recorded in
@@ -436,7 +436,7 @@ rather than a limiter.
 
 ### 5.1 Naming — and the live defect not to copy
 
-The convention in `backend/api.py`'s `Unit` list: **`label` is the product name and nothing
+The convention in `backend/server.py`'s `Unit` list: **`label` is the product name and nothing
 else.** SyMoNeuRaL Chat, SyMoNeuRaL Image, SyMoNeuRaL Remix, SyMoNeuRaL RavenCalc, SyMoNeuRaL
 Miner, SyMoNeuRaL Miner GPU, SyMoNeuRaL Gateway. The technique goes in `spec`; footprint and
 attribution go in `detail`.
@@ -512,7 +512,7 @@ already says `SQLite · FTS5 · no weights` for anyone who wants the detail.
 
 ### 5.5 The layout cost, which is real
 
-`backend/api.py` currently builds **nine** units — chat, image, remix, ravencalc, train,
+`backend/server.py` currently builds **nine** units — chat, image, remix, ravencalc, train,
 asicminer, gpuminer, tuner, gateway. (`.claude/HANDOVER.md` §0 says eight; `gpuminer` was
 added after that line was written. Counted directly for this spec.)
 

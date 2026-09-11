@@ -28,7 +28,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 # The root calculation has been wrong four times in this repo and it fails silently, because
 # the wrong parent is usually a directory that exists. Asserted, not assumed.
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 
 SRC=/etc/symoneural
 DST="$ROOT/run/config"
@@ -109,7 +109,7 @@ sys.path.insert(0, "apps")
 # pass. This is the whole question: does the file alone carry the configuration?
 for k in [k for k in os.environ if k.startswith(("SYM_", "SYMONEURAL_"))]:
     del os.environ[k]
-import runtimeconfig
+from runtime import runtimeconfig
 names = runtimeconfig.load(warn=False)
 bad = runtimeconfig.rejected()
 print(f"  config dir: {runtimeconfig.config_dir()}")

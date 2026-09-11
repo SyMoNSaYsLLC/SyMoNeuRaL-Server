@@ -7,8 +7,8 @@
 # 1. **Nothing is installed into the serving interpreter.** That interpreter is a Debian
 #    install carrying only what the API needs, and `.claude/settings.local.json` denies
 #    `pip install` against it by design. rembg brings onnxruntime, numba and scikit-image;
-#    those live in `backend/apps/sigils/.venv` and are reached across a subprocess boundary
-#    by `cutout_worker.py`, the same shape `backend/apps/asicminer/probe.py` already uses.
+#    those live in `backend/sigils/.venv` and are reached across a subprocess boundary
+#    by `cutout_worker.py`, the same shape `backend/asicminer/probe.py` already uses.
 #
 # 2. **The weights are fetched here, not at request time.** rembg's default behaviour is to
 #    download a model on first use into `~/.u2net`. A serving path that reaches the network
@@ -28,12 +28,12 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 [ -f "$ROOT/scripts/gpu-governor.sh" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 
-VENV="$ROOT/backend/apps/sigils/.venv"
+VENV="$ROOT/backend/sigils/.venv"
 MODELS="$ROOT/backend/models/rembg"
 MODEL="${1:-u2net}"
 
 # The verified subset. `isnet-general-use` and `silueta` were checked and removed rather than
-# left in: see the block comment in `backend/apps/sigils/cutout_worker.py` for what each check
+# left in: see the block comment in `backend/sigils/cutout_worker.py` for what each check
 # found. Keep this list and that dict identical.
 case "$MODEL" in
   u2net|u2netp) ;;

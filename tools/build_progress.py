@@ -420,7 +420,7 @@ def parse_tasks(text: str, root: Path | None = None) -> list[dict]:
                 # percentage rule below can only ever *set* `done` and never withhold it,
                 # one satisfied `resolve:` closed the task no matter how many `check:`
                 # lines were still red. #74 was archived that way on 2026-08-21 with
-                # `ngrep /studio/comfy -- backend/api.py` failing on three occurrences and
+                # `ngrep /studio/comfy -- backend/server.py` failing on three occurrences and
                 # `grep ComfyUI -- LICENSES.md` never written: a `git mv` of the launcher
                 # satisfied the move, and forty-odd unmet checks went with it. CLAUDE.md
                 # names this exact failure -- "a check that can pass without the work being
@@ -791,7 +791,7 @@ def note_cell(t: dict) -> str:
 
 
 #: A leading repo-relative path in a `from:` or `edit:` line — `GARRETT-REQUESTS.md R-98`,
-#: `symoneural.env — set SPOTIFY_CLIENT_SECRET`, `backend/api.py:1545`.
+#: `symoneural.env — set SPOTIFY_CLIENT_SECRET`, `backend/server.py:1545`.
 DOC_PATH = re.compile(r"^([\w./-]+\.\w+)(?::(\d+))?(.*)$", re.S)
 
 

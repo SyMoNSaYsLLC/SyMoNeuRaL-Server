@@ -121,9 +121,9 @@ def make_root(tag: str) -> pathlib.Path:
     (d / "backend").mkdir()
     (d / "run").mkdir()
     shutil.copy2(GOVERNOR, d / "scripts" / "gpu-governor.sh")
-    # The governor asserts `$ROOT/backend/api.py` exists and exits if not -- the guard that
+    # The governor asserts `$ROOT/backend/server.py` exists and exits if not -- the guard that
     # catches a mis-derived root. Satisfy it honestly rather than removing the check.
-    (d / "backend" / "api.py").write_text("# root marker for tools/lease_proof_2p.py\n")
+    (d / "backend" / "server.py").write_text("# root marker for tools/lease_proof_2p.py\n")
     return d
 
 

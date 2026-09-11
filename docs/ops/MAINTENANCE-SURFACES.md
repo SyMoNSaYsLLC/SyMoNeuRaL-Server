@@ -49,7 +49,7 @@ still listed here is exactly the false claim described above. Note the rack call
 - **`/demo/dispatchos`** — the customer application. This is the one that must never carry the
   banner, and it is the failure this list exists to prevent: Donnie is being sent that URL.
   It is also structurally safe rather than only listed as safe, because it is served by
-  `backend/api.py` and does not load `site/ui.js` at all. The test asserts both.
+  `backend/server.py` and does not load `site/ui.js` at all. The test asserts both.
 - **`/share-dispatchos.html`** — the customer preview. Same reason. It does not load `ui.js`
   either.
 - **`/overview`, `/controlboard`, `/receipts`, `/documentation.html`, `/training.html`,

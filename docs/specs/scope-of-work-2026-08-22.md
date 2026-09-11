@@ -22,7 +22,7 @@ the repo's own standing re-measure instruction.
 | Step | What | Gate |
 |---|---|---|
 | 0.1 | **Gateway fold verification** (R-175). The block is written; the two readings that decide it: `rows: 13` with no top-level `gateway`, and `miner subs` ending `('gateway','net','offline')`; then `frontend.mjs`'s *"gateway page prints the API's own state verbatim"* — the assertion that catches a bad `sub` lookup rendering "not present" to every visitor. | all suites green + that line |
-| 0.2 | **Commit A** — fold: `backend/api.py`, `backend/apps/ROSTER.md`, `test_status_rack.py`, `test_roster.py`, `tools/build_pages.py`, `tests/frontend.mjs`, `site/gateway.html` (generated output ships with its generator — #81's lesson) | `git diff --cached --check` |
+| 0.2 | **Commit A** — fold: `backend/server.py`, `backend/apps/ROSTER.md`, `test_status_rack.py`, `test_roster.py`, `tools/build_pages.py`, `tests/frontend.mjs`, `site/gateway.html` (generated output ships with its generator — #81's lesson) | `git diff --cached --check` |
 | 0.3 | **Commit B** — `docs/studio-harness-gap.md` (#89 → 50%, does not archive) | — |
 | 0.4 | **Commit C** — closure evidence: `PROJECT-TASKS.md`, `review/CLOSED-TASKS.md` | — |
 | 0.5 | **Full-suite re-measure.** CLAUDE.md's own instruction: the 1758 reading has no SHA because the ravencalc repair was uncommitted; `ce4fb27c` landed it. Run both invocations from `backend/`, plus `apps/remix`, stamp the counts with the SHA, extend the ladder. | counts + SHA in CLAUDE.md |

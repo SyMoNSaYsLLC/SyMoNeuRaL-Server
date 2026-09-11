@@ -9,7 +9,7 @@ plus one appended block in `site/symoneural.css`. **`SHELL` is not touched** —
 inherit the change.
 
 > **Before you start — this spec was written against a moving tree.** Concurrent agents were
-> editing `tools/build_pages.py`, `site/chat.html`, `site/console.js`, `backend/api.py` and
+> editing `tools/build_pages.py`, `site/chat.html`, `site/console.js`, `backend/server.py` and
 > `tests/frontend.mjs` while it was being written. Two consequences, both verified at the time
 > of writing:
 > - Every `build_pages.py` line number cited below is **still correct**: the concurrent change
@@ -95,7 +95,7 @@ two sizes only: **9999px** for every circular control, **24px** for the composer
    Apache-2.0 attribution condition. Our model line is a full-width caption that **wraps**
    (`overflow-wrap:anywhere`, no `white-space:nowrap`, no `text-overflow`). Non-negotiable —
    see `.claude/CLAUDE.md` and the comment at `site/symoneural.css:396`.
-2. **The "+" attachment button.** `backend/api.py` exposes `/api/chat`, `/api/image`,
+2. **The "+" attachment button.** `backend/server.py` exposes `/api/chat`, `/api/image`,
    `/api/gen/{name}`, `/api/ravencalc`, `/api/remix`, `/api/status`, `/api/ws` — there is no
    upload endpoint. A button that cannot do anything is a decorative control.
 3. **The search icon and the conversation list.** Verified: no persistence endpoint exists and
@@ -491,7 +491,7 @@ diff" rule is satisfied by construction. Run it twice anyway and diff, then chec
    seventh item — 7 × 46 = 322px tall on desktop, still fine, and 7 × 36 + 6 × 6 = 288px on a
    390px phone, still fits. Re-check the count before you hardcode the list.
 5. **Model attribution string.** I hardcoded `SymonChat S1-7B · Q4_K_M · built on
-   Qwen2.5-7B-Instruct`, mirroring `backend/api.py:1122`. But `api.py` swaps `· Q4_K_M` for
+   Qwen2.5-7B-Instruct`, mirroring `backend/server.py:1122`. But `api.py` swaps `· Q4_K_M` for
    `+ persona adapter` when `training/adapter/symoneural-lora.gguf` exists, and the page would
    then be stale. Options: (a) accept the static string, (b) have `build_pages.py` read the same
    condition at build time, (c) fill it from `/api/status` at runtime. **(b) is cheapest and

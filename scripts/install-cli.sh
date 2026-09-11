@@ -19,7 +19,7 @@ set -euo pipefail
 find_root() {                       # walk up for the marker; never count parents
     local d; d="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     while [ "$d" != "/" ]; do
-        [ -f "$d/backend/api.py" ] && { printf '%s' "$d"; return 0; }
+        [ -f "$d/backend/server.py" ] && { printf '%s' "$d"; return 0; }
         d="$(dirname "$d")"
     done
     echo "install-cli: no repo root above ${BASH_SOURCE[0]}" >&2; return 1

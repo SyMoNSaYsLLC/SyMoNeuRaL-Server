@@ -62,7 +62,7 @@ echo "installing unit -> $UNIT"
 # repo root is substituted at install time from where this script actually lives. That
 # is what lets the checkout be cloned anywhere and still produce a correct unit.
 ROOT="$(cd "$HERE/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 sed "s|@@ROOT@@|$ROOT|g" "$ROOT/ops/symoneural-api.service" > "$UNIT.tmp"
 install -m 644 -o root -g root "$UNIT.tmp" "$UNIT"
 rm -f "$UNIT.tmp"
@@ -92,7 +92,7 @@ if [ -f "$DEMO/run/api.pid" ]; then
   kill "$(cat "$DEMO/run/api.pid")" 2>/dev/null || true
   rm -f "$DEMO/run/api.pid"
 fi
-pkill -f "[p]ython3 $ROOT/backend/api.py" 2>/dev/null || true
+pkill -f "[p]ython3 $ROOT/backend/server.py" 2>/dev/null || true
 sleep 1
 
 systemctl daemon-reload

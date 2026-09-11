@@ -1,0 +1,70 @@
+# TEMPLATE. @@ROOT@@ is replaced with the repository root by ops/install-runtime.sh.
+#
+# SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
+# Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Full licence: @@ROOT@@/LICENSE
+#
+# SyMoNeuRaL Web -- the first-party public HTTP/TLS runtime, replacing the generic vendor
+# caddy.service as the production owner of :80 and :443.
+#
+# ## What this is, precisely
+#
+# `symoneural-web` is a SyMoNeuRaL-authored Go program (web/symoneural-web/main.go) that
+# IMPORTS the Caddy web server as a library. It is not a copy, a symlink or a rename of
+# /usr/bin/caddy -- their hashes differ and the vendor binary is untouched on disk. Caddy
+# remains the work of its own authors under Apache-2.0; the SyMoNeuRaL licence above covers
+# the wrapper only, and THIRD_PARTY_NOTICES.md beside the binary inventories all 157 linked
+# modules.
+#
+# ## Every setting below is copied from the vendor unit on purpose
+#
+# The vendor caddy.service is the behaviour this must preserve, so the differences are the
+# interesting part and there are only four: the ExecStart binary, the explicit
+# WorkingDirectory, the explicit HOME, and Conflicts=. Everything else -- Type=notify, the
+# caddy user, CAP_NET_BIND_SERVICE, the limits, PrivateTmp, ProtectSystem -- is identical,
+# because parity was the acceptance test and a "while we're here" hardening change would
+# have made a failed cutover impossible to attribute.
+[Unit]
+Description=SyMoNeuRaL Web (first-party HTTP/TLS runtime)
+Documentation=file://@@ROOT@@/web/symoneural-web/main.go
+Documentation=file://@@ROOT@@/LICENSE
+After=network.target network-online.target
+Requires=network-online.target
+# Two processes cannot own :80 and :443. `Conflicts=` makes systemd refuse to run both
+# rather than leaving the second one to fail on bind and leave the site half-served -- which
+# is the failure mode a person notices only from the outside.
+Conflicts=caddy.service caddy-api.service
+
+[Service]
+Type=notify
+User=caddy
+Group=caddy
+
+# EXPLICIT and absolute, which the vendor unit leaves unset. An unset WorkingDirectory
+# resolves to `/` for a system service, so `systemctl show -p WorkingDirectory` printed an
+# empty value and nobody could tell "defaulted to /" from "misconfigured". It is set here to
+# the data directory the process actually uses so the answer is legible and so any relative
+# path this runtime were ever handed resolves somewhere owned by it.
+WorkingDirectory=/var/lib/caddy
+
+# Certificate and state compatibility is the whole risk of this cutover. Caddy resolves its
+# data directory from $HOME when XDG_DATA_HOME is unset, so the existing store at
+# /var/lib/caddy/.local/share/caddy -- including the two issued certificates -- is reused
+# rather than re-requested. Set explicitly rather than relying on systemd's implicit HOME.
+Environment=HOME=/var/lib/caddy
+
+ExecStart=@@ROOT@@/web/symoneural-web/build/symoneural-web run --environ --config /etc/caddy/Caddyfile
+ExecReload=@@ROOT@@/web/symoneural-web/build/symoneural-web reload --config /etc/caddy/Caddyfile --force
+
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+# Required to bind 80/443 as a non-root user. Without it the process starts and then cannot
+# listen, which presents as a site outage with a healthy-looking unit.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+SyslogIdentifier=symoneural-web
+
+[Install]
+WantedBy=multi-user.target

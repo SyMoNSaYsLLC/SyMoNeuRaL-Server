@@ -131,7 +131,7 @@ re-date.
 | Deploy script | `/home/google/Symoneural/scripts/deploy.sh` |
 | Webroot (published to) | `/var/www/symoneural` |
 
-**The engine is at `engines/`, NOT `backend/engines/`.** `backend/api.py:183` computes
+**The engine is at `engines/`, NOT `backend/engines/`.** `backend/server.py:183` computes
 `LLM_ENGINE = ROOT / "engines" / …`. An instruction naming `backend/engines/` for the native
 engine is wrong and is corrected wherever it appears.
 

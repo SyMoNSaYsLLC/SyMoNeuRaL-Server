@@ -1,0 +1,35 @@
+# SyMoNeuRaL port registry -- THE source of truth for every listening port on this box.
+#
+# Hand-maintained. Four consumers read it and none of them hardcodes a port:
+#
+#   tools/build_ports.py       -> docs/ops/PORTS.md          (generated, do not hand-edit)
+#   backend/apps/ports.py      -> the API and every surface process
+#   ops/symoneural-surface@.service (via the per-instance env file it generates)
+#   tools/smoke.py             -> which port to test each surface on
+#
+# Why a TSV and not the Markdown table: `ops/Caddyfile`, the unit template and the rack all
+# need this machine-readable, and this repository has already been bitten by a figure that
+# lived only in prose. The Markdown is the rendering, not the record.
+#
+# SERVICE     the systemd unit or process that binds it
+# PORT        the TCP port
+# BIND        127.0.0.1 = loopback only; 0.0.0.0 = every interface (say why in NOTE)
+# SURFACE     the /api/status unit id this port serves, or "-" if it is not a surface
+# DELEGATED   yes = a split-out process owns this surface and backend/api.py must NOT
+#             register its inline route. no = the monolith still answers it.
+#             Flipping this to yes without the process running takes the surface down --
+#             which is why `backend/apps/ports.py` refuses to report a surface delegated
+#             unless the registry ALSO gives it a port.
+# STATE       running | proposed | external
+# NOTE        why it exists, and anything an operator needs before touching it
+SERVICE	PORT	BIND	SURFACE	DELEGATED	STATE	NOTE
+symoneural-web	80	0.0.0.0	-	-	running	Caddy. Public HTTP; redirects to 443.
+symoneural-web	443	0.0.0.0	-	-	running	Caddy. Public HTTPS. Site block is symoneural.com/www only -- there is no localhost site, so https://localhost returns 000 and that is not a fault.
+symoneural-web	2019	127.0.0.1	-	-	running	Caddy admin API. No `admin` directive in the Caddyfile, so this is on by default. A `reload` pushes config through it.
+symoneural-gateway	8000	127.0.0.1	-	-	running	symon-gateway. Forwards /api/{*path} and /v1/* verbatim to the API. Enabled 2026-09-09; it being stopped was the five-day 502.
+symoneural-api	8800	127.0.0.1	-	-	running	backend/api.py. The monolith: every surface not marked DELEGATED above answers here.
+symoneural-llm	8081	127.0.0.1	chat	no	running	llama-server, started by the API under a governor lease. Not an independent unit.
+symoneural-ui	8188	127.0.0.1	studio	no	external	ComfyUI. Hand-started by scripts/symoneural-ui.sh; nothing starts it at boot, and studio reporting offline until then is correct.
+symoneural-ravencalc	8811	127.0.0.1	ravencalc	no	proposed	THE PILOT. Its own uvicorn: backend/apps/ravencalc/service.py. DELEGATED stays `no` until the unit is installed -- flipping it first would 404 the surface on the live monolith.
+sshd	28002	0.0.0.0	-	-	external	OpenSSH on a non-standard port. PermitRootLogin no, fail2ban active. Not first-party; recorded because public exposure is an open question.
+xrdp	28001	0.0.0.0	-	-	external	xrdp (/etc/xrdp/xrdp.ini). Not first-party; same reason as sshd.

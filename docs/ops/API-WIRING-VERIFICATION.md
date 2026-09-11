@@ -21,7 +21,7 @@ python3 -m apps.layer_probe               # the four-layer matrix; exit 0 means 
 **This application can never return `405`, so a GET-only sweep cannot tell a POST route from
 a route that does not exist.**
 
-`backend/api.py` ends its route table with `Mount('', StaticFiles(...))` — route index 145 of
+`backend/server.py` ends its route table with `Mount('', StaticFiles(...))` — route index 145 of
 146, matching every path there is. Starlette resolves in order:
 
 1. `GET /api/chat` reaches the `POST /api/chat` route, which returns a **partial** match

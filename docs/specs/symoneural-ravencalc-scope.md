@@ -115,7 +115,7 @@ unrelated answer** — a wrong result carrying the authority of a check is worse
 `ravencalc` · SyMoNeuRaL RavenCalc · `1U` · **`bus="cpu"`** · `/ravencalc.html` · spec *exact
 symbolic algebra* · detail *cpu only, never queues* · ready when app, import and route tests pass.
 
-`backend/api.py:1974` writes `state="ready"` as a **literal**, not derived from a GPU probe — it is
+`backend/server.py:1974` writes `state="ready"` as a **literal**, not derived from a GPU probe — it is
 the only row that does, and that is the CPU-only claim expressed in code.
 
 **RavenCalc must not be folded into Studio, Chat or Runtime/ModelOps as a hidden subfeature.** It

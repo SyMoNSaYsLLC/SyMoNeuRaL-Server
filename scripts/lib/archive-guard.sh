@@ -26,7 +26,7 @@
 #
 # WHY `.git/` IS ON THE SHAREABLE LIST
 #
-# Rotating a secret does not touch history. `backend/apps/remix/.env` was tracked from
+# Rotating a secret does not touch history. `backend/remix/.env` was tracked from
 # `9b5da84` until it was untracked at `d453c65`, so the pre-rotation values are in a blob
 # that any clone of this repo carries -- including SPOTIFY_CLIENT_SECRET, which is
 # provider-issued, was never rotated, and is still live. A tarball containing `.git` is
@@ -38,7 +38,7 @@
 #
 # WHY THERE IS A CONTENT SCAN AND NOT JUST A PATH LIST
 #
-# A path list catches `backend/apps/remix/.env`. It does not catch `remix.env.backup`,
+# A path list catches `backend/remix/.env`. It does not catch `remix.env.backup`,
 # `.env.old`, or a vault file named `remix.env.pre-rotation-20260820`. The values are what
 # matter, so the scan looks for the assignment shape of the keys this repo actually defines.
 # Key NAMES appear below; no value is ever read into a variable, printed, or logged.
@@ -76,7 +76,7 @@ _AG_GIT_PATTERN='(^|/)\.git/'
 # Key names only. Never a value.
 #
 # `SYMONEURAL_OBS_PASSWORD` joined the list on 2026-08-21 with #96. The path list above
-# already refuses `backend/apps/live/symoneural-live.env`, so this entry is not for the file
+# already refuses `backend/live/symoneural-live.env`, so this entry is not for the file
 # the rule names -- it is for `live.env.old`, `symoneural-live.env.pre-rotation`, and the copy
 # somebody pastes into a scratch note. That gap is the whole reason a content scan exists
 # beside a path list, and adding the key at the same time as the app is the only moment

@@ -26,7 +26,7 @@ PROG="$(basename "$0")"
 ETC=/etc/symoneural
 ENV_FILE="$ETC/accounts.env"
 KEY=SYMONEURAL_SESSION_SECRET
-#: backend/apps/accounts._secret() refuses anything shorter. Kept in sync deliberately by
+#: backend/accounts._secret() refuses anything shorter. Kept in sync deliberately by
 #: `apps/test_accounts_runtime.py`, which reads MIN_SECRET_CHARS out of the module rather than
 #: repeating the number -- a constant duplicated in two files is a constant that will drift.
 MIN_CHARS=32
@@ -134,7 +134,7 @@ cmd_rotate() {
   printf '    sudo -n /usr/local/sbin/symoneural-root restart-api\n'
   printf 'Then confirm with:  sudo %s fingerprint   (expect MATCH on the new value)\n' "$0"
   printf '\nEvery session issued under the old secret stops validating at that restart --\n'
-  printf 'that is the design, not a side effect: backend/apps/accounts stores\n'
+  printf 'that is the design, not a side effect: backend/accounts stores\n'
   printf 'hmac(secret, token) per session row, so rotation IS invalidation.\n'
 }
 

@@ -85,7 +85,7 @@ misclassified**, so the sites are an explicit list and
 | upstream | `bartowski/Qwen2.5-7B-Instruct-GGUF`, `bartowski/Qwen2.5-0.5B-Instruct-GGUF` |
 | licence | Apache-2.0, **texts present on disk** |
 | runtime | llama.cpp-family engine, `-ngl 99` (`api.py:1163`) |
-| set at | `backend/api.py:187`, `:191` |
+| set at | `backend/server.py:187`, `:191` |
 | adapter | `CHAT_ADAPTER`, reported by `/api/status` (`api.py:2355`) |
 | status | **PROD / active** |
 

@@ -57,7 +57,7 @@ come back only through `restore/manifests/BUILD-RECIPES.tsv`.
 | `symoneural-miner/build/kawpowminer/symoneural-miner` | 6.0 MB | 2026-09-04 17:25 | **no** | ELF 64-bit LSB pie executable |
 | `symoneural-ui/main.py` | 24.3 KB | 2026-08-18 18:09 | **no** | Python script |
 | `training/.venv/bin/python` | 6.5 MB | 2026-08-10 08:06 | **no** | ELF 64-bit LSB executable |
-| `backend/api.py` | 233.8 KB | 2026-09-10 23:39 | yes | Python script |
+| `backend/server.py` | 233.8 KB | 2026-09-10 23:39 | yes | Python script |
 | `web/symoneural-web/build/symoneural-web` | 72.7 MB | 2026-08-26 15:13 | **no** | ELF 64-bit LSB executable |
 | `backend/apps/gateway/target/release/symoneural-gateway` | 26.0 MB | 2026-08-26 15:16 | **no** | ELF 64-bit LSB pie executable |
 | `backend/apps/ravencalc/service.py` | 7.1 KB | 2026-09-10 01:42 | yes | Python script |
@@ -67,7 +67,7 @@ come back only through `restore/manifests/BUILD-RECIPES.tsv`.
 | `symoneural-miner-core/bin/symoneural-miner-smoke` | 8.7 KB | 2026-09-08 04:35 | yes | Python script |
 
 The `type` column is `file -bL`'s answer verbatim, including where it is wrong:
-`file(1)` content-sniffs and calls `backend/api.py` JavaScript. That is a property of
+`file(1)` content-sniffs and calls `backend/server.py` JavaScript. That is a property of
 `file`, not of the repository, and it is left uncorrected because a generator that
 quietly overrides its own measurement is worse than one that reports an odd one.
 `symoneural-llm` at 17 KB is the other reading to distrust on sight: it is a shim, and
@@ -129,8 +129,8 @@ the fix would be somebody re-stamping the number.
 
 | runtime | surface | invoked at | lease taken at |
 |---|---|---|---|
-| `symoneural-llm` | chat | `backend/api.py:1424` | `backend/api.py:3013` |
-| `symoneural-diffuse` | image | `backend/api.py:3167` | `backend/api.py:3180` |
+| `symoneural-llm` | chat | `backend/server.py:1424` | `backend/server.py:3013` |
+| `symoneural-diffuse` | image | `backend/server.py:3167` | `backend/server.py:3180` |
 | `symoneural-diffuse` | sigils | `backend/apps/sigils/render.py:193` | `backend/apps/sigils/render.py:89` |
 | `symoneural-listen` | sigils | `backend/apps/sigils/listen.py:190` | — |
 | `symoneural-listen` | voice | `backend/apps/voice/asr.py:254` | — |

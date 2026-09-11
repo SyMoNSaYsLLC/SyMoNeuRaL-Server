@@ -26,7 +26,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from apps import runtimes  # noqa: E402
+from registry import runtimes  # noqa: E402
 
 OUT = ROOT / "docs" / "ops" / "RUNTIMES.md"
 
@@ -192,7 +192,7 @@ def render() -> str:
                  f"{'yes' if m['tracked'] else '**no**'} | {m['kind']} |")
     L += ["",
           "The `type` column is `file -bL`'s answer verbatim, including where it is wrong:",
-          "`file(1)` content-sniffs and calls `backend/api.py` JavaScript. That is a property of",
+          "`file(1)` content-sniffs and calls `backend/server.py` JavaScript. That is a property of",
           "`file`, not of the repository, and it is left uncorrected because a generator that",
           "quietly overrides its own measurement is worse than one that reports an odd one.",
           "`symoneural-llm` at 17 KB is the other reading to distrust on sight: it is a shim, and",
@@ -305,7 +305,7 @@ def render() -> str:
           "Every one of them must be known to `scripts/gpu-governor.sh` — probeable for liveness",
           "(a `surface_pattern()` arm, or `surface_live()`'s explicit `miner` case) *and*",
           "stoppable (an `evict()` arm, or `train`'s deliberate refusal to be evicted).",
-          "`backend/apps/test_runtimes_registry.py` asserts both, and that assertion exists because",
+          "`backend/test_runtimes_registry.py` asserts both, and that assertion exists because",
           "the two-process lease proof established the cost of getting it wrong: `drain()` with no",
           "pattern reads **every** compute context against `DRAIN_FLOOR_MIB=1024`, so a surface the",
           "governor does not recognise falls to the `*)` default and its first acquire behind a",

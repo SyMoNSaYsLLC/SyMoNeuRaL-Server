@@ -496,7 +496,7 @@ DRIVE_MOVES: list[tuple[str, str, str]] = [
 #
 # * `metrics/` (116K) -- section 6.3 calls it "readouts, not build source". It is neither:
 #   15 first-party `readout` SCRIPTS plus a README stating "Nothing here invents a metric:
-#   every field rendered comes from the Status model in backend/api.py". It is operator
+#   every field rendered comes from the Status model in backend/server.py". It is operator
 #   tooling and it is tracked in /yocto's git. Kept.
 # * `controlboard/` (964K) -- the counterpart: 119 authored `launch` entry points, each
 #   saying "Edit freely; this is the entry point, not a wrapper", plus `_dispatch` and a
@@ -1015,7 +1015,7 @@ OPERATIONS.append(dict(
     why="PRESERVED, NOT RETIRED, and the reversal is deliberate. The re-run probes still "
         "show RUNTIME_REQUIRED_LOCAL=0 and UNKNOWN=0, but the instruction to retire was "
         "conditional on this being DEAD reference source and it is not: "
-        "backend/apps/test_vendor_sdks.py (9 passing tests) is a licence-compliance "
+        "backend/test_vendor_sdks.py (9 passing tests) is a licence-compliance "
         "control that re-derives each tree's licence verdict by reading the licence text "
         "out of the vendored copy ON DISK and comparing it to PROVENANCE.md, because a "
         "test that only read the manifest would be asking the tool to confirm its own "

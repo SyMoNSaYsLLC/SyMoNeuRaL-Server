@@ -124,7 +124,7 @@ alive has done nothing.
 ### 1.3 Throttling — account-scoped, and why that is not the limiter he removed
 
 **Rate limiting is off across the entire API today, deliberately, at the owner's
-instruction** (`backend/api.py` ~line 131: "nothing here is to cap what he can send until he
+instruction** (`backend/server.py` ~line 131: "nothing here is to cap what he can send until he
 has decided himself what should pass"). `_rate_for()` reads `SYMONEURAL_RATE_<SURFACE>` and a
 surface with no variable set has no bucket at all.
 
@@ -250,7 +250,7 @@ the *only* 429 the API emits, since the global limiter is off.
 
 ### 3.1 Wiring requirements — the four that have bitten this repo
 
-1. **Routes must be declared BEFORE the `StaticFiles` mount** in `backend/api.py`. The mount
+1. **Routes must be declared BEFORE the `StaticFiles` mount** in `backend/server.py`. The mount
    at `/` matches everything, so a route added after it is unreachable. `api.py` already
    says this at the mount (`~line 1948`) and the section pages shipped broken for a related
    reason.
@@ -275,7 +275,7 @@ the *only* 429 the API emits, since the global limiter is off.
    shipped 404ing in production while the local suite passed 25/25.
    **Keep everything under `/api` and the problem does not exist.**
 
-3. **The route passes the client address in.** `backend/api.py` already has
+3. **The route passes the client address in.** `backend/server.py` already has
    `client_key(request)` (~line 440), which reads `X-Forwarded-For` because Caddy fronts
    everything. Pass its result as `ip=`; do not reimplement header parsing inside the
    accounts module, or the project has two versions of it to drift apart.

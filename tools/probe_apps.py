@@ -114,7 +114,7 @@ DOORS = frozenset({
     "/api/accounts/logout",
     "/api/dispatchos/login", "/api/dispatchos/status", "/api/dispatchos/logout",
     # `/state`, not `/status`. Both spellings were guessed here first and neither
-    # existed on `studio`; `backend/apps/test_probes.py` checks every entry in this
+    # existed on `studio`; `backend/test_probes.py` checks every entry in this
     # set against the live router for that reason, and caught it.
     "/api/studio/state",
 })
@@ -187,10 +187,10 @@ GPU_LAST = {
 #: reporting these two as defects was this tool's own false positive. Each entry here
 #: was read before it was added, so the check keeps its teeth for a NEW one.
 DELIBERATE_404 = {
-    "/api/live/now": "apps/live/routes.py:180-193 — *\"404 when nothing is live, which "
+    "/api/live/now": "live/routes.py:180-193 — *\"404 when nothing is live, which "
                      "is the normal state and not an error\"*; the player branches on "
                      "404-or-200 rather than on a null field",
-    "/api/rack/power": "apps/controlboard/routes.py:8-14 — 404 rather than 403 with the "
+    "/api/rack/power": "controlboard/routes.py:8-14 — 404 rather than 403 with the "
                        "switch disabled, so a visitor learns nothing about an operator "
                        "control being present",
 }
@@ -245,7 +245,7 @@ def call(method: str, path: str, body: dict | None = None,
 
 def route_table() -> list:
     """The real matchable route table, via the module that already owns this job."""
-    from apps import route_matrix
+    from registry import route_matrix
     api = importlib.import_module("api")
     return route_matrix.collect(api.app)
 
@@ -257,7 +257,7 @@ def partition(table: list) -> dict:
     than reimplemented: it carries the `/api/streamer/guide` versus `/api/streamer`
     tie-break that a `startswith` loop gets wrong in prefix order.
     """
-    from apps import appdocs
+    from registry import appdocs
     owned: dict[str, list] = {a.id: [] for a in appdocs.APPLICATIONS}
     unowned: list = []
     for r in table:
@@ -875,7 +875,7 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    from apps import appdocs
+    from registry import appdocs
 
     d: dict = {"measured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                "head": subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],

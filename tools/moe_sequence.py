@@ -59,14 +59,14 @@ HEAD = re.compile(r"ffn_moe_topk-(\d+)\s*=.*=\s*\{(\d+),\s*(\d+)")
 NUMS = re.compile(r"-?\d+\.\d+")
 
 DOMAINS = {
-    "code": [open(ROOT/"backend/apps/gpu.py").read()[:6000],
-             open(ROOT/"backend/apps/telemetry.py").read()[:6000],
+    "code": [open(ROOT/"backend/gpu.py").read()[:6000],
+             open(ROOT/"backend/telemetry.py").read()[:6000],
              open(ROOT/"tools/bench_models.py").read()[:6000]],
     "prose": [open(ROOT/"README.md").read()[:6000],
               open(ROOT/"docs/ops/MEASUREMENTS.md").read()[:6000],
               open(ROOT/"review/bench/README.md").read()[:6000]],
     "technical": [open(ROOT/"scripts/gpu-governor.sh").read()[:6000],
-                  open(ROOT/"backend/apps/fabric_core/expertcache.py").read()[:6000],
+                  open(ROOT/"backend/fabric_core/expertcache.py").read()[:6000],
                   open(ROOT/"tools/moe_sequence.py").read()[:6000]],
 }
 

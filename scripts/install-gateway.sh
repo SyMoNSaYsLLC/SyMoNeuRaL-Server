@@ -13,7 +13,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 UNIT=/etc/systemd/system/symoneural-gateway.service
 
 [ "$(id -u)" -eq 0 ] || { echo "run me with sudo" >&2; exit 1; }
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 
 # ---------------------------------------------------------------- which binary
 #
@@ -39,7 +39,7 @@ BIN="$ART_ABS"
 # out you forgot to build.
 if [ ! -x "$BIN" ]; then
   echo "gateway binary not found at $BIN" >&2
-  echo "build it first:  cd $ROOT/backend/apps/gateway && cargo build --release" >&2
+  echo "build it first:  cd $ROOT/backend/gateway && cargo build --release" >&2
   exit 1
 fi
 
@@ -54,7 +54,7 @@ echo "  unit points at $ROOT"
 # Matched on /proc/<pid>/exe -- the kernel's resolved path to the running image -- and NOT on
 # the command line. This used to be `pkill -x -f "$BIN"`, which missed the very case the line
 # above describes: a gateway started by hand from the repo root has the command line
-# `./backend/apps/gateway/target/release/symon-gateway`, and -x demands the pattern EQUAL the
+# `./backend/gateway/target/release/symon-gateway`, and -x demands the pattern EQUAL the
 # command line, so an absolute pattern never matches a relative invocation. Found live on this
 # box, holding :8000 while the unit sat in a 203/EXEC restart loop.
 #

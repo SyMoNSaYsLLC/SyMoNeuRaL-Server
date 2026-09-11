@@ -547,7 +547,7 @@ CMAKE
 # RavenCalc is the precedent. `-DGGML_CUDA=OFF` below is that decision, written down.
 #
 # WHY IT LIVES HERE RATHER THAN IN contrib/. `contrib/` is banned by
-# `backend/apps/test_references_boundary.py` and, more to the point, `/contrib` is
+# `backend/test_references_boundary.py` and, more to the point, `/contrib` is
 # gitignored -- which is how this capability disappeared the first time, and how the miner's
 # benchmark binary disappeared too. Two instances made it a pattern; building into
 # `engines/` under our own name is the fix for the pattern, not just for this engine.

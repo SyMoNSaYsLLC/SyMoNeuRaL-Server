@@ -1,4 +1,4 @@
-"""Generate `site/project.html` -- the web client for `backend/apps/project`.
+"""Generate `site/project.html` -- the web client for `backend/project`.
 
     python3 tools/build_project.py && python3 tools/build_cachebust.py
 
@@ -15,7 +15,7 @@ strips `?v=` before checking that references resolve, so a destamped page deploy
 quietly and the reference check stays green. Check it directly instead --
 `grep -c '?v=' site/project.html` must be non-zero before calling this surface done.
 
-`backend/apps/project/README.md` closes its "What is NOT implemented" list with, in first
+`backend/project/README.md` closes its "What is NOT implemented" list with, in first
 place, *"There is no page."* The API has been complete and usable from `curl` since it was
 written; nothing rendered it, so the rack tile pointed at `/documentation.html` and the
 surface Garrett asked for -- *"like the claude cowork"* -- was invisible on the site that
@@ -60,7 +60,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 sys.path.insert(0, str(ROOT / "tools"))
 
@@ -205,7 +205,7 @@ def body() -> str:
           <ul class="pj-list" id="pj-files"></ul>
           <form class="pj-row" id="pj-file-form" style="margin-top:10px">
             <input class="pj-grow" id="pj-file-path" maxlength="400"
-                   placeholder="backend/apps/project/README.md" autocomplete="off">
+                   placeholder="backend/project/README.md" autocomplete="off">
             <input class="pj-grow" id="pj-file-note" maxlength="400"
                    placeholder="why it matters (optional)" autocomplete="off">
             <button class="cta" type="submit">Reference</button>
@@ -340,7 +340,7 @@ SCRIPT = r"""<script>
         'Set them in the systemd unit environment and restart the API:</p>' +
         '<p><code>SYMONEURAL_PROJECT_ENABLED=1</code><br><code>SYMONEURAL_PROJECT_TOKEN=' +
         '&lt;secrets.token_urlsafe(32)&gt;</code></p>' +
-        '<p class="pj-note">Read <code>backend/apps/project/README.md</code> first.</p>';
+        '<p class="pj-note">Read <code>backend/project/README.md</code> first.</p>';
       return;
     }
     var msg = (code === 'unauthorized' || !code)

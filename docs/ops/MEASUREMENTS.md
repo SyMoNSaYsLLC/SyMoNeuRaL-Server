@@ -45,7 +45,7 @@ had already failed at least once:
   `apps/streamer/guide` reported `ModuleNotFoundError: No module named 'apps'` as collection
   ERRORS while passing 169/169 with the path set. `backend/conftest.py` now puts `backend/`
   on `sys.path` — which is not a test-only convenience, it is what the service already does:
-  `ExecStart=/usr/bin/python3 .../backend/api.py` makes `backend/` `sys.path[0]` at runtime.
+  `ExecStart=/usr/bin/python3 .../backend/server.py` makes `backend/` `sys.path[0]` at runtime.
 - **the two `--ignore` flags** were an exclusion nobody could see from the failure. The
   reinforce path in the line above had gone stale — that suite moved to
   `apps/studio/plugins/reinforce/tests` — and the exclusion is now enforced by the suite
@@ -422,7 +422,7 @@ service would queue a job on the live GPU. Start the render UI and your own API,
 ```bash
 bash scripts/symoneural-ui.sh start                       # loopback :8188, no lock held
 cd backend && SYMONEURAL_STUDIO_ENABLED=1 SYMONEURAL_STUDIO_TOKEN=devtest \
-    python3 -m uvicorn api:app --port 8876          # a spare port, not the service
+    python3 -m uvicorn server:app --port 8876          # a spare port, not the service
 SYMONEURAL_STUDIO_TOKEN=devtest node tests/studio.mjs http://127.0.0.1:8876
 bash scripts/symoneural-ui.sh stop                        # /free, THEN SIGTERM -- see below
 ```
@@ -455,7 +455,7 @@ throughout. `backend/apps/studio/SMOKE-bench.md` has the three-viewport table an
 break.
 
 The 16/16 that stood at `d3a4040`, `1537262` and `d20e09b` is kept in the ladder above rather
-than overwritten: each was re-run rather than re-dated because `backend/api.py` had changed
+than overwritten: each was re-run rather than re-dated because `backend/server.py` had changed
 underneath it, and studio.mjs runs against `api.py`. Its three `net::ERR_ABORTED` lines are
 labelled optional and 404 upstream at :8188 as well; they are not proxy faults, and #99 checked
 three more of the same class (`api/userdata?dir=workflows`, `?dir=subgraphs`,

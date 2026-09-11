@@ -33,12 +33,12 @@ ROOT="$(cd "$HERE/.." && pwd)"
 # ---------------------------------------------------------------------------------
 # SUPERSEDED 2026-09-04, and delegating rather than deleted.
 #
-# The argument above is still the design and is cited from backend/apps/voice/asr.py and
+# The argument above is still the design and is cited from backend/voice/asr.py and
 # from tools/fork_engines.sh, so it stays here where those citations point. What changed is
 # that every operative line below it was wrong:
 #
 #   * it cloned into `contrib/whisper.cpp`, which `/contrib` gitignores and
-#     backend/apps/test_references_boundary.py bans outright. Building there is how this
+#     backend/test_references_boundary.py bans outright. Building there is how this
 #     capability vanished once already, with nothing in git log to say it had.
 #   * it wrote the weight under its UPSTREAM filename, while both call sites load the house
 #     name `symoneural-listen-base-en.bin`. So even a successful run left ASR dead, and that

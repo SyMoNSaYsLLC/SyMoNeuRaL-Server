@@ -30,7 +30,7 @@ The only targets that are legitimately not files on disk are the four section pa
 `/overview`, `/livestack`, `/controlboard`, `/receipts`), `/docs`, `/openapi.json`, and
 anything under `/api/*` -- all served by FastAPI rather than off the webroot. Adding a fifth
 section means adding it to `ROUTES` here as well as to `ops/Caddyfile`, `tools/build_split.py`
-and `backend/api.py`.
+and `backend/server.py`.
 
 **The failure mode that costs the most is this one, so check `ROUTES` before believing a
 BROKEN line.** A link to a path FastAPI serves and the webroot does not is reported broken here

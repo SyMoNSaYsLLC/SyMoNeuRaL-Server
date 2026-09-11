@@ -33,7 +33,7 @@ visitors. `backend/apps/cryptominer/__init__.py:11` already says the equivalent 
 half: *"It is an operator tool, not a public [one] … there is no honest public version of a live
 panel."*
 
-Measured on this box, 2026-08-22: rack row `backend/api.py:2041` is a **6U unit with three
+Measured on this box, 2026-08-22: rack row `backend/server.py:2041` is a **6U unit with three
 subunits** — `gpuminer`, `asicminer`, `gateway`. So the current rack model *does* fold Gateway
 under Miner, and §4 records that as-is rather than proposing a change.
 
@@ -121,7 +121,7 @@ Holds the GPU. See §5.
   and nothing answers on port 4028. An emulator quoting a hashrate would be inventing one.
 
 ### Gateway · TRON USDT licensing
-Folded under Miner in the current rack model (`backend/api.py:2056`), so it is described as a
+Folded under Miner in the current rack model (`backend/server.py:2056`), so it is described as a
 **Miner-family subunit** — because that is the observable state, not because the code belongs
 there.
 

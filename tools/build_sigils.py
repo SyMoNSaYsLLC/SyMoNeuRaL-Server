@@ -27,7 +27,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 sys.path.insert(0, str(ROOT / "tools"))
 
@@ -44,7 +44,7 @@ API = "/api/sigils"
 # Taken on this box on 2026-08-17. RTX 5070 Ti, 15.92 GiB; i9-10900KF for the CPU work.
 # The renders were driven through this surface's own code path:
 #
-#   python3 - <<'PY'   # backend/apps/sigils/render.py + matte.py, 8 subjects x 2 fields
+#   python3 - <<'PY'   # backend/sigils/render.py + matte.py, 8 subjects x 2 fields
 #   ... render.run(render.build_argv(prompt, raw, seed, steps=4, size=512)) ...
 #
 # Sixteen renders: eight subject types (animal, object, person, dark, light, thin/spindly,

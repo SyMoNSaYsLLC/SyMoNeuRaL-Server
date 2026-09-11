@@ -16,7 +16,7 @@ GPU work.**
 
 | | What it is | Classification |
 |---|---|---|
-| **the live surface** | `/api/remix` in `backend/api.py:2646`, a **client of the Chat surface** | **PROD direction** — preserve current candidate-generation behaviour |
+| **the live surface** | `/api/remix` in `backend/server.py:2646`, a **client of the Chat surface** | **PROD direction** — preserve current candidate-generation behaviour |
 | **the older Spotify DJ app** | `backend/apps/remix/symoneural_dj/`, its own sub-project with `pyproject.toml` and 28 tests | **AUDIT** — stale internal naming and Spotify-service code |
 
 **They fail independently, and the rack row belongs to the first one.** So:

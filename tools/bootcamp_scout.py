@@ -10,7 +10,7 @@ worse than no matrix, because it reads authoritative.
 
 So the depth chart does not hand-write its facts. This script reads them:
 
-  * routes            parsed from the AST of api.py and every backend/apps/*/ module
+  * routes            parsed from the AST of api.py and every backend/*/ module
   * models on disk    scanned, with `general.architecture` read out of each GGUF header
   * serving defaults  read from the assignments in api.py, not from memory
   * env flags         grepped from the modules that gate on them

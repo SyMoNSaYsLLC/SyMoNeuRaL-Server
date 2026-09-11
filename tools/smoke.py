@@ -68,9 +68,9 @@ from pathlib import Path
 def _repo_root() -> Path:
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()

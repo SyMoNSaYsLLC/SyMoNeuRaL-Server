@@ -5,7 +5,7 @@ authoritative for what the project is. `.claude/HANDOVER.md` is the state docume
 `.claude/CLAUDE.md` is the rulebook. This file is an argument to evaluate.
 
 Written 2026-08-17 against the tree at `595835d`. It quotes `file:line`; **re-grep before
-trusting any of them.** That warning is unusually live here: `backend/api.py`,
+trusting any of them.** That warning is unusually live here: `backend/server.py`,
 `scripts/gpu-governor.sh`, `tools/build_pages.py` and `tools/build_training.py` were all
 being edited by other agents while this was written, and the `train` unit's line number moved
 once mid-audit. Every load-bearing claim below was re-verified against the working tree at
@@ -30,7 +30,7 @@ three layers of it:
 | Layer | State |
 |---|---|
 | A page to drive it | **None.** The `train` unit's `href` is `/training.html`, which is the 422 KB **manual**, not a tuning UI. |
-| An API route | **None.** `backend/api.py` defines 14 routes plus one router (`tuner`); not one of them is `/api/train*`. `grep -c "/api/train" backend/api.py` → **0**. |
+| An API route | **None.** `backend/server.py` defines 14 routes plus one router (`tuner`); not one of them is `/api/train*`. `grep -c "/api/train" backend/server.py` → **0**. |
 | A choice of base model | **One.** Exactly one base model on this box can be fine-tuned at all — see §4.1. |
 | A choice of method | **None.** Everything but four values is hardcoded in `training/train_lora.py`. |
 
@@ -80,7 +80,7 @@ docstring with their reasons.
 
 ### 1.2 The API — nothing
 
-`backend/api.py:1355-1363` defines the unit and that is the whole of it:
+`backend/server.py:1355-1363` defines the unit and that is the whole of it:
 
 ```
 Unit(id="train", label="SyMoNeuRaL Quantized Low-Rank Adaptation Tool", slot="2U",
@@ -247,7 +247,7 @@ against it. That test is a deliverable, not a nicety.
 
 - **Its own FastAPI app on port 8000.** `.claude/CLAUDE.md` is explicit that FastAPI does all
   the routing and `api.py` mounts `site/` last. The QLoRA surface must be an `APIRouter`
-  mounted into `backend/api.py`, exactly as `apps/streamer` is at `api.py:1888`. A second origin
+  mounted into `backend/server.py`, exactly as `apps/streamer` is at `api.py:1888`. A second origin
   breaks `console.js`'s WebSocket-with-polling-fallback.
 - **Its licensing/checkpoint-sealing subsystem.** Out of scope, and `docs/specs/symon-ml-review.md`
   §3 already argues client-side DRM has a structural ceiling.
@@ -774,7 +774,7 @@ Not a schedule. This is what has to be true before the next thing can be.
    identical first.
 5. **Model registry + preflight**, `plan_residency`-shaped, `CapabilityWaived` → 501 (§2.1,
    §2.2, §4.4).
-6. **`backend/apps/qlora/` as an `APIRouter`**, mounted in `backend/api.py` beside `tuner`
+6. **`backend/apps/qlora/` as an `APIRouter`**, mounted in `backend/server.py` beside `tuner`
    (`api.py:1888`), token-gated on the ASIC pattern (§7.5). Routes:
    `GET /api/train/models`, `GET /api/train/presets`, `POST /api/train/preflight`,
    `POST /api/train/start`, `GET /api/train/status`, `POST /api/train/stop`.

@@ -25,7 +25,7 @@ Safety, in order:
   * runs `pytest` on **one test id at a time**, so a mutation cannot be credited to an unrelated
     failure.
 
-`backend/apps/test_sabotage_matrix.py` checks this file stays honest -- every anchor still present,
+`backend/test_sabotage_matrix.py` checks this file stays honest -- every anchor still present,
 every test id still real -- without mutating anything, so the suite stays side-effect free.
 """
 from __future__ import annotations

@@ -1,0 +1,82 @@
+# SyMoNeuRaL runtime registry -- THE source of truth for what the first-party runtimes are,
+# what invokes them, what they load, and whether they take the GPU lease.
+#
+# Hand-maintained. `ops/PORTS.tsv` records where surfaces LISTEN; nothing before this file
+# recorded what runs behind them. Written 2026-09-10 because the answer lived in four places
+# -- api.py's argv builders, gpu-governor.sh's case arms, restore/manifests/BUILD-RECIPES.tsv
+# and nobody's head -- and four copies of an answer disagree within six months.
+#
+# Readers:
+#   tools/build_runtimes.py   -> docs/ops/RUNTIMES.md   (generated, do not hand-edit)
+#   backend/apps/runtimes.py  -> the reader every other consumer uses
+#   backend/apps/test_runtimes_registry.py  -> asserts this file agrees with the other two
+#                                              registries and with gpu-governor.sh
+#
+# ## What belongs in here, and what deliberately does not
+#
+# ONLY things somebody DECIDED. Sizes, build dates, resolved library paths and which CUDA
+# minor a binary ends up linking are MEASUREMENTS: they change when anyone rebuilds or runs
+# `update-alternatives`, and a stale measurement sitting in a hand-maintained file is the
+# carried-forward figure this repository has already been bitten by. They are measured fresh
+# by `tools/build_runtimes.py` and dated in `docs/ops/RUNTIMES.md`.
+#
+# For the same reason CALL_SITE stores a FILE and a PATTERN, never a line number. `backend/
+# api.py` is 235 KB and any edit above a pinned line would redden the test, and the fix would
+# be somebody re-stamping the number. The generator finds the current line and prints it, so
+# the "file and line" is always a fresh reading.
+#
+# ## Columns
+#
+# RUNTIME       the runtime's name. NOT unique on its own -- see SURFACE.
+# KIND          engine-cuda | engine-cpu | service-go | service-rust | service-python |
+#               interpreter | cli | not-a-runtime
+# ARTEFACT      repo-relative path to the thing that is executed, or "-" if there is none.
+# MODELS        `;`-separated repo-relative weight paths this runtime is given, or "-".
+#               Taken from the argv the invoker builds; the two GPU engines' rows were also
+#               captured live from /proc on 2026-09-10 and matched.
+# INVOKED_BY    the component that starts it, or "(nothing)" -- which is a finding, not a gap.
+# CALL_SITE     `<repo-relative file>::<literal fragment on the invoking line>`. The pattern
+#               must match EXACTLY ONE line in that file; an ambiguous pattern is an error,
+#               because a pattern that matches two places no longer identifies a call site.
+# INVOCATION    long-lived-child | per-request-subprocess | systemd-unit | hand-started |
+#               detached-job | never
+# PORT          the TCP port it binds, or "-". Must agree with ops/PORTS.tsv.
+# SURFACE       the /api/status unit id, or "-". (RUNTIME, SURFACE) is the primary key: one
+#               binary genuinely serves two surfaces with two governor arms, and collapsing
+#               those into one row is what hid the sigil surface from the eviction logic.
+# LEASE         the governor surface name it acquires under, or "-" for none. A non-"-" value
+#               MUST be handled in scripts/gpu-governor.sh -- see the note below.
+# LEASE_SITE    `<file>::<fragment>` where the lease is taken, or "-".
+# BUILD_RECIPE  the COMPONENT_ID in restore/manifests/BUILD-RECIPES.tsv that says how to
+#               rebuild it. "-" if it is interpreted and has no build. The build command is
+#               NOT duplicated here: that file is its authority.
+# STATE         running | present | proposed | disabled | absent
+# NOTE          what an operator needs before touching it.
+#
+# ## The one rule that is enforced by a test rather than by prose
+#
+# A runtime with a LEASE must have its surface name known to `scripts/gpu-governor.sh` --
+# both in `surface_pattern()` (so the governor can tell whether it is actually alive) and in
+# `evict()` (so the previous tenant can be stopped). The 2026-09-10 two-process lease proof
+# established why: `drain()` with no pattern reads EVERY compute context against
+# DRAIN_FLOOR_MIB=1024, so a surface with no eviction arm falls to the `*)` default and its
+# first acquire behind a resident tenant is REFUSED -- correctly, and it looks like a lock
+# bug. That was written up as "a checklist item for surfaces three onward, and it is not in
+# any document yet". It is now in this one, and in test_runtimes_registry.py.
+RUNTIME	KIND	ARTEFACT	MODELS	INVOKED_BY	CALL_SITE	INVOCATION	PORT	SURFACE	LEASE	LEASE_SITE	BUILD_RECIPE	STATE	NOTE
+symoneural-llm	engine-cuda	symoneural-llm/build/bin/symoneural-llm	backend/models/llm/symon-1.0-7b-q4_k_m.gguf;backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf;training/adapter/symoneural-lora.gguf	symoneural-api	backend/api.py::argv = [str(LLM_ENGINE)	long-lived-child	8081	chat	chat	backend/api.py::lease = gpu.hold("chat")	symoneural-llm	running	LEASE_SITE names the POST /api/chat holder; `gpu.hold("chat")` appears 4 times in api.py (the WebSocket, this one, remix, and the comment in start_llama) and they are the same lease, not four. The ARTEFACT is a 17 KB SHIM, not the engine: it links libsymoneural_llm_server_impl.so with a $ORIGIN RUNPATH and the real code is 23 shared libraries beside it. Sizing this runtime by its binary understates it by three orders of magnitude. Started once and kept, then evicted by whichever surface next wants the card. LLAMA_PORT is a module constant in api.py and does NOT read the environment -- two api.py processes both serving chat would collide on 8081 regardless of the lease.
+symoneural-diffuse	engine-cuda	symoneural-diffuse/build/bin/symoneural-diffuse	backend/models/image/symoneural-image-unet-q4_k.gguf;backend/models/image/symoneural-image-vae.safetensors;backend/models/image/symoneural-image-clip.safetensors;backend/models/image/symoneural-image-t5-q8_0.gguf	symoneural-api	backend/api.py::argv = [str(DIFFUSE_ENGINE)	per-request-subprocess	-	image	image	backend/api.py::async with gpu.hold("image")	symoneural-diffuse	running	Its RUNPATH is the ABSOLUTE /usr/local/cuda-13.3/... rather than $ORIGIN, so which CUDA it links depends on the environment it is started in -- see docs/ops/RUNTIMES.md. Runs directly inside gpu.hold, NOT wrapped in `gpu-governor.sh with`: wrapping it self-deadlocked on a lock the caller already held.
+symoneural-diffuse	engine-cuda	symoneural-diffuse/build/bin/symoneural-diffuse	backend/models/image/symoneural-image-unet-q4_k.gguf;backend/models/image/symoneural-image-vae.safetensors;backend/models/image/symoneural-image-clip.safetensors;backend/models/image/symoneural-image-t5-q8_0.gguf	symoneural-api	backend/apps/sigils/render.py::argv = [str(DIFFUSE_ENGINE)	per-request-subprocess	-	sigils	sigil	backend/apps/sigils/render.py::SURFACE = "sigil"	symoneural-diffuse	running	Same binary and same weights as the `image` row, DIFFERENT governor surface -- deliberately, so the rack can say which of the two holds the card. It has its own eviction arm; folding it into `image` would make the surface invisible in the readout the site exists to be honest about.
+symoneural-listen	engine-cpu	symoneural-listen/build/bin/symoneural-listen	backend/models/whisper/symoneural-listen-base-en.bin	symoneural-api	backend/apps/sigils/listen.py::str(WHISPER),	per-request-subprocess	-	sigils	-	-	symoneural-listen	running	REACHABLE TODAY, ungated: POST /api/sigils/from-audio, and /api/sigils/state reports "audio": true on this box. Takes NO lease and that is the design, not an omission -- CPU transcription can run while another surface holds the card, so a spoken sticker pays only the GPU wait a typed one already pays.
+symoneural-listen	engine-cpu	symoneural-listen/build/bin/symoneural-listen	backend/models/whisper/symoneural-listen-base-en.bin	symoneural-api	backend/apps/voice/asr.py::str(WHISPER_CLI), "-m"	per-request-subprocess	-	voice	-	-	symoneural-listen	disabled	The second path to the same engine. CONFIG-GATED: /api/voice/* is registered but returns a 503 naming SYMONEURAL_VOICE_ENABLED=1 and SYMONEURAL_VOICE_TOKEN, neither of which is set on this box. The code and the weights are both here; a switch is off.
+symoneural-miner	engine-cuda	symoneural-miner/build/kawpowminer/symoneural-miner	-	symoneural-api	backend/apps/cryptominer/__init__.py::wrapped = [str(GOVERNOR), "with", SURFACE, "--", *argv]	detached-job	-	gpuminer	miner	backend/apps/cryptominer/__init__.py::wrapped = [str(GOVERNOR), "with", SURFACE, "--", *argv]	symoneural-miner	present	NOT under build/bin/ like the other three engines -- kawpowminer's CMake puts it under build/kawpowminer/, and a path built from the naming convention finds nothing. Uses the `with` form, which releases from a trap on crash; a bare acquire/release pair does not. CLEAN_BUILD_SUPPORTED=NO in BUILD-RECIPES: rebuilding needs a prebuilt static prefix and a ~40 minute two-stage job.
+symoneural-ui	service-python	symoneural-ui/main.py	-	(hand, via scripts/symoneural-ui.sh)	scripts/symoneural-ui.sh::setsid "$VENV" "$COMFY/main.py"	hand-started	8188	studio	comfy	backend/apps/studio/tools_impl/comfy_tool.py::async with comfy.lease("comfy")	symoneural-ui	present	ComfyUI. Nothing starts it at boot and no unit exists, so `studio` reporting offline is correct rather than a fault. Its eviction arm calls symoneural-ui.sh stop and waits for the DRAIN, never a bare pkill: the process exiting is not the memory coming back.
+training	interpreter	training/.venv/bin/python	-	symoneural-api	backend/apps/studio/plugins/reinforce/jobs.py::[str(GOVERNOR), "with", "train", "--"]	detached-job	-	train	train	backend/apps/studio/plugins/reinforce/jobs.py::[str(GOVERNOR), "with", "train", "--"]	-	present	A separate interpreter, never the serving one: the API runs on the system python3 and this venv carries a cu128 torch stack for Blackwell sm_120. The subprocess boundary is what keeps those apart. UNIQUE among leaseholders: `train` has no eviction arm because evict() REFUSES to evict a live training run (gpu-governor.sh, before the case). That refusal is the arm.
+symoneural-api	service-python	backend/api.py	-	systemd	ops/symoneural-api.service::ExecStart=	systemd-unit	8800	-	-	-	symoneural-api	running	The monolith. Every surface not marked DELEGATED in ops/PORTS.tsv answers here, and it owns the governor lease on behalf of chat, image and sigil. Runs under /usr/bin/python3 with NO LD_LIBRARY_PATH -- which is what decides symoneural-diffuse's CUDA minor.
+symoneural-web	service-go	web/symoneural-web/build/symoneural-web	-	systemd	ops/symoneural-web.service::ExecStart=	systemd-unit	443	-	-	-	symoneural-web	running	First-party Go that imports Caddy as a library. Also binds 80 and 127.0.0.1:2019 -- see ops/PORTS.tsv; this row carries 443 because that is the one a visitor uses. TRAP: a root drop-in overrides ExecStart to serve ops/Caddyfile but leaves ExecReload pointing at /etc/caddy/Caddyfile, so `systemctl reload` silently serves the other copy. RUNBOOK.md section 6.
+symoneural-gateway	service-rust	backend/apps/gateway/target/release/symoneural-gateway	-	systemd	ops/symoneural-gateway.service::ExecStart=	systemd-unit	8000	-	-	-	symoneural-gateway	running	Rust, from 8 .rs files with 362 crates pinned in Cargo.lock -- NOT the thirteen TRON settlement Python modules in the same directory, which are mounted inside the API and are not what the unit runs. Its being stopped was the five-day 502.
+symoneural-ravencalc	service-python	backend/apps/ravencalc/service.py	-	(no unit yet)	backend/apps/ravencalc/service.py::uvicorn.run(app, host="127.0.0.1"	systemd-unit	8811	ravencalc	-	-	-	proposed	THE SPLIT PILOT. Deliberately takes no lease -- that is the property that lets it answer while the card is loading. DELEGATED stays `no` in ops/PORTS.tsv until the unit is installed; flipping it first would 404 the surface on the live monolith.
+symoneural-cli	cli	symoneural-code/bin/symoneural-cli	-	scripts/gpu-governor.sh	scripts/gpu-governor.sh::"$HERE/bin/symoneural-cli" _stop-chat	per-request-subprocess	-	-	-	-	symoneural-cli	running	Not only an operator tool: it is the GRACEFUL half of the governor's `chat` eviction arm, with `pkill -f bin/symoneural-llm` as the ungraceful fallback. Both halves are asserted by apps/test_governor_paths.py, because a `||` fallback hides a broken primary. Installed to ~/.local/bin as a symlink, never a copy -- a copied launcher once diverged and nothing noticed for days.
+symoneural-code	cli	symoneural-code/bin/symoneural-code	-	(hand)	scripts/install-cli.sh::ENTRIES=(symoneural-cli symoneural-code	never	-	-	-	-	symoneural-code	present	Operator-invoked only; nothing in the serving path calls it. Also provides symoneural-discovery.
+symoneural-audit	cli	symoneural-audit/bin/symoneural-audit	-	(hand)	scripts/install-cli.sh::ENTRIES=(symoneural-cli symoneural-code	never	-	-	-	-	symoneural-audit	present	The runtime behind the path-fragility ratchet. Operator-invoked; nothing starts it.
+symoneural-miner-core	not-a-runtime	symoneural-miner-core/bin/symoneural-miner-smoke	-	(nothing)	symoneural-miner-core/bin/symoneural-miner-smoke::def main(argv: list[str]) -> int:	never	-	-	-	-	symoneural-miner-core	present	NOT A RUNNABLE MINER, and the row exists to say so rather than to leave a blank cell. `bin/` holds one file and it is an end-to-end SMOKE -- loopback only, no real mining, a shape-valid wallet that is deliberately not a real address. The clean-room claim covers the Keccak only; docs/ALGORITHM-GAP.md states what is missing. It demonstrates the pipeline, not the algorithm.

@@ -3,7 +3,7 @@
 
     python3 tools/build_exp.py
 
-This is the filename `backend/api.py`'s 404 for `/exp` names, so it is the filename this file
+This is the filename `backend/server.py`'s 404 for `/exp` names, so it is the filename this file
 has to keep: the route reads `site/exp.html` at request time and tells the operator to run this
 generator when it is not there.
 
@@ -55,7 +55,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found at {ROOT}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "site"
 APP = ROOT / "backend" / "apps" / "studio" / "plugins" / "exp"
 sys.path.insert(0, str(ROOT / "tools"))
@@ -208,7 +208,7 @@ def main() -> int:
     # surgery against source this repository is not authorized to read as an editable file
     # would be guessing at code rather than changing it.
     #
-    # The authored source is `backend/apps/.../page.js`, which is outside 6.2's frontend
+    # The authored source is `backend/.../page.js`, which is outside 6.2's frontend
     # allowlist. The outline defect on this page is therefore RECORDED as out-of-scope rather
     # than papered over. See the 6.2 evidence root.
     (SITE / "exp.js").write_text(js)

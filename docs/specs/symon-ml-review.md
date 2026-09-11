@@ -102,7 +102,7 @@ It is a plan for a machine this one no longer is. Building to it would be a regr
 | Blueprint | This repo |
 |---|---|
 | `transformers` + `bitsandbytes` 4-bit NF4 | llama.cpp, GGUF **Q4_K_M**, measured **80–92 tok/s** |
-| `main.py` FastAPI gateway on `127.0.0.1:8800` | `backend/api.py`, already exactly that |
+| `main.py` FastAPI gateway on `127.0.0.1:8800` | `backend/server.py`, already exactly that |
 | `symon_ml/training/tuner.py` QLoRA | `training/train_lora.py`, adapter already built |
 | `~/AI_Local_NVIDIA/llm/…` | `/home/google/Symoneural/…`, and nothing hardcodes its path |
 | `pip install torch --index-url …/cu121` | **cu128 — cu121 does not support Blackwell sm_120** |

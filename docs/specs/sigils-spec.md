@@ -198,7 +198,7 @@ symoneural-image-clip.safetensors          246,144,152 B   0.23 GiB   text encod
 symoneural-image-t5-q8_0.gguf           5,199,794,784 B   4.84 GiB   on CPU -- api.py passes --backend te=cpu
 ```
 
-`/api/image` already fights for this space, and `backend/api.py` documents why: without
+`/api/image` already fights for this space, and `backend/server.py` documents why: without
 `te=cpu` and `--vae-tiling`, "a 768x768 render dies in VAE decode: it wants a 3.7 GB compute
 buffer, and with the 5.2 GB T5 encoder also resident there is nothing left."
 

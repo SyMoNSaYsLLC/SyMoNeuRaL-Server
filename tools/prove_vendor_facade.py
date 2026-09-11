@@ -1,7 +1,7 @@
 """Break each facade on purpose, one break at a time, and record what goes red.
 
 Task #74 item 5. Run it after touching anything under `FACADES` in
-`backend/apps/test_vendor_facade.py`:
+`backend/test_vendor_facade.py`:
 
     python3 tools/prove_vendor_facade.py     # exit 0 iff every break goes red and nothing is left behind
 
@@ -28,31 +28,31 @@ TEST = "apps/test_vendor_facade.py"
 #: (label, file, find, replace) -- each is the single edit that reintroduces one defect.
 BREAKS = [
     ("a shipped module imports the vendor directly",
-     "backend/apps/studio/inference.py",
+     "backend/studio/inference.py",
      "from . import httpclient", "import httpx"),
 
     ("...and the alias form an ngrep cannot see",
-     "backend/apps/studio/inference.py",
+     "backend/studio/inference.py",
      "from . import httpclient", "import httpx as httpclient"),
 
     ("the remix connector reaches past its facade",
-     "backend/apps/remix/symoneural_dj/connectors/spotify.py",
+     "backend/remix/symoneural_dj/connectors/spotify.py",
      "from .. import httpclient", "import httpx as httpclient"),
 
     ("an incomplete re-export -- the `convert_xor` shape",
-     "backend/apps/studio/httpclient.py",
+     "backend/studio/httpclient.py",
      "HTTPStatusError = httpx.HTTPStatusError", "# HTTPStatusError = httpx.HTTPStatusError"),
 
     ("the remix facade drops a name its connectors annotate with",
-     "backend/apps/remix/symoneural_dj/httpclient.py",
+     "backend/remix/symoneural_dj/httpclient.py",
      "Response = httpx.Response", "# Response = httpx.Response"),
 
     ("the facade stops importing its vendor (rule passes, nothing works)",
-     "backend/apps/studio/mcpframework.py",
+     "backend/studio/mcpframework.py",
      "import fastmcp\n", "\n"),
 
     ("an exemption that no longer applies is left in EXEMPT",
-     "backend/apps/ravencalc/ravencalc.py",
+     "backend/ravencalc/ravencalc.py",
      "from sympy.parsing.sympy_parser import", "from symbolic_parser_stub import"),
 ]
 

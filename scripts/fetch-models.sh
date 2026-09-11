@@ -12,7 +12,7 @@
 # HOUSE NAMES. Nothing under backend/models/ keeps an upstream filename. What lands on disk
 # is symon-1.0-* for the language tiers and symoneural-image-* / symoneural-listen-* for the
 # rest; backend/models/PROVENANCE.json records which upstream artefact each one came from,
-# and backend/apps/test_weight_names.py fails if a file appears that is not in the manifest
+# and backend/test_weight_names.py fails if a file appears that is not in the manifest
 # or not named to the rule. The upstream URLs below are the one thing that cannot be
 # rebranded -- you cannot fetch from a repository without naming it -- and the manifest is
 # where that mapping is kept honest.
@@ -27,7 +27,7 @@ set -euo pipefail
 # it fails silently, because the wrong parent is usually a directory that exists.
 # The guard below turns that into an immediate, obvious failure.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-[ -f "$ROOT/backend/api.py" ] || { echo "repo root not found at $ROOT (expected backend/api.py)" >&2; exit 1; }
+[ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
 M="$ROOT/backend/models"
 verify_sha256() { # file expected; an empty expectation preserves legacy non-image behavior
   local file="$1" expected="${2:-}" actual

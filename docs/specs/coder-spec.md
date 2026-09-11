@@ -93,14 +93,14 @@ reason the file sizes below are labelled as file sizes and nothing more.
 
 ### 2.2 A number that is about to be wrong, and why this section exists
 
-The working-tree copy of `backend/api.py` starts `llama-server` with `-c 65536` and carries
+The working-tree copy of `backend/server.py` starts `llama-server` with `-c 65536` and carries
 a comment projecting that this takes chat *"from ~5 GB to ~8.7 GB of 15.92 GiB"*.
 
 **Do not build headroom arithmetic on 8.7 GB.** Three checks, all run for this spec:
 
-1. `git show HEAD:backend/api.py` starts llama-server with **`-c 8192`**. The 65536 change is
-   **uncommitted** — `git diff --stat` shows `backend/api.py` modified by 274 lines.
-2. `backend/api.py` was last written at **09:12:04**. `symoneural-api.service` last started
+1. `git show HEAD:backend/server.py` starts llama-server with **`-c 8192`**. The 65536 change is
+   **uncommitted** — `git diff --stat` shows `backend/server.py` modified by 274 lines.
+2. `backend/server.py` was last written at **09:12:04**. `symoneural-api.service` last started
    at **09:00:29**. The running service therefore predates the edit and is serving `-c 8192`.
 3. The 5.4 GiB measurement in §2.1 was taken at **08:39**, also under `-c 8192`.
 
@@ -296,7 +296,7 @@ onto the one card. So:
 - Coder acquires as `gpu-governor.sh with coder -- <cmd>` so the lock is always released,
   including on crash.
 - **Coder holds the lock for a job, never for the session.** `.claude/CLAUDE.md` is explicit
-  and `backend/api.py` already learned this the hard way — holding across a process lifetime
+  and `backend/server.py` already learned this the hard way — holding across a process lifetime
   once locked the CLI out until the acquire timeout. An agentic session lasts minutes to
   hours; holding the card for all of it would take the public site down for the duration.
   The lock is taken per model call and released on the token stream ending.
@@ -312,7 +312,7 @@ Routes go at `/api/coder/*`, matching the Backstage-shaped convention
 `.claude/HANDOVER.md` §5 item 13 records and that `/api/chat`, `/api/image`,
 `/api/ravencalc`, `/api/tuner/*`, `/api/asicminer/*` and `/api/gpuminer/*` already follow.
 
-**They must be declared BEFORE the `StaticFiles` mount** in `backend/api.py`. That mount is
+**They must be declared BEFORE the `StaticFiles` mount** in `backend/server.py`. That mount is
 at line 1988 and it is at `/`, so it matches everything; a route declared after it is
 unreachable. `app.include_router(tuner.router, prefix="/api/tuner")` at line 1937 is the
 worked example, and its comment says exactly this.
@@ -333,7 +333,7 @@ Applied here:
 | An extensionless `/coder` | **Yes** — and three other files. |
 
 That last row is the expensive one: an extensionless route means editing
-`tools/build_split.py`, `backend/api.py`, `ops/Caddyfile`, **and** `is_route()` in
+`tools/build_split.py`, `backend/server.py`, `ops/Caddyfile`, **and** `is_route()` in
 `scripts/deploy.sh` (which otherwise reports `MISSING coder`, because pages link `/coder`
 while the file is `coder.html`). **Do not add an extensionless route for this surface.**
 
@@ -441,12 +441,12 @@ already exists — xrdp, or an SSH tunnel — which keeps the "no public route" 
 The pattern is already in the repo, in `backend/apps/asicminer/__init__.py`: off unless
 `SYMONEURAL_ASIC_ENABLED=1` **and** `SYMONEURAL_ASIC_TOKEN` are both set, `enabled()` requiring both,
 `token_ok()` using `hmac.compare_digest` so a wrong token cannot be found a character at a
-time, and `_asic_auth()` in `backend/api.py` answering 503 when the surface is off and 401
+time, and `_asic_auth()` in `backend/server.py` answering 503 when the surface is off and 401
 on a bad token. It fails closed on a misconfiguration, which is the right default for a box
 serving the public.
 
 **It is a good pattern and it is still not sufficient here**, for a reason that is about the
-capability rather than the gate. `backend/api.py`'s own comment on the GPU miner gate gets
+capability rather than the gate. `backend/server.py`'s own comment on the GPU miner gate gets
 at it: an unauthenticated route there would let a stranger evict chat and hold the GPU — "a
 denial of service with a wallet address attached." Coder is a strict escalation of that. The
 worst case for a leaked ASIC token is rig telemetry and a scan of a private range. The worst
@@ -508,7 +508,7 @@ local-only recommendation does not depend on the RCE argument alone.
 ### 4.5 Rate limiting is off, so a token would be the only gate
 
 Per-endpoint rate limits were **switched off across the API on 2026-08-17 at Garrett's
-instruction**. `backend/api.py` builds `LIMITS` from `SYMONEURAL_RATE_*` environment variables and
+instruction**. `backend/server.py` builds `LIMITS` from `SYMONEURAL_RATE_*` environment variables and
 unset means `(0, 0)`, which means no limiter object at all. Nothing is metered right now.
 
 The code is explicit about the consequence, in the GPU miner gate: *"The token IS the gate
@@ -518,7 +518,7 @@ no second layer catching a brute-force attempt."*
 For option (b) this is decisive: there would be exactly one gate, no lockout, no backoff, and
 no throttle on guessing. `hmac.compare_digest` defeats timing attacks but does nothing about
 volume. **This is not an argument for turning rate limiting back on** — Garrett's reasoning
-holds, and `backend/api.py` records it: on one GPU a rate limit never bought throughput, the
+holds, and `backend/server.py` records it: on one GPU a rate limit never bought throughput, the
 one-deep queue rations the card by itself. It is an argument that option (b) is thinner than
 it looks. Option (a) is unaffected: there is nothing to brute-force.
 
@@ -528,7 +528,7 @@ it looks. Option (a) is unaffected: there is nothing to brute-force.
 
 ### 5.1 Naming — get this right, because a live example is wrong
 
-The convention, from the `Unit` list in `backend/api.py`: **`label` is the product name and
+The convention, from the `Unit` list in `backend/server.py`: **`label` is the product name and
 nothing else.** SyMoNeuRaL Chat, SyMoNeuRaL Image, SyMoNeuRaL Remix, SyMoNeuRaL RavenCalc,
 SyMoNeuRaL Miner, SyMoNeuRaL Miner GPU, SyMoNeuRaL Gateway. The technique goes in `spec`,
 the footprint and attribution in `detail`.
@@ -581,7 +581,7 @@ GPU; `gpu` is both correct and free.
 **`offline`**, and it must be *computed*, not hardcoded — the same way `gateway_state`,
 `asic_state` and `gpuminer_state` already are.
 
-The rule this follows is the one already applied to the GPU miner in `backend/api.py`:
+The rule this follows is the one already applied to the GPU miner in `backend/server.py`:
 `offline` until a miner binary is configured, because there is none on this box and nothing
 here has ever hashed, so any hashrate figure would be invented. Coder is in exactly that
 position: no weights, no process, nothing has ever run.
@@ -609,7 +609,7 @@ entire spec; pointing it at nothing breaks the pattern. The proposal above sends
 different kind of destination from every neighbour, and a visitor who clicks expecting a
 surface gets a paragraph.
 
-**Problem two: the rack is already over budget.** `backend/api.py` currently builds **nine**
+**Problem two: the rack is already over budget.** `backend/server.py` currently builds **nine**
 units — chat, image, remix, ravencalc, train, asicminer, gpuminer, tuner, gateway. (Note:
 `.claude/HANDOVER.md` §0 still says eight; `gpuminer` was added after that line was written.
 Counted directly for this spec.) `.claude/HANDOVER.md` §3.0 measures Live stack as fitting at
@@ -659,7 +659,7 @@ and the suite is green — not when the agent has produced text that resembles a
 
 ### 7.1 The agent is asked to modify the running API — the required scenario
 
-Garrett asks Coder to add an endpoint. It edits `backend/api.py`. Four things can happen, in
+Garrett asks Coder to add an endpoint. It edits `backend/server.py`. Four things can happen, in
 increasing order of nastiness:
 
 **(1) It writes a syntax error.** The running service is unaffected — a running Python
@@ -669,7 +669,7 @@ the agent's own loop.
 
 **(2) It adds a route after the `StaticFiles` mount.** The mount is at `/` and matches
 everything, so the route is silently unreachable — no error, no log line, a 404 that looks
-like a typo. `backend/api.py` warns about this in two places and a 7B will still do it,
+like a typo. `backend/server.py` warns about this in two places and a 7B will still do it,
 because the file is 1,992 lines and the mount is at the bottom. **Detection:** assert the
 route answers, not that the code contains it.
 
@@ -699,7 +699,7 @@ machine is live.
 1. **Per-job locking** (§3.1) — the lock is held for a model call, not a session. This is
    already the rule and it mostly solves the problem: between calls the agent is thinking,
    editing files, and running tests, none of which touch the card.
-2. **Coder yields, like the GPU miner.** `backend/api.py` describes `gpuminer` as the
+2. **Coder yields, like the GPU miner.** `backend/server.py` describes `gpuminer` as the
    opposite of `train`: it yields to everything, because no hashrate is worth making a
    visitor wait. The same reasoning applies — no refactor is worth a dead chat surface. The
    cost is that a Coder session gets slower when the site is busy, which is correct.
@@ -721,7 +721,7 @@ machinery for it.**
   full stop — the staging `site/` and the live `/var/www/symoneural` are different
   directories and only root crosses between them.
 - **The agent cannot restart the service.** `sudo systemctl restart symoneural-api` needs
-  root. Combined with §7.1(1), a bad edit to `backend/api.py` is **inert** until a restart
+  root. Combined with §7.1(1), a bad edit to `backend/server.py` is **inert** until a restart
   that someone with root chooses to run.
 - **`./scripts/symoneural.sh off` is the kill switch**, and it frees the card too.
 - **`node tests/frontend.mjs` is the gate before that restart** — 26/26 locally and against
@@ -867,7 +867,7 @@ Do not resolve this by picking whichever label is closer to hand. Decide the mod
   `miner)` arm, not a coder one. So §3.1's recommendation stands as work to do, and the
   collateral-kill hazard is live: a coder `llama-server` would today hit the `*)` default and
   be pkilled as part of evicting something else.
-- **`backend/api.py` has no coder route and no coder `Unit`**, and `ops/Caddyfile` has no
+- **`backend/server.py` has no coder route and no coder `Unit`**, and `ops/Caddyfile` has no
   coder reference. Nothing is wired. The label `SyMoNeuRaL Coder` is unclaimed, so §5.1's
   naming prescription is still a specification rather than a rename.
 

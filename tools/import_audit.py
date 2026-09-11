@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Derive the serving path's real third-party dependency set from the source, not from a list.
 
-Commissioning found that nothing in this repo records what `backend/api.py` needs to run
+Commissioning found that nothing in this repo records what `backend/server.py` needs to run
 (`api.py`'s own docstring calls the absence deliberate: the OS packages are simply expected
 to be there). A hand-written list of imports is the same guesswork one step removed -- it
 goes stale the first time somebody adds an import. So this parses every module instead.
@@ -36,15 +36,15 @@ from pathlib import Path
 def _repo_root() -> Path:
     """Find the root by its marker, not by counting parents.
 
-    `backend/apps/test_path_fragility.py` enforces this and explains why: a `parents[N]`
+    `backend/test_path_fragility.py` enforces this and explains why: a `parents[N]`
     root is silent when it is wrong, because the wrong parent usually exists too. `api.py`'s
     own header records having got that wrong four separate times.
     """
     here = Path(__file__).resolve()
     for cand in (here, *here.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
-    raise SystemExit(f"repo root not found above {here}: no backend/api.py marker")
+    raise SystemExit(f"repo root not found above {here}: no backend/server.py marker")
 
 
 ROOT = _repo_root()
@@ -64,9 +64,9 @@ def _pruned(name: str) -> bool:
     return name in PRUNE_DIRS or name.startswith(".")
 
 
-# `backend/` is `sys.path[0]` at runtime because the unit runs `python3 backend/api.py`, and
+# `backend/` is `sys.path[0]` at runtime because the unit runs `python3 backend/server.py`, and
 # api.py itself inserts these two. A name resolvable under any of them is first-party.
-FIRST_PARTY_ROOTS = ("backend", "backend/apps", "backend/apps/ravencalc", "tools", ".")
+FIRST_PARTY_ROOTS = ("backend", "backend", "backend/ravencalc", "tools", ".")
 
 
 @dataclass
@@ -172,11 +172,11 @@ def _handler_catches_import_error(h: ast.ExceptHandler) -> bool:
                for n in names)
 
 
-# The API process is `python3 backend/api.py`, so `backend/` is sys.path[0]; api.py then
+# The API process is `python3 backend/server.py`, so `backend/` is sys.path[0]; api.py then
 # inserts `apps/ravencalc` and `apps`. Nothing puts the per-app `.venv` directories on the
 # path, which is why a module resolvable inside `apps/studio/.venv` is NOT resolvable to the
 # process that serves. These three roots are the serving path, literally.
-RUNTIME_PATH = ("backend", "backend/apps/ravencalc", "backend/apps")
+RUNTIME_PATH = ("backend", "backend/ravencalc", "backend")
 
 
 def resolve_local(dotted: str) -> Path | None:
@@ -190,8 +190,8 @@ def resolve_local(dotted: str) -> Path | None:
         mod = base.joinpath(*parts[:-1]) / f"{parts[-1]}.py"
         if mod.is_file():
             return mod
-        # `backend/apps/` carries no __init__.py -- it is a namespace package, and
-        # `from apps import streamer` (api.py:112) resolves against it only because
+        # `backend/` carries no __init__.py -- it is a namespace package, and
+        # `import streamer` (api.py:112) resolves against it only because
         # `backend/` is sys.path[0]. Treating it as unresolvable reports the repo's own
         # package tree as a missing third-party dependency.
         if pkg.is_dir() and any(pkg.glob("*.py")):
@@ -318,11 +318,11 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--base", default="backend", help="subtree to scan (default: backend)")
     ap.add_argument("--graph", action="store_true",
-                    help="only what backend/api.py transitively loads at import time")
+                    help="only what backend/server.py transitively loads at import time")
     args = ap.parse_args(argv)
 
     if args.graph:
-        entry = ROOT / "backend" / "api.py"
+        entry = ROOT / "backend" / "server.py"
         mods, third = reachable_from(entry)
         by_name: dict[str, dict] = {}
         for t in third:

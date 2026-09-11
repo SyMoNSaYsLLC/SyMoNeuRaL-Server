@@ -112,7 +112,7 @@ only**:
 
 | Unit | Reference |
 |---|---|
-| `symoneural-api.service` | `WorkingDirectory=/home/google/Symoneural`, `ExecStart=…/backend/api.py`, governor calls in `ExecStartPre`/`ExecStopPost` |
+| `symoneural-api.service` | `WorkingDirectory=/home/google/Symoneural`, `ExecStart=…/backend/server.py`, governor calls in `ExecStartPre`/`ExecStopPost` |
 | `symoneural-gateway.service` | `ExecStart=…/backend/apps/gateway/target/release/symoneural-gateway` |
 | `symoneural-web.service` | `ExecStart=…/web/symoneural-web/build/symoneural-web` |
 | `symoneural-progress.service` (user) | `ExecStart` of `tools/build_intake.py`, `archive_tasks.py`, `build_progress.py`; `ReadWritePaths` |
@@ -201,7 +201,7 @@ documentation, **do not exist anywhere on the live filesystem**:
 |---|---|
 | `training/adapter/adapter_model.safetensors` | absent |
 | `training/adapter-qwen36/adapter_model.safetensors` | absent |
-| `training/adapter/symoneural-lora.gguf` | absent — **and this is `CHAT_ADAPTER` at `backend/api.py:237`** |
+| `training/adapter/symoneural-lora.gguf` | absent — **and this is `CHAT_ADAPTER` at `backend/server.py:237`** |
 | `run/reinforce/adapters/*/adapter_model.safetensors` | absent |
 
 Verified properly rather than by a single suppressed `find`: `training/adapter/` and
@@ -521,7 +521,7 @@ carrying a precondition and a rollback, and no wildcards anywhere.
 Four findings materially changed the plan and would each have caused damage if missed:
 
 1. **`Downloads/symoneural-vault-2026-08-19-v2.tar.gz` is the only located copy of the
-   persona LoRA weights and of `CHAT_ADAPTER`** (`backend/api.py:237`). Those files exist
+   persona LoRA weights and of `CHAT_ADAPTER`** (`backend/server.py:237`). Those files exist
    nowhere on the live filesystem. It sits in the directory most likely to be bulk-deleted,
    and it is now manifest row 0.
 2. Two **registered git worktrees** masquerading as build clutter — a plain `rm -rf` would

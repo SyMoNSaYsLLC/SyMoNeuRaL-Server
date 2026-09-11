@@ -31,7 +31,7 @@
 #
 # It will not enable remote access to anything. SYMONEURAL_CODER_ALLOW_REMOTE and
 # SYMONEURAL_RACK_ALLOW_REMOTE are never written here, so both surfaces stay loopback-only, which
-# is the shape their own documentation argues for: backend/apps/coder/README.md is explicit
+# is the shape their own documentation argues for: backend/coder/README.md is explicit
 # that an agent which can develop the site is arbitrary code execution on the box that
 # serves the public internet. Opening either one to the network is a deliberate act and
 # should look like one -- add the line by hand, having decided to.
@@ -128,7 +128,7 @@ done
 # address is not guessable, so a missing one is a hard stop rather than a default.
 #
 # These are the only three names accepted, and TRON's own (nile, shasta, mainnet) are not
-# among them: backend/apps/gateway/chain.py holds the one-way map and refuses anything outside
+# among them: backend/gateway/chain.py holds the one-way map and refuses anything outside
 # it, so writing `nile` here would produce a surface that reads `offline` with a message
 # listing these three. One vocabulary, so a value that looks configured cannot mean a chain
 # nobody chose. The rack still prints TRON's name for the chain it is actually on.
@@ -191,7 +191,7 @@ set_kv() {
   esac
 }
 
-# secrets.token_urlsafe(32), exactly as backend/apps/project/store.py instructs -- "generate
+# secrets.token_urlsafe(32), exactly as backend/project/store.py instructs -- "generate
 # it with secrets.token_urlsafe(32) and never by hand". The system interpreter, since that is
 # the serving path's interpreter and no virtualenv is involved.
 gen_token() { /usr/bin/python3 -c 'import secrets; print(secrets.token_urlsafe(32))'; }
@@ -210,7 +210,7 @@ for pair in "$WANT_CODER CODER" "$WANT_PROJECT PROJECT" "$WANT_RACK RACK" \
   set_kv "SYMONEURAL_${name}_TOKEN" "$(gen_token)"
 done
 # Not a token, so it is printed rather than reported as "generated", and it goes in the same
-# 0600 file anyway rather than an `Environment=` line -- backend/apps/asicminer/README.md:65
+# 0600 file anyway rather than an `Environment=` line -- backend/asicminer/README.md:65
 # suggests a drop-in for it, which is fine for a rig address and wrong for the token beside it.
 # One file, one place to look. Empty stays empty: `rigs()` at asicminer/__init__.py:80 treats
 # unset and "" identically, so there is nothing to write when the operator gave no addresses.
@@ -218,7 +218,7 @@ done
 #
 # Every surface in that loop pairs an ENABLED flag with a generated bearer token because none
 # of them has a login -- the token IS their authentication. DispatchOS has real accounts with
-# scrypt password hashes (backend/apps/dispatchos/store.py), so a shared bearer token beside
+# scrypt password hashes (backend/dispatchos/store.py), so a shared bearer token beside
 # them would be a second and weaker credential for the same data, and one that would have to
 # be handed to a customer on top of the password he is already being given.
 #
@@ -229,7 +229,7 @@ done
 # Like dispatchos, a switch and nothing else -- this surface mints no shared bearer token.
 # It is reachable only from a loopback peer with no x-forwarded-* header (api.py
 # `_require_local`), and unlike `coder` it has no ALLOW_REMOTE escape hatch, so there is no
-# network path for a secret to defend. See backend/apps/coders/__init__.py for that reasoning.
+# network path for a secret to defend. See backend/coders/__init__.py for that reasoning.
 if [ "$WANT_CODERS" -eq 1 ]; then
   set_kv SYMONEURAL_CODERS_ENABLED 1
 fi
@@ -250,7 +250,7 @@ fi
 # ## The gated surfaces this script deliberately does not switch
 #
 # Eight env-gated surfaces have no arm here. Asic gained one above, because its rack row was in
-# exactly the state Studio's was -- SubUnit `asicminer` (backend/api.py:1655) told an operator
+# exactly the state Studio's was -- SubUnit `asicminer` (backend/server.py:1655) told an operator
 # to "set SYMONEURAL_ASIC_ENABLED=1 ... and SYMONEURAL_ASIC_TOKEN" and nothing sanctioned would
 # do it. News then joined the list -- it was always in this state and the test could not see
 # it, because the test's regex looked for the `SYM_` prefix and news was the first surface
@@ -264,7 +264,7 @@ fi
 #                 SYMONEURAL_SESSION_SECRET of at least MIN_SECRET_CHARS=32 (:139), and minting a
 #                 SYMONEURAL_ACCOUNTS_TOKEN here would write a key nothing reads. Its unit_state()
 #                 at :865 says "if this ever becomes a rack unit" -- prospective, no row.
-#   voice      -- backend/api.py:2317-2319 says in the source that the row is deliberately
+#   voice      -- backend/server.py:2317-2319 says in the source that the row is deliberately
 #                 absent because href /voice.html does not exist. Switching it on would light
 #                 nothing an operator can see; the page comes first, by that comment's rule.
 #   exp        -- measured, not assumed: the row reads `queued` with the switch set and with
@@ -382,5 +382,5 @@ printf '\nDone. Tokens are in %s (root, 0600). Read one with:\n' "$ENV_FILE"
 printf '    sudo sed -n "s/^SYMONEURAL_PROJECT_TOKEN=//p" %s\n' "$ENV_FILE"
 printf '\nBoth Coder and Rack remain loopback-only: SYMONEURAL_*_ALLOW_REMOTE is deliberately unset.\n'
 printf 'Studio is not loopback-gated in the same way -- it has no ALLOW_REMOTE switch, so its\n'
-printf 'token is the whole gate. backend/apps/studio/__init__.py:42 is explicit that\n'
+printf 'token is the whole gate. backend/studio/__init__.py:42 is explicit that\n'
 printf 'the surface can write to the host. Treat SYMONEURAL_STUDIO_TOKEN accordingly.\n'

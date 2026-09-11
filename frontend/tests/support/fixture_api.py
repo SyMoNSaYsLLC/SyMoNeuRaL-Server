@@ -7,12 +7,12 @@ Why a fixture rather than the running API on :8800:
     is a test that corrupts the thing it is checking;
   - the slice test needs to sign in, which means knowing a password, and the live passwords
     are Garrett's and were handed over out of band;
-  - `backend/api.py` boots the whole box -- engines, the governor, the rack -- and none of
+  - `backend/server.py` boots the whole box -- engines, the governor, the rack -- and none of
     that is under test here.
 
-So this mounts the REAL routers (`apps.dispatchos.router` and `ui_router`, the same objects
-`backend/api.py` mounts) against a throwaway SQLite file, exactly as
-`backend/apps/test_dispatchos.py` does. The contract under test is real; only the data and
+So this mounts the REAL routers (`dispatchos.router` and `ui_router`, the same objects
+`backend/server.py` mounts) against a throwaway SQLite file, exactly as
+`backend/test_dispatchos.py` does. The contract under test is real; only the data and
 the process are disposable.
 
     python3 fixture_api.py --port 8811 --db /tmp/x/d.db
@@ -56,8 +56,8 @@ def main() -> int:
     import uvicorn
     from fastapi import FastAPI
 
-    from apps import dispatchos
-    from apps.dispatchos import store
+    import dispatchos
+    from dispatchos import store
 
     store.init_db()
     # `seed_demo_users` is not used: it only knows the four real account names, and seeding

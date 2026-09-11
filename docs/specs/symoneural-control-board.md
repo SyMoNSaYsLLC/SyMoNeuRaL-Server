@@ -16,7 +16,7 @@ Related to Live Stack, not identical to it: **Live Stack reads, Control Board ac
 > *"If a unit is powered off through the control board, HTTP work for that surface must be
 > refused."* — and *"a UI button must not lie about actual backend behaviour."*
 
-**This is implemented.** `RackPowerGate` in `backend/api.py:1415` is **raw ASGI middleware, on
+**This is implemented.** `RackPowerGate` in `backend/server.py:1415` is **raw ASGI middleware, on
 purpose** (`:49` says so), installed at `:1486`. Per request it resolves
 `rackpower.unit_for_path(...)` and, if `rackpower.is_disabled(unit_id)`, refuses the work
 (`:1471-1472`). The module is `apps.controlboard`, imported under the name `rackpower` at `:158`.
@@ -72,9 +72,9 @@ deliberate — deriving one from the other would delete the check.
 
 | Piece | Location |
 |---|---|
-| rack assembly | **inline in `backend/api.py`** (`:1955` onward) |
+| rack assembly | **inline in `backend/server.py`** (`:1955` onward) |
 | the switch | `backend/apps/controlboard/` |
-| the gate | `RackPowerGate`, `backend/api.py:1415-1486` |
+| the gate | `RackPowerGate`, `backend/server.py:1415-1486` |
 | the page | generated into `site/index.html` by `tools/build_console.py` |
 | the live view | browser script over WebSocket |
 

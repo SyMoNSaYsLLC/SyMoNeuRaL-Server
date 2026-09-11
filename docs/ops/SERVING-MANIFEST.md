@@ -13,7 +13,7 @@ serving dependencies changed and that is the news. If only this line changes, no
 did, and committing it is optional.
 
 Three environments, deliberately separate. The serving interpreter never imports from
-any virtualenv; each venv is reached by subprocess. `backend/api.py:25` says "no
+any virtualenv; each venv is reached by subprocess. `backend/server.py:25` says "no
 virtualenv anywhere in the serving path" and `api.py:73-74` documents one 48 lines
 later -- the architecture is the hybrid below, and this table is the statement of it
 that the docstring does not make.
@@ -22,7 +22,7 @@ that the docstring does not make.
 
 `/usr/bin/python3` — Python 3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]
 
-Measured by importing `backend/api.py` with `sys.path[0]` set the way `ExecStart`
+Measured by importing `backend/server.py` with `sys.path[0]` set the way `ExecStart`
 sets it and reading `sys.modules`, then resolving each file to its owning package.
 **Every one is dpkg-owned: there is no pip in the serving path.** A missing entry here
 stops the process from starting.
@@ -65,8 +65,8 @@ miss it entirely.
 | the `uvicorn` CLI script (NOT used) | `/home/google/.local/share/../bin/uvicorn` | **not dpkg-owned** -- a user-local pip install |
 
 The CLI wrapper being unpackaged is harmless *because nothing in the serving path
-invokes it*: the unit runs `python3 backend/api.py`. It is recorded so that a future
-reader who reaches for `uvicorn api:app` knows the wrapper is not managed by apt.
+invokes it*: the unit runs `python3 backend/server.py`. It is recorded so that a future
+reader who reaches for `uvicorn server:app` knows the wrapper is not managed by apt.
 
 Reinstall with:
 
@@ -110,7 +110,7 @@ it means that surface is unavailable on this box.
 |---|---|---|---|---|
 | `backend/apps/studio/.venv` | yes | 69 | subprocess: `.venv/bin/python -m apps.studio.mcp_server` | backend/apps/studio/__init__.py:23,67; mcp_server.py:4,6,28 |
 | `backend/apps/sigils/.venv` | yes | 30 | subprocess: `.venv/bin/python cutout_worker.py <in.png> <out.png>` | backend/apps/sigils/cutout_worker.py:1,4,7; segment.py:48; docs/specs/sigils-spec.md:139 |
-| `backend/apps/asicminer/.venv` | yes | 31 | subprocess: rig-protocol shim | backend/api.py:73-74 |
+| `backend/apps/asicminer/.venv` | yes | 31 | subprocess: rig-protocol shim | backend/server.py:73-74 |
 | `training/.venv` | yes | 79 | subprocess: `training/.venv/bin/python`, never imported | backend/apps/studio/plugins/reinforce/__init__.py:56; jobs.py:72,627 |
 
 Each is its own environment with its own interpreter. A package in one is not
