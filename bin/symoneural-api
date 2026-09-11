@@ -5,15 +5,15 @@
 """symoneural-api -- the entry point for the API and orchestration runtime.
 
 `ops/architecture/COMPONENT-MAP.tsv` has recorded this as a component since before this
-file existed: `symoneural-api  SERVICE_API  IMPLEMENTED  PRODUCTION  backend/api.py  Python
+file existed: `symoneural-api  SERVICE_API  IMPLEMENTED  PRODUCTION  backend/server.py  Python
 ... API/orchestration :8800`. It is real, it is in production, and until 2026-09-08 it was
-the only runtime with no folder of its own -- the unit ran `python3 backend/api.py` directly.
+the only runtime with no folder of its own -- the unit ran `python3 backend/server.py` directly.
 
 Owner's reasoning for giving it one, and it is correct: the API is not the web runtime and
 not the language runtime. It can be used without either. A runtime that can be used
 independently deserves to be addressable independently.
 
-**This launches; it does not reimplement.** The application lives in `backend/api.py` and
+**This launches; it does not reimplement.** The application lives in `backend/server.py` and
 `backend/apps/`, which is where 15,697 tracked files expect it, and moving 4,097 lines of a
 live production service to gain a tidier path would be a large change with no functional
 gain. What this adds is a first-party, licensed, documented entry point that resolves the
@@ -23,7 +23,7 @@ anywhere, and the unit can name a runtime rather than a script inside another co
     symoneural-api                 # start it in the foreground
     symoneural-api --check         # resolve and report, start nothing
 
-The live unit still runs `backend/api.py` directly. Repointing it at this entry point is a
+The live unit still runs `backend/server.py` directly. Repointing it at this entry point is a
 one-line systemd drop-in and needs root, so it is the owner's to apply -- see the README
 beside this file. Nothing here changes a running service.
 """
@@ -33,7 +33,7 @@ import os
 import sys
 from pathlib import Path
 
-MARKER = Path("backend") / "api.py"
+MARKER = Path("backend") / "server.py"
 
 
 def find_root(start: Path) -> Path:

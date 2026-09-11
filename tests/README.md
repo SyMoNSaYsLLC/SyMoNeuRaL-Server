@@ -15,7 +15,11 @@ whole run without it, and there are still some.
 ## The state, measured — not asserted
 
 **Read this before trusting a green run on one directory.** Measured 2026-09-11 at
-`42165e79`, on the command above:
+`026f289`, on the command above:
+
+```
+840 failed, 1207 passed, 43 skipped, 77 errors in 240s
+```
 
 | bucket | files | result |
 |---|---|---|

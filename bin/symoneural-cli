@@ -11,7 +11,7 @@ Three surfaces share one workstation, and they do not share it equally:
     ravencalc   sympy, exact symbolic         CPU only, never queues       needs nothing
 
 The chat figure is the whole resident cost measured on this box -- 4.36 GiB of weights plus
-the adapter and the KV cache -- and it agrees with the ~8.2 GiB `backend/api.py` budgets for
+the adapter and the KV cache -- and it agrees with the ~8.2 GiB `backend/server.py` budgets for
 the same spawn. The image figure is the four weight files summed with `ls`, not a resident
 reading: sd.cpp is not ComfyUI, and the 13.1 GiB peak recorded for a 1024x1024 render in
 HANDOVER belongs to that other engine. Both are verifiable by opening what they name.
@@ -66,13 +66,13 @@ def _find_root(start: Path) -> Path:
     files in this repo still count parents; `symoneural-audit` exists to find them.
     """
     for cand in (start, *start.parents):
-        if (cand / "backend" / "api.py").is_file():
+        if (cand / "backend" / "server.py").is_file():
             return cand
     return start.parent                     # let the assert below say what went wrong
 
 
 ROOT = _find_root(HERE)
-assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found from {HERE}"
+assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found from {HERE}"
 
 # Legacy env promotion, and it has to run HERE -- above `STATE` and `DEFAULT_API` below,
 # which read the environment at module scope. Every variable this repo owns was once spelled
@@ -81,8 +81,10 @@ assert (ROOT / "backend" / "api.py").is_file(), f"repo root not found from {HERE
 # agent` on an un-migrated box reports "no token in this environment" while the token is
 # plainly set, which is the worst kind of wrong answer -- confidently specific and false.
 # Same module the API uses, so there is one implementation of the rename to reason about.
-sys.path.insert(0, str(ROOT / "backend" / "apps"))
-import symoneuralenv  # noqa: E402
+# backend/, not backend/apps/ -- apps/ was flattened into per-component directories on
+# 2026-09-11 and the env promoter moved to runtime/lib/.
+sys.path.insert(0, str(ROOT / "backend"))
+from runtime.lib import symoneuralenv  # noqa: E402
 symoneuralenv.promote()
 
 MODELS = ROOT / "backend" / "models"
@@ -453,7 +455,7 @@ def cmd_image(args) -> int:
 # --------------------------------------------------------------------------
 
 def cmd_ravencalc(args) -> int:
-    sys.path.insert(0, str(ROOT / "backend" / "apps" / "ravencalc"))
+    sys.path.insert(0, str(ROOT / "backend" / "ravencalc"))
     try:
         import ravencalc
     except ImportError as exc:

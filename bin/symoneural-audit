@@ -11,7 +11,7 @@ directories, and the interactive client was promoted out of `bin/`. The client b
 instantly:
 
     ROOT = HERE.parent
-    assert (ROOT / "backend" / "api.py").is_file()
+    assert (ROOT / "backend" / "server.py").is_file()
     AssertionError: repo root not found at /home/google/Symoneural/symoneural-code
 
 `HERE.parent` encodes the file's **depth in the tree**. Every move is therefore a breaking
@@ -20,7 +20,7 @@ that happens to exist. That file's own comment already read *"this calculation h
 wrong four times in this repo"*. The promotion made it five, and it was only a two-minute
 fix because somebody had put an assert under it.
 
-Meanwhile `bin/symoneural-discovery` had been walking up to find `backend/api.py` the whole
+Meanwhile `bin/symoneural-discovery` had been walking up to find `backend/server.py` the whole
 time. The correct pattern was one file away from the one that broke, and nothing in the repo
 could tell you which files used which.
 
@@ -61,7 +61,7 @@ import re
 import subprocess
 import sys
 
-MARKER_FILE = pathlib.Path("backend") / "api.py"
+MARKER_FILE = pathlib.Path("backend") / "server.py"
 
 #: How the repo root is legitimately found: walk up until a marker is seen. Any file that
 #: does this is fine no matter where it lives.

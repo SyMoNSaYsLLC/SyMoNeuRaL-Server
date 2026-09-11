@@ -14,7 +14,7 @@ command the hyphenated house spelling. A Python module cannot be named
 this. `bin/symoneural-cli` is the precedent for a hyphenated entry point over an
 unhyphenated package.
 
-It finds the repo by signature -- `backend/api.py` plus `scripts/gpu-governor.sh`, the same
+It finds the repo by signature -- `backend/server.py` plus `scripts/gpu-governor.sh`, the same
 pair `api.py` and `discovery.repo_root()` probe for -- walking up from this file. Resolving
 `bin/..` by counting instead would break silently the day the layout moves, and a tool that
 imports a *different* checkout's code than the one it lives in is worse than one that fails.
@@ -28,19 +28,19 @@ from pathlib import Path
 
 def _backend_dir() -> Path:
     for parent in Path(__file__).resolve().parents:
-        if ((parent / "backend" / "api.py").exists()
+        if ((parent / "backend" / "server.py").exists()
                 and (parent / "scripts" / "gpu-governor.sh").exists()):
             return parent / "backend"
     raise SystemExit(
         "symoneural-discovery: could not find the repo from "
-        f"{Path(__file__).resolve()} -- expected backend/api.py and scripts/gpu-governor.sh "
+        f"{Path(__file__).resolve()} -- expected backend/server.py and scripts/gpu-governor.sh "
         "in an ancestor directory."
     )
 
 
 sys.path.insert(0, str(_backend_dir()))
 
-from apps.studio.plugins.discovery.discovery import main  # noqa: E402
+from studio.plugins.discovery.discovery import main  # noqa: E402
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
