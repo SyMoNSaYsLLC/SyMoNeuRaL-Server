@@ -30,7 +30,10 @@ README = ROOT / "README.md"
 #: Directories the map documents that are created by a tool when first used, and are legitimately
 #: absent on a clean box. Named individually rather than pattern-matched: a growing list here is
 #: a sign the map is drifting again, and it should be short enough that growth is visible.
-CREATED_ON_DEMAND = {"incoming", "releases"}
+#: `incoming` and `releases` belonged to the old tree and have no row here. This tree creates
+#: exactly one directory on demand: run/, by the first start. It HAS a row, because a clone
+#: not carrying it is precisely what a new arrival needs told.
+CREATED_ON_DEMAND: set[str] = set()
 
 
 def _subjects(line: str) -> list[str]:

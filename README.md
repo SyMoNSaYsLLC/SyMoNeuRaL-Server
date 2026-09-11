@@ -5,17 +5,26 @@ everything measured.
 
 ## Layout
 
-Seven directories. Each one is a thing you can name out loud.
+Nine directories. Each one is a thing you can name out loud, and each has a `README.md`
+saying what belongs in it and what does not.
 
 | Directory | What it is |
 |---|---|
-| `backend/` | the FastAPI application — `api.py` and the `apps/` modules behind it |
-| `frontend/` | the Next.js application |
+| `backend/` | the FastAPI application — `server.py` and one directory per component |
+| `frontend/` | both browser surfaces: `app/` (Next.js) and `site/` (static) |
 | `models/` | model weights. **Not carried by a clone** — see below |
-| `docs/` | the rules, the decisions, the operational procedure |
-| `scripts/` | operational scripts: setup, the GPU governor, deploy |
-| `tools/` | build, audit and evidence generators — these do not run in production |
+| `ops/` | how this box is configured, served and recorded |
+| `scripts/` | operational procedure: setup, the GPU governor, deploy, model staging |
+| `tools/` | generators, benchmarks and audits — none of it runs in production |
+| `tests/` | by what they are about: component, structure, ops, site, models, clients |
+| `business/` | what this company is and sells. Not operations, not code |
 | `bin/` | runtime entry points |
+| `run/` | runtime state. Not in git, and all of it reconstructible |
+
+**There is no `docs/`.** Every document lives with the thing it describes: a surface's spec
+in `backend/<component>/docs/`, the current operational record in `ops/registry/`, a dated
+finding in `ops/audits/`. A document that lives away from what it describes goes stale
+without anybody noticing.
 
 ## What is NOT here, and why
 
