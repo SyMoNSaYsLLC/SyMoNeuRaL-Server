@@ -4,8 +4,9 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.ratelimit import throttled_for
+from core.config import SITE, STUDIO_REGISTRY_FILE
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -64,7 +65,7 @@ router = APIRouter()
 
 @router.get("/api/studio/models", tags=["studio"],
          summary="Models on this machine, read from a pre-computed file",
-         dependencies=[Depends(ctx.throttled_for("studio"))])
+         dependencies=[Depends(throttled_for("studio"))])
 async def studio_models() -> dict:
     """The model list, as last written by `tools/build/build_registry.py`.
 
@@ -87,7 +88,7 @@ async def studio_models() -> dict:
     `studio` bucket so a ceiling can be set without touching this file.
     """
     try:
-        doc = json.loads(ctx.STUDIO_REGISTRY_FILE.read_text())
+        doc = json.loads(STUDIO_REGISTRY_FILE.read_text())
     except (OSError, json.JSONDecodeError):
         doc = None
     if not isinstance(doc, dict):
@@ -119,7 +120,7 @@ async def studio_page() -> FileResponse:
 
     Declared above the StaticFiles mount, for the same reason every route here is.
     """
-    f = ctx.SITE / "studio.html"
+    f = SITE / "studio.html"
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="studio.html has not been generated; "

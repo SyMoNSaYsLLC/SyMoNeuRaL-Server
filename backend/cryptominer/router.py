@@ -5,7 +5,6 @@ Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json

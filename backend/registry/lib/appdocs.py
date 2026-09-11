@@ -38,8 +38,8 @@ customer as an instruction they are failing to follow. `/demo/dispatchos/docs` i
 handshake names explicitly: it documents the customer surface for Donnie's role and must not
 present operator actions as things he can do.
 """
-
 from __future__ import annotations
+
 
 import dataclasses
 import html

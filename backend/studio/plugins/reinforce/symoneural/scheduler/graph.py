@@ -21,8 +21,8 @@ into the same buffers. :class:`CapturedGraph` owns its buffers to make that
 contract explicit rather than a footgun -- writing to a freed pointer and
 replaying is a silent corruption, not a crash.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass, field
 from typing import Any, Callable

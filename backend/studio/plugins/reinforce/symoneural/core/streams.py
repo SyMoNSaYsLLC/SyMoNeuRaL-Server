@@ -23,8 +23,8 @@ hide it behind and extra streams only add scheduling overhead.
 re-derive this. On a Gen 5 x16 host the same code would benefit; the flag is
 computed, not hard-coded off.
 """
-
 from __future__ import annotations
+
 
 import time
 from contextlib import contextmanager

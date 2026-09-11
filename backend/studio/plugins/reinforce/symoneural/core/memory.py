@@ -18,8 +18,8 @@ mistake hard to commit by accident.
 starves the OS. :class:`MemoryPools` tracks the pinned high-water mark so a
 leak shows up in :meth:`MemoryPools.stats` rather than as a mysterious hang.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass, field
 from typing import Any

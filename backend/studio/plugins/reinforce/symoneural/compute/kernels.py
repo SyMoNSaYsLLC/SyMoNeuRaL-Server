@@ -25,8 +25,8 @@ Design decisions and where they come from (all measured, see
   2.36x over the worst configuration tested -- notably *not* the conventional
   256. Defaults here follow the measurement.
 """
-
 from __future__ import annotations
+
 
 # ---------------------------------------------------------------------------
 # Element-wise transforms. Templated so one source serves float/double.

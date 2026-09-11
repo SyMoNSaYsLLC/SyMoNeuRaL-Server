@@ -21,8 +21,8 @@ GiB, so nothing here approaches the capacity ceiling. That is deliberate --
 the point is correctness of composition, and the benchmark suite is where
 size gets pushed.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass
 from typing import Any

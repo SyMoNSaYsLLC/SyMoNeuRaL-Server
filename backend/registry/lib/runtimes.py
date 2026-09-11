@@ -27,8 +27,8 @@ under two different governor surfaces with two different eviction arms. Collapsi
 one row is precisely what would hide the sigil surface from the eviction logic, so
 `get()` takes both and `for_runtime()` returns every row for a name.
 """
-
 from __future__ import annotations
+
 
 import functools
 import pathlib

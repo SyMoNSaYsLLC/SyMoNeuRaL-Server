@@ -25,8 +25,8 @@ Usage:
     python3 -m apps.route_matrix              # dump the full table
     python3 -m apps.route_matrix --classify   # classify EXPECTED against it
 """
-
 from __future__ import annotations
+
 
 import dataclasses
 import importlib

@@ -17,8 +17,8 @@ A second worker would contend for the same link. :class:`RequestQueue` reads
 :attr:`~symoneural.core.streams.StreamScheduler.overlap_is_profitable` rather
 than assuming.
 """
-
 from __future__ import annotations
+
 
 import itertools
 import queue

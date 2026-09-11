@@ -28,8 +28,8 @@ Two accuracy notes, because getting these wrong changes what you can promise
    raises the cost of casual copying and gives you an audit trail; describing it
    to end users as making extraction impossible would be false.
 """
-
 from __future__ import annotations
+
 
 import hashlib
 import json

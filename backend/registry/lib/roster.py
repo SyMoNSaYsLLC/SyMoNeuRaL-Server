@@ -15,8 +15,8 @@ silently drops a line it does not understand turns the roster into a fourth disa
 which is the whole thing this file was written to stop -- and it would do it invisibly, since
 the symptom is a row quietly missing from the rack rather than an error anybody sees.
 """
-
 from __future__ import annotations
+
 
 import pathlib
 import re

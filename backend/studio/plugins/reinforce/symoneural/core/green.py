@@ -19,8 +19,8 @@ driver enforces TPC-alignment rules beyond the advertised
 **Only ``8,8`` was accepted.** :data:`SAFE_SPLIT` is that value, and it is the
 default here so nothing in this repository ever relies on auto-split.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass
 from typing import Any

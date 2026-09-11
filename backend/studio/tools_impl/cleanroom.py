@@ -76,6 +76,7 @@ through to the untyped branch. The wire would still work and the schema handed t
 and to every MCP client would quietly lose its shape. `FunctionalSpec` is the connection
 wire, so its shape is the point.
 """
+from __future__ import annotations
 import dataclasses
 import hashlib
 import json

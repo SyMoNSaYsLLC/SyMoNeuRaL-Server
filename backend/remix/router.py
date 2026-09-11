@@ -5,8 +5,8 @@ globals now come off `core.context.ctx`, which server.py populates during startu
 -- see that module on why a router must never import server.
 """
 from __future__ import annotations
+from core.ratelimit import throttled_for
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -65,7 +65,7 @@ router = APIRouter()
 
 @router.post("/api/remix", response_model=ctx.RemixResult, tags=["surfaces"])
 async def remix(body: ctx.RemixRequest,
-                _: Annotated[None, Depends(ctx.throttled_for("remix"))]) -> ctx.RemixResult:
+                _: Annotated[None, Depends(throttled_for("remix"))]) -> ctx.RemixResult:
     """Build a sequenced tracklist.
 
     Remix has no weights of its own -- it asks the chat surface, which is what "one server

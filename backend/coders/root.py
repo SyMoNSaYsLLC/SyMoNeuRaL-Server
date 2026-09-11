@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import ROOT
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -79,7 +79,7 @@ async def coders_page(request: Request) -> FileResponse:
     from coders import enabled as _coders_enabled  # noqa: PLC0415
     if not _coders_enabled():
         raise HTTPException(status_code=404)
-    f = ctx.ROOT / "backend" / "apps" / "coders" / "page.html"
+    f = ROOT / "backend" / "apps" / "coders" / "page.html"
     if not f.is_file():
         raise HTTPException(status_code=404, detail="coders.html has not been generated")
     return FileResponse(f, media_type="text/html")

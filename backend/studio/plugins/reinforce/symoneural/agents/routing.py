@@ -9,8 +9,8 @@ request. On this host a 7B swap costs ~560 ms each way at 7 GB/s, which
 exceeds the entire latency budget of an interactive call. Degrading the tier is
 almost always the better trade, and the router says so when it does.
 """
-
 from __future__ import annotations
+
 
 import threading
 import time

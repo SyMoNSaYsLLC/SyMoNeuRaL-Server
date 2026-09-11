@@ -16,8 +16,8 @@ an instruction: honouring it would make `backend/server.py` drop the inline rout
 else answered, taking the surface down with a 404 that looks like a routing bug. So the
 reader refuses it and says so.
 """
-
 from __future__ import annotations
+
 
 import functools
 import pathlib

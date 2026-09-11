@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import ROOT
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -73,7 +73,7 @@ async def local_intake(body: ctx.IntakeSet, request: Request) -> JSONResponse:
     world-readable on a box that also runs a web server.
     """
     ctx._require_local(request)
-    target = ctx.ROOT / "INTAKE.md"
+    target = ROOT / "INTAKE.md"
     if not target.is_file():
         raise HTTPException(status_code=404, detail="INTAKE.md has not been generated yet")
 
@@ -113,7 +113,7 @@ async def local_tasknote(body: ctx.TaskNote, request: Request) -> JSONResponse:
     parsed by `build_progress.py` as a directive somebody declared.
     """
     ctx._require_local(request)
-    target = ctx.ROOT / "PROJECT-TASKS.md"
+    target = ROOT / "PROJECT-TASKS.md"
     if not target.is_file():
         raise HTTPException(status_code=404, detail="PROJECT-TASKS.md not found")
 
@@ -161,7 +161,7 @@ async def local_progress(request: Request) -> FileResponse:
     to type instead. This route exists so that it does not have to.
     """
     ctx._require_local(request)
-    f = ctx.ROOT / "run" / "progress.html"
+    f = ROOT / "run" / "progress.html"
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="run/progress.html has not been generated; "

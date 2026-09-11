@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import SITE
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -72,7 +72,7 @@ async def exp_page() -> FileResponse:
 
     Declared above the StaticFiles mount, for the same reason every route here is.
     """
-    f = ctx.SITE / "exp.html"
+    f = SITE / "exp.html"
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="exp.html has not been generated; "

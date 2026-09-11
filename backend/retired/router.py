@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import _RETIRED_PAGES
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -66,4 +66,4 @@ router = APIRouter()
 @router.get("/tuner-watch.html", include_in_schema=False)
 async def retired_streamer_pages(request: Request) -> RedirectResponse:
     """Send a retired page name to the one that replaced it."""
-    return RedirectResponse(ctx._RETIRED_PAGES[request.url.path], status_code=302)
+    return RedirectResponse(_RETIRED_PAGES[request.url.path], status_code=302)

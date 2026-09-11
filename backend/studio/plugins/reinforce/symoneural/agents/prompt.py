@@ -9,8 +9,8 @@ That matters because the prompt's whole job is to stop the orchestrator making
 decisions the hardware cannot honour — routing a 14B request to a box with 4 GB
 free, or assuming a model swap is cheap on a 7 GB/s link.
 """
-
 from __future__ import annotations
+
 
 from typing import Any
 

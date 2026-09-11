@@ -61,8 +61,8 @@ never silently condemned. `/local/*` inverts the expectation on purpose: it is
 local-only, so being refused at the gateway and in public is the correct result,
 not a defect to fix.
 """
-
 from __future__ import annotations
+
 
 import asyncio
 import json

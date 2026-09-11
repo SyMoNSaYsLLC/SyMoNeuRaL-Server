@@ -8,8 +8,8 @@ The engine is a single process-wide instance created on startup, because a
 CUDA context is per-process and building one per request would be absurd. The
 batching queue is what provides concurrency; the ASGI layer stays thin.
 """
-
 from __future__ import annotations
+
 
 import time
 from contextlib import asynccontextmanager

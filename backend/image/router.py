@@ -4,8 +4,9 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.ratelimit import denied, throttled_for
+from core.config import DIFFUSE_ENGINE, FLUX, RENDERS
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -64,16 +65,16 @@ router = APIRouter()
 
 @router.post("/api/image", response_model=ctx.ImageResult, tags=["surfaces"])
 async def image(body: ctx.ImageRequest,
-                _: Annotated[None, Depends(ctx.throttled_for("image"))]) -> ctx.ImageResult:
-    """Render an image with ctx.FLUX.1-schnell.
+                _: Annotated[None, Depends(throttled_for("image"))]) -> ctx.ImageResult:
+    """Render an image with FLUX.1-schnell.
 
     Taking the card means evicting chat first -- both weight sets do not fit -- so the
     first render after a chat may include a cold load. `seconds` is the render alone.
     """
-    if ctx.denied(body.prompt):
-        ctx.log.warning("ctx.denied image prompt: %r", body.prompt[:200])
+    if denied(body.prompt):
+        ctx.log.warning("denied image prompt: %r", body.prompt[:200])
         raise HTTPException(400, "That one specific combination is refused. Nothing else is.")
-    if any(not p.exists() for p in ctx.FLUX.values()) or not ctx.DIFFUSE_ENGINE.exists():
+    if any(not p.exists() for p in FLUX.values()) or not DIFFUSE_ENGINE.exists():
         raise HTTPException(503, "Image surface is still warming up.")
 
     # secrets, not the clock. int(time.time()) % 100000 gave every render in the same
@@ -81,10 +82,10 @@ async def image(body: ctx.ImageRequest,
     # correlated images -- and wrapped every ~27 hours.
     seed = body.seed if body.seed is not None else secrets.randbelow(2**31 - 1)
     stamp = f"gen-{int(time.time() * 1000)}-{seed}.png"
-    out = ctx.RENDERS / stamp
-    argv = [str(ctx.DIFFUSE_ENGINE),
-            "--diffusion-model", str(ctx.FLUX["unet"]), "--vae", str(ctx.FLUX["vae"]),
-            "--clip_l", str(ctx.FLUX["clip"]), "--t5xxl", str(ctx.FLUX["t5"]),
+    out = RENDERS / stamp
+    argv = [str(DIFFUSE_ENGINE),
+            "--diffusion-model", str(FLUX["unet"]), "--vae", str(FLUX["vae"]),
+            "--clip_l", str(FLUX["clip"]), "--t5xxl", str(FLUX["t5"]),
             "-p", body.prompt, "--cfg-scale", "1.0", "--sampling-method", "euler",
             "--steps", str(body.steps), "-W", str(body.size), "-H", str(body.size),
             "--seed", str(seed), "-o", str(out),
@@ -136,7 +137,7 @@ async def gen(name: str) -> FileResponse:
     # the generator emits rather than trying to sanitise traversal out of arbitrary input.
     if not re.fullmatch(r"gen-\d{13}-\d{1,10}\.png", name):
         raise HTTPException(404, "No such render.")
-    path = ctx.RENDERS / name
+    path = RENDERS / name
     if not path.is_file():
         raise HTTPException(404, "That render has been pruned.")
     return FileResponse(path, media_type="image/png",

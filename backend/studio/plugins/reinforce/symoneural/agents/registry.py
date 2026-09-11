@@ -28,8 +28,8 @@ last resort and prefers queueing behind a resident model.
 Compare: once resident, the same model is read at ~752 GB/s. The ratio between
 resident and non-resident access on this box is about **107x**.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass, field
 from enum import Enum

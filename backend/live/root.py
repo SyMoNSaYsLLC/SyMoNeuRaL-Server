@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import SITE
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -86,7 +86,7 @@ async def live_page() -> FileResponse:
 
     Declared above the StaticFiles mount, for the same reason every route here is.
     """
-    f = ctx.SITE / "live.html"
+    f = SITE / "live.html"
     if not f.is_file():
         # Deliberately NOT "run tools/build_<x>.py". There is no generator for this page and
         # there is not meant to be: *"Make sure to update the applications to be static with
@@ -112,7 +112,7 @@ async def coder_page() -> FileResponse:
 
     Declared above the StaticFiles mount, for the same reason every route here is.
     """
-    f = ctx.SITE / "coder.html"
+    f = SITE / "coder.html"
     if not f.is_file():
         raise HTTPException(status_code=404,
                             detail="site/coder.html is missing. It is a tracked, "

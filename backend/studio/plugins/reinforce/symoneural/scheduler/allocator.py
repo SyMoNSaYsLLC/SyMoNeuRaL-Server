@@ -14,8 +14,8 @@ spill to, and the PCIe link out is ~7 GB/s, so spilling to host is not a
 recovery strategy -- it is a 100x cliff. :meth:`BlockAllocator.reserve` fails
 fast rather than letting the driver thrash.
 """
-
 from __future__ import annotations
+
 
 import threading
 from collections import defaultdict

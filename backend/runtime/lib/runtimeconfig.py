@@ -42,8 +42,8 @@ config must not reach the serving interpreter. `apps/cryptominer` makes exactly 
 for its own `_ENV_KEYS` and it generalises: the safe direction is to name what may pass, not to
 guess at what must not. A rejected name is counted and logged, never silently dropped.
 """
-
 from __future__ import annotations
+
 
 import logging
 import os

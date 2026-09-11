@@ -4,8 +4,8 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.config import API_REFERENCE_SCRIPT, API_REFERENCE_STYLE, DOCS_HEADER, LIMITS, MAX_PROMPT_CHARS
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -97,14 +97,14 @@ async def api_reference() -> HTMLResponse:
     # while the code enforced 120/min and 4,000 -- and this site's whole argument is that
     # its published numbers are the real ones. A stale honest-looking figure is the same
     # failure as a decorative LED.
-    per_min, per_hour = ctx.LIMITS["chat"]
+    per_min, per_hour = LIMITS["chat"]
     rate = (f'<div class="val">{per_min}<u>/min</u></div>'
             f'<div class="sub">{per_hour:,}/hour &middot; per address</div>'
             if per_min else
             '<div class="val sm">none</div>'
             '<div class="sub">unmetered &middot; the queue is the only backstop</div>')
-    header = (ctx.DOCS_HEADER.replace("@@RATE@@", rate)
-                         .replace("@@CAP@@", f"{ctx.MAX_PROMPT_CHARS:,}"))
+    header = (DOCS_HEADER.replace("@@RATE@@", rate)
+                         .replace("@@CAP@@", f"{MAX_PROMPT_CHARS:,}"))
 
     return HTMLResponse(
         "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
@@ -114,7 +114,7 @@ async def api_reference() -> HTMLResponse:
         '<link rel="stylesheet" href="/symoneural.css">'
         '<link rel="stylesheet" href="/rack-detail.css">'
         '<meta name="theme-color" content="#0e100f">'
-        f"{ctx.API_REFERENCE_STYLE}</head><body>{header}"
+        f"{API_REFERENCE_STYLE}</head><body>{header}"
         '<div class="ar-wrap">'
         f"{ctx._application_docs_index()}"
         '<p class="ar-note">Every operation below is read from the schema this service '
@@ -123,7 +123,7 @@ async def api_reference() -> HTMLResponse:
         'The raw document is at <a href="/openapi.json">/openapi.json</a>.</p>'
         '<div id="ar-root"><p class="ar-count">Reading /openapi.json&hellip;</p></div>'
         "</div>"
-        f"{ctx.API_REFERENCE_SCRIPT}"
+        f"{API_REFERENCE_SCRIPT}"
         '<script src="/console.js" defer></script>'
         "</body></html>"
     )

@@ -6,8 +6,8 @@ genuinely cannot provide is *waived*, not failed. ``simpleP2P`` exits cleanly on
 single-GPU machine and that is the sample behaving correctly; the engine follows
 the same convention so that "cannot run here" never masquerades as "broken".
 """
-
 from __future__ import annotations
+
 
 
 class SymoneuralError(Exception):

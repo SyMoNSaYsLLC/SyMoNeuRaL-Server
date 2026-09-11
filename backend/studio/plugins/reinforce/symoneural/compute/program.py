@@ -16,8 +16,8 @@ That is the exact failure the ``reductionMultiBlockCG`` sample hits when invoked
 without both directories. :func:`resolve_include_paths` finds them so callers
 never have to.
 """
-
 from __future__ import annotations
+
 
 import functools
 import os

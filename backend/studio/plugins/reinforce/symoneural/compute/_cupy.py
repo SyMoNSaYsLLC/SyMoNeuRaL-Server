@@ -26,8 +26,8 @@ Use it as::
 Verified by importing ``studio.plugins.reinforce`` with CuPy absent: it succeeds and
 ``enabled()`` returns False.
 """
-
 from __future__ import annotations
+
 
 from ..core.errors import CapabilityWaived
 

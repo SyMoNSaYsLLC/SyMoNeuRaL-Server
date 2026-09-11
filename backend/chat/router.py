@@ -4,8 +4,9 @@ Paths here are absolute, so this router is mounted WITHOUT a prefix.
 Globals come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
+from core.ratelimit import check_rate, throttled_for
+from core.config import CHAT_MODEL, DISCONNECT_POLL_S, LIMITS, MAX_PROMPT_CHARS, QUEUE_DEPTH, SYSTEM_PROMPT
 
-from __future__ import annotations
 import asyncio
 import hashlib
 import json
@@ -76,8 +77,8 @@ async def websocket(ws: WebSocket) -> None:
         await ws.send_text(json.dumps({
             "t": "welcome", "proto": 1,
             "caps": ["rack", "chat", "ravencalc", "remix", "ping"],
-            "limits": {"prompt_chars": ctx.MAX_PROMPT_CHARS, "per_min": RATE_PER_MIN,
-                       "per_hour": RATE_PER_HOUR, "queue_depth": ctx.QUEUE_DEPTH},
+            "limits": {"prompt_chars": MAX_PROMPT_CHARS, "per_min": RATE_PER_MIN,
+                       "per_hour": RATE_PER_HOUR, "queue_depth": QUEUE_DEPTH},
             "note": "One GPU. chat/image/remix take turns; calc never queues.",
         }, separators=(",", ":")))
         # One full snapshot, once. Everything after this is a patch against it -- so the
@@ -127,8 +128,8 @@ async def websocket(ws: WebSocket) -> None:
 
             # Everything below spends the GPU or the CPU, so it is rate limited exactly
             # like the REST routes. Holding a socket open is not a way around the caps.
-            if not await ctx.check_rate(kind if kind in ctx.LIMITS else "chat", key):
-                per_min, per_hour = ctx.LIMITS.get(kind, ctx.LIMITS["chat"])
+            if not await check_rate(kind if kind in LIMITS else "chat", key):
+                per_min, per_hour = LIMITS.get(kind, LIMITS["chat"])
                 await ws.send_text(json.dumps({
                     "t": "error", "code": 429,
                     "error": f"Easy -- {kind} is capped at {per_min}/min, "
@@ -152,7 +153,7 @@ async def websocket(ws: WebSocket) -> None:
         await ctx.bus.leave(ws)
 @router.post("/api/chat", tags=["surfaces"])
 async def chat(body: ctx.ChatRequest, request: Request,
-                _: Annotated[None, Depends(ctx.throttled_for("chat"))]) -> StreamingResponse:
+                _: Annotated[None, Depends(throttled_for("chat"))]) -> StreamingResponse:
     """Ask the local model. Streams Server-Sent Events as the card produces tokens.
 
     Each event is `{"delta": "..."}`; the last is
@@ -217,7 +218,7 @@ async def chat(body: ctx.ChatRequest, request: Request,
                     thinking.cancel()
                     await drop_lease()
                     return
-                await asyncio.sleep(ctx.DISCONNECT_POLL_S)
+                await asyncio.sleep(DISCONNECT_POLL_S)
         except asyncio.CancelledError:
             raise
 
@@ -258,7 +259,7 @@ async def chat(body: ctx.ChatRequest, request: Request,
             # correct layer: it leaves upstream metadata untouched and honest, and it fixes
             # every caller of this route at once. A blank string is now treated as "no
             # override supplied" rather than as "erase the identity".
-            system = ctx.SYSTEM_PROMPT if (body.system is None or not body.system.strip()) \
+            system = SYSTEM_PROMPT if (body.system is None or not body.system.strip()) \
                 else body.system
             try:
                 exact = await asyncio.wait_for(thinking, timeout=5)
@@ -292,7 +293,7 @@ async def chat(body: ctx.ChatRequest, request: Request,
             yield "data: " + json.dumps({
                 "done": True, "tokens": tokens, "seconds": round(elapsed, 2),
                 "tok_per_s": round(tokens / elapsed, 1) if elapsed else None,
-                "model": ctx.CHAT_MODEL.stem, "adapter": ctx.adapter_applies(),
+                "model": CHAT_MODEL.stem, "adapter": ctx.adapter_applies(),
             }) + "\n\n"
         finally:
             # Every exit from the generator returns the card: a clean finish, a client that

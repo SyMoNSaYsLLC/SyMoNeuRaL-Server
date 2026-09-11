@@ -10,8 +10,8 @@ than merely plausible. Reference figures come from
 copy reported 994 GB/s at 8 MB and 380 GB/s at 512 MB. :func:`bench_l2_cliff`
 demonstrates that on purpose.
 """
-
 from __future__ import annotations
+
 
 import time
 from dataclasses import dataclass, field

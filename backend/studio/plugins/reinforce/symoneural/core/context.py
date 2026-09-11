@@ -12,8 +12,8 @@ Hardware notes for the target box (measured, see ``docs/01-hardware-dossier.md``
   host link. :attr:`DeviceContext.pcie_bound` is the flag the scheduler reads to
   decide that stream-overlap is not worth attempting.
 """
-
 from __future__ import annotations
+
 
 from dataclasses import dataclass
 from typing import Any

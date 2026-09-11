@@ -12,8 +12,8 @@ Construction order matters and is fixed here so callers cannot get it wrong:
 device context -> memory pools -> block allocator -> stream scheduler ->
 kernel cache -> operators -> models -> graph cache -> request queue.
 """
-
 from __future__ import annotations
+
 
 from typing import Any
 

@@ -9,8 +9,8 @@ Launch geometry follows what ``launchConfigTuning`` measured on this GPU:
 **64 threads per block**, 2.36x better than the worst configuration tested and
 notably not the conventional 256.
 """
-
 from __future__ import annotations
+
 
 from typing import Any
 
