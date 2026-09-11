@@ -372,7 +372,7 @@ EXTERNAL_ROUTES: dict[str, str] = {
 
 
 def _refchatgpt_routes() -> dict[str, str]:
-    """Build the referencestochatgpt route table FROM docs/reference/UPSTREAM-PINS.tsv.
+    """Build the referencestochatgpt route table FROM docs/specs/reference/UPSTREAM-PINS.tsv.
 
     The manifest is the single authority for provenance, so the destinations are derived
     from it rather than retyped. Section 7.1 wants pinned upstreams at
@@ -411,7 +411,7 @@ OPERATIONS.extend([
              "preserved under .private/storage-reorg/patches/), 10 with NO git provenance "
              "at all (2.65 GB) which therefore need a real snapshot rather than a pin. "
              "`claude-desktop` inside is PROTECTED and stays.",
-         evidence="docs/reference/UPSTREAM-PINS.tsv"),
+         evidence="docs/specs/reference/UPSTREAM-PINS.tsv"),
     dict(id="mv-external-rest", kind="move_leaves", src="external",
          routes=EXTERNAL_ROUTES,
          why="Section 7.1: the remaining reference warehouse, routed by domain. The four "
@@ -555,10 +555,10 @@ OPERATIONS.extend([
 # (197M). The first-party build authority the spec says to keep is about 23M. Nothing in
 # the repository reads either directory: the only references to `buildv2/.local` or
 # `buildv2/vendor` anywhere in the tree are two prose mentions in
-# docs/handoffs/TOTAL-SYMONEURAL-HISTORY*.md. No code, no recipe, no script.
+# docs/history/handoffs/TOTAL-SYMONEURAL-HISTORY*.md. No code, no recipe, no script.
 #
 # Full identity, licence and reacquire method for every offloaded collection is recorded in
-# docs/reference/BUILDV2-OFFLOAD-RECORD.md, as the buildv2 section requires.
+# docs/specs/reference/BUILDV2-OFFLOAD-RECORD.md, as the buildv2 section requires.
 #
 # `vendor/checksums/` and `.local/project-native/` are UNROUTED on purpose:
 #   * checksums/ (24K) is four .sha256 files naming every offloaded wheel and archive by
@@ -592,17 +592,17 @@ OPERATIONS.extend([
          routes=BUILDV2_LOCAL_ROUTES,
          why="4.8G of reacquirable third-party build inputs -- Apple SDK/Xcode/OSXCross "
              "(4.4G), JVM (151M), AI SDK wheels (289M), CUDA (1.1M). Identity, licence "
-             "and reacquire method recorded in docs/reference/BUILDV2-OFFLOAD-RECORD.md. "
+             "and reacquire method recorded in docs/specs/reference/BUILDV2-OFFLOAD-RECORD.md. "
              "project-native (5.8M) stays: it is evidence about the retained "
              "native-project.",
-         evidence="docs/reference/BUILDV2-OFFLOAD-RECORD.md"),
+         evidence="docs/specs/reference/BUILDV2-OFFLOAD-RECORD.md"),
     dict(id="mv-buildv2-vendor", kind="move_leaves", src="archive/buildv2/vendor",
          routes=BUILDV2_VENDOR_ROUTES,
          why="197M of vendored third-party source: gradle-9.5.1-bin.zip (134M, sha256 "
              "bafc141b619ad6350fd975fc903156dd5c151998cc8b058e8c1044ab5f7b031f) and "
              "Python wheels for antigravity/openai/anthropic (63M), every one already "
              "recorded by version and hash in vendor/checksums/. checksums/ itself STAYS.",
-         evidence="docs/reference/BUILDV2-OFFLOAD-RECORD.md"),
+         evidence="docs/specs/reference/BUILDV2-OFFLOAD-RECORD.md"),
 ])
 
 
@@ -1022,8 +1022,8 @@ OPERATIONS.append(dict(
         "homework. Two more tests walk the tree. Deleting it reclaims 131M -- 0.04% of "
         "what this reorganisation moves -- and costs the on-disk half of a control the "
         "owner asked to exist in git. So the bytes go to Drive and the tree stays. See "
-        "docs/reference/VENDOR-CLASSIFICATION.md.",
-    evidence="docs/reference/VENDOR-CLASSIFICATION.md"))
+        "docs/specs/reference/VENDOR-CLASSIFICATION.md.",
+    evidence="docs/specs/reference/VENDOR-CLASSIFICATION.md"))
 
 
 

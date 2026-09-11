@@ -131,7 +131,7 @@ git commit      <full 40-char SHA>
 created         <YYYY-MM-DD HH:MM ZZZ>
 
 INCLUDED (scoped pathspec, committed state only)
-  docs/share-previews/                              preview page, README, this plan
+  docs/specs/share-previews/                              preview page, README, this plan
   docs/ops/SYMONEURAL-EMAIL-IDENTITY-POLICY.md      mailbox identity policy
   docs/ops/example-env.md                           placeholder env, secret values blank
   ops/Caddyfile                                     repo copy, bcrypt hashes only

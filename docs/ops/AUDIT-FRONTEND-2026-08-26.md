@@ -417,7 +417,7 @@ design** — retained, unchanged.
 
 **`share-dispatchos.html` — live and required.** An active credentialed customer preview behind
 `basicauth` for four named accounts (`ops/Caddyfile:332`), with a documented install-order
-safety property in `docs/share-previews/README.md`. Decisively,
+safety property in `docs/specs/share-previews/README.md`. Decisively,
 `backend/apps/test_maintenance_banner.py:139-144` asserts the file **exists** ("the customer
 preview page has gone missing") **and that it must not load `ui.js`**. Adding site navigation
 would put the internal surface list in front of a customer and break that test — retained,

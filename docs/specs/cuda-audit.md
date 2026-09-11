@@ -279,7 +279,7 @@ self-contained script per concept. The engine is an installable package with a
 wrong shape to compare against a folder of demos; there is nothing to build ahead of time
 because NVRTC compiles at import. The engine borrows the samples' *Python* idiom
 (`cuda.core` + CuPy for allocation, kernels as source strings) rather than their C++ one,
-which matches how the curriculum in `docs/04-cuda-curriculum/` was actually run here.
+which matches how the curriculum in `docs/guides/cuda-curriculum/` was actually run here.
 
 The **accidental** part of the divergence is 1.10: `run_tests.sh` still encodes the
 pre-`4b6eaba` path to the samples tree.
@@ -478,7 +478,7 @@ Measured vs theoretical consistently, `bench/suite.py:27` labels the whole `REFE
 as measured on this box with a date, `memory_regime()` derives the regime instead of
 hardcoding a label, and README's "Known limits" and "What is real, and what is a stub"
 sections are candid. The foreign deviceQuery output at
-`docs/04-cuda-curriculum/1_GettingStarted.md:158-184` (132 SMs, cc 8.9) is correctly framed
+`docs/guides/cuda-curriculum/1_GettingStarted.md:158-184` (132 SMs, cc 8.9) is correctly framed
 as upstream "Expected Output" with `<Your GPU Name>` — not a mislabel.
 
 Against that standard, seven items fall short:

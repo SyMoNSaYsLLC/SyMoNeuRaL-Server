@@ -62,7 +62,7 @@ tail -f .private/storage-reorg/latest.log
    `backend/apps/test_vendor_sdks.py` (9 tests) is a licence-compliance control that reads
    licence text out of the vendored copy *on disk* and compares it to `PROVENANCE.md`.
    Deleting the tree reclaims 131M and destroys the on-disk half of that control. It is
-   preserved to Drive and kept locally; see `docs/reference/VENDOR-CLASSIFICATION.md`.
+   preserved to Drive and kept locally; see `docs/specs/reference/VENDOR-CLASSIFICATION.md`.
 
 7. **Two credential-bearing files were found at mode 0664** — `providerapikeys.txt` and
    `credential_setup.py`. Both now sit at 0600 under `.private/secrets/`. **Rotation is
@@ -247,8 +247,8 @@ bite you.
 
 ## Earlier handoffs
 
-Everything before 2026-09-08 is in **`docs/handoffs/HANDOVER-ARCHIVE-pre-20260908.md`** —
+Everything before 2026-09-08 is in **`docs/history/handoffs/HANDOVER-ARCHIVE-pre-20260908.md`** —
 4,876 lines of accreted history, kept verbatim and clearly marked as
 historical. It was split out because a canonical handoff that grows by prepending stops being
 a handoff, and because present-tense audit checks cannot tell a 2026-08 statement from a
-claim about today. The dated per-window handoffs are in `docs/handoffs/`.
+claim about today. The dated per-window handoffs are in `docs/history/handoffs/`.

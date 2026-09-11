@@ -31,8 +31,8 @@ unprotected sole copy of first-party build authority.
 | Original upstream model distributions | `gdrive:Models/` | The **running** weights are local at `backend/models/` under house names. `backend/models/PROVENANCE.json` maps each house name to `upstream_repo` + `upstream_file`; 11 of 11 are re-fetchable, 9 of 11 carry a recorded sha256. |
 | Old SyMoNeuRaL source snapshots | `gdrive:Symoneural/History/Source-Snapshots/` | Includes the dismembered pre-2026-08-20 repo, routed per collection. |
 | Old build output and build history | `gdrive:Symoneural/History/Build-History/`, `gdrive:Build-Outputs/` | Yocto packages are keyed by architecture. |
-| Pinned third-party upstream source | `gdrive:Symoneural/Upstream-Source/<project>/<revision>/` | Revision is in the path, so a snapshot is identifiable rather than merely dated. See `docs/reference/UPSTREAM-PINS.tsv` for the local record of every pin. |
-| Apple SDK / Xcode / OSXCross | `gdrive:Development-Reference/Apple/` | Not redistributable under Apple's terms; held as a private archive and reacquired from Apple. Identity in `docs/reference/BUILDV2-OFFLOAD-RECORD.md`. |
+| Pinned third-party upstream source | `gdrive:Symoneural/Upstream-Source/<project>/<revision>/` | Revision is in the path, so a snapshot is identifiable rather than merely dated. See `docs/specs/reference/UPSTREAM-PINS.tsv` for the local record of every pin. |
+| Apple SDK / Xcode / OSXCross | `gdrive:Development-Reference/Apple/` | Not redistributable under Apple's terms; held as a private archive and reacquired from Apple. Identity in `docs/specs/reference/BUILDV2-OFFLOAD-RECORD.md`. |
 | CUDA / NVIDIA reference | `gdrive:Development-Reference/NVIDIA-CUDA/` | TensorRT, cutlass, samples, Nsight, Blackwell GEMM kernels. |
 | Toolchains and IDE installers | `gdrive:Development-Reference/Toolchains/` | Version-pinned in filenames; hashes in `archive/buildv2/vendor/checksums/`. |
 | Miner / firmware / crypto | `gdrive:Projects/Crypto/`, `gdrive:Build-Outputs/Yocto/Firmware/` | cgminer trees under `Projects/Crypto/Reference-Source`. Recipes fetch upstream, so no local tree was a build source. |

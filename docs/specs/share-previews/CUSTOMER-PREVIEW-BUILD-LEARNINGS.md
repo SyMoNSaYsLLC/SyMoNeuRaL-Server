@@ -25,7 +25,7 @@ staging location by construction rather than by discipline. Verified:
 
 ### The sequence
 
-1. **Stage** the page under `docs/share-previews/`. Not `site/`.
+1. **Stage** the page under `docs/specs/share-previews/`. Not `site/`.
 2. **Install** the config and reload. Verify the path answers **401** *before the page exists*.
    A 401 on a path with no file behind it is exactly what you want to see: it proves auth runs
    in front of the lookup.

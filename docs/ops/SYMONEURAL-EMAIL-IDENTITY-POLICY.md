@@ -66,14 +66,14 @@ carries empty values by construction.
 
 ## DispatchOS preview usage
 
-`docs/share-previews/share-dispatchos.html` shows **`saysupport@symoneural.com` and nothing
+`docs/specs/share-previews/share-dispatchos.html` shows **`saysupport@symoneural.com` and nothing
 else.** No admin address, no noreply, no alert sink, no personal Gmail.
 
 The preview's *Conversation record trail* section describes routing a conversation copy to
 **SyMoNeuRaL admin review**. It names the destination by role and deliberately not by address:
 the customer needs to know a record trail exists, and does not need the internal mailbox that
 receives it. That routing target is `symonsayadmin@symoneural.com`, recorded here and in
-`docs/share-previews/README.md`.
+`docs/specs/share-previews/README.md`.
 
 Also: describe mail infrastructure only as *"hosted business mail infrastructure"* if it must
 be described at all. Provider names, DNS records, MX hosts, SPF/DKIM/DMARC entries and

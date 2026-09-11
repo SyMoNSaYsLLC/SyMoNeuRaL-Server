@@ -73,8 +73,8 @@ What *is* available: ComfyUI runs as **its own Python process** (proxied at `127
 
 | Target | What it actually is | Proposed home |
 |---|---|---|
-| `SymonSaysLLC` (1.1 M, 26 files) | A-4 / D-11 decision records — same family as the `handoffs/` rulings | `docs/decisions/` |
-| `symoneural-docs-reconciliation-20260903` (36 K) | one reconciliation document | `docs/decisions/` |
+| `SymonSaysLLC` (1.1 M, 26 files) | A-4 / D-11 decision records — same family as the `handoffs/` rulings | `docs/history/decisions/` |
+| `symoneural-docs-reconciliation-20260903` (36 K) | one reconciliation document | `docs/history/decisions/` |
 | `symoneural-lora-restoration-20260903` (48 K) | `LORA-PAYLOADS.tsv`, `SHA256SUMS`, restoration write-up — **metadata only, no weights** | `docs/ops/` |
 | `DifficultCode` (940 K) | `coder/`, `dispathosbuild/`, `gssymondevalien-ui/` — **looks first-party; needs a read before it moves** | TBD — see gate |
 | `RAVENCALC.md` (544 K) | exploded `.docx` | `docs/` as a real document, re-zipped or converted |

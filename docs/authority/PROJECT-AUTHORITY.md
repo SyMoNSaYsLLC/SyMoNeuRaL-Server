@@ -302,7 +302,7 @@ would be parsed as a directive instead of as somebody's words.
 ## Where to look — there is exactly one of each
 
 Three files once all claimed to describe "current state" and agents kept acting on the stale
-one. There is now one of each, and everything superseded lives in `docs/archive/` behind a
+one. There is now one of each, and everything superseded lives in `docs/history/archive/` behind a
 README that says so.
 
 | Question | File |

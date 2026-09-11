@@ -5,7 +5,7 @@ cuda-samples curriculum validated on this GPU. Nothing wraps a third-party
 inference codebase.
 
 Design decisions and where they come from (all measured, see
-``docs/01-hardware-dossier.md`` and ``docs/04-cuda-curriculum/``):
+``docs/01-hardware-dossier.md`` and ``docs/guides/cuda-curriculum/``):
 
 * **Vectorised loads (``float4``).** ``alignedTypes`` measured 341 GB/s for
   16-byte accesses versus 45 GB/s for single bytes -- a 7.4x spread from access

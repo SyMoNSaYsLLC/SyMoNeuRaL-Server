@@ -505,7 +505,7 @@ signing code in the web process**.
 **Open:** #75 is **paused at 0/4** — rotation not done, and the Spotify half is Garrett's
 (third-party dashboard). `scripts/lib/archive-guard.sh:74`'s `_AG_SECRET_KEYS` covers the current
 names; **any new token name must be added there in the same change that introduces it.** #38 —
-extend the leak guard to `review/`, `docs/archive/` and the retired-assignment files, which is where
+extend the leak guard to `review/`, `docs/history/archive/` and the retired-assignment files, which is where
 a pasted credential would land unnoticed. **#102** (`owner: garrett`) — the displayed Studio token
 is spent and needs a new value.
 

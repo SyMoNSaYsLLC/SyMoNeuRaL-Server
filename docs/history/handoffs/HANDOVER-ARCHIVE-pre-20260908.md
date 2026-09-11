@@ -342,7 +342,7 @@ Read this file first and read all of it. It is standalone — you will not have 
 conversation, so every number, path and decision you need is stated here.
 
 > **Precedence:** this file is authoritative for *state and what is left to do*.
-> `docs/authority/PROJECT-AUTHORITY.md` remains authoritative for *rules*. Anything in `docs/archive/` is
+> `docs/authority/PROJECT-AUTHORITY.md` remains authoritative for *rules*. Anything in `docs/history/archive/` is
 > superseded — do not act on it.
 ## 0. Sixty-second version
 
@@ -4338,7 +4338,7 @@ exit 144. Put the pkill in a command that does not otherwise mention the process
   the repo root while you are working, and several have already had to be caught this way.
 - **Three files claimed to be "current state".** There is now one: this file. `PROJECT-STATE.md`,
   the previous `HANDOVER`, the eleven root-level playbooks (superseded by `docs/symoneural-manual.md`),
-  the old `.claude/START-PROMPT.txt` and `checkcoderswork.txt` all moved to **`docs/archive/`**, which
+  the old `.claude/START-PROMPT.txt` and `checkcoderswork.txt` all moved to **`docs/history/archive/`**, which
   has a README explaining what each one is and why it is not authoritative. Do not create a
   second state document; update this one.
 - **The duplicate `SymoneuralGPUWorker/…-1818 2/` copy was byte-identical and is deleted.**
@@ -4663,7 +4663,7 @@ an existing box renames in place instead of re-downloading 40 GB, and a fresh cl
 straight to the house name. Three things are exempt with reasons recorded in the manifest:
 `rembg/u2net.onnx` (rembg resolves `<name>.onnx` by model name), `hf/hub/models--*` (the
 huggingface_hub cache layout *is* the index), and `licenses/*` (a licence that does not name
-its licensor is not a licence). Dated documents under `docs/archive/` keep the old names and
+its licensor is not a licence). Dated documents under `docs/history/archive/` keep the old names and
 carry a header note pointing here — they are records of what was read at the time.
 
 ## 2i. Symon Say News — the live ticker, at `26cb58e` (2026-08-20)

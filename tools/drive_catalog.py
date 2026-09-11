@@ -215,7 +215,7 @@ def build() -> int:
             "KNOWN_WORKING_COMPONENTS": sem.get("KNOWN_WORKING_COMPONENTS", ""),
             "KNOWN_FAILURES": sem.get("KNOWN_FAILURES", ""),
             "RELEVANT_DOCS": sem.get("RELEVANT_DOCS",
-                                     "docs/reference/EXTERNAL-KNOWLEDGE-CATALOG.md"),
+                                     "docs/specs/reference/EXTERNAL-KNOWLEDGE-CATALOG.md"),
             "WHY_RETAINED": sem.get("WHY_RETAINED", ""),
             "REACQUIRABLE": sem.get("REACQUIRABLE", "unknown"),
             "UNIQUE": sem.get("UNIQUE", "unknown"),

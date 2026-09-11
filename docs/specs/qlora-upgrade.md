@@ -120,7 +120,7 @@ everything.
 
 **`train_lora.py` never touches the governor.** No `acquire`, no `with`, no subprocess. The
 lock was taken by a human wrapping the command — the form is recorded at
-`docs/archive/HANDOVER-2026-08-16-1910.md:579`:
+`docs/history/archive/HANDOVER-2026-08-16-1910.md:579`:
 
 ```
 gpu-governor.sh with train -- training/.venv/bin/python training/train_lora.py ...

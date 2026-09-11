@@ -315,7 +315,7 @@ class ClaimsContradictedByTheDiskFail(unittest.TestCase):
                 # the same line is not asserting it. The blockquote rule above covers a
                 # correction block; this covers a historical LEDGER, where the retraction
                 # is a table cell beside the claim rather than prose beneath it --
-                # docs/handoffs/GARRETT-MEMORY-REQUEST.md:146 reads
+                # docs/history/handoffs/GARRETT-MEMORY-REQUEST.md:146 reads
                 #     | vLLM is not installed | `SUPERSEDED`. Present in its venv; ... |
                 # which records that the claim was wrong. Flagging that would make the
                 # repository unable to write down its own corrected mistakes, which is the

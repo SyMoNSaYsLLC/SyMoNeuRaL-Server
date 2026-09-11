@@ -2,7 +2,7 @@
 
 > **REDACTED COPY.** Credential filenames and infrastructure posture masked as `*****`.
 > Concepts kept, identifiers blurred. This file now lives *in* the repo: the handoff chain
-> was moved from `/home/google/SyMoNeuRaL-Workspace/handoffs` into `docs/handoffs/` during
+> was moved from `/home/google/SyMoNeuRaL-Workspace/handoffs` into `docs/history/handoffs/` during
 > this window, so a clone finally carries the project's own decision record.
 
 ## Continues from

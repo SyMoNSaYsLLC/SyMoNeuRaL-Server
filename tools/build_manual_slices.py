@@ -7,7 +7,7 @@
 
 ## Why this exists
 
-Nineteen documents under `docs/03-playbooks/`, `docs/04-cuda-curriculum/` and again under
+Nineteen documents under `docs/guides/playbooks/`, `docs/guides/cuda-curriculum/` and again under
 `backend/studio/plugins/reinforce/docs/` said in their own third line:
 
     > Sliced from the consolidated manual at `../symoneural-manual.md`, which remains the
@@ -25,7 +25,7 @@ path back to the manual. That is exactly the drift a generator removes by constr
 ## The mapping, derived by measurement rather than assumed
 
 A slice is one `##` section of the manual, verbatim, with trailing blank lines stripped, under
-a small derived header. Checked against `docs/03-playbooks/playbook-01.md`: the manual's
+a small derived header. Checked against `docs/guides/playbooks/playbook-01.md`: the manual's
 section is 215 lines, the slice body is 214, and a unified diff shows the single difference is
 one trailing blank line. Everything else -- including the `####` subtitle -- is already in the
 manual and needs no reconstruction.

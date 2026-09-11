@@ -26,7 +26,7 @@ it is a split, and the split is lopsided.
 
 Nothing in the repository reads these. Measured: the only references to
 `buildv2/.local` or `buildv2/vendor` anywhere in the tree are two prose mentions in
-`docs/handoffs/TOTAL-SYMONEURAL-HISTORY*.md`. No code, no recipe, no script.
+`docs/history/handoffs/TOTAL-SYMONEURAL-HISTORY*.md`. No code, no recipe, no script.
 
 | Collection | Size | Identity recorded | Reacquire |
 |---|---:|---|---|

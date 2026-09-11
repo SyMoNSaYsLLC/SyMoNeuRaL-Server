@@ -38,7 +38,7 @@ promotion path is an opinion.
 
 ## How this was measured
 
-`tools`-style audit script over `git ls-files`, excluding `docs/archive/`, `references/`,
+`tools`-style audit script over `git ls-files`, excluding `docs/history/archive/`, `references/`,
 `review/` and `__pycache__`. That scope matters: **`engines/` is gitignored, so the vendored
 ComfyUI fork is excluded automatically** and every finding below is about code this project
 owns. Python string literals were tokenized so comments and docstrings do not count as code

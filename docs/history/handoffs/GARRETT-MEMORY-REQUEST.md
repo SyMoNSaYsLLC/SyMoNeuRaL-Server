@@ -179,7 +179,7 @@ Dispositions are exactly: `SUMMARIZED_AND_INDEXED`, `AUTHORITATIVE_IN_GIT`,
 | S10 | Codex transfer note | prior memory | 04:22 today | 13,932 B | present | `SUMMARIZED_AND_INDEXED` | yes | no | on disk | none | folded in; unmodified |
 | S11 | `ProjectStatus.md` | canonical state | 2026-08 → now | 1 file | current | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | none | re-pinned this session |
 | S12 | `docs/HANDOFF.md` | canonical handoff | current | 64 lines | current | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | none | split from a 4,876-line archive |
-| S13 | `docs/handoffs/` | dated handoffs | 2026-09-01 → now | 41 files | current | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | redacted | includes the pre-2026-09-08 HANDOVER archive |
+| S13 | `docs/history/handoffs/` | dated handoffs | 2026-09-01 → now | 41 files | current | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | redacted | includes the pre-2026-09-08 HANDOVER archive |
 | S14 | `symoneural-miner-core/` | first-party miner | today | 51 tests, 13-check smoke | current | `AUTHORITATIVE_IN_GIT` | yes | yes | `5c0ad43f` | none | `docs/ALGORITHM-GAP.md` states the gap |
 | S15 | `symoneural-code/` | CLI + importer | today | 41 importer tests | current | `AUTHORITATIVE_IN_GIT` | yes | yes | `98180797`… | none | source == launcher, hash `b79a6f5e` |
 | S16 | migration manifest | disposition ledger | today | 18,434 rows | present, mode 600 | `AUTHORITATIVE_IN_MIGRATION_MANIFEST` | yes | no | on disk | no secrets | every source row classified |
@@ -447,7 +447,7 @@ and nothing noticed until hashes were compared.
 | Was | Now |
 |---|---|
 | `.claude/CLAUDE.md` | `docs/authority/PROJECT-AUTHORITY.md` |
-| `.claude/HANDOVER.md` | `docs/HANDOFF.md` (64 lines) + `docs/handoffs/HANDOVER-ARCHIVE-pre-20260908.md` (4,876) |
+| `.claude/HANDOVER.md` | `docs/HANDOFF.md` (64 lines) + `docs/history/handoffs/HANDOVER-ARCHIVE-pre-20260908.md` (4,876) |
 | `.claude/START-PROMPT.txt` | `docs/authority/START-HERE.txt` |
 | `permissions.deny` | `docs/authority/TOOL-POLICY.json`, **enforced** by `backend/apps/test_tool_policy.py` |
 | root `CLAUDE.md` importing `.claude/CLAUDE.md` | a pointer with no rules in it |
@@ -637,7 +637,7 @@ pre-migration ZIP **plus** its sidecar. Everything else is machine-local.
     "rules": "/home/google/Symoneural/docs/authority/PROJECT-AUTHORITY.md",
     "current_state": "/home/google/Symoneural/ProjectStatus.md",
     "current_handoff": "/home/google/Symoneural/docs/HANDOFF.md",
-    "history_archive": "/home/google/Symoneural/docs/handoffs/HANDOVER-ARCHIVE-pre-20260908.md",
+    "history_archive": "/home/google/Symoneural/docs/history/handoffs/HANDOVER-ARCHIVE-pre-20260908.md",
     "tool_policy": "/home/google/Symoneural/docs/authority/TOOL-POLICY.json",
     "active_dot_claude_functional_dependencies": 0,
     "dot_claude_prose_citations_remaining": 128
@@ -729,7 +729,7 @@ Please pick this up in this order:
    fact that makes a first-party miner possible; the ProgPoW loop and kernel are the work.
 5. **Do not** claim first-party for anything whose upstream is copyleft, however the files
    are named. `fork_engines.sh` refuses it in code and there are tests.
-6. **When you stop**, write a dated handoff into `docs/handoffs/` and update
+6. **When you stop**, write a dated handoff into `docs/history/handoffs/` and update
    `docs/HANDOFF.md` and `ProjectStatus.md`. One canonical state source and one canonical
    handoff. Do not create a third.
 
