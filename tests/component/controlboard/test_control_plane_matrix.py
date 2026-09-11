@@ -47,7 +47,7 @@ MIGRATION = DOCS / "ops" / "OPENAI-GPT-OSS-MIGRATION.md"
 
 APPS = ROOT / "backend" / "apps"
 MODELS = ROOT / "backend" / "models"
-SCOUT = ROOT / "tools" / "bootcamp_scout.py"
+SCOUT = ROOT / "tools" / "lib" / "bootcamp_scout.py"
 
 
 def is_app_module_dir(path):

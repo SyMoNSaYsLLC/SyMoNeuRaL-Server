@@ -35,7 +35,11 @@ import urllib.parse
 
 sys.path.insert(0, str(next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())))
 
-from streamer.apps import m3u, routes, safefetch, sessions, xtream          # noqa: E402
+from streamer.apps import m3u
+from streamer import streamer as routes
+from streamer.lib import safefetch
+from streamer.lib import sessions
+from streamer.lib import xtream
 from streamer.lib.safefetch import BlockedURL, Policy, Scrubber            # noqa: E402
 
 SENTINEL_USER = "zz-streamer-test-user-zz"

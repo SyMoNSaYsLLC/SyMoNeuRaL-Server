@@ -97,7 +97,7 @@ THIRD_PARTY_SECRETS = {
 
 # Generators that assert a live token was NOT baked into a published page. These are leak
 # guards pointing the opposite way from a gate, and they are inert when no token is set.
-LEAK_GUARDS = {REPO / "tools" / "build_studio.py", REPO / "tools" / "build_exp.py"}
+LEAK_GUARDS = {REPO / "tools" / "build" / "build_studio.py", REPO / "tools" / "build" / "build_exp.py"}
 
 
 #: Vendored trees living INSIDE apps/. `apps/sigils/.venv` is a gitignored virtualenv whose

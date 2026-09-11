@@ -19,10 +19,10 @@ import time
 
 import pytest
 
-from .apps import collect
-from .apps import feeds
-from .lib import fetch
-from .apps import rank
+from news.apps import collect
+from news.apps import feeds
+from news.lib import fetch
+from news.apps import rank
 from .apps.parse import Item, clean, parse_feed
 
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())

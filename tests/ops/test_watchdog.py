@@ -16,7 +16,7 @@ import sys
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-WATCH = ROOT / "tools" / "watch.py"
+WATCH = ROOT / "tools" / "lib" / "watch.py"
 sys.path.insert(0, str(ROOT / "tools"))
 
 

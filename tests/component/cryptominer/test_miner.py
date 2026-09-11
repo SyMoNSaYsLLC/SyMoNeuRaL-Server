@@ -35,7 +35,6 @@ import time
 import unittest
 
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-sys.path.insert(0, str(HERE.parent))           # backend/apps, as backend/server.py does
 import cryptominer  # noqa: E402
 
 FIXTURE = HERE / "testdata" / "kawpowminer-1.2.4-sm120-bench.log"

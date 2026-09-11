@@ -22,7 +22,8 @@ if str(_APPS) not in sys.path:
     sys.path.insert(0, str(_APPS))
 
 from gateway.lib import abi, chain                                      # noqa: E402
-from gateway.lib import entitlement, store, verify                   # noqa: E402
+from gateway.lib import entitlement, store
+from gateway.apps import verify
 from gateway.apps.verify import Granted, Refused, verify_payment      # noqa: E402
 
 # The canonical chain key -- what readings, `verify` and the clearance store are keyed by.

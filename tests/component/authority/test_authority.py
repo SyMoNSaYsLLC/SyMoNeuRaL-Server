@@ -19,7 +19,7 @@ import unittest
 import unittest.mock
 from pathlib import Path
 
-from . import (AuthorityError, LeaseConflict, NoTask, NotAuthorised, SCOPES, Task,
+from authority import (AuthorityError, LeaseConflict, NoTask, NotAuthorised, SCOPES, Task,
                acquire, current_holder, guard, journal_path, release, require, tasks_path,
                record_task, state_dir)
 

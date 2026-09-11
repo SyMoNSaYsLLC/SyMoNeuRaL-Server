@@ -47,7 +47,7 @@ import unittest
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 API = REPO / "backend" / "server.py"
 SITE = REPO / "site"
-GENERATOR = REPO / "tools" / "build_pages.py"
+GENERATOR = REPO / "tools" / "build" / "build_pages.py"
 
 
 def _livestack_pages() -> dict[str, str]:

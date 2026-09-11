@@ -10,7 +10,7 @@ import sys
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-TOOL = ROOT / "tools" / "build_operator.py"
+TOOL = ROOT / "tools" / "build" / "build_operator.py"
 PAGE = ROOT / "run" / "operator.html"
 sys.path.insert(0, str(ROOT / "backend"))
 

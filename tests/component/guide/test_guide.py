@@ -21,7 +21,7 @@ import pathlib
 import sys
 import unittest
 
-from streamer import guide  # noqa: E402
+from streamer.guide import guide
 
 
 # A small synthetic playlist. Three spellings of one sports group on purpose, a numbered pair

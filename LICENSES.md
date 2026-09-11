@@ -4,7 +4,7 @@
 >
 > **`/LICENSE` is the authoritative SyMoNeuRaL first-party licence** — *SyMoNeuRaL Proprietary
 > License*, © 2026 **SymonSays LLC**, SHA-256
-> `ba36ea1115f39cf439f9a34e5ebb107fd3169eca9eb132fe328d1c0d6a85dde7`, machine-readable
+> `a313b57c6b3a5660028c9b9d0cc8fca67380c1d0587975814c6d74ea0c2b42c7`, machine-readable
 > identifier **`LicenseRef-SyMoNeuRaL-Proprietary`**. That file carries the controlling terms
 > and nothing else; the identifier belongs in manifests and metadata rather than in the
 > licence body.

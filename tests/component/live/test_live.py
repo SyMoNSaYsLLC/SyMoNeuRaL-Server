@@ -22,7 +22,8 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from live.lib import hls, obs, routes
+from live.lib import hls, obs
+from live import live as routes
 
 REPO = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 

@@ -30,7 +30,8 @@ import unittest
 import unittest.mock
 
 import project                                                          # noqa: E402
-from project import router, store                                       # noqa: E402
+from project import router
+from project.lib import store
 
 TOKEN = "test-token-not-a-real-secret"
 ENV_KEYS = ("SYMONEURAL_PROJECT_ENABLED", "SYMONEURAL_PROJECT_TOKEN", "SYMONEURAL_PROJECT_DB",

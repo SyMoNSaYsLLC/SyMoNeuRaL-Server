@@ -132,7 +132,7 @@ class TheToolRunsOnThisBox(unittest.TestCase):
 
     def test_json_mode_is_parseable_and_exits_zero(self):
         r = subprocess.run(
-            [sys.executable, str(ROOT / "tools" / "serving_config_audit.py"), "--json"],
+            [sys.executable, str(ROOT / "tools" / "audit" / "serving_config_audit.py"), "--json"],
             capture_output=True, text=True, timeout=180)
         self.assertEqual(r.returncode, 0,
                          f"the audit must not fail a caller's CI for root-owned state; "

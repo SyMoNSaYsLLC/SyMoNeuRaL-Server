@@ -295,7 +295,7 @@ class WriterAuthorityTests(unittest.TestCase):
                              f"{forbidden} would be a privileged entitlement API")
 
     def test_t22b_cli_exposes_the_operations(self):
-        src = (ROOT / "tools" / "dispatchos_accounts.py").read_text()
+        src = (ROOT / "tools" / "lib" / "dispatchos_accounts.py").read_text()
         for flag in ("--link-identity", "--unlink-identity", "--grant", "--revoke",
                      "--list-entitlements"):
             self.assertIn(flag, src, f"CLI missing {flag}")

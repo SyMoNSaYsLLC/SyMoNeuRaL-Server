@@ -24,7 +24,7 @@ import sys
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-TOOL = ROOT / "tools" / "bootcamp_referee.py"
+TOOL = ROOT / "tools" / "lib" / "bootcamp_referee.py"
 
 
 def _load():

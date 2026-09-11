@@ -43,8 +43,8 @@ def _repo_root() -> pathlib.Path:
 
 ROOT = _repo_root()
 
-PREFLIGHT = ROOT / "tools" / "preflight.py"
-SERVING_DEPS = ROOT / "tools" / "serving_deps.py"
+PREFLIGHT = ROOT / "tools" / "lib" / "preflight.py"
+SERVING_DEPS = ROOT / "tools" / "lib" / "serving_deps.py"
 
 
 def _load_preflight():

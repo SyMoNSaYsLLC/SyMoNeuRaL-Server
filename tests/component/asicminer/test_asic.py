@@ -21,10 +21,8 @@ import tempfile
 import unittest
 
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-sys.path.insert(0, str(HERE.parent))           # backend/apps, as backend/server.py does
 import asicminer  # noqa: E402
 
-sys.path.insert(0, str(HERE))
 import fwcheck  # noqa: E402
 
 

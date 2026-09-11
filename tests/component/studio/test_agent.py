@@ -28,7 +28,9 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from . import agent, registry, routes  # noqa: F401  routes populates the registry
+from studio import registry
+from studio import studio as routes
+from studio.lib import agent
 
 GATED = "run_command"
 OPEN = "list_dir"

@@ -36,10 +36,10 @@ import wave
 from unittest import mock
 
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-sys.path.insert(0, str(HERE.parent))
 
 import voice  # noqa: E402
-from voice.lib import asr, routes, tts  # noqa: E402
+from voice.lib import asrtts  # noqa: E402
+from voice import voice as routes
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

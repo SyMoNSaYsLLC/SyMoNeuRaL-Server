@@ -24,9 +24,9 @@ import shutil
 import tempfile
 import unittest
 
-from .lib import registry
-from .lib import workspace
-from .tools_impl import cleanroom
+from studio.lib import registry
+from studio.lib import workspace
+from studio.tools_impl import cleanroom
 
 
 class TheWireHasShapeTests(unittest.TestCase):

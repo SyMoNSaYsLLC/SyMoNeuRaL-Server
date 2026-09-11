@@ -13,7 +13,7 @@ import unittest
 import unittest.mock
 import os
 
-from . import (Answer, PRESETS, agreement, preset_rows, provider_map, providers,
+from coders import (Answer, PRESETS, agreement, preset_rows, provider_map, providers,
                _normalise, CODER_IDS)
 
 

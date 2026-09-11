@@ -219,7 +219,7 @@ class EngineAuditCoversEveryEngine(unittest.TestCase):
         # from a blind spot.
         self.assertIn("chat_template", probe_engines.SERVING_SCAN_EXCLUDE)
         doc = probe_engines.__doc__ or ""
-        src = (ROOT / "tools" / "probe_engines.py").read_text()
+        src = (ROOT / "tools" / "audit" / "probe_engines.py").read_text()
         self.assertIn("api.py:2823", src,
                       "the chat_template exclusion no longer cites the file:line "
                       "that argues for it")

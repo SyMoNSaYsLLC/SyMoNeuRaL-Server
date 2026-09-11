@@ -157,7 +157,7 @@ class Idempotent(unittest.TestCase):
     @staticmethod
     def _generate() -> dict[str, bytes]:
         r = subprocess.run(
-            [sys.executable, str(ROOT / "tools" / "build_restore_manifests.py")],
+            [sys.executable, str(ROOT / "tools" / "build" / "build_restore_manifests.py")],
             cwd=ROOT, capture_output=True, text=True, timeout=900)
         if r.returncode != 0:
             raise AssertionError(f"the generator failed:\n{r.stdout}\n{r.stderr}")

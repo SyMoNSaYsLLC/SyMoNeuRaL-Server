@@ -151,7 +151,7 @@ def main() -> int:
         dst = WORK / f"e{keep:02d}.gguf"
         if not dst.exists():
             p = subprocess.run(
-                [str(VENV), str(ROOT / "tools" / "moe_prune.py"), "--keep", str(keep),
+                [str(VENV), str(ROOT / "tools" / "bench" / "moe_prune.py"), "--keep", str(keep),
                  "--src", str(SRC), "--dst", str(dst), "--keep-from", str(CAPTURE)],
                 capture_output=True, text=True, timeout=3600)
             if p.returncode != 0:

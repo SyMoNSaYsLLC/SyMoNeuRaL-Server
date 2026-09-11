@@ -24,7 +24,7 @@ REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "back
 def _load(tmp: pathlib.Path):
     """Load storage_reorg with all of its state redirected into a temp tree."""
     spec = importlib.util.spec_from_file_location(
-        "storage_reorg_under_test", REPO / "tools" / "storage_reorg.py")
+        "storage_reorg_under_test", REPO / "tools" / "data" / "storage_reorg.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     m.ROOT = tmp
@@ -208,7 +208,7 @@ def test_content_manifest_is_content_addressed_not_size_only(tmp_path):
     (src / "b.txt").write_bytes(b"BBBB")          # same size, different content
     (src / "link").symlink_to("a.txt")
     out = tmp_path / "CONTENTS.tsv"
-    r = subprocess.run(["python3", str(REPO / "tools" / "sym_content_manifest.py"),
+    r = subprocess.run(["python3", str(REPO / "tools" / "lib" / "sym_content_manifest.py"),
                         "make", str(src), str(out)], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
     rows = [l.split("\t") for l in out.read_text().splitlines()[1:]]

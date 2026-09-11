@@ -52,11 +52,13 @@ import types
 import unittest
 from unittest import mock
 
-from . import fiber as fibermod
-from . import cli, gate, loader as loadermod
-from . import registry
-from .context import Context, ContextError, Runtime
-from .plugins import CATALOGUE
+from studio.plugins.exp import fiber as fibermod
+from exp import gate
+from studio.plugins.exp import cli
+from studio.plugins.exp import loader as loadermod
+from exp import registry
+from exp.context import Context, ContextError, Runtime
+from exp.plugins import CATALOGUE
 
 APP = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 

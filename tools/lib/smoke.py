@@ -148,7 +148,7 @@ def http(url: str, method: str = "GET", body: dict | None = None,
 
 # --------------------------------------------------------------------- checks
 def check_preflight() -> None:
-    r = subprocess.run([sys.executable, str(ROOT / "tools" / "preflight.py"), "--json"],
+    r = subprocess.run([sys.executable, str(ROOT / "tools" / "lib" / "preflight.py"), "--json"],
                        capture_output=True, text=True, timeout=180)
     try:
         hard = json.loads(r.stdout)["hard_failures"]

@@ -33,7 +33,7 @@ PKG = HERE
 
 sys.path.insert(0, str(HERE.parents[3]))
 
-from studio.plugins import discovery as app  # noqa: E402
+from studio.plugins.discovery import discovery as app
 from studio.plugins.discovery import discovery, envfile  # noqa: E402
 
 

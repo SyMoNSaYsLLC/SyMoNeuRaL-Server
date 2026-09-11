@@ -31,10 +31,10 @@ import unittest
 from unittest import mock
 
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-sys.path.insert(0, str(HERE.parent))
 
 import gateway  # noqa: E402
-from gateway.lib import abi, address, chain, routes  # noqa: E402
+from gateway.lib import abi, address, chain# noqa: E402
+from gateway import gateway as routes
 from gateway.lib.keccak import _sponge, keccak256  # noqa: E402
 
 # The live USDT TRC-20 contract on mainnet. Used only as a known-good *address*; nothing in

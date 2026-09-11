@@ -23,8 +23,8 @@ import unittest
 from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-GENERATOR = ROOT / "tools" / "build_progress.py"
-INTAKE_GENERATOR = ROOT / "tools" / "build_intake.py"
+GENERATOR = ROOT / "tools" / "build" / "build_progress.py"
+INTAKE_GENERATOR = ROOT / "tools" / "build" / "build_intake.py"
 TASK_ROW = re.compile(r"^([◼◻▶]) ((?:\(unnumbered[^)]*\))|#\d+) — (.+)$", re.M)
 SOURCES = ("PROJECT-TASKS.md", "GARRETT-REQUESTS.md", "AUDIT-SURFACE-2026-08-19.md",
            "GARRETT-INBOX.md")

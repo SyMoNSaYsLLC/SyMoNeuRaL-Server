@@ -18,7 +18,7 @@ import unittest
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from .lib import epg
+from streamer.lib import epg
 from .lib.safefetch import Policy
 from .lib.xtream import XtreamCreds
 

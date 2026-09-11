@@ -23,7 +23,7 @@ from symoneural.core.green import (
 )
 from symoneural.compute.program import KernelCache, resolve_include_paths
 
-from .conftest import CUDA_INCLUDE_ARG, MPI_LAUNCH, has_libcudacxx, has_mpirun
+from reinforce.conftest import CUDA_INCLUDE_ARG, MPI_LAUNCH, has_libcudacxx, has_mpirun
 
 
 # ===========================================================================

@@ -27,7 +27,8 @@ from fastapi.testclient import TestClient                      # noqa: E402
 
 import dispatchos                                    # noqa: E402
 import accounts as shared_accounts                   # noqa: E402
-from dispatchos.lib import ai, quotes, store                  # noqa: E402
+from dispatchos.lib import ai, store
+from dispatchos.apps import quotes
 
 PW = "a-long-enough-password"
 

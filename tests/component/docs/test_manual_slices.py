@@ -16,7 +16,7 @@ import sys
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-TOOL = ROOT / "tools" / "build_manual_slices.py"
+TOOL = ROOT / "tools" / "build" / "build_manual_slices.py"
 
 
 class TheSlicesAreGenerated(unittest.TestCase):

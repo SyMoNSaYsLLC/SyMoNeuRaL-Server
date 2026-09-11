@@ -38,8 +38,11 @@ import unittest
 
 sys.path.insert(0, str(next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())))
 
-from reinforce import (dataset_guard, jobs, presets, registry,  # noqa: E402
-                       rewards, rollout)
+from reinforce import jobs, registry
+from studio.plugins.reinforce import dataset_guard
+from studio.plugins.reinforce import presets
+from studio.plugins.reinforce import rewards
+from studio.plugins.reinforce import rollout
 
 GIB = registry.GIB
 SEVEN_B = "Qwen/Qwen2.5-7B-Instruct"

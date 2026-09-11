@@ -92,7 +92,7 @@ class ContractShapeTests(unittest.TestCase):
         self.assertEqual(set(plugins.REQUIRED) & set(plugins.RECOGNISED), set())
 
     def test_load_returns_the_module_a_plain_import_returns(self):
-        from studio.plugins import exp
+        from studio.plugins.exp import exp
         self.assertIs(plugins.load("exp"), exp)
 
     def test_load_refuses_a_name_not_in_the_tuple(self):

@@ -1238,7 +1238,7 @@ def write_manifest(src: pathlib.Path, out: pathlib.Path) -> tuple[int, int]:
     SHA256 pass costs one sequential read of the leaf, which on NVMe is cheap next to the
     upload it precedes.
     """
-    helper = ROOT / "tools" / "sym_content_manifest.py"
+    helper = ROOT / "tools" / "lib" / "sym_content_manifest.py"
     if helper.is_file():
         r = sh(["python3", str(helper), "make", str(src), str(out)], timeout=43200)
         if r.returncode == 0:

@@ -42,13 +42,14 @@ import unittest
 import unittest.mock
 from unittest import mock
 
-from . import gate, routes
-from .lib import comfy
-from .lib import graph
-from .lib import registry
-from .apps import workflows
-from .lib import workspace
-from . import tools_impl  # noqa: F401  -- imported for its @tool registrations
+from studio import gate
+from studio import studio as routes
+from studio.lib import comfy
+from studio.lib import graph
+from studio.lib import registry
+from studio.apps import workflows
+from studio.lib import workspace
+from studio import tools_impl  # noqa: F401  -- imported for its @tool registrations
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 APP = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())

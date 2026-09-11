@@ -328,7 +328,7 @@ class TheGenerator(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        out = subprocess.run([sys.executable, str(ROOT / "tools" / "build_registry.py"),
+        out = subprocess.run([sys.executable, str(ROOT / "tools" / "build" / "build_registry.py"),
                               "--print"], capture_output=True, text=True, timeout=180)
         assert out.returncode == 0, out.stderr[-2000:]
         cls.doc = json.loads(out.stdout)
