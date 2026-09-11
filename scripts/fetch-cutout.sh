@@ -13,7 +13,7 @@
 # 2. **The weights are fetched here, not at request time.** rembg's default behaviour is to
 #    download a model on first use into `~/.u2net`. A serving path that reaches the network
 #    mid-request fails in a way that looks like a slow render, so the download is done once,
-#    deliberately, into `backend/models/rembg/`, and `U2NET_HOME` points there.
+#    deliberately, into `models/rembg/`, and `U2NET_HOME` points there.
 #
 # Licences -- a gate, not a footnote. u2net and isnet are Apache-2.0. **bria-rmbg-2.0 is
 # CC BY-NC 4.0 and is deliberately not fetched**: it is the best-known model rembg offers
@@ -29,7 +29,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 [ -f "$ROOT/scripts/gpu-governor.sh" ] || { echo "repo root not found at $ROOT" >&2; exit 1; }
 
 VENV="$ROOT/backend/sigils/.venv"
-MODELS="$ROOT/backend/models/rembg"
+MODELS="$ROOT/models/rembg"
 MODEL="${1:-u2net}"
 
 # The verified subset. `isnet-general-use` and `silueta` were checked and removed rather than
@@ -70,10 +70,10 @@ else
 fi
 
 # Apache-2.0 §4(a) obliges the licence text to travel with the Work, and `LICENSES.md` §9
-# checks for `backend/models/licenses/`. Same helper shape as `scripts/fetch-models.sh` so
+# checks for `models/licenses/`. Same helper shape as `scripts/fetch-models.sh` so
 # there is one place a customer build looks. A table row asserting Apache-2.0 while no text
 # ships is the obligation restated, not met.
-L="$ROOT/backend/models/licenses"; mkdir -p "$L"
+L="$ROOT/models/licenses"; mkdir -p "$L"
 lic() { # url dest
   [ -s "$L/$2" ] && { echo "  have $2"; return; }
   if curl -fsSL --retry 3 -o "$L/$2.part" "$1" 2>/dev/null && [ -s "$L/$2.part" ]; then

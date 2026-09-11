@@ -116,8 +116,8 @@ it nearly happened here.
 
 ### 2.3 What is actually on the box
 
-`backend/models/` — note the path. `.claude/CLAUDE.md`'s build block says weights go to
-`models/`; **there is no `models/` directory**, it is `backend/models/`, and that line in
+`models/` — note the path. `.claude/CLAUDE.md`'s build block says weights go to
+`models/`; **there is no `models/` directory**, it is `models/`, and that line in
 CLAUDE.md is stale. File sizes read off disk 2026-08-17:
 
 | File | Size on disk | Role |

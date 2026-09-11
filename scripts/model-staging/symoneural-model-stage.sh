@@ -41,7 +41,7 @@ set -euo pipefail
 CONFIRM_PHRASE="RUN MODEL DOWNLOAD"
 CANDIDATE_ID="symon-openai-20b"
 CANDIDATE_UPSTREAM="openai/gpt-oss-20b"
-STAGING_REL="backend/models/staging"
+STAGING_REL="models/staging"
 
 # The smoke engine listens here, NOT on LLAMA_PORT (8081). A candidate sharing the production
 # port could be answered by -- or could answer for -- the running Qwen server, and then the
@@ -75,8 +75,8 @@ usage() {
 show_disk() {
   head_ "disk"
   df -h . | awk 'NR==1 || NR==2 {print "  " $0}'
-  if [[ -d backend/models ]]; then
-    dim "  backend/models: $(du -sh backend/models 2>/dev/null | cut -f1)"
+  if [[ -d models ]]; then
+    dim "  models: $(du -sh models 2>/dev/null | cut -f1)"
   fi
 }
 
@@ -104,7 +104,7 @@ mode_smoke_plan() {
 
   Write the readings into:
 
-    backend/models/staging/<id>/SMOKE-PASSED.txt
+    models/staging/<id>/SMOKE-PASSED.txt
 
   That file cannot be written honestly without having run the thing, which is the whole
   reason `--activate-candidate` requires it. `exists` and `grep` cannot ask whether a model
@@ -218,8 +218,8 @@ mode_stage_gpt_oss() {
   "gguf_present": $gguf_flag,
   "smoke_passed": false,
   "rollback_to": {
-    "chat": "backend/models/llm/symon-1.0-7b-q4_k_m.gguf",
-    "chat_draft": "backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
+    "chat": "models/llm/symon-1.0-7b-q4_k_m.gguf",
+    "chat_draft": "models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
     "upstream": "bartowski/Qwen2.5-7B-Instruct-GGUF",
     "note": "measured active default at the time of staging; not deleted, not moved"
   },

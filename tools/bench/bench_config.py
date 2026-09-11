@@ -63,9 +63,9 @@ ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 GOV = ROOT / "scripts" / "gpu-governor.sh"
 
 MODELS = {
-    "gptoss": ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf",
-    "qwen":   ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf",
-    "draft":  ROOT / "backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
+    "gptoss": ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf",
+    "qwen":   ROOT / "models/llm/symon-1.0-7b-q4_k_m.gguf",
+    "draft":  ROOT / "models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
 }
 PORT = 8099
 

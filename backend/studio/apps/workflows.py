@@ -20,7 +20,7 @@ and the four filenames are the ones `folder_paths.get_filename_list` returns aft
 
 ## Why FLUX.1-schnell and not SD1.5
 
-Because it is what is here. `backend/models/image/` holds a quantised schnell UNet, the T5-XXL
+Because it is what is here. `models/image/` holds a quantised schnell UNet, the T5-XXL
 and CLIP-L text encoders, and the FLUX autoencoder -- 12 GB that the stable-diffusion.cpp
 surface already uses. `ComfyUI/models/checkpoints/` is empty apart from its placeholder, so a
 `CheckpointLoaderSimple` graph (the shape every ComfyUI example uses) has nothing to load and

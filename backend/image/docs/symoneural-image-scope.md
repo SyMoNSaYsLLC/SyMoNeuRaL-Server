@@ -15,7 +15,7 @@ and runs through the governor and queue. **That is not a capacity claim for mult
 
 ## 2. The baseline — measured, four files, all present
 
-`backend/models/image/`, read 2026-08-22:
+`models/image/`, read 2026-08-22:
 
 | File | Size |
 |---|---|

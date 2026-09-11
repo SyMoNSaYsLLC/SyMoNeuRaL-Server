@@ -61,9 +61,9 @@ Checked with `find / -xdev` for `u2net`, `rembg`, `birefnet`, `sam_vit`, `isnet`
 
 | Claim | Result | Evidence |
 |---|---|---|
-| Any segmentation weights under `backend/models/` | **None.** `hf/` (Qwen2.5-7B-Instruct), `image/` (FLUX set), `llm/`, `licenses/` | `ls backend/models/*` |
+| Any segmentation weights under `models/` | **None.** `hf/` (Qwen2.5-7B-Instruct), `image/` (FLUX set), `llm/`, `licenses/` | `ls models/*` |
 | Any under `references/` | **None.** Thirteen trees, none vision-segmentation; `stable-diffusion-webui-master/` is a design reference with no weights | `ls references/` |
-| A root `models/` directory | **Does not exist.** `.claude/CLAUDE.md`'s build block says `fetch-models.sh` writes to `models/`; the tree has `backend/models/`. Cosmetic, but it sent this audit to a non-existent path first — worth one line in HANDOVER when someone next edits it | `ls models/` → No such file or directory |
+| A root `models/` directory | **Does not exist.** `.claude/CLAUDE.md`'s build block says `fetch-models.sh` writes to `models/`; the tree has `models/`. Cosmetic, but it sent this audit to a non-existent path first — worth one line in HANDOVER when someone next edits it | `ls models/` → No such file or directory |
 | `~/.u2net`, `~/.cache/rembg` (rembg's default weight cache) | **Neither exists** | `ls` |
 | `rembg`, `onnxruntime`, `cv2`, `torch`, `skimage` in the serving interpreter | **None present** | `python3 -c "import importlib.util…"` |
 | `PIL`, `numpy`, `scipy` in the serving interpreter | **All present** — PIL 11.1.0, numpy 2.2.4, scipy 1.15.3 | same |

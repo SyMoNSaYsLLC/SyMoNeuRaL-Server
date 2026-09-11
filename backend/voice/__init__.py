@@ -113,7 +113,7 @@ def token_ok(presented: str | None) -> bool:
 
 def installed() -> bool:
     """Whether the ASR engine and its weights are actually on this disk. Both artefacts are
-    gitignored (`contrib/`, `backend/models/`), so a fresh checkout has neither and this is
+    gitignored (`contrib/`, `models/`), so a fresh checkout has neither and this is
     the difference between `ready` and `offline` on the rack."""
     return asr.installed()[0]
 

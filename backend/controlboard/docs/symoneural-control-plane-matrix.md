@@ -34,7 +34,7 @@ Gate × Meter × State × Risk × Runbook`
 | 4 | **Starter** | the proven current best **for this instance** | `api.py` AST, read not remembered |
 | 5 | **Candidate** | smoke-passed or partly proven competitor | Bootcamp §5, `staging/` |
 | 6 | **Captain** | which evaluator policy arbitrates | Bootcamp §1 *Captain types* |
-| 7 | **Model** | the weight actually reachable | `backend/models`, GGUF headers |
+| 7 | **Model** | the weight actually reachable | `models`, GGUF headers |
 | 8 | **Tool** | non-model executables the instance calls | binaries on disk |
 | 9 | **Agent** | anything that acts without a per-action human | route + loop inspection |
 | 10 | **Data** | most sensitive class the instance can reach | denylists, DB paths, env |
@@ -253,7 +253,7 @@ Two findings, both from filling in dimension 11 against the disk instead of agai
 
 | Reading | Value |
 |---|---|
-| weight | `backend/models/whisper/symoneural-listen-base-en.bin`, **147,964,211 B**, present, **1/1 manifested** |
+| weight | `models/whisper/symoneural-listen-base-en.bin`, **147,964,211 B**, present, **1/1 manifested** |
 | runtime | `whisper-cli` — **absent.** `asr.py:53-54` resolves it to `contrib/whisper.cpp/build/bin/whisper-cli` |
 | `contrib/` | **the directory does not exist**, and `.gitignore:63` ignores `/contrib` |
 | box-wide search | **two `whisper-cli` binaries exist**, both **973,872 B**, at `references/ENGINEERING/questions/contrib/whisper.cpp/build/bin/` (Aug 21) and `references/referencestochatgpt/whisper.cpp/build/bin/` (**Aug 17 14:04**) — **and neither may be used** (see below) |

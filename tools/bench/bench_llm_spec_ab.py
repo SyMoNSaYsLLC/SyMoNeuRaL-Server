@@ -47,8 +47,8 @@ from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
-CHAT = ROOT / "backend" / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
-DRAFT = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+CHAT = ROOT / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
+DRAFT = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
 ADAPTER = ROOT / "training" / "adapter" / "symoneural-lora.gguf"
 
 #: Deliberately not 8081. See the module docstring.

@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 TOOL = ROOT / "tools" / "lib" / "model_inventory.py"
 SCRIPT = ROOT / "scripts" / "model-staging" / "symoneural-model-stage.sh"
-MODELS = ROOT / "backend" / "models"
+MODELS = ROOT / "models"
 
 sys.path.insert(0, str(ROOT / "tools" / "lib"))
 import model_inventory as inv                                        # noqa: E402
@@ -381,7 +381,7 @@ class StagingScriptRefusalTests(unittest.TestCase):
         Skips when staging is absent: the tree is gitignored, so it does not exist on a fresh
         clone, and a test that quietly passes on absence would be worse than one that says why.
         """
-        manifest = ROOT / "backend/models/staging/openai-gpt-oss-20b/STAGED-MANIFEST.json"
+        manifest = ROOT / "models/staging/openai-gpt-oss-20b/STAGED-MANIFEST.json"
         if not manifest.is_file():
             self.skipTest("no staged candidate on this box; nothing to protect")
 
@@ -406,7 +406,7 @@ class StagingScriptRefusalTests(unittest.TestCase):
         measured or decided, unlike the manifest sitting beside it. That asymmetry is the whole
         reason one is rewritten here and the other is refused.
         """
-        staging = ROOT / "backend/models/staging/openai-gpt-oss-20b"
+        staging = ROOT / "models/staging/openai-gpt-oss-20b"
         roll, manifest = staging / "ROLLBACK.md", staging / "STAGED-MANIFEST.json"
         if not manifest.is_file():
             self.skipTest("no staged candidate on this box")

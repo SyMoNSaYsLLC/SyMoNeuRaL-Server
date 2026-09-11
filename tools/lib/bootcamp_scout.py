@@ -126,7 +126,7 @@ def serving_defaults() -> dict:
 
 
 def weights_on_disk() -> list[dict]:
-    """Every weight file under backend/models, with its measured size and architecture."""
+    """Every weight file under models, with its measured size and architecture."""
     exts = {".gguf", ".safetensors", ".bin", ".pt", ".onnx"}
     rows = []
     if not MODELS.is_dir():
@@ -153,7 +153,7 @@ def manifested() -> set[str]:
     except Exception:
         return set()
     rows = data if isinstance(data, list) else data.get("weights", data.get("models", []))
-    return {f"backend/models/{r['path']}" for r in rows if isinstance(r, dict) and "path" in r}
+    return {f"models/{r['path']}" for r in rows if isinstance(r, dict) and "path" in r}
 
 
 #: Path segments that mean "somebody else's code vendored into this tree".

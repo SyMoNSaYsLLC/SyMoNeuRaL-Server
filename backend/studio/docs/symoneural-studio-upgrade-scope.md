@@ -179,7 +179,7 @@ Two consequences that follow directly:
   model version*; it does not edit the model it derived from. `MODEL-REGISTRY.md`'s per-entry
   `provenance/license reference` is what makes that auditable, and an in-place mutation would
   destroy the provenance of the thing it overwrote.
-- **The current baseline is a protected input.** The four `backend/models/image/` FLUX/Schnell
+- **The current baseline is a protected input.** The four `models/image/` FLUX/Schnell
   files are PROD (`BOX-REALITY-AUDIT.md` §1.1). They are read by these operations and are not a
   legal write target for any of them.
 
@@ -341,7 +341,7 @@ Their *shape* is right and is kept verbatim in the node-system spec as field-sha
 illustration. Their *values* describe a machine this is not, and an MVP built to them would
 fail on the first node.
 
-1. **`"model_id": "sdxl-base"`** — there is no SDXL on this box. `backend/models/image/` holds
+1. **`"model_id": "sdxl-base"`** — there is no SDXL on this box. `models/image/` holds
    `symoneural-image-unet-q4_k.gguf`, `symoneural-image-t5-q8_0.gguf`,
    `symoneural-image-clip.safetensors`, `symoneural-image-vae.safetensors`: FLUX.1-schnell,
    quantised. **`ComfyUI/models/checkpoints/` does not exist at all**, so the
@@ -370,7 +370,7 @@ family, and the registry says which.
 schema is written so a family can be added without reshaping the graph format.
 
 **The current first image baseline for this box is the existing SyMoNeuRaL FLUX/Schnell-style
-stack in `backend/models/image/`:**
+stack in `models/image/`:**
 
 ```
 symoneural-image-unet-q4_k.gguf      the quantised UNet

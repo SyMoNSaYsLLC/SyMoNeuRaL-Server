@@ -51,7 +51,7 @@ def run(script, *args, timeout=120):
 
 def measured_payload_count() -> int:
     """Count payloads independently of the launchers, so the assertion is not circular."""
-    d = ROOT / "backend" / "models"
+    d = ROOT / "models"
     if not d.is_dir():
         return 0
     n = 0
@@ -114,7 +114,7 @@ class PayloadReportingTests(unittest.TestCase):
         """Two independent counters of the same thing must not drift.
 
         `measured_payload_count()` here and `payload_count` in `_models_common.sh` walk
-        `backend/models` with the same rules by hand. If they disagree, one of them is the
+        `models` with the same rules by hand. If they disagree, one of them is the
         wrong answer to "what is installed" and there is no way to tell which from output
         alone -- which is exactly the second-source-of-truth problem control/ exists to stop.
         """

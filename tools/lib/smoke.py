@@ -447,11 +447,11 @@ def check_gpu_lease(driver_ok: bool, quick: bool) -> None:
 
 def check_models() -> None:
     wanted = [
-        "backend/models/llm/symon-1.0-7b-q4_k_m.gguf",
-        "backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
-        "backend/models/image/symoneural-image-unet-q4_k.gguf",
-        "backend/models/image/symoneural-image-vae.safetensors",
-        "backend/models/image/symoneural-image-clip.safetensors",
+        "models/llm/symon-1.0-7b-q4_k_m.gguf",
+        "models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf",
+        "models/image/symoneural-image-unet-q4_k.gguf",
+        "models/image/symoneural-image-vae.safetensors",
+        "models/image/symoneural-image-clip.safetensors",
     ]
     missing = [w for w in wanted if not (ROOT / w).is_file()]
     if missing:

@@ -26,9 +26,9 @@ Somebody prepared the ASR half at ~14:03 today and their session is no longer in
 | Artefact | When | Note |
 |---|---|---|
 | `contrib/whisper.cpp` @ `1fe009c` | 14:03 | cloned **and built** — `build/bin/whisper-cli`, `whisper-server`, `whisper-bench` all present. Gitignored (`.gitignore:41`). |
-| `backend/models/whisper/symoneural-listen-base-en.bin` | 14:04 | 141 MB, the real `base.en` weights. Gitignored (`.gitignore:2`). |
-| `backend/models/licenses/whisper.cpp.LICENSE.txt` | 14:46 | MIT, "Copyright (c) 2023-2026 The ggml authors". |
-| `backend/models/licenses/openai-whisper.LICENSE.txt` | 14:46 | the model's own licence. |
+| `models/whisper/symoneural-listen-base-en.bin` | 14:04 | 141 MB, the real `base.en` weights. Gitignored (`.gitignore:2`). |
+| `models/licenses/whisper.cpp.LICENSE.txt` | 14:46 | MIT, "Copyright (c) 2023-2026 The ggml authors". |
+| `models/licenses/openai-whisper.LICENSE.txt` | 14:46 | the model's own licence. |
 
 **The single most important byte in all of it:** `contrib/whisper.cpp/build/CMakeCache.txt`
 carries `GGML_CUDA:BOOL=OFF`. The ASR engine that exists on this box is a **CPU** build.
@@ -64,7 +64,7 @@ Reproduce any of it:
 
 ```bash
 W=contrib/whisper.cpp/build/bin/whisper-cli
-M=backend/models/whisper/symoneural-listen-base-en.bin
+M=models/whisper/symoneural-listen-base-en.bin
 $W -m $M -t 8 -nt -f contrib/whisper.cpp/samples/jfk.wav
 ```
 
@@ -171,10 +171,10 @@ cd backend/apps/voice && python3 -m venv .venv && .venv/bin/pip install piper-tt
 
 Two things to settle at the same time, both cheap if done then and expensive if done later:
 
-- **The voice model's licence** must go in `backend/models/licenses/` like every other weight
+- **The voice model's licence** must go in `models/licenses/` like every other weight
   on this box. Piper's voices are not uniformly licensed — check the specific voice, do not
   assume it inherits Piper's own terms.
-- **`onnxruntime` is already in play here.** `backend/models/licenses/onnxruntime.LICENSE.txt`
+- **`onnxruntime` is already in play here.** `models/licenses/onnxruntime.LICENSE.txt`
   and `rembg`/`u2net` were recorded at 14:46 for the Stickers work (item 13). Coordinate rather
   than adding a second copy of the same dependency under a different owner.
 

@@ -46,7 +46,7 @@ BOOTCAMP = DOCS / "specs" / "symoneural-bootcamp.md"
 MIGRATION = DOCS / "ops" / "OPENAI-GPT-OSS-MIGRATION.md"
 
 APPS = ROOT / "backend" / "apps"
-MODELS = ROOT / "backend" / "models"
+MODELS = ROOT / "models"
 SCOUT = ROOT / "tools" / "lib" / "bootcamp_scout.py"
 
 
@@ -365,10 +365,10 @@ class ClaimsContradictedByTheDiskFail(unittest.TestCase):
 
 class WeightNamesResolve(unittest.TestCase):
     """Skips rather than fails where the weights are not present -- the convention
-    `test_weight_names.py` already uses, and necessary because `backend/models` is gitignored and
+    `test_weight_names.py` already uses, and necessary because `models` is gitignored and
     is empty in a fresh worktree."""
 
-    #: The persona adapter lives under `training/`, not `backend/models` -- it is protected and
+    #: The persona adapter lives under `training/`, not `models` -- it is protected and
     #: reported separately -- so both roots are searched. Getting this wrong made the first draft
     #: of this test report a missing weight that was simply somewhere else.
     WEIGHT_ROOTS = (MODELS, ROOT / "training")
@@ -385,7 +385,7 @@ class WeightNamesResolve(unittest.TestCase):
                 present |= {p.name for p in root.rglob("*")
                             if p.is_file() and p.suffix in suffixes}
         if not present:
-            self.skipTest("no weight files in this clone (backend/models is gitignored)")
+            self.skipTest("no weight files in this clone (models is gitignored)")
 
         text = read(CAPABILITY)
         named = set(re.findall(r"`([a-z0-9._-]+\.(?:gguf|safetensors|bin|onnx))`", text))

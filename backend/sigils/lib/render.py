@@ -77,7 +77,7 @@ GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 #: `external/` -- a tree this project may not build or link -- which is what took
 #: the sigil surface offline with every weight file present.
 DIFFUSE_ENGINE = ROOT / "symoneural-diffuse" / "build" / "bin" / "symoneural-diffuse"
-MODELS = ROOT / "backend" / "models" / "image"
+MODELS = ROOT / "models" / "image"
 #: Renders are API output. They go to backend/output/ and come back as /api/gen/<name>;
 #: they never go to site/, which is the staging webroot the web server does not serve.
 RENDERS = ROOT / "backend" / "output"

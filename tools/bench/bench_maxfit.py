@@ -63,12 +63,12 @@ GOV = ROOT / "scripts" / "gpu-governor.sh"
 PORT = 8099
 
 MODELS = {
-    "gptoss": ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf",
-    "qwen":   ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf",
-    "qwen3-30b-a3b": ROOT / ("backend/models/staging/candidates/qwen3-30b-a3b/"
+    "gptoss": ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf",
+    "qwen":   ROOT / "models/llm/symon-1.0-7b-q4_k_m.gguf",
+    "qwen3-30b-a3b": ROOT / ("models/staging/candidates/qwen3-30b-a3b/"
                              "Qwen3-30B-A3B-Instruct-2507-UD-Q3_K_XL.gguf"),
-    "qwen3-14b": ROOT / "backend/models/staging/candidates/qwen3-14b/Qwen_Qwen3-14B-Q4_K_M.gguf",
-    "qwen3-30b-q2": ROOT / ("backend/models/staging/candidates/qwen3-30b-a3b-q2/"
+    "qwen3-14b": ROOT / "models/staging/candidates/qwen3-14b/Qwen_Qwen3-14B-Q4_K_M.gguf",
+    "qwen3-30b-q2": ROOT / ("models/staging/candidates/qwen3-30b-a3b-q2/"
                             "Qwen3-30B-A3B-Instruct-2507-Q2_K_L.gguf"),
 }
 

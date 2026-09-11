@@ -239,7 +239,7 @@ def run_case(name: str) -> dict:
         expect = "unknown before measuring"
 
     elif name == "model":
-        target = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+        target = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
         with moved_away(target):
             a = start_foreground(tag="model")
         kind, msg = classify(a, "/api/chat speculative decoding")

@@ -290,14 +290,14 @@ class TestDenylist(Base):
         """The other half, and the reason the weight rule is scoped to `training/`.
 
         This was written first as `*.safetensors`/`*.gguf` in DENY_NAME_GLOBS, matched
-        anywhere -- which reports every off-the-shelf model under `backend/models/` as
+        anywhere -- which reports every off-the-shelf model under `models/` as
         refused. `.claude/CLAUDE.md` says the stack is "off-the-shelf and permissively
         licensed, so nothing here is protected by a licence", so that is a false statement
         about a licence, rendered on a page whose whole argument is that its readings are
         real. A denylist that cries wolf gets read as noise, and then the entries that matter
         get read as noise too."""
-        for rel in ("backend/models/qwen2.5-7b-instruct-q4_k_m.gguf",
-                    "backend/models/flux/flux1-schnell.safetensors",
+        for rel in ("models/qwen2.5-7b-instruct-q4_k_m.gguf",
+                    "models/flux/flux1-schnell.safetensors",
                     "models/whatever.gguf"):
             p = self.ws / rel
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -338,7 +338,7 @@ class TestDenylist(Base):
         """The cap must bind DURING the walk, not after it.
 
         The default workspace is the repo root, and `rglob("*")` there descends into
-        backend/models/ (40 GB), external/ (8.5 GB), contrib/ and three venvs. Draining
+        models/ (40 GB), external/ (8.5 GB), contrib/ and three venvs. Draining
         the generator into `sorted()` and then trimming to the cap returns the same answer
         and does all the work first, which is the "guard that protects nothing" shape.
 

@@ -58,7 +58,7 @@
 #
 # ## The weights are addressed by THIS repo's names, not upstream's
 #
-# `backend/models/image/` holds `symoneural-image-{unet-q4_k.gguf,t5-q8_0.gguf,
+# `models/image/` holds `symoneural-image-{unet-q4_k.gguf,t5-q8_0.gguf,
 # clip.safetensors,vae.safetensors}`. The vendored `extra_model_paths.yaml` documents the
 # upstream filenames it was written against, which are no longer on this box -- #74 item 3
 # renamed them and `backend/test_weight_names.py` keeps them renamed. The copy is

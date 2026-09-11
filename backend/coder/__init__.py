@@ -328,7 +328,7 @@ DENY_NAME_GLOBS: tuple[str, ...] = (
 #
 # This started as `*.safetensors`/`*.gguf` in DENY_NAME_GLOBS above, matched anywhere. That
 # is wrong in a way worth recording, because it looks strictly safer and is not: it would
-# report every public model under `backend/models/` -- Qwen, FLUX, whatever is fetched by
+# report every public model under `models/` -- Qwen, FLUX, whatever is fetched by
 # `scripts/fetch-models.sh` -- as `refused, matches the denied pattern *.gguf`. On a page
 # whose entire claim is that its readings are real, that is a false reading of a licence
 # status, and it would train the operator to read "refused" as noise. The one thing a
@@ -598,7 +598,7 @@ def list_dir(path: str = ".", *, token: str | None, peer: str | None,
     try:
         # The cap is applied DURING the walk, not after it. `sorted(walker)` would drain
         # the whole generator first, which on the default workspace -- the repo root --
-        # means rglob descending into backend/models/ (40 GB), external/ (8.5 GB),
+        # means rglob descending into models/ (40 GB), external/ (8.5 GB),
         # contrib/ and three venvs before the cap is consulted even once. A limit checked
         # after the expensive part is the shape HANDOVER §3.0d catalogues: it reads as a
         # guard and protects nothing. Collect up to the cap, then sort the survivors.

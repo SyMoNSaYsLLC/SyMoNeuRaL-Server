@@ -152,7 +152,7 @@ wall-clock training figure may be quoted from this log.**
 1. **`HF_HOME` points at a directory that does not exist.** `train_lora.py:35,39`:
    `ROOT = HERE.parent.parent` → `/home/google`, so `HF_HOME` becomes
    `/home/google/models/hf`. Confirmed absent. The real cache is
-   `backend/models/hf/` (15 GB), moved there by `9b5da84`. A fresh run today
+   `models/hf/` (15 GB), moved there by `9b5da84`. A fresh run today
    re-downloads ~14.2 GiB into a non-repo path, silently, and the docstring's promise that
    *"where are the models" has one answer* is broken. The repo already has the fix pattern:
    `tools/build/build_training.py:33` asserts `(ROOT / "backend" / "api.py").is_file()` with the
@@ -354,11 +354,11 @@ owner meant. `references/Projects_Crypto` (5.4 GB) is Antminer firmware and is u
 
 | File | Size on disk | Format | Fine-tunable with peft + bitsandbytes? |
 |---|---|---|---|
-| `backend/models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct` | 14.2 GiB (`total_size` 15,231,233,024 B) | HF safetensors, bf16, 4 shards | **Yes — the only one** |
-| `backend/models/llm/symon-1.0-7b-q4_k_m.gguf` | 4.36 GiB | GGUF Q4_K_M | No |
-| `backend/models/llm/symon-1.0-14b-q4_k_m.gguf` | 8.37 GiB | GGUF Q4_K_M | No |
-| `backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf` | 0.37 GiB | GGUF Q4_K_M | No |
-| `backend/models/image/*` (FLUX.1-schnell, ae, clip_l, t5xxl) | 11.8 GiB | GGUF + safetensors | No — diffusion, different surface |
+| `models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct` | 14.2 GiB (`total_size` 15,231,233,024 B) | HF safetensors, bf16, 4 shards | **Yes — the only one** |
+| `models/llm/symon-1.0-7b-q4_k_m.gguf` | 4.36 GiB | GGUF Q4_K_M | No |
+| `models/llm/symon-1.0-14b-q4_k_m.gguf` | 8.37 GiB | GGUF Q4_K_M | No |
+| `models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf` | 0.37 GiB | GGUF Q4_K_M | No |
+| `models/image/*` (FLUX.1-schnell, ae, clip_l, t5xxl) | 11.8 GiB | GGUF + safetensors | No — diffusion, different surface |
 | `training/adapter/adapter_model.safetensors` | 154 MiB | PEFT LoRA, fp32 | output, not a base |
 
 **GGUF is not a training format for this stack.** `transformers`/`peft`/`bitsandbytes`
@@ -479,7 +479,7 @@ checkpointing and a small batch"*):
    `cuMemGetInfo`, minus projected peak, against the chosen preset. Not fitting raises
    `CapabilityWaived` → **501** with the sum shown.
 5. **Fetch-on-demand, explicitly.** Offering a model not on disk must state the download size
-   up front (~27.5 GiB for the 14B) and write into `backend/models/hf`. Which means fixing
+   up front (~27.5 GiB for the 14B) and write into `models/hf`. Which means fixing
    `HF_HOME` (§1.5.1) is a prerequisite, not a follow-up.
 6. **Never enumerate `training/*.jsonl`.** See §8.
 

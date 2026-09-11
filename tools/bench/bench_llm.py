@@ -591,8 +591,8 @@ def main() -> int:
                   "model_path": props.get("model_path") or gen.get("model"),
                   "build": props.get("build_info")}
 
-    chat_model = ROOT / "backend" / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
-    draft_model = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+    chat_model = ROOT / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
+    draft_model = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
     d["models"] = []
     for p in (chat_model, draft_model):
         if not p.exists():

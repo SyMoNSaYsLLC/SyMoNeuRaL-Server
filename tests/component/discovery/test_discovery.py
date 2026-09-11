@@ -129,7 +129,7 @@ class CredentialContainmentTests(unittest.TestCase):
         A real token pasted into any tracked `*.example` is a leak whether or not a `.deb` is
         ever built, so the rule belongs on the tracked tree. It runs over `git ls-files` output
         for that reason — `find` would also walk `external/`, `.venv`s and 104 GiB of
-        `backend/models/`, none of which is publishable and all of which is out of scope.
+        `models/`, none of which is publishable and all of which is out of scope.
 
         The failure message names the file and the key and **never the value**: a test whose
         output carries the secret it caught has published it into CI logs and commit messages.

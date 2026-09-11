@@ -62,7 +62,7 @@ SEMANTICS: dict[str, dict[str, str]] = {
         CATEGORY="models", SUBCATEGORY="upstream distributions and historical",
         DESCRIPTION="Original and upstream public model distributions, conversion inputs, "
                     "historical models and model cards. The RUNNING weights are NOT here: "
-                    "they live locally at backend/models/ under house names, because the "
+                    "they live locally at models/ under house names, because the "
                     "runtime must work with Drive unavailable.",
         KEYWORDS="qwen;openai;gpt-oss;gguf;safetensors;weights;conversion",
         PROBLEM_DOMAIN="model provenance and re-derivation",
@@ -257,9 +257,9 @@ local. Everything here is history, reference and recovery material.
 **Where are the original Qwen/OpenAI models?**
 `Models/` — upstream distributions, conversion inputs and historical models, with
 `Models/Historical/` holding earlier staging. The *running* weights are not here: they are
-local at `backend/models/` under house names (`symon-1.0-*`, `symoneural-image-*`,
+local at `models/` under house names (`symon-1.0-*`, `symoneural-image-*`,
 `symoneural-listen-*`), because the runtime must work with Drive unavailable.
-`backend/models/PROVENANCE.json` maps every house name to its upstream repo and file.
+`models/PROVENANCE.json` maps every house name to its upstream repo and file.
 
 **Where are old SyMoNeuRaL source and build snapshots?**
 `Symoneural/History/Source-Snapshots/` and `Symoneural/History/Build-History/`. Pinned

@@ -57,9 +57,9 @@ ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 GOV = ROOT / "scripts" / "gpu-governor.sh"
 VENV = ROOT / "training" / ".venv" / "bin" / "python3"
-SRC = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
+SRC = ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
 CAPTURE = ROOT / "review/bench/moe-sequences.json"
-WORK = ROOT / "backend/models/staging/prune-sweep"
+WORK = ROOT / "models/staging/prune-sweep"
 PORT = 8099
 
 # Short factual prompts the original answers in under 60 tokens. A model that needs 400 has

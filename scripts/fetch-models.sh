@@ -9,9 +9,9 @@
 # FLUX.1-schnell ONLY. FLUX.1-dev is non-commercial and must never be substituted into
 # anything customer-facing. See LICENSES.md.
 #
-# HOUSE NAMES. Nothing under backend/models/ keeps an upstream filename. What lands on disk
+# HOUSE NAMES. Nothing under models/ keeps an upstream filename. What lands on disk
 # is symon-1.0-* for the language tiers and symoneural-image-* / symoneural-listen-* for the
-# rest; backend/models/PROVENANCE.json records which upstream artefact each one came from,
+# rest; models/PROVENANCE.json records which upstream artefact each one came from,
 # and backend/test_weight_names.py fails if a file appears that is not in the manifest
 # or not named to the rule. The upstream URLs below are the one thing that cannot be
 # rebranded -- you cannot fetch from a repository without naming it -- and the manifest is
@@ -28,7 +28,7 @@ set -euo pipefail
 # The guard below turns that into an immediate, obvious failure.
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 [ -f "$ROOT/backend/server.py" ] || { echo "repo root not found at $ROOT (expected backend/server.py)" >&2; exit 1; }
-M="$ROOT/backend/models"
+M="$ROOT/models"
 verify_sha256() { # file expected; an empty expectation preserves legacy non-image behavior
   local file="$1" expected="${2:-}" actual
   [ -n "$expected" ] || return 0
@@ -128,7 +128,7 @@ get "$HF/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/Qwen2.5-0.5B-Instruct
 # -- a handful of words describing a sticker -- and a larger model is a straight swap,
 # because both call sites pass the path and neither parses the name. MIT twice over: MIT at
 # ggerganov for the conversion, MIT at OpenAI for what it is a conversion OF, and both texts
-# are already in backend/models/licenses/.
+# are already in models/licenses/.
 echo "speech surface:"
 #
 # NOT pinned here, deliberately, and the reason is worth stating because pinning it was the

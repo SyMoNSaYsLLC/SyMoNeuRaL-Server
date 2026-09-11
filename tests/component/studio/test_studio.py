@@ -769,7 +769,7 @@ class ReadFileTests(unittest.TestCase):
             path = fh.name
         try:
             # `read_bytes()[:max_bytes]` pulled the whole file in first, which is an OOM on any
-            # of the multi-GB `.gguf` files under `backend/models/`. If the implementation goes
+            # of the multi-GB `.gguf` files under `models/`. If the implementation goes
             # back to it, this patch turns that into a failure instead of a slow pass.
             with mock.patch.object(pathlib.Path, "read_bytes",
                                    side_effect=AssertionError("read the whole file")):

@@ -195,17 +195,17 @@ traceback can carry a training example in it.
 
 **The `symon-1.0-*` models and the `Qwen/*` catalogue rows are the same models at two
 stages.** `symon-1.0-14b-q4_k_m` *is* `Qwen2.5-14B-Instruct`, converted and house-named;
-`symon-1.0-27b-*` is `Qwen3.6-27B`. `backend/models/PROVENANCE.json` is the record, and the
+`symon-1.0-27b-*` is `Qwen3.6-27B`. `models/PROVENANCE.json` is the record, and the
 catalogue now reads it — every GGUF row carries `upstream` and `same_model_as`, and the
 upstream rows name the house model they became.
 
 That matters because of where each stage is stored. The model-storage policy is:
 
-> Local `backend/models/` — only canonical SyMoNeuRaL house-named runnable artifacts and
+> Local `models/` — only canonical SyMoNeuRaL house-named runnable artifacts and
 > required local metadata/state.
 > Drive `Models/` — public/original upstream distributions **and conversion inputs**.
 
-So the HF cache under `backend/models/hf/` holds **metadata only**: config, tokenizer and the
+So the HF cache under `models/hf/` holds **metadata only**: config, tokenizer and the
 safetensors *filenames*, as symlinks whose blobs are on Drive. `du` reports 2.6 MB. That is
 the policy executed correctly, **not damage** — broken symlinks are the shape
 `huggingface_hub` leaves behind when blobs are removed.

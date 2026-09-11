@@ -6,7 +6,7 @@
 
 Three properties this suite is built for, beyond checking the code works.
 
-**It must SKIP, not fail, on a fresh checkout.** `contrib/` and `backend/models/` are both
+**It must SKIP, not fail, on a fresh checkout.** `contrib/` and `models/` are both
 gitignored, so `whisper-cli` and `symoneural-listen-base-en.bin` are absent from a clone. A suite that went
 red there would be a false alarm the next agent has to disprove before they can trust
 `pytest apps/`, and this repo has already paid for that lesson five times. Everything that
@@ -38,7 +38,7 @@ from unittest import mock
 HERE = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 
 import voice  # noqa: E402
-from voice.lib import asrtts  # noqa: E402
+from voice.lib import asr, tts  # noqa: E402
 from voice import voice as routes
 
 from fastapi import FastAPI  # noqa: E402

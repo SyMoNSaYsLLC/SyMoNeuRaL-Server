@@ -352,7 +352,7 @@ resolves *inside* the backups root, which only the shape check refuses.
 The sixth row is the same lesson in a different place. `list_dir`'s entry cap was originally
 checked inside `for child in sorted(walker)`, which drains the entire generator before the
 loop body runs even once — on the default workspace, the repo root, that means `rglob("*")`
-descending through `backend/models/` (40 GB), `references/` (8.5 GB), `contrib/` and three
+descending through `models/` (40 GB), `references/` (8.5 GB), `contrib/` and three
 venvs before the limit is consulted. It returned the right answer and did all the work
 first, which is exactly the §3.0d shape: a guard that reads as if it protects something and
 does not. The cap now binds during the walk, and the test asserts **how far the walk got**

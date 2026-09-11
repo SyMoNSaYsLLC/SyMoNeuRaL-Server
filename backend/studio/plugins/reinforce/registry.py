@@ -71,7 +71,7 @@ ROOT = next((_p for _p in (HERE, *HERE.parents) if (_p / "backend" / "server.py"
 # does, and turn a silent misresolution into an import-time crash.
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root misresolved to {ROOT}"
 
-MODELS_DIR = ROOT / "backend" / "models"
+MODELS_DIR = ROOT / "models"
 HF_HOME = MODELS_DIR / "hf"
 HF_HUB = HF_HOME / "hub"
 GGUF_DIR = MODELS_DIR / "llm"
@@ -447,7 +447,7 @@ class Entry:
     arch_label: str = ""
     params: dict | None = None
     fetch_bytes: int = 0         # projected download size when `present` is false
-    #: What this artefact was converted from, read out of backend/models/PROVENANCE.json.
+    #: What this artefact was converted from, read out of models/PROVENANCE.json.
     upstream: str = ""
     #: The OTHER row in this same catalogue that is the same model at a different stage.
     #: This field exists because of a specific misreading. The catalogue printed, adjacently:
@@ -463,7 +463,7 @@ class Entry:
         return asdict(self)
 
 
-#: backend/models/PROVENANCE.json is the only place recording which upstream artefact each
+#: models/PROVENANCE.json is the only place recording which upstream artefact each
 #: house name came from. It is authoritative and already existed; nothing here writes it.
 PROVENANCE = MODELS_DIR / "PROVENANCE.json"
 
@@ -717,7 +717,7 @@ def fetchable() -> list[Entry]:
     """
     out: list[Entry] = []
     have = {e.id for e in scan_hf_cache() if e.trainable}
-    # Derived from backend/models/PROVENANCE.json rather than hardcoded. The hardcoded pair
+    # Derived from models/PROVENANCE.json rather than hardcoded. The hardcoded pair
     # was ("0.5b", "14b") -- which silently excluded the 7B and the 27B, the two models whose
     # HF blobs are actually offloaded to Drive. So the picker could not show the offload state
     # for the only two models in it, and a reader who went looking found nothing at all.
@@ -753,7 +753,7 @@ def fetchable() -> list[Entry]:
                 f"different stage." if house else "")
         out.append(Entry(
             id=repo_id, label=repo_id, kind="hf",
-            path=f"backend/models/hf ({state})",
+            path=f"models/hf ({state})",
             present=False, trainable=False,
             same_model_as=", ".join(house),
             reason=(whereabouts + also + " Fetch-on-demand is not implemented -- this row "

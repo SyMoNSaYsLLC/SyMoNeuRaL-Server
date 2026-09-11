@@ -67,7 +67,7 @@ ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
 #: 0.40 GB. Deliberately the smallest weight on the box: two resident at once is ~1.3 GB
 #: against ~7.3 GB free, so even a FAILING lock cannot OOM the card during the negative
 #: control. A proof whose failure mode is an OOM is a proof nobody runs twice.
-MODEL = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+MODEL = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
 SAMPLE_S = 0.15
 
 

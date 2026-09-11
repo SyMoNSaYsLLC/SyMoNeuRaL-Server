@@ -51,7 +51,7 @@ assert (ROOT / "scripts" / "gpu-governor.sh").is_file(), (
 #: the engine could disappear without a trace, and did. `voice/asr.py` is the other call site
 #: and moved in the same commit; those two were the only ones.
 WHISPER = ROOT / "symoneural-listen" / "build" / "bin" / "symoneural-listen"
-MODELS = ROOT / "backend" / "models" / "whisper"
+MODELS = ROOT / "models" / "whisper"
 #: `base.en` is the default the fetch script pulls. English-only, 142 MB, and enough for
 #: an utterance that is a handful of words describing a sticker. A larger model is a
 #: straight swap -- the file name is the only thing that changes.

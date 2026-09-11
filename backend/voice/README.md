@@ -54,7 +54,7 @@ Neither is a design question. Both are one decision or one file away.
   at 353–414 ms from 3 s to 22 s, then doubling at 33 s. Whisper encodes a padded window, not
   the speech. Publish "about half a second for anything you can say in one breath"; never
   promise per-second scaling, and count windows rather than seconds in any progress indicator.
-- **Both artefacts this needs are gitignored** (`contrib/whisper.cpp`, `backend/models/whisper`)
+- **Both artefacts this needs are gitignored** (`contrib/whisper.cpp`, `models/whisper`)
   so a fresh checkout has neither. `EngineTests` **skips** as a unit there rather than failing.
 - **The semaphore is per event loop**, held in a `WeakKeyDictionary`. A module-level singleton
   works in the service (one loop, for ever) and raises the moment a suite calls `asyncio.run`

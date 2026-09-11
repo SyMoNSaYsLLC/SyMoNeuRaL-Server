@@ -5,7 +5,7 @@
 
 `.claude/CLAUDE.md`'s standing rule is scan-never-hardcode, derive-never-look-up, every figure
 labelled. A hand-written model list is a claim that rots the first time somebody drops a
-`.safetensors` into `backend/models/`, and that is exactly what happened here: `PROVENANCE.json`
+`.safetensors` into `models/`, and that is exactly what happened here: `PROVENANCE.json`
 records 11 weights and there are 28 on disk. The 17 it does not know about are 78 GiB, and no
 document noticed because no document was measuring.
 
@@ -94,7 +94,7 @@ def active_from_source() -> dict[str, str]:
     asr = ROOT / "backend" / "voice" / "lib" / "asr.py"
     if asr.is_file():
         text = asr.read_text(encoding="utf-8", errors="replace")
-        # ... / "backend" / "models" / "whisper" / "symoneural-listen-base-en.bin"
+        # ... / "models" / "whisper" / "symoneural-listen-base-en.bin"
         m = re.search(r'"models"\s*/\s*"([^"]+)"\s*/\s*"([^"]+)"', text)
         if m:
             found[f"{m.group(1)}/{m.group(2)}"] = "asr"
@@ -142,7 +142,7 @@ def scan() -> dict:
             "classification": _classify(rel, entry, rel in active),
         })
 
-    # Adapters live outside backend/models on purpose -- they are training OUTPUT, and
+    # Adapters live outside models on purpose -- they are training OUTPUT, and
     # `training/` is the protected tree. Recorded separately, never merged with base weights.
     adapters = []
     for p in sorted(TRAINING.rglob("adapter_model.safetensors")) if TRAINING.is_dir() else []:

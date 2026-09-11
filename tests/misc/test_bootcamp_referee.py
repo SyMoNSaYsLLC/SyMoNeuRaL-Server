@@ -88,7 +88,7 @@ class TheModelIsBlind(unittest.TestCase):
 
 
 class ScoringIsNotCorrectIsGood(unittest.TestCase):
-    MODEL = "backend/models/llm/model.gguf"
+    MODEL = "models/llm/model.gguf"
 
     def _probe(self, mode, **kw):
         return mr.Probe(probe_id="p", prompt="q", scoring_mode=mode,

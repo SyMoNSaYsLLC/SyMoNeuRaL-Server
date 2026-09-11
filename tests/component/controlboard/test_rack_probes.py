@@ -44,7 +44,7 @@ from pathlib import Path
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 API_PY = ROOT / "backend" / "server.py"
 API_SOURCE = API_PY.read_text()
-MODELS = ROOT / "backend" / "models"
+MODELS = ROOT / "models"
 STATUS_URL = "http://127.0.0.1:8800/api/status"
 
 

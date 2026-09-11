@@ -1315,7 +1315,7 @@ class PreflightTests(unittest.TestCase):
 
         This one is contingent and the contingency is stated rather than left to fail
         confusingly. `preflight()` checks preset, then model, then dataset, so on a box with no
-        `backend/models` this returns `unknown_model` and the assertion below reads
+        `models` this returns `unknown_model` and the assertion below reads
         `'unknown_model' != 'dataset_protected'` -- which looks like the corpus guard is broken
         and is not. That exact confusion cost another session time during the merge, in a temp
         worktree created by `git worktree add`, which does not get the symlink.

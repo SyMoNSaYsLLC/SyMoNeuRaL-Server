@@ -55,7 +55,7 @@ WORKER = pathlib.Path(__file__).resolve().parent / "cutout_worker.py"
 #: Where `scripts/fetch-cutout.sh` puts the weights. Passed as `U2NET_HOME` so rembg loads
 #: from disk instead of reaching for the network mid-request, which is its default and is
 #: the wrong behaviour inside a serving path.
-WEIGHTS = ROOT / "backend" / "models" / "rembg"
+WEIGHTS = ROOT / "models" / "rembg"
 DEFAULT_MODEL = "u2net"
 
 #: Generous against a measured ~1.3 s. A cold page cache after a reboot is the realistic
@@ -118,7 +118,7 @@ def state() -> dict:
         "model": DEFAULT_MODEL if model_file().is_file() else None,
         # Two licences, not one, because the engine and the weights are separate artefacts
         # with separate terms and a single "Apache-2.0" here would be quietly wrong about
-        # rembg. Both texts are fetched to `backend/models/licenses/`; see LICENSES.md §2-3.
+        # rembg. Both texts are fetched to `models/licenses/`; see LICENSES.md §2-3.
         "licence": {"model": "Apache-2.0 (U^2-Net, upstream repo)",
                     "engine": "MIT (rembg, onnxruntime)"},
         "engine": "rembg + onnxruntime, CPU, in its own venv -- never takes the GPU lock",

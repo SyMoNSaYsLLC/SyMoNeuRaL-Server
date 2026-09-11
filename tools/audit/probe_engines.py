@@ -41,7 +41,7 @@ distinction decides whether a hit is a finding:
   `ggml_conv2d_direct`. Renaming a function in a help string would make the help
   wrong. Reported separately, and not as findings.
 
-`backend/models/PROVENANCE.json` is the sanctioned place upstream attribution
+`models/PROVENANCE.json` is the sanctioned place upstream attribution
 lives, and none of this argues for erasing it — `test_weight_names.py` already
 enforces that every house name records where it came from. The question here is
 narrower: what does the engine SAY IT IS when something asks.
@@ -298,7 +298,7 @@ def measure_listen(repeats: int) -> dict:
     not contend with anything on the card and does not need the governor.
     """
     binary = ROOT / "symoneural-listen" / "build" / "bin" / "symoneural-listen"
-    weight = ROOT / "backend" / "models" / "whisper" / "symoneural-listen-base-en.bin"
+    weight = ROOT / "models" / "whisper" / "symoneural-listen-base-en.bin"
     sample = ROOT / "symoneural-listen" / "samples" / "jfk.wav"
     if not all(p.exists() for p in (binary, weight, sample)):
         return {"skipped": "binary, weight or sample absent",

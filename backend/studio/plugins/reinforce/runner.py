@@ -131,7 +131,7 @@ sys.path[:] = [p for p in sys.path if pathlib.Path(p or ".").resolve() != HERE]
 ROOT = next((_p for _p in (HERE, *HERE.parents) if (_p / "backend" / "server.py").is_file()), HERE)
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root misresolved to {ROOT}"
 
-HF_HOME = ROOT / "backend" / "models" / "hf"
+HF_HOME = ROOT / "models" / "hf"
 os.environ.setdefault("HF_HOME", str(HF_HOME))
 # Offline by default. A path slip that would otherwise start a silent ~14 GiB re-download
 # becomes an immediate, legible error instead.

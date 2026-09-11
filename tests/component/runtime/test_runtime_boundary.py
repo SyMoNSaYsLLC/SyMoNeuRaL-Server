@@ -216,7 +216,7 @@ class ManifestTests(unittest.TestCase):
                     "architecture", "model_identity", "file_type"):
             self.assertIn(key, m, f"the manifest has no {key!r}")
         self.assertEqual(m["relative_path"],
-                         "backend/models/llm/symon-1.0-7b-q4_k_m.gguf")
+                         "models/llm/symon-1.0-7b-q4_k_m.gguf")
         self.assertEqual(len(m["sha256"]), 64)
         self.assertNotIn("/yocto", m["canonical_absolute_path"])
         self.assertTrue(m["canonical_absolute_path"].startswith(CANON))

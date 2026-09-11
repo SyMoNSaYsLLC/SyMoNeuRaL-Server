@@ -611,7 +611,7 @@ def preflight(model_id: str, preset_id: str, dataset_path: str = "",
     if not GOVERNOR.is_file():
         problems.append("scripts/gpu-governor.sh is missing -- nothing may touch the GPU without it")
     if not registry.HF_HOME.is_dir():
-        problems.append("backend/models/hf does not exist -- the weight cache would not resolve")
+        problems.append("models/hf does not exist -- the weight cache would not resolve")
     if problems:
         result.update({"ok": False, "reason": "environment", "message": "; ".join(problems)})
 

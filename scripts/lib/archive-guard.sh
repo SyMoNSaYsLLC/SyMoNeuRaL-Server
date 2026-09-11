@@ -87,7 +87,7 @@ _AG_SECRET_KEYS='SPOTIFY_CLIENT_ID|SPOTIFY_CLIENT_SECRET|SPOTIFY_REDIRECT_URI|SY
 #
 # The content scan reads bytes. `grep -I` skips binary files, but it must read a file to
 # decide it is binary, so "skip" costs a full read. On this box the working tree is 158 GiB
-# (backend/models 115G, references 12G, engines 9.5G, training/.venv 7.2G, contrib 6.9G), and
+# (models 115G, references 12G, engines 9.5G, training/.venv 7.2G, contrib 6.9G), and
 # #15 hardlinks all of it. Scanning that unpruned takes hours; pruning it takes 0.33 s.
 #
 # WHY THIS IS SAFE FOR local-authorized AND NOT FOR shareable
@@ -107,7 +107,7 @@ _AG_SECRET_KEYS='SPOTIFY_CLIENT_ID|SPOTIFY_CLIENT_SECRET|SPOTIFY_REDIRECT_URI|SY
 # nothing about it -- the summary line only names entries that exist -- so the scan silently
 # went back to reading 9.5 GiB it had been skipping since this list was written. Slow, not
 # wrong; but "slow enough that nobody runs it" is how a credential scan stops being run.
-_AG_PRUNE_DIRS='backend/models	references	engines	contrib	.venv	node_modules	__pycache__	run'
+_AG_PRUNE_DIRS='models	references	engines	contrib	.venv	node_modules	__pycache__	run'
 
 # archive_guard <shareable|local-authorized> <root> [label]
 # Returns 0 if the archive may be built, 1 if it may not. Prints findings to stderr.

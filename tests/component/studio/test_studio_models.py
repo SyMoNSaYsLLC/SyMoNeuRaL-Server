@@ -246,7 +246,7 @@ class ValidatorRejectsJunk(unittest.TestCase):
         self.assertNotIn("path", ns["_STUDIO_FIELDS"])
         row = ns["_studio_rows"]([{
             "id": "x",
-            "path": "backend/models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/deadbeef",
+            "path": "models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/deadbeef",
         }])[0]
         self.assertNotIn("path", row)
 

@@ -168,7 +168,7 @@ def read_file(path: str, max_bytes: int = DEFAULT_MAX_BYTES, start_line: int = 0
         with p.open("rb") as fh:
             # `read(want + 1)`, not `read_bytes()[:want]`. Slicing after the read means the whole
             # file comes into the interpreter first: `read_file("/proc/kcore")` or any of the
-            # multi-GB `.gguf` files under `backend/models/` would OOM the serving process, and
+            # multi-GB `.gguf` files under `models/` would OOM the serving process, and
             # `max_bytes` -- documented above as "stop after this many bytes" -- bounded only the
             # return value. The extra byte is how truncation is detected without trusting
             # `st_size`, which is 0 for most of `/proc` and 128 TiB for `/proc/kcore`.

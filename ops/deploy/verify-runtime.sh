@@ -207,10 +207,10 @@ else
     else
         fail "engine holds /yocto references" "fds=$fds maps=$maps"
     fi
-    if sudo -n grep -q "$CANON/backend/models/llm/" /proc/$ENG_PID/maps 2>/dev/null; then
+    if sudo -n grep -q "$CANON/models/llm/" /proc/$ENG_PID/maps 2>/dev/null; then
         pass "engine has the canonical GGUF mapped"
     else
-        fail "engine has not mapped a model under $CANON/backend/models/llm/"
+        fail "engine has not mapped a model under $CANON/models/llm/"
     fi
 fi
 

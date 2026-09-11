@@ -33,10 +33,10 @@ API_PY = BACKEND / "backend" / "server.py"
 TREE = ast.parse(API_PY.read_text(encoding="utf-8"))
 SRC = API_PY.read_text(encoding="utf-8")
 
-QWEN_CHAT = ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf"
-QWEN_DRAFT = ROOT / "backend/models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf"
+QWEN_CHAT = ROOT / "models/llm/symon-1.0-7b-q4_k_m.gguf"
+QWEN_DRAFT = ROOT / "models/llm/symon-1.0-draft-0.5b-q4_k_m.gguf"
 ADAPTER = ROOT / "training/adapter/symoneural-lora.gguf"
-CANDIDATE = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
+CANDIDATE = ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
 
 
 def _funcs(*names: str) -> dict:

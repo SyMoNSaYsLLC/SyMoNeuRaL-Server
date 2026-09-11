@@ -95,7 +95,7 @@ class TheSpineIsActuallyMeasured(unittest.TestCase):
         """Two independent copies of the same reader, deliberately. They must not disagree --
         a depth chart saying `qwen2` while the serving code says otherwise is the whole failure
         this design is trying to avoid."""
-        chat = ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf"
+        chat = ROOT / "models/llm/symon-1.0-7b-q4_k_m.gguf"
         if not chat.is_file():
             self.skipTest("chat weight absent on this box")
         self.assertEqual(self.cm.gguf_arch(chat), "qwen2")

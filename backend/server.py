@@ -1124,7 +1124,7 @@ dispatchos.set_ask_model(guide_ask_model)
 # `path` is deliberately NOT in this list, even though the file carries it. Caddy delegates the
 # whole `/api/*` subtree publicly and this route has no surface flag in front of it, so the
 # response is world-readable; the row in the file reads
-# `backend/models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/<hash>`, which is this
+# `models/hf/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/<hash>`, which is this
 # repo's internal directory layout rather than a fact about the model. `/api/train/models` does
 # publish it, but that route is behind `_require_surface()`. Nothing needs it here: `id` names
 # the model, `kind` says which loader reads it, and `reason` carries the "not fetched" story

@@ -29,7 +29,7 @@ not a courtesy — a contract with no room for what makes a surface different ge
 then the abstraction exists while nothing uses it.
 
 `GenericProvenance` is the one to design first. Every artefact in this repo already carries
-provenance obligations — `backend/models/PROVENANCE.json` is the only place the house-name →
+provenance obligations — `models/PROVENANCE.json` is the only place the house-name →
 upstream-artefact mapping exists, and `NAMES.md` is a **licence obligation** rather than
 documentation. A generic artefact type that cannot carry those is not usable here.
 

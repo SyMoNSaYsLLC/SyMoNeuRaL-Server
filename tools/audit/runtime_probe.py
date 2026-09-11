@@ -257,7 +257,7 @@ def probe_llm_cli() -> None:
     require an empty card and is therefore a test somebody will run twice.
     """
     cli = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm-cli"
-    model = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+    model = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
     if not cli.is_file() or not model.is_file():
         record("symoneural-llm", "cli-fixed-seed", SKIP,
                "binary or draft model absent", cli=cli.is_file(), model=model.is_file())
@@ -326,7 +326,7 @@ def probe_llm_server() -> None:
     strength of a CLI run.
     """
     exe = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
-    model = ROOT / "backend" / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
+    model = ROOT / "models" / "llm" / "symon-1.0-draft-0.5b-q4_k_m.gguf"
     if not exe.is_file() or not model.is_file():
         record("symoneural-llm", "server-fixed-seed", SKIP, "binary or draft model absent")
         return
@@ -394,7 +394,7 @@ def probe_diffuse() -> None:
     exe = ROOT / "symoneural-diffuse" / "build" / "bin" / "symoneural-diffuse"
     w = {"unet": "symoneural-image-unet-q4_k.gguf", "vae": "symoneural-image-vae.safetensors",
          "clip": "symoneural-image-clip.safetensors", "t5": "symoneural-image-t5-q8_0.gguf"}
-    mdir = ROOT / "backend" / "models" / "image"
+    mdir = ROOT / "models" / "image"
     missing = [k for k, v in w.items() if not (mdir / v).is_file()]
     if not exe.is_file() or missing:
         record("symoneural-diffuse", "fixed-seed-png", SKIP,
@@ -480,7 +480,7 @@ def probe_listen_binary() -> None:
     than CUDA.
     """
     exe = ROOT / "symoneural-listen" / "build" / "bin" / "symoneural-listen"
-    model = ROOT / "backend" / "models" / "whisper" / "symoneural-listen-base-en.bin"
+    model = ROOT / "models" / "whisper" / "symoneural-listen-base-en.bin"
     wav = ROOT / "symoneural-listen" / "samples" / "jfk.wav"
     if not all(p.is_file() for p in (exe, model, wav)):
         record("symoneural-listen", "jfk-wav", SKIP, "binary, weight or sample absent",
@@ -566,7 +566,7 @@ def probe_listen_cost() -> None:
     audio and only one of them is arithmetic anybody can check.
     """
     exe = ROOT / "symoneural-listen" / "build" / "bin" / "symoneural-listen"
-    model = ROOT / "backend" / "models" / "whisper" / "symoneural-listen-base-en.bin"
+    model = ROOT / "models" / "whisper" / "symoneural-listen-base-en.bin"
     wav = ROOT / "symoneural-listen" / "samples" / "jfk.wav"
     if not all(p.is_file() for p in (exe, model, wav)):
         record("symoneural-listen", "cost-vs-bucket", SKIP, "binary, weight or sample absent")

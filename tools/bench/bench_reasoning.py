@@ -88,8 +88,8 @@ from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 ENGINE = ROOT / "symoneural-llm" / "build" / "bin" / "symoneural-llm"
-CANDIDATE = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
-QWEN = ROOT / "backend/models/llm/symon-1.0-7b-q4_k_m.gguf"
+CANDIDATE = ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
+QWEN = ROOT / "models/llm/symon-1.0-7b-q4_k_m.gguf"
 
 SMOKE_PORT = 8099            # never 8081: a candidate on the production port proves nothing
 QWEN_PORT = 8081             # where production Qwen already listens

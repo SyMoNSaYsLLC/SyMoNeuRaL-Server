@@ -1,8 +1,8 @@
 """Every weight on disk carries a house name, and every house name has a recorded origin.
 
-The rule this enforces: nothing under `backend/models/` is named after another company or
+The rule this enforces: nothing under `models/` is named after another company or
 another repository. What is on disk is `symon-1.0-*` for the language tiers and
-`symoneural-*` for everything else, and `backend/models/PROVENANCE.json` is the single place
+`symoneural-*` for everything else, and `models/PROVENANCE.json` is the single place
 that records which upstream artefact each house name was fetched from.
 
 A rename is cheap to do once and cheap to undo by accident: the next person to add a weight
@@ -27,7 +27,7 @@ import unittest
 from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-MODELS = ROOT / "backend" / "models"
+MODELS = ROOT / "models"
 MANIFEST = MODELS / "PROVENANCE.json"
 IMAGE_PATHS = {
     "image/symoneural-image-unet-q4_k.gguf",
@@ -50,9 +50,9 @@ WEIGHT_DIRS = ("llm", "image", "whisper")
 WEIGHT_SUFFIXES = (".gguf", ".safetensors", ".bin", ".onnx", ".pt", ".pth")
 
 EXEMPT = {
-    "backend/models/rembg": "rembg resolves a session by model name and expects <name>.onnx in U2NET_HOME",
-    "backend/models/hf": "the huggingface_hub cache layout -- the directory name IS the index",
-    "backend/models/licenses": "third-party licence texts; a licence that does not name its licensor is not a licence",
+    "models/rembg": "rembg resolves a session by model name and expects <name>.onnx in U2NET_HOME",
+    "models/hf": "the huggingface_hub cache layout -- the directory name IS the index",
+    "models/licenses": "third-party licence texts; a licence that does not name its licensor is not a licence",
 }
 
 
@@ -189,8 +189,9 @@ class ImageProvenanceFetch(unittest.TestCase):
         temp = tempfile.TemporaryDirectory(prefix="symoneural-provenance-", dir="/tmp")
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name)
-        self.models = self.root / "backend/models"
+        self.models = self.root / "models"
         self.models.mkdir(parents=True)
+        (self.root / "backend").mkdir()
         (self.root / "backend/server.py").touch()
         (self.root / "scripts").mkdir()
         self.script = self.root / "scripts/fetch-models.sh"
@@ -353,7 +354,7 @@ class NoForeignNamesInCode(unittest.TestCase):
     #: Files allowed to name an upstream artefact, and the reason each one must.
     ALLOWED = {
         "scripts/fetch-models.sh": "the download URL is the upstream path; it cannot be rebranded",
-        "backend/models/PROVENANCE.json": "this file exists to record the mapping",
+        "models/PROVENANCE.json": "this file exists to record the mapping",
         "backend/test_weight_names.py": "the LEGACY list above",
     }
 
@@ -380,7 +381,7 @@ class NoForeignNamesInCode(unittest.TestCase):
 
 
 class NamesDocumentAgreesWithManifest(unittest.TestCase):
-    """`backend/models/NAMES.md` is the reader's copy of the manifest, and must stay one.
+    """`models/NAMES.md` is the reader's copy of the manifest, and must stay one.
 
     Task #74 item 3 asks for a table "mapping each SyMoNeuRaL name to its upstream model and
     licence", because that table is what attribution is rendered from. Two copies of the same
@@ -405,7 +406,7 @@ class NamesDocumentAgreesWithManifest(unittest.TestCase):
         cls.names = (MODELS / "NAMES.md").read_text(encoding="utf-8")
 
     def test_the_document_exists_and_is_not_a_stub(self):
-        # The declared check on #74 is `grep upstream -- backend/models/NAMES.md`, which a
+        # The declared check on #74 is `grep upstream -- models/NAMES.md`, which a
         # one-line file satisfies -- and a task that archives on a stub is worse than one that
         # never closed. This is the floor that word-count check cannot express.
         self.assertGreater(len(self.names), 2000, "NAMES.md is too short to be the table")

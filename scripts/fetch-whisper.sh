@@ -44,7 +44,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 #     name `symoneural-listen-base-en.bin`. So even a successful run left ASR dead, and that
 #     is part of why it stayed dead: the script appeared to work. The upstream spelling is
 #     deliberately not repeated here -- `apps/test_weight_names.py` bans it from source, and
-#     `backend/models/NAMES.md` is the one place that maps house name to upstream name.
+#     `models/NAMES.md` is the one place that maps house name to upstream name.
 #
 # The two canonical tools now own the two halves, and both are tracked:
 #
@@ -64,7 +64,7 @@ else
   "$ROOT/tools/sh/fork_engines.sh" listen
 fi
 
-WEIGHT="$ROOT/backend/models/whisper/symoneural-listen-base-en.bin"
+WEIGHT="$ROOT/models/whisper/symoneural-listen-base-en.bin"
 if [ -s "$WEIGHT" ]; then
   echo "==> weight already present: $(basename "$WEIGHT") ($(du -h "$WEIGHT" | cut -f1))"
 else

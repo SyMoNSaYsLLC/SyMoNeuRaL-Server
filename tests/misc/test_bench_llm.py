@@ -27,7 +27,7 @@ import unittest
 from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-CHAT_GGUF = ROOT / "backend" / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
+CHAT_GGUF = ROOT / "models" / "llm" / "symon-1.0-7b-q4_k_m.gguf"
 
 
 def _load(name: str):

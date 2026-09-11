@@ -111,12 +111,12 @@ fi
 
 say "Weights"
 missing_w=0
-for w in backend/models/llm/symon-1.0-7b-q4_k_m.gguf backend/models/image/symoneural-image-unet-q4_k.gguf; do
+for w in models/llm/symon-1.0-7b-q4_k_m.gguf models/image/symoneural-image-unet-q4_k.gguf; do
   [ -s "$w" ] && pass "$(basename "$w")" || { note "$(basename "$w") missing"; missing_w=1; }
 done
 [ "$missing_w" = "1" ] && note "run ./scripts/fetch-models.sh to download weights and their licences"
-[ -d backend/models/licenses ] && pass "model licences present (required for any customer build)" \
-                       || note "backend/models/licenses missing — ./scripts/fetch-models.sh fetches them"
+[ -d models/licenses ] && pass "model licences present (required for any customer build)" \
+                       || note "models/licenses missing — ./scripts/fetch-models.sh fetches them"
 
 say "Adapter"
 [ -s training/adapter/symoneural-lora.gguf ] \

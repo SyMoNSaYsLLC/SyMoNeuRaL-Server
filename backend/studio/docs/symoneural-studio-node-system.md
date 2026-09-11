@@ -386,7 +386,7 @@ Five nodes only:
 
 `image.model_loader` · `image.prompt` · `image.sampler` · `image.vae_decode` · `image.output`
 
-Bound to the **FLUX.1-schnell GGUF stack in `backend/models/image/`** — `UnetLoaderGGUF`,
+Bound to the **FLUX.1-schnell GGUF stack in `models/image/`** — `UnetLoaderGGUF`,
 `DualCLIPLoaderGGUF`, `VAELoader` — and **not** `CheckpointLoaderSimple`, which has nothing to
 load here because `ComfyUI/models/checkpoints/` does not exist. `workflows.py` already
 enumerates the installed node set with its required inputs; that enumeration is the input to

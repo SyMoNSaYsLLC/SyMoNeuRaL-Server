@@ -353,7 +353,7 @@ Upgrade/Candidate, Future/Blocked — plus the competition record. Extras go in 
 
 **Option 2 — Near Upgrade / Candidate**
 - **model/runtime** `symon-openai-20b.gguf` (gpt-oss, 12.85 GiB, MXFP4, `file_type 38`)
-- **route/file** `backend/models/staging/openai-gpt-oss-20b/` — **staging, not wired to any route**
+- **route/file** `models/staging/openai-gpt-oss-20b/` — **staging, not wired to any route**
 - **proof** smoke-passed (5 of 6 readings) · benchmarked · 166.3 tok/s gen · **14,297 MiB at production context, generating** · negative control **PASS**
 - **proof needed** governor-lease reading (structurally impossible via the isolated path) · a quality comparison that is not one prompt
 - **blockers** **(1) no persona adapter** — the qwen2 LoRA cannot apply, measured exit 1; promotion *loses the persona outright* and no gpt-oss-shaped LoRA exists. **(2) 259 tokens for a one-sentence answer** — 10× Qwen's, the Harmony reasoning channel is charged whether read or not. **(3) 14.3 GiB leaves under the governor's 1.5 GB drain floor when co-resident**

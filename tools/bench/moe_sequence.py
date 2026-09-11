@@ -50,7 +50,7 @@ from pathlib import Path
 
 ROOT = next(_p for _p in Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 EVALCB = ROOT / "symoneural-llm" / "build-evalcb" / "bin" / "llama-eval-callback"
-GPTOSS = ROOT / "backend/models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
+GPTOSS = ROOT / "models/staging/openai-gpt-oss-20b/symon-openai-20b.gguf"
 
 # The trailing `= {...}` is the RESULT shape. A non-greedy match grabs the SOURCE shape out of
 # `VIEW(ffn_moe_argsort-0{32, 4, ...})`, reads n_used as 32, finds no line with 32 numbers and

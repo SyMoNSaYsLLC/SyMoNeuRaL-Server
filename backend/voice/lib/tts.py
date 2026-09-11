@@ -30,10 +30,10 @@ repo root; this is the corrected path and the spec now says so.)
 
 Two things to settle in the same sitting, both cheap then and expensive later:
 
-- **The voice model's licence goes in `backend/models/licenses/`** like every other weight
+- **The voice model's licence goes in `models/licenses/`** like every other weight
   here. Piper's voices are not uniformly licensed -- check the specific voice; it does not
   inherit Piper's own terms.
-- **`onnxruntime` is already in play on this box** -- `backend/models/licenses/onnxruntime.
+- **`onnxruntime` is already in play on this box** -- `models/licenses/onnxruntime.
   LICENSE.txt` and `rembg`/`u2net` were recorded for the Stickers work (HANDOVER §5 item 13).
   Coordinate rather than adding a second copy of the same dependency under a different owner.
 """

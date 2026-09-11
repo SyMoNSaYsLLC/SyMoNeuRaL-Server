@@ -15,7 +15,7 @@
 # WHAT IS IN IT: tracked production files, minus protected and non-production exclusions.
 # Tracked-ness is the first rule because
 # `.gitignore` already encodes "build output, weights and secrets do not travel" -- the
-# 104 GiB of `backend/models/`, every `.venv`, `contrib/`, `engines/`, `external/`, `run/`.
+# 104 GiB of `models/`, every `.venv`, `contrib/`, `engines/`, `external/`, `run/`.
 # Using `git ls-files` rather than `find` means those cannot be re-included by accident.
 set -euo pipefail
 
@@ -153,7 +153,7 @@ Description: SyMoNeuRaL local AI stack -- CLI, API, site and studio tools
  /etc/symoneural/no-auto-deploy to suppress it.
  .
  Model weights are NOT included: they are roughly 104 GiB on the reference box and
- are fetched separately into backend/models. The llama.cpp and stable-diffusion.cpp
+ are fetched separately into models. The llama.cpp and stable-diffusion.cpp
  binaries are not included either -- they are built from contrib/ on the target,
  against its own driver and compute capability. Until both exist,
  "symoneural-cli status" reports the surfaces as not built, which is accurate.

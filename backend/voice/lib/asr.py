@@ -64,7 +64,7 @@ WHISPER_CLI = Path(os.environ.get("SYMONEURAL_WHISPER_CLI")
                    or ROOT / "symoneural-listen" / "build" / "bin"
                    / "symoneural-listen")
 MODEL = Path(os.environ.get("SYMONEURAL_WHISPER_MODEL")
-             or ROOT / "backend" / "models" / "whisper" / "symoneural-listen-base-en.bin")
+             or ROOT / "models" / "whisper" / "symoneural-listen-base-en.bin")
 
 # Whisper pads its input to a fixed window and encodes the window, not the speech. This is
 # the number behind the flat 353-414 ms `encode` column for every clip from 3 s to 22 s, and
@@ -113,7 +113,7 @@ def ffmpeg_path() -> str | None:
 
 def installed() -> tuple[bool, str]:
     """(ready, why not). Every clause names the exact missing path, because both artefacts
-    are gitignored (`contrib/` and `backend/models/`) and a fresh checkout has neither."""
+    are gitignored (`contrib/` and `models/`) and a fresh checkout has neither."""
     if not WHISPER_CLI.is_file():
         return False, f"whisper-cli missing at {WHISPER_CLI}"
     if not os.access(WHISPER_CLI, os.X_OK):

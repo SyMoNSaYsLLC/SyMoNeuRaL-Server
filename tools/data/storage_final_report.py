@@ -184,7 +184,7 @@ def collect() -> dict:
         ROOT / "external") else 0
     d["HISTORICAL_ARCHIVE_BYTES"] = du(ROOT / "archive") if exists(
         ROOT / "archive") else 0
-    d["LOCAL_RUNTIME_MODEL_BYTES"] = du(ROOT / "backend" / "models")
+    d["LOCAL_RUNTIME_MODEL_BYTES"] = du(ROOT / "models")
     d["UNIQUE_TRAINING_BYTES"] = du(ROOT / "training") if exists(
         ROOT / "training") else 0
     d["RUNTIME_REQUIRED_DEPENDENCY_BYTES"] = du(ROOT / "backend" / "vendor") if exists(

@@ -180,7 +180,7 @@ GPL-encumbered. hls.js does the same job in 384 KB under a permissive licence.
 > `backend/apps/sigils/cutout_worker.py` is therefore `u2net` and `u2netp` only, and
 > `scripts/fetch-cutout.sh` refuses anything else.
 
-Licence texts are saved to **`backend/models/licenses/`** by `scripts/fetch-models.sh`,
+Licence texts are saved to **`models/licenses/`** by `scripts/fetch-models.sh`,
 `scripts/fetch-whisper.sh` and `scripts/fetch-cutout.sh` — all three write to the one
 directory so a customer build has a single place to look. `models/` is gitignored
 (40 GB), so those files live on disk beside the weights rather than in git — **they must be
@@ -230,7 +230,7 @@ redistributed if a customer box does photograph cut-outs. Populated by `scripts/
 | numpy | BSD-3-Clause (with 0BSD, MIT, Zlib, CC0-1.0 components) |
 | scikit-image, pooch | BSD-3-Clause |
 
-`rembg.LICENSE.txt` and `onnxruntime.LICENSE.txt` are fetched to `backend/models/licenses/`.
+`rembg.LICENSE.txt` and `onnxruntime.LICENSE.txt` are fetched to `models/licenses/`.
 The remainder are ordinary MIT/BSD wheels whose texts ship inside their own `dist-info`, which
 is where a customer image will find them.
 
