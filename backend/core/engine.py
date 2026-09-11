@@ -21,6 +21,17 @@ import studio  # noqa: E402  -- the local agent and the
 import live  # noqa: E402  -- his OBS stream, watchable while it runs and after it
 
 from core.context import ctx
+from core import events
+
+# Beside the thing it guards. It lived in server.py and was read off ctx, which meant the
+# API could start and only fail at SHUTDOWN, when stop_llama() first reached for it -- and
+# `import server` does not run the lifespan, so nothing caught it. Found by booting.
+_llama_lock = asyncio.Lock()
+
+#: The resident chat engine, or None. Declared here rather than assigned only inside
+#: start_llama(), because stop_llama() reads it and a shutdown that never started the engine
+#: then raised NameError -- an API that starts fine and cannot stop. Also found by booting.
+_llama: asyncio.subprocess.Process | None = None
 
 
 def _gguf_arch(path):
@@ -179,7 +190,7 @@ async def llama_up() -> bool:
         return False
 async def start_llama() -> bool:
     global _llama
-    async with ctx._llama_lock:
+    async with _llama_lock:
         if await llama_up():
             return True
         if not CHAT_MODEL.exists() or not LLM_ENGINE.exists():
@@ -231,16 +242,23 @@ async def start_llama() -> bool:
             # On disk but not applicable. Say so, for the reason the adapter branch says it:
             # a surface that quietly runs without an accelerator it believes it has produces
             # a throughput number nobody can explain.
-            ctx.log.warning("draft model NOT applied: %s is %s, chat model is %s",
-                        DRAFT_MODEL.name, _gguf_arch(DRAFT_MODEL), _gguf_arch(CHAT_MODEL))
+            # `skipped`, not a warning buried in prose: a surface quietly running without an
+            # accelerator it believes it has produces a throughput number nobody can explain.
+            events.skipped("speculative decoding", "draft arch differs from chat arch",
+                           draft=DRAFT_MODEL.name, draft_arch=_gguf_arch(DRAFT_MODEL),
+                           chat_arch=_gguf_arch(CHAT_MODEL))
         if adapter_applies():
             argv += ["--lora", str(CHAT_ADAPTER)]
         elif CHAT_ADAPTER.exists():
             # On disk but not applicable. Say so loudly: the alternative is a surface that
             # quietly serves without its persona and a ctx.log that never mentions it.
-            ctx.log.warning("persona adapter NOT applied: %s is %s, chat model is %s",
-                        CHAT_ADAPTER.name, _gguf_arch(CHAT_ADAPTER), _gguf_arch(CHAT_MODEL))
-        ctx.log.info("starting chat surface")
+            events.skipped("persona adapter", "adapter arch differs from chat arch",
+                           adapter=CHAT_ADAPTER.name, adapter_arch=_gguf_arch(CHAT_ADAPTER),
+                           chat_arch=_gguf_arch(CHAT_MODEL))
+        events.runtime_status("symoneural-llm", "starting", model=CHAT_MODEL.name,
+                              ctx=CHAT_CTX_TOTAL, slots=2,
+                              draft=draft_applies(), adapter=adapter_applies())
+        _spawn = time.monotonic()
         _llama = await asyncio.create_subprocess_exec(
             *argv, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
         # No `start_new_session=True` here, deliberately: the chat engine is long-lived and
@@ -248,16 +266,29 @@ async def start_llama() -> bool:
         # `record_engine` will decline to offer a pgid, and eviction signals the single pid.
         # That is still an identity, which the pattern it replaces was not.
         await record_engine(_llama.pid)
+        # The duration to ready is the diagnostic. 4 s is a warm page cache, 40 s is a cold
+        # read of 11 GB off disk, and a failure at 3 s is a missing file rather than a
+        # timeout -- and the old log said "chat surface up" for all three.
         for _ in range(120):
             if await llama_up():
-                ctx.log.info("chat surface up")
+                events.runtime_status("symoneural-llm", "ready", pid=_llama.pid,
+                                      ms=int((time.monotonic() - _spawn) * 1000),
+                                      port=LLAMA_PORT)
                 return True
+            if _llama.returncode is not None:
+                events.runtime_status("symoneural-llm", "failed",
+                                      reason=f"exited rc={_llama.returncode} before answering",
+                                      ms=int((time.monotonic() - _spawn) * 1000))
+                return False
             await asyncio.sleep(1)
-        ctx.log.error("chat surface failed to come up")
+        events.runtime_status("symoneural-llm", "failed",
+                              reason="no answer on /health within 120 s",
+                              pid=_llama.pid, port=LLAMA_PORT,
+                              ms=int((time.monotonic() - _spawn) * 1000))
         return False
 async def stop_llama() -> None:
     global _llama
-    async with ctx._llama_lock:
+    async with _llama_lock:
         if _llama and _llama.returncode is None:
             _llama.terminate()
             try:

@@ -3,7 +3,7 @@
 Runtime objects come off `core.context.ctx`; importing server would be a cycle.
 """
 from __future__ import annotations
-from core.config import LIMITS, MAX_PROMPT_CHARS, PORT, QUEUE_DEPTH
+from core.config import LIMITS, LOCAL_ONLY, MAX_PROMPT_CHARS, PORT, QUEUE_DEPTH
 
 import asyncio
 import subprocess
@@ -25,6 +25,7 @@ import live  # noqa: E402  -- his OBS stream, watchable while it runs and after 
 import dispatchos  # noqa: E402  -- the transport dispatch application for a named
 
 from core.context import ctx
+from core import events
 
 
 class AsicCache:
@@ -91,35 +92,45 @@ async def telemetry_loop() -> None:
         except Exception:
             ctx.log.exception("telemetry loop hiccup")
 @asynccontextmanager
-async def lifespan(_: FastAPI):
-    ctx.log.info("symoneural api on 127.0.0.1:%d (loopback only)", PORT)
+async def lifespan(app: FastAPI):
+    events.startup_begin()
+    events.emit("listening", host="127.0.0.1", port=PORT, scope=LOCAL_ONLY and "loopback" or "any")
     global _LOOP
     _LOOP = asyncio.get_running_loop()
-    guide_routes.ASK_MODEL = ctx.guide_ask_model
+    # From core.engine directly, not off ctx. It is a plain function with no dependency on
+    # the app, so routing it through the context bag bought nothing and cost a startup: it
+    # was never added to configure(), and `import server` does not run the lifespan, so the
+    # route-count check could not see it. Found by booting the thing.
+    from core.engine import guide_ask_model
+    guide_routes.ASK_MODEL = guide_ask_model
     # "0/min, 0/hr" would read as "nothing is allowed" in a ctx.log someone skims at 3am, when
     # it means the exact opposite. Print the state, not the number.
-    metered = ", ".join(f"{s} {p}/min {h}/hr" for s, (p, h) in LIMITS.items() if p) or "none"
-    ctx.log.info("caps: prompt<=%d chars, queue %d, rate limited: %s",
-             MAX_PROMPT_CHARS, QUEUE_DEPTH, metered)
+    events.emit("caps", prompt_chars=MAX_PROMPT_CHARS, queue_depth=QUEUE_DEPTH,
+                metered=sum(1 for p, _ in LIMITS.values() if p), surfaces=len(LIMITS))
     # DispatchOS creates its tables once at startup rather than on the first request, so an
     # operator opening the page never races two requests both running CREATE TABLE. Guarded
     # by the switch: with the surface off this touches no disk at all, which keeps the
     # default state of this box free of a database nobody asked for.
-    if dispatchos.enabled():
+    with events.phase("dispatchos store"):
         try:
             dispatchos.init_db()
-            ctx.log.info("dispatchos surface enabled; store at %s", dispatchos.lib.store.db_path())
-        except Exception:
+            events.runtime_status("dispatchos", "ready", store=dispatchos.lib.store.db_path())
+        except Exception as exc:
+            events.runtime_status("dispatchos", "failed", reason=f"store: {type(exc).__name__}")
             # A store that will not open is a reason for that surface to answer 503, not a
             # reason for the whole API to fail to start. `status()` reports it as offline.
             ctx.log.exception("dispatchos store could not be initialised; surface stays down")
+
     ticker = asyncio.create_task(telemetry_loop())
     # Only run when an operator has switched the surface on. With the env unset this task
     # would loop forever doing nothing, so it is not started at all -- and the rack still
     # reports the ASIC unit correctly, because `unit_state` reads the switches directly.
     asic = asyncio.create_task(asic_refresher()) if asicminer.enabled() else None
-    if asic:
-        ctx.log.info("asic surface enabled; probing %d configured rig(s)", len(asicminer.rigs()))
+    _rigs = len(asicminer.rigs())
+    events.runtime_status("asicminer",
+                          "starting" if (asic and _rigs) else "absent",
+                          reason=None if (asic and _rigs) else "no rigs configured",
+                          rigs=_rigs)
     # Same reasoning as the ASIC probe, for the same reason: a public TRON node measured
     # 0.4-2.3 s from this box, and /api/status drives the rack websocket for every visitor.
     # A reading that slow cannot sit on the status path, so it is cached off it.
@@ -134,9 +145,10 @@ async def lifespan(_: FastAPI):
     # everything this task would poll nothing forever.
     delegates = (asyncio.create_task(ctx.poll_delegated())
                  if ports.delegated_surfaces() else None)
-    if newsfeed:
-        ctx.log.info("news surface enabled; %d sources, %d search engines, %.0fs interval",
-                 len(news.apps.feeds.SOURCES), len(news.apps.feeds.SEARCHES), news.interval_s())
+    events.runtime_status("news", "starting" if newsfeed else "absent",
+                          reason=None if newsfeed else "refresher not started",
+                          sources=len(news.apps.feeds.SOURCES),
+                          engines=len(news.apps.feeds.SEARCHES), interval_s=news.interval_s())
     # The project store is created by `store.connect()`, which every write route goes
     # through -- but the rack poll uses `probe()`, read-only by design, so before this line
     # existed a fresh install reported "no project store initialised" until someone happened
@@ -144,15 +156,19 @@ async def lifespan(_: FastAPI):
     # a file. `bootstrap()` is a no-op when the switch is off; it does not create a database
     # for a surface nobody enabled.
     store_path = project.bootstrap()
-    if store_path:
-        ctx.log.info("project surface enabled; store at %s", store_path)
+    events.runtime_status("project", "ready" if store_path else "absent",
+                          reason=None if store_path else "no store; bootstrap made none",
+                          store=store_path)
     # The obs-websocket client. Started here and never from a route: a connection per request
     # would re-run the SHA256 challenge/response on every page load, and obs-websocket rate
     # limits nothing, so that fault is invisible except as latency. `start()` returns as soon
     # as the task is scheduled and never raises -- an absent OBS is the normal state of this
     # box, not an error, and it must not be able to stop the API booting.
     await live.bridge.start()
+    events.startup_complete(routes=len(app.routes),
+                            tasks=sum(1 for t in (ticker, asic, gw, newsfeed, delegates) if t))
     yield
+    events.emit("shutdown_begin")
     ticker.cancel()
     if asic:
         asic.cancel()
@@ -165,6 +181,7 @@ async def lifespan(_: FastAPI):
     # Without this a reload leaks one ffmpeg per live stream: the sessions outlive the
     # process that spawned them and nothing else knows their pids.
     streamer.lib.sessions.MANAGER.shutdown()
+    events.emit("shutdown_complete")
     # Closes the socket and cancels the reconnect loop. Without it a `--reload` cycle leaves
     # the old task backing off against an OBS the new process is also connecting to, which is
     # two clients holding one credential and a reconnect storm nobody can see from a ctx.log.

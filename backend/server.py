@@ -285,6 +285,14 @@ logging.basicConfig(
     handlers=[logging.FileHandler(RUN / "api.log"), logging.StreamHandler()],
 )
 log = logging.getLogger("symoneural.api")
+
+# Structured events get their OWN file as well as the shared one. run/events.log is a single
+# shape -- `HH:MM:SS.mmm event key=value ...` -- so it can be parsed without a regex that
+# has to tolerate prose. Milliseconds because two phases on the same second is the normal
+# case, and a startup you cannot order is a startup you cannot diagnose. See core/events.py.
+_events = logging.FileHandler(RUN / "events.log")
+_events.setFormatter(logging.Formatter("%(asctime)s.%(msecs)03d %(message)s", "%H:%M:%S"))
+logging.getLogger("symoneural.events").addHandler(_events)
 # The logger is configured here, above the limits, because _rate_for() warns on a
 # malformed override and LIMITS is built at import time. Defined the other way round it
 # is a NameError on startup that only fires when someone sets the env var wrongly.
@@ -590,7 +598,6 @@ def exact_context(result: dict) -> str:
 
 
 _llama: asyncio.subprocess.Process | None = None
-_llama_lock = asyncio.Lock()
 
 
 
