@@ -1,0 +1,13 @@
+# The operator's real configuration. It carries SYMONEURAL_MINER_TOKEN — the shared secret that
+# gates start/stop of a process which takes the GPU — and a wallet address. The tracked
+# file is miner.env.example, which is inert by design.
+miner.env
+
+# The root .gitignore has `*.log`, which is right for run/ and wrong for exactly one file
+# here: testdata/ holds captured miner output that `test_miner.py` asserts against
+# byte-for-byte. Without this negation the fixture is never committed and the suite fails on
+# a fresh checkout with "missing capture" -- while passing on the machine that wrote it,
+# which is the worst way for a test to be broken. A deeper .gitignore can re-include a file
+# a shallower one excluded, as long as no parent directory is itself excluded; `*.log`
+# excludes files, so this works.
+!testdata/*.log

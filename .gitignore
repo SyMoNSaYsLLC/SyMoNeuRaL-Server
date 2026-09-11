@@ -1,0 +1,33 @@
+# Weights and datasets. Large, separately licensed, and git is the wrong tool.
+/models/*
+!/models/.gitkeep
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Runtime state. Regenerated; never a source of truth.
+/run/
+*.log
+
+# Dependency trees, in every language this repo touches.
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.next/
+dist/
+build/
+target/
+
+# Editor and OS noise.
+.DS_Store
+*.swp
+.idea/
+.vscode/

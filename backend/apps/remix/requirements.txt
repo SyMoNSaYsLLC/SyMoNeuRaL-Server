@@ -1,0 +1,7 @@
+# Runtime. Already satisfied by ~/.venvs/vllm on this box — install only if
+# building a fresh venv. Tests additionally need pytest (see pyproject [dev]).
+fastapi>=0.136
+uvicorn>=0.51
+httpx>=0.28
+python-dotenv>=1.2
+pillow>=12.3

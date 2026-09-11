@@ -1,0 +1,37 @@
+target_path	consumer_type	consumer	reference_kind	verdict	note
+/home/google/Symoneural	systemd	/etc/systemd/system/symoneural-api.service	EXEC	LIVE_CONSUMER	WorkingDirectory + ExecStart backend/api.py; pid 1505 running
+/home/google/Symoneural	systemd	/etc/systemd/system/symoneural-gateway.service	EXEC	LIVE_CONSUMER	ExecStart backend/apps/gateway/target/release/symoneural-gateway
+/home/google/Symoneural	systemd	/etc/systemd/system/symoneural-web.service	EXEC	LIVE_CONSUMER	ExecStart web/symoneural-web/build/symoneural-web
+/home/google/Symoneural	systemd	~/.config/systemd/user/symoneural-progress.service	EXEC	LIVE_CONSUMER	ExecStart tools/build_*.py; ReadWritePaths
+/home/google/Symoneural	script	/home/google/Symoneural/scripts/gpu-governor.sh	EXEC	LIVE_CONSUMER	invoked by api unit ExecStartPre/ExecStopPost
+/home/google/.config/rclone/rclone.conf	systemd	/etc/systemd/system/rclone-gdrive.service	EXEC	LIVE_CONSUMER	RequiresMountsFor + RCLONE_CONFIG; mounts /mnt/gdrive
+/home/google/ComfyUI-Shared	symlink	/home/google/Symoneural/references/ComfyUI-Shared	SYMLINK	LIVE_CONSUMER	canonical repo symlinks OUT to this path
+/home/google/Symoneural	symlink	/home/google/SyMoNeuRaL-Projects/Symoneural	SYMLINK	REFERENCED	symlink INTO canonical repo; do not follow when deleting parent
+/home/google/symoneural-build-20260902/src	git	/home/google/Symoneural/.git/worktrees/src	WORKTREE	LIVE_CONSUMER	registered worktree at 98326529 (detached)
+/home/google/symoneural-build-20260902/src-b	git	/home/google/Symoneural/.git/worktrees/src-b	WORKTREE	LIVE_CONSUMER	registered worktree at 98326529 (detached)
+/home/google/MIT_AI_Training	script	/home/google/Symoneural/scripts/deploy.sh:31	COMMENT	UNREFERENCED	comment describing a historical path bug; not resolved at runtime
+/home/google/MIT_AI_Training	config	/home/google/Symoneural/.claude/settings.local.json	COMMENT	UNREFERENCED	prose inside a mutable, concurrently-edited config
+/home/google/MIT_AI_Training	doc	docs/archive/{HANDOVER,PROJECT-STATE,START-PROMPT,checkcoderswork}	DOC	UNREFERENCED	archived documentation prose
+/home/google/.venvs/vllm	doc	docs/ops/BOX-REALITY-AUDIT.md, RUNTIME-PROFILES.md, VLLM-BENCH-PARITY.md	DOC	REFERENCED	vLLM 0.25.1 installed-not-serving; no unit, no port
+/home/google/.symoneural-full	doc	.claude/HANDOVER.md:2237, docs/specs/symoneural-miner-scope.md:49	DOC	REFERENCED	described as IP vault; DISK DIVERGES FROM DOC (see report)
+/home/google/go/bin	shell	/home/google/.zshrc:38	EXEC	LIVE_CONSUMER	added to PATH
+/home/google/.local/bin	shell	/home/google/.profile:31, .zshrc:42	EXEC	LIVE_CONSUMER	added to PATH; holds hf, claude, uv
+/home/google/.opencode/bin	shell	/home/google/.bashrc:186	EXEC	LIVE_CONSUMER	added to PATH
+/home/google/huggingface/start_server.sh	shell	/home/google/.zshrc:44-45	EXEC	DANGLING	alias target does not exist; pre-existing broken reference
+/home/google/zig-x86_64-linux-0.17.0-dev.1426+58a94eaae	shell	/home/google/.bashrc:141	COMMENT	UNREFERENCED	commented-out PATH line
+/home/google/Downloads	doc	repo docs	DOC	UNKNOWN_REFERENCE	2 prose hits only
+/home/google/Desktop	doc	repo docs	DOC	UNKNOWN_REFERENCE	4 prose hits only
+/home/google/symoneural-corpus-audit-20260829T233921Z	doc	repo docs	DOC	REFERENCED	evidence cited by documentation
+/home/google/symoneural-108-postboot-20260829T152526Z	doc	repo docs	DOC	REFERENCED	evidence cited by documentation
+/home/google/symoneural-108-phase1a-abi-20260829T164106Z	doc	repo docs	DOC	REFERENCED	evidence cited by documentation
+/home/google/symoneural-108-phase2-serving-proof-20260829T165111Z	doc	repo docs	DOC	REFERENCED	evidence cited by documentation
+/home/google/symoneural-application-repair-handoff-20260902	doc	repo docs	DOC	REFERENCED	handoff cited by documentation
+/home/google/Symoneural-Extended	doc	repo docs	DOC	REFERENCED	cited by documentation
+/home/google/SyMoNeuRaL-Projects	doc	repo docs	DOC	REFERENCED	cited by documentation
+/home/google/yocto	doc	repo docs (39 hits)	DOC	DANGLING	path does not exist; the real mount is /yocto (nvme0n1p2)
+/home/google/Symoneural_backups	doc	repo docs	DOC	DANGLING	path does not exist
+/home/google/symoneural-apt	doc	repo docs	DOC	DANGLING	path does not exist
+/home/google/models	doc	repo docs	DOC	DANGLING	path does not exist
+/home/google/AI_Local_NVIDIA	doc	repo docs	DOC	DANGLING	path does not exist
+/home/google/symoneural-merge4	doc	repo docs	DOC	DANGLING	dir absent; only symoneural-merge4.tar.gz exists
+/home/google/retraining-notes	doc	repo docs	DOC	DANGLING	path does not exist

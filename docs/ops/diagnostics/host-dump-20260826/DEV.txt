@@ -1,0 +1,24 @@
+=== GPU / ACCELERATOR DEVICE NODES ===
+NVIDIA device nodes are expected and intentionally retained for CUDA.
+/dev/nvidia-uvm-tools
+/dev/nvidia-uvm
+/dev/nvidia-caps
+/dev/nvidia-caps/nvidia-cap2
+/dev/nvidia-caps/nvidia-cap1
+/dev/nvidia-modeset
+/dev/nvidia0
+/dev/nvidiactl
+/dev/uinput
+/dev/input
+
+=== NVIDIA NODE DETAILS ===
+crw-rw-rw- 1 root root 195,   0 Aug 29 10:30 /dev/nvidia0
+crw-rw-rw- 1 root root 195, 255 Aug 29 10:30 /dev/nvidiactl
+crw-rw-rw- 1 root root 195, 254 Aug 29 10:30 /dev/nvidia-modeset
+crw-rw-rw- 1 root root 237,   0 Aug 29 10:30 /dev/nvidia-uvm
+crw-rw-rw- 1 root root 237,   1 Aug 29 10:30 /dev/nvidia-uvm-tools
+
+/dev/nvidia-caps:
+total 0
+cr-------- 1 root root 241, 1 Aug 29 10:30 nvidia-cap1
+cr--r--r-- 1 root root 241, 2 Aug 29 10:30 nvidia-cap2

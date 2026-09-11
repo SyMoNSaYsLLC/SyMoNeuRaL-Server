@@ -1,0 +1,450 @@
+>>>STOP AND REPLACE THE CURRENT WORK WITH THIS TASK.
+
+# REMOVE `symoneural-deploy.service`, MOVE ATOMIC PUBLICATION INTO THE RUNNING GATEWAY, THEN PROVE THE COMPLETE RUNTIME
+
+Garrett has made the following architecture decision:
+
+1. Remove the standalone `symoneural-deploy.service` completely.
+2. Make the existing long-running `symoneural-gateway` runtime own atomic static-site publication and report its measured release state.
+3. Keep Caddy as the web server and prove its real runtime configuration, including the currently blank `wd=` display.
+4. After the migration, prove the complete physical-hardware-to-local-web inference chain.
+5. Perform clean, from-source rebuilds of every buildable SyMoNeuRaL runtime artifact before cutover, and regenerate/revalidate every noncompiled runtime artifact. Do not misuse the word “compiled” for unit files, Python source, Caddy configuration, shell scripts, or static assets.
+
+This task supersedes the earlier read-only hardware-proof prompt. It authorizes only the narrowly scoped implementation and cutover described below. It does not authorize a reboot or unrelated cleanup.
+
+## Current facts and required interpretation
+
+- Repository: `/home/google/Symoneural`
+- Current services reportedly include:
+  - `symoneural-api`: enabled, active/running
+  - `symoneural-gateway`: enabled, active/running
+  - `symoneural-deploy`: enabled, active/exited
+  - `caddy`: enabled, active/running, displayed as `wd=` with no value
+- `symoneural-deploy` is a oneshot. `active/exited` with `Result=success` and `ExecMainStatus=0` is not a process failure; it is normal systemd oneshot state when `RemainAfterExit=yes`. Nevertheless, Garrett explicitly wants this standalone unit removed and its responsibility moved into a real long-running, measurable runtime.
+- Do not “fix” Caddy's blank `wd=` by guessing. An unset `WorkingDirectory=` for a system service commonly means systemd's default `/`. Prove the effective property, the live process cwd, and path resolution. Change it only if direct evidence proves a defect.
+- Garrett deliberately closed the stale Kate session labeled `winvslinux5070ti.txt`. Do not investigate or reopen it.
+- Garrett deliberately deleted `/home/google/unexpected-reboot-forensics.txt`. Its absence is expected. Do not restore, recover, recreate, or search unallocated space for it.
+- If needed, the preserved pre-reboot transcript may be `/home/google/Music/laststeps`. Read it only if present. If absent, mark that comparison `BLOCKED`; do not recreate it.
+- `/home/google/yocto` was permanently deleted. `/yocto` may still be a mounted build/offload filesystem, but no live SyMoNeuRaL runtime may depend on it.
+- Historical pre-change commit reported: `b4b9c528e724d454f98a929ac6e2f85cb26c8e34`.
+- Historical pre-change inventory reported:
+  - `symoneural-api`: `enabled=enabled active=active sub=running wd=/home/google/Symoneural`
+  - `symoneural-gateway`: `enabled=enabled active=active sub=running wd=/home/google/Symoneural`
+  - `symoneural-deploy`: `enabled=enabled active=active sub=exited wd=/home/google/Symoneural`
+  - `caddy`: `enabled=enabled active=active sub=running wd=`
+  - API unit SHA-256: `4cd366d4dc543f3b531815082d44929e0ec2902db75c8eb44588dea0a9bbca8d`
+  - gateway unit SHA-256: `33f0b31926c8cad1a8ba2836343de267376d7a7f1fef4b24952072ce3854e609`
+  - deploy unit SHA-256: `ebbd08d64d11336987b0535b503f4305e502a6250ba87863667581e4db7eb679`
+  - gateway binary SHA-256: `41b9eda87550c6b23b416e2b253f1a9339e52cd82b990d37adb73e8b8f46ad74`
+  - inference-engine binary SHA-256: `0c4f804a5b18f754376acef6d73595eb191dafd6855cd81831844c941e3fe4c1`
+  - installed Caddyfile SHA-256: `b5c9e8d3371d38c15dd4274358e853ed22829794b4c24f3d7bce195bf15c2ebd`
+  - reported webroot digest: `bc77f4d35d1a9032cbd0868bfabe592b47af1823` for 93 assets
+  - verifier exit: `0`
+
+These are historical comparison values, not outputs to force. The 40-character webroot value cannot be SHA-256. Identify its real algorithm and exact generation procedure or mark that historical comparison `BLOCKED`. Freshly rebuilt binaries may legitimately have different hashes; explain every difference from source, build command, toolchain, and build metadata. Never copy an old binary merely to preserve its old hash.
+
+## Non-negotiable safety boundaries
+
+You SHALL NOT:
+
+- Reboot, shut down, power off, suspend, reset, or schedule a reboot.
+- Run `systemd-run`, `reboot`, `shutdown`, `poweroff`, `at`, cron changes, timers, or detached background jobs.
+- Start or resume rclone, BitBake, Yocto builds, matrix builds, unrelated pruning, archival, broad deletion, or uploads. The exact gated removal of `symoneural-deploy.service` and bounded old-release retention defined below are the only deletion exceptions.
+- Access the public internet or install, upgrade, or remove packages.
+- Modify `/yocto`, model weights, credentials, databases, business records, unrelated services, or unrelated repository files. The canonical inference-engine binary may be replaced only by the newly built, fully validated engine at the controlled installation gate below; preserve the known-good binary and its metadata for rollback first.
+- Run `git pull`, checkout, reset, clean, amend, rebase, or push.
+- Destroy or overwrite user modifications, untracked files, logs, or evidence.
+- Add `Restart=always` to publication logic.
+- make Caddy, API, or gateway pretend to be healthy when publication fails.
+- execute a root-owned service command from a script or binary writable by an unprivileged account without explicitly identifying and resolving that privilege boundary.
+- give the public gateway broad write access to `/etc`, `/usr`, the repository, model files, secrets, or all of `/var/www`.
+- copy files in place over the live webroot in a way that can expose a partial release.
+- use symlinks that can redirect publication outside the approved destination.
+- start a second inference server manually.
+- call a deterministic fallback and describe it as model inference.
+- call an HTTP redirect, open socket, systemd state, or natural-language fallback complete proof.
+
+You MAY, only for this task:
+
+- Read the host, repository, systemd, Caddy, `/proc`, `/sys`, journals, PCI information, NVIDIA telemetry, and existing non-secret runtime configuration.
+- Modify only the repository files directly required for gateway-owned publication, its unit/install templates, runtime verification, tests, documentation, and Caddy integration.
+- Use already installed native compilers, CUDA toolchain, build systems, and locally available dependency source to perform the clean rebuild matrix below. Do not install a tool or fetch source from the internet.
+- Create isolated clean build directories, rebuild the gateway and inference engine from current canonical source, validate the results, and replace their canonical runtime binaries only at the controlled cutover gate with exact rollback copies already preserved.
+- Create evidence and rollback copies under a new directory named `/home/google/symoneural-gateway-publish-migration-YYYYMMDD-HHMMSS/`.
+- Install only the changed repository-managed unit/configuration artifacts after validating their exact diff and preserving rollback copies.
+- Run `systemctl daemon-reload` only at the controlled cutover phase.
+- Perform at most one planned restart of `symoneural-gateway` for the initial cutover, plus one rollback restart only if the cutover fails.
+- Perform at most one planned restart of `symoneural-api` if installing the rebuilt engine or a validated API runtime artifact requires it, plus one rollback restart only if that cutover fails. If the API and engine can be safely installed and proven without restarting the API, do not restart it.
+- Reload or restart Caddy only if its effective configuration must actually change and `caddy validate` passes first. If no Caddy configuration changes, do not restart it.
+- Stop, disable, and remove the exact standalone `symoneural-deploy.service` only after gateway-owned publication has passed its pre-cutover and live cutover gates.
+- Send one harmless supported production inference request after model integrity passes.
+- Create one scoped Git commit after all validation passes, but stage no unrelated files and do not push. If the worktree contains overlapping or ambiguous user changes, do not commit; report the blocker.
+
+If an action falls outside those permissions, stop and ask Garrett.
+
+## Evidence and communication requirements
+
+Create only:
+
+`/home/google/symoneural-gateway-publish-migration-YYYYMMDD-HHMMSS/`
+
+Place command logs, pre/post inventories, rollback copies, test output, diffs, hashes, and the final report there. Auditor-created temporary files, pytest caches, bytecode, cookies, and sanitized inputs must remain there. Existing services and journals may make normal incidental writes; disclose writes attributable to this task.
+
+Use these verdicts exactly:
+
+- `PASS`: directly proven.
+- `FAIL`: directly contradicted.
+- `BLOCKED`: cannot safely be completed.
+- `NOT TESTED`: not attempted.
+- `INFORMATIONAL`: useful but not a criterion.
+
+Before every privileged, modifying, reload, restart, disable, or removal command, state:
+
+1. exact command;
+2. purpose;
+3. exact files/services affected;
+4. rollback command or rollback artifact;
+5. expected interruption and duration;
+6. evidence file receiving output.
+
+Never expose passwords, cookies, tokens, authorization headers, API keys, or complete process environments. Redact before evidence is written.
+
+Provide progress at least every two minutes during long work. Do not leave a silent watcher as the only status.
+
+## Phase 1 — Freeze and prove the pre-change state
+
+Before editing anything:
+
+1. Record date/timezone, hostname, boot ID/time, Debian/kernel, current Git HEAD, full `git status --short --branch`, modified files, and untracked files.
+2. Do not touch existing user changes. If required files overlap with uncommitted changes whose ownership is unclear, mark `BLOCKED` and stop.
+3. Record effective and source definitions for `symoneural-api`, `symoneural-gateway`, `symoneural-deploy`, and Caddy, including unit fragments/drop-ins, `ExecStart*`, `WorkingDirectory`, users/groups, dependencies/order, sandbox settings, environment-file paths with values redacted, and current journals.
+4. Record exact PIDs, `/proc/<pid>/exe`, cwd, cmdline, cgroup, sockets, fds, maps, and identities for API, gateway, Caddy, and any inference process.
+5. Hash the repository unit templates, installed units/drop-ins, gateway binary/source, publisher/deploy script, Caddyfile, webroot manifest, verifier, model manifest, engine binary, build-system inputs, dependency lockfiles, compiler binaries, linker, CUDA compiler, and relevant CMake/cache/toolchain files.
+6. Inventory all references to `symoneural-deploy`, `scripts/deploy.sh`, `/var/www/symoneural`, publication paths, `systemctl start`, `systemctl restart`, and `/yocto` in tracked files, installed units, dependencies, scripts, documentation, tests, timers, cron, and current processes.
+7. Record the current source asset tree and live webroot as sorted NUL-safe manifests containing relative path, type, mode, size, and SHA-256. Never call a 40-character digest SHA-256; determine its real algorithm and generation procedure.
+8. Inspect `scripts/deploy.sh` before executing it. Identify every write, prune, backup, ownership change, external command, input, symlink behavior, failure mode, and concurrency risk.
+9. Run existing read-only verification only after inspecting it and proving it will not mutate the repository or system.
+
+Do not make changes until this phase is complete.
+
+## Phase 1A — Classify every requested artifact honestly
+
+Before building, produce a table with one row for every item below and these columns: item, current path, source path, artifact type, authoritative build/generation/install command, toolchain, clean-build capability, expected output, current SHA-256, and required action.
+
+Required rows:
+
+- `symoneural-api` application source/runtime;
+- `symoneural-api` unit;
+- `symoneural-gateway` binary;
+- `symoneural-gateway` unit;
+- gateway-owned publication component;
+- soon-to-be-removed `symoneural-deploy` unit;
+- inference-engine binary;
+- Caddy executable;
+- Caddyfile and any drop-ins;
+- static-site source assets;
+- generated/bundled static assets, if any;
+- live webroot release manifest;
+- `ops/verify-runtime.sh`;
+- model manifest;
+- GGUF model weights.
+
+Use these action terms exactly:
+
+- `COMPILE`: native executable/library built from source.
+- `GENERATE`: produced from source inputs by a deterministic generator/bundler.
+- `VALIDATE`: interpreted source/config/script checked without inventing a compiled artifact.
+- `INSTALL`: validated artifact placed into its exact runtime location.
+- `REMOVE`: deliberately eliminated from source and installed runtime contract.
+- `INTEGRITY-CHECK ONLY`: immutable/external artifact that must not be rebuilt or modified.
+- `BLOCKED`: required source/toolchain/procedure is absent.
+
+Required honest classifications unless current source proves otherwise:
+
+- The gateway and CUDA inference engine are `COMPILE` targets.
+- Python API source is `VALIDATE` unless the production design actually builds a documented executable/package. `compileall` or `.pyc` generation is syntax/bytecode validation and must not be called a native application rebuild.
+- systemd units, Caddyfile, shell verifier, and model manifest are `GENERATE` or `VALIDATE` plus `INSTALL`; they are not compiled binaries.
+- static assets are `GENERATE` only if a real bundler/build pipeline exists; otherwise they are `VALIDATE` plus atomic publication.
+- `symoneural-deploy.service` is `REMOVE`, never rebuild.
+- GGUF weights are `INTEGRITY-CHECK ONLY`.
+- The Caddy executable is `COMPILE` only if SyMoNeuRaL owns its source, dependency lock, and reproducible local build procedure. If it is a Debian/vendor-managed binary, record version/hash/package provenance and classify it `INTEGRITY-CHECK ONLY`; do not pretend that validating Caddyfile recompiles Caddy.
+
+If Garrett's phrase “recompile all” is technically impossible for a row, say exactly why and perform the truthful action above. Never report a validation, copy, reinstall, service restart, or unchanged old hash as a compilation.
+
+## Phase 1B — Clean rebuild and regeneration matrix
+
+Perform this phase after the pre-change inventory and before live cutover.
+
+### General build rules
+
+- Discover the authoritative tracked build instructions and dependency lockfiles first. Do not guess a command from directory names.
+- Use only current canonical source from the recorded Git state. Record whether the tree is clean or dirty and exactly which permitted task edits are included.
+- Use fresh, isolated, explicitly named build directories. Do not reuse the old CMake cache or old object files as proof of a clean rebuild.
+- Do not delete known-good installed artifacts. Build side by side, preserve rollback copies, and install only after validation.
+- Record full compiler/linker/CUDA versions, absolute tool paths, environment variables with secrets redacted, build flags, target architecture, dependency versions, start/end times, exit statuses, and complete bounded logs.
+- Do not use BitBake, the Yocto build tree, an extensible SDK, or a cross sysroot for host services unless the tracked authoritative build procedure explicitly requires it and you first prove the produced artifacts are native Debian x86-64, use the correct host ABI, have no runtime sysroot dependency, and are intended for this host. The existence of an SDK is not proof that it is the correct toolchain.
+- Reject stale-object, incremental-only, wrong-architecture, unresolved-library, or source/hash ambiguity.
+- Generate fresh SHA-256 values for every new artifact. Historical hashes are comparison evidence only.
+
+### Gateway clean native rebuild
+
+- Build the complete gateway from its actual source with the authoritative native Debian x86-64 toolchain and locked dependencies.
+- Include the new atomic publication and release-telemetry implementation.
+- Prove all source files required by the build were compiled or otherwise consumed; capture the build graph or verbose commands.
+- Validate file type, ELF architecture/interpreter, build ID, NEEDED libraries, RPATH/RUNPATH, full `ldd`, unresolved count, ownership/mode plan, and source-to-binary provenance.
+- Run unit/integration/security tests against the new binary before installation.
+- Do not replace the live binary until all gates pass.
+
+### CUDA inference-engine clean rebuild
+
+- Discover the exact current engine source and tracked build configuration. Do not infer it solely from the old binary path.
+- Configure from a fresh build directory with the installed native host compiler and installed CUDA toolkit.
+- Discover the actual GPU compute capability and supported architecture flags from the hardware/toolchain. For the reported RTX 5070 Ti, require native Blackwell device code appropriate to the installed CUDA version, and distinguish `sm_120`, architecture-specific `sm_120a`, and PTX-only fallback accurately. Do not hardcode a value the toolchain does not support.
+- Enable the actual CUDA/cuBLAS path required by the engine and forbid a CPU-only production build.
+- Capture configure output, complete build commands, compiler IDs, `CMAKE_CUDA_ARCHITECTURES` or equivalent, link commands, and dependency resolution.
+- Prove the new ELF's architecture/interpreter/build ID/NEEDED/RPATH/RUNPATH/`ldd`, zero unresolved dependencies, CUDA runtime, cuBLAS, cuBLASLt, driver resolution, and embedded GPU code through `cuobjdump` or an authoritative equivalent.
+- Run an isolated smoke/evaluation against the canonical GGUF only after its full integrity check passes. Do not install or start a second production engine concurrently.
+- Preserve the old engine and atomically install the new validated engine only at the controlled cutover gate.
+
+### API validation/build
+
+- Discover how the production API is actually packaged and launched.
+- Run syntax, import, dependency, type/static checks, and tests using the exact production interpreter/environment, with bytecode/cache output redirected to the evidence directory.
+- If a documented package/wheel/executable is part of production, build it cleanly and validate/install it. If production runs Python source directly, state that there is no native binary to recompile and prove the source/interpreter/dependencies instead.
+- Do not replace source with generated bytecode or claim `.pyc` is the production application.
+
+### Units, Caddy, assets, verifier, and manifests
+
+- Regenerate from tracked templates where a real generator exists; otherwise validate exact source and install it byte-for-byte or render-equivalently.
+- Syntax-check shell and Python scripts without allowing caches outside evidence.
+- Run the authoritative static-asset build from clean inputs if one exists. If none exists, validate and manifest the source assets; do not invent a bundler.
+- Generate the new live release manifest with an explicitly named full SHA-256 procedure and asset count. Preserve the old 40-character digest only as historical unidentified/SHA-1-like evidence until proven.
+- Validate Caddy configuration with the installed Caddy executable. Rebuild Caddy itself only under the ownership/source/provenance rule above.
+- Regenerate the model manifest only by physically reading the full GGUF and parsing its actual metadata; never modify the weights.
+- Update the verifier so it enforces the post-migration gateway-owned publication contract and the absence of `symoneural-deploy`.
+
+## Phase 2 — Required gateway-owned publication design
+
+Implement one publication component used by the long-running gateway startup path. Do not merely move the old service name or hide a standalone oneshot behind another unit.
+
+The design SHALL satisfy all of the following:
+
+### Ownership and lifecycle
+
+- `symoneural-gateway.service` remains `Type=simple`, `Type=notify`, or another genuinely long-running type appropriate to the actual gateway.
+- Publication runs as a defined gateway startup phase before the gateway reports ready or binds its production listener, unless the existing gateway readiness protocol requires a safer equivalent.
+- A publication failure prevents the new gateway instance from reporting ready and produces a nonzero, explicit failure with actionable logs.
+- The previously verified live release remains intact if publication fails.
+- Do not create a replacement `symoneural-publish.service`, timer, path unit, detached daemon, or misleading active/exited unit.
+- Do not run publication on every HTTP request.
+
+### Atomicity and integrity
+
+- Use a same-filesystem staging directory outside the live release path but within the approved publication parent.
+- Acquire an exclusive lock with a bounded timeout so concurrent restarts cannot publish concurrently.
+- Copy only the intended source asset tree.
+- Reject device files, sockets, FIFOs, unsafe symlinks, path traversal, and resolution outside approved roots.
+- Produce a sorted manifest with a clearly named digest algorithm, relative paths, file types, modes, byte sizes, and content hashes.
+- Verify the staged release against the source manifest before activation.
+- Activate by an atomic same-filesystem switch/rename suitable for the actual layout.
+- Keep the previous verified release available for immediate rollback.
+- Bound retention and disk use without deleting anything outside the exact release-management directory.
+- On identical input, perform a verified no-op rather than unnecessary publication.
+- `sync` is not a substitute for atomicity or verification.
+
+### Least privilege
+
+- Identify the gateway runtime user/group and Caddy read user/group.
+- Give the gateway publication component write access only to the exact release-management directory it owns.
+- Give Caddy read/execute access only as needed.
+- Preserve restrictive modes and do not make the webroot world-writable.
+- Do not make root execute code from a repository writable by `google` merely to avoid designing the permission boundary.
+- If safe least privilege cannot be implemented with current ownership and installed capabilities, mark `BLOCKED`, explain the exact missing mechanism, and stop before cutover.
+
+### Measurability
+
+The running gateway must expose or provide through its existing local status/health mechanism a sanitized publication state containing at least:
+
+- release identifier;
+- source Git commit, with dirty-state indicator;
+- manifest algorithm and full manifest digest;
+- asset count and total bytes;
+- publication result;
+- publication or verification timestamp;
+- whether startup published a new release or verified an identical release;
+- active release identifier actually used by Caddy;
+- last publication error category without secrets or sensitive paths.
+
+Public responses must not reveal credentials, internal secrets, or unnecessary absolute paths. If the existing status endpoint is public, expose only safe fields and keep detailed evidence local.
+
+Readiness must fail if the gateway's claimed active release does not match the release Caddy is configured to serve.
+
+### Caddy relationship
+
+- Keep Caddy's site root explicit and absolute.
+- Do not point Caddy at an unverified staging directory.
+- Determine boot ordering and behavior when the gateway publication fails. Preserve the last verified release rather than serving a partial new release.
+- Avoid editing a package-managed base unit when a repository-managed drop-in or existing supported configuration mechanism is appropriate.
+- Validate any Caddy configuration before reload/restart.
+
+## Phase 3 — Tests before live cutover
+
+Add focused tests using isolated temporary directories. They must cover:
+
+1. first publication;
+2. identical-input verified no-op;
+3. changed asset publication;
+4. full manifest and byte comparison;
+5. publication failure before activation;
+6. injected failure during staging;
+7. rollback to previous release;
+8. lock contention and timeout;
+9. malicious/escaping symlink rejection;
+10. path traversal rejection;
+11. unsupported file-type rejection;
+12. permissions and Caddy readability;
+13. dirty Git-state reporting;
+14. status/health release metadata;
+15. readiness failure on claimed/served release mismatch;
+16. no `/yocto` runtime dependency;
+17. no reference to a standalone `symoneural-deploy.service` in the final source/install/runtime contract;
+18. no repository writes from tests.
+
+Update runtime-boundary tests so they prove the new contract instead of expecting `symoneural-deploy` to be active/exited.
+
+Run syntax/static checks and the smallest relevant test set first, then the complete relevant suite. Redirect caches, bytecode, and temporary output into the evidence directory. Record exact commands, duration, writes, counts, and exit status. Mutation tests may use only isolated copies.
+
+Do not cut over on any failing test.
+
+## Phase 4 — Controlled live cutover
+
+Proceed only after Phases 1–3 pass.
+
+1. Preserve exact rollback copies and hashes of every installed file that will change.
+2. Validate the repository diff and prove it contains no unrelated changes, credentials, model-weight changes, `/yocto` dependencies, reboot actions, timers, rclone, or destructive broad paths. Clean gateway/engine build outputs and explicitly generated runtime artifacts are expected; identify each one.
+3. Install the fully validated rebuilt gateway, rebuilt engine, gateway-owned publication/runtime changes, generated/validated units, verifier, manifests, and any genuinely rebuilt static bundle through exact atomic or package-supported operations. Preserve and hash every prior installed artifact first. Do not restart unrelated services.
+4. Run `systemctl daemon-reload` once if unit definitions/drop-ins changed.
+5. If required by the proven runtime process/engine lifecycle, perform the one authorized planned restart of `symoneural-api`; otherwise leave it running. Prove it loads the intended validated source/artifact and will launch only the new canonical engine.
+6. Perform the one authorized planned restart of `symoneural-gateway`.
+7. Prove the live gateway executable hash equals the newly built/installed hash—not the historical binary by assumption—and that its source/build provenance is recorded.
+8. Prove the live or next on-demand engine executable hash equals the newly built/installed hash, maps the canonical GGUF and intended CUDA libraries, and is not the preserved rollback binary.
+9. Prove the gateway reaches active/running and ready state, publication succeeded, the active release manifest matches the source, and Caddy is still serving the prior or new fully verified release with no partial state.
+10. Verify API, gateway, Caddy, site, static asset, protected route behavior, logs, sockets, ownership, permissions, release telemetry, and fresh hashes for every installed artifact.
+11. If the API, engine, or gateway cutover fails, collect evidence, execute only the documented rollback, restore the complete prior runtime state, verify recovery, and stop. Do not remove `symoneural-deploy` after a failed cutover.
+
+Only after the gateway-owned replacement is live and verified:
+
+12. Stop and disable the exact `symoneural-deploy.service`.
+13. Remove its enablement symlinks and exact installed unit file through the repository-managed uninstall path or another explicitly documented exact-file operation.
+14. Remove the tracked standalone unit template and all installer, verifier, test, documentation, dependency, and operational references that imply it still exists.
+15. Run `systemctl daemon-reload` once after removal.
+16. Prove all of the following:
+    - `systemctl cat symoneural-deploy` reports no such unit;
+    - `systemctl is-enabled symoneural-deploy` reports not found, not merely disabled;
+    - `systemctl list-unit-files` contains no deploy unit;
+    - no wants/requires symlink references it;
+    - no timer/path/socket/user unit recreates it;
+    - no installed or tracked runtime instruction starts/restarts it;
+    - gateway remains active/running and owns measured publication state;
+    - Caddy serves the verified active release;
+    - API and gateway remain canonical and independent of `/yocto`.
+
+Do not reboot to prove this change. Use systemd's effective current state, dependency graph, installed artifacts, runtime inspection, and boot-order analysis. A later reboot requires a separate explicit instruction from Garrett.
+
+## Phase 5 — Mandatory Caddy `wd=` proof
+
+Investigate the exact observed line:
+
+`caddy                  enabled=enabled   active=active    sub=running  wd=`
+
+Collect:
+
+- effective `WorkingDirectory`, `RootDirectory`, `RootImage`, `ExecStart`, `User`, `Group`, `EnvironmentFiles`, `ProtectSystem`, `ProtectHome`, `ReadWritePaths`, and `ConfigurationDirectory`;
+- unit fragment and all drop-ins;
+- live process cwd through `/proc/<pid>/cwd`;
+- open Caddyfile, certificate/state, and webroot descriptors with secrets redacted;
+- every filesystem path used by the effective Caddy configuration;
+- path resolution and readability as the Caddy user;
+- `caddy validate` output for the exact effective configuration if it is safe and available.
+
+Verdicts:
+
+- `PASS`: `WorkingDirectory=` is intentionally unset/defaulted, the live cwd is proven, material paths are explicit/correct, and no behavior depends on an assumed cwd.
+- `FAIL`: direct evidence shows a relative-path or cwd-dependent defect.
+- `BLOCKED`: proof cannot be collected safely.
+
+Do not set `WorkingDirectory=` just to make `wd=` display a value. If `PASS`, document that no change is correct. If `FAIL`, implement the smallest repository-managed correction only after validation and rollback evidence, then perform the one separately justified Caddy reload/restart allowed above.
+
+## Phase 6 — Post-change hardware-to-application proof
+
+After the migration and required clean rebuilds pass, prove this live chain using the newly installed artifacts. Do not perform another rebuild during the proof phase:
+
+physical RTX 5070 Ti → PCIe/sysfs → NVIDIA kernel driver/device nodes → CUDA/cuBLAS libraries → exact production engine → canonical GGUF → live GPU process/telemetry → model-backed API response → gateway → Caddy → localhost response.
+
+At minimum:
+
+1. Prove RTX 5070 Ti identity, PCI BDF/IDs, driver/modules, current/max link speed and width, `/dev/nvidia*`, NVIDIA procfs, Secure Boot, driver version, VRAM, thermals, power, clocks, utilization, and processes.
+2. Prove the exact newly rebuilt production engine's canonical path, fresh SHA-256, source/build provenance, ELF architecture/interpreter, NEEDED/RPATH/RUNPATH, complete `ldd`, zero unresolved libraries, CUDA/cuBLAS resolution, and embedded GPU architecture. Compare with the historical hash without requiring equality. Do not rebuild again in this phase.
+3. Fully hash and parse `/home/google/Symoneural/backend/models/llm/symon-1.0-7b-q4_k_m.gguf`; compare size/hash/identity with `/home/google/Symoneural/ops/manifests/llm-chat-model.json`. Historical comparison: size `4683074240`, SHA-256 `65b8fcd92af6b4fefa935c625d1ac27ea29dcb6ee14589c55a8f115ceaaa1423`, GGUF v3, qwen2, file type 15. If integrity fails, do not infer.
+4. Use localhost-only routing. Follow and validate redirects; a 302 alone is not proof.
+5. Discover the supported production inference route/schema from current source/OpenAPI. Do not guess. Send one harmless request: `Return exactly: SYMONEURAL_HARDWARE_OK`.
+6. Before/during/after the request, capture timestamps, latency, HTTP status, sanitized response, explicit `model=true` or equivalent, fallback exclusion, engine PID/exe/cwd/cgroup/fds/maps, canonical GGUF mapping, CUDA mappings, NVIDIA process, VRAM, utilization, power, temperature, clocks, journals, and faults.
+7. Mark inference `FAIL` for `model=false`, deterministic fallback, CPU-only execution, absent canonical GGUF mapping, absent NVIDIA compute process/telemetry, or a second manually started engine.
+8. Prove API and gateway cwd/exe/argv/fds/maps/config are canonical and have no live `/yocto` dependency.
+9. Prove gateway publication telemetry matches the manifest of the release Caddy actually serves.
+10. Review current-boot hardware/kernel errors: Xid, AER, GPU reset, CUDA initialization, MCE, EDAC, NVMe/filesystem errors, thermal shutdown, OOM, panic/oops, hung task, and watchdog reset.
+
+## Phase 7 — Final repository and runtime proof
+
+Run the updated verifier and relevant full test suite only after inspecting them for safety. Prove:
+
+- no installed or tracked `symoneural-deploy.service` exists;
+- no deploy unit is enabled, loaded, failed, wanted, required, or referenced;
+- gateway is active/running and publication is measured;
+- publication is atomic, verified, least-privilege, rollback-capable, and bounded;
+- Caddy serves the exact verified active release;
+- blank Caddy `wd=` is either directly proven correct or corrected for a directly proven reason;
+- API, gateway, Caddy, engine, GGUF, and CUDA runtime are canonical;
+- every buildable SyMoNeuRaL runtime artifact was cleanly rebuilt from current source, every noncompiled artifact was truthfully regenerated/validated/installed, and each live artifact matches its fresh post-build hash;
+- the removed deploy unit was not falsely described as rebuilt, Python/config/scripts/assets were not falsely described as native compilations, and vendor Caddy was not falsely described as a SyMoNeuRaL source rebuild;
+- no live component requires `/yocto`;
+- a real GPU-backed response completed through the production path;
+- no fallback or CPU-only path was mislabeled as inference;
+- no failed systemd units or new material hardware faults invalidate the result.
+
+Review the final diff. If and only if every implementation and validation gate passes and no unrelated change is staged, create one scoped commit. Do not push.
+
+## Required deliverables
+
+Inside the evidence directory create:
+
+- `00-summary.txt`
+- `01-prechange-state.txt`
+- `02-dependency-and-security-audit.txt`
+- `03-design-and-diff.txt`
+- `04-build-classification-and-toolchains.txt`
+- `05-clean-builds-and-generated-artifacts.txt`
+- `06-tests.txt`
+- `07-cutover.txt`
+- `08-deploy-unit-removal.txt`
+- `09-caddy-working-directory.txt`
+- `10-hardware-gpu-engine-model.txt`
+- `11-live-inference-and-routing.txt`
+- `12-postchange-runtime.txt`
+- `13-git-and-installation.txt`
+- `ROLLBACK.md`
+- `SHA256SUMS`
+- `SYMONEURAL-GATEWAY-PUBLICATION-MIGRATION.md`
+
+The Markdown report must begin with a table containing component, exact criterion, direct evidence, verdict, and notes. Include the exact command ledger, relevant unedited bounded output, exit statuses, timestamps, duration, what each result proves, what it does not prove, all writes/restarts, rollback readiness, failures, blockers, untested items, and final Git state.
+
+Final overall verdict must be exactly one of:
+
+- `MIGRATION FAILED — ROLLED BACK`
+- `MIGRATION BLOCKED — NO CUTOVER`
+- `GATEWAY PUBLICATION MIGRATED — HARDWARE RUNTIME PARTIALLY VERIFIED`
+- `GATEWAY PUBLICATION MIGRATED — SYMONEURAL HARDWARE RUNTIME VERIFIED`
+
+Do not use the final verified verdict unless the standalone unit is truly absent, gateway-owned publication is active and measurable, Caddy serves the matching release, the production API returns a real model-backed result, NVIDIA execution is directly observed, fallback/CPU-only paths are excluded, model integrity passes, and no live `/yocto` dependency exists.
+
+Begin with Phase 1. Do not reboot under any circumstance.

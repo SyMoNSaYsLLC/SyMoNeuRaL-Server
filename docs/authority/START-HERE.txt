@@ -1,0 +1,62 @@
+You are picking up symoneural.com, a live production site for SyMoNeuRaL (a SymonSays LLC
+company) that sells custom local AI infrastructure. The repo is /home/google/Symoneural.
+
+Read /home/google/Symoneural/.claude/HANDOVER.md first and read all of it — it is written
+for someone with zero prior context and every path, number and decision you need is in it.
+Then read /home/google/Symoneural/.claude/CLAUDE.md, which holds the rules, and skim
+`git log` (every commit states its reason; several design choices look arbitrary without it).
+
+Everything is deployed and nothing is pending. Confirm that for yourself before you change
+anything — both runs should agree, and if they do not, production is behind the repo and I
+need to deploy:
+
+    cd /home/google/Symoneural
+    node tests/frontend.mjs                          # expect 26/26
+    node tests/frontend.mjs https://symoneural.com   # expect 26/26
+
+Six things to know before your first edit:
+
+1. I do the deploys. Editing backend/api.py changes the API as soon as the service
+   restarts, but anything under site/ does not reach a visitor until I run
+   `sudo scripts/deploy.sh --prune`. When you finish a frontend change, tell me plainly
+   that it needs deploying and give me the command — do not describe it as live.
+
+   Three different commands exist and they are not interchangeable. Work out which you
+   need and say so:
+     site/ content changed .......... sudo scripts/deploy.sh --prune
+     backend/api.py changed ......... sudo systemctl restart symoneural-api
+     ops/Caddyfile changed .......... sudo ./scripts/install-caddy.sh
+
+2. Run every generator twice and diff before committing, and run
+   tools/build_cachebust.py LAST. There are ELEVEN generators. HANDOVER §6 has the
+   one-liner, and note that build_split.py READS index.html, so it is order-constrained at
+   both ends of the chain, not just the cachebust at the tail.
+
+3. One GPU, 15.92 GiB, one tenant at a time via a mkdir lock at run/gpu.lock.d.
+   Everything that touches the card goes through scripts/gpu-governor.sh and names its
+   surface when it releases.
+
+4. Put a running checklist at the bottom of every reply, split into what is live on the
+   site, what is built but waiting on my deploy, and what is repo-only. I lose track
+   across rapid-fire requests and I will interrupt you mid-task.
+
+5. MEASURE THE RENDERED PAGE, NOT A PROXY FOR IT. Four layout assertions in this repo have
+   passed while the page was visibly broken, every one because it measured something
+   adjacent to what a visitor sees: the document's scroll height instead of the panel's, an
+   element's top while it was hidden, `element.hidden` on an element Chrome was painting,
+   and a panel's height when the failing property was whether its CONTENT fit. Read
+   getComputedStyle and real box heights, test at the viewport that CONSTRAINS the design
+   rather than a comfortable one, and when you add a layout assertion, put the bug back and
+   confirm it fails. That check is cheap and has caught a useless assertion every time.
+
+6. A CHECK THAT FAILS ON HEALTHY INPUT IS WORSE THAN NO CHECK. Five verification steps here
+   have done exactly that in two days, and one of them offered to abort a working
+   deployment. Every one encoded an assumption about the deployment that later stopped
+   being true. If you touch a verification step, run it against the real system and confirm
+   it passes on known-good input — not only that it fails on known-bad. HANDOVER §3.0b.
+
+Where to start: ask me what I want next rather than assuming. If I have nothing specific,
+HANDOVER §5 has the queue. The highest-stakes open item is that the licensing DRM fails
+open; the cheapest is regenerating the contract signing key, whose private half was lost
+with /tmp, leaving a committed public key that can verify contracts nobody can sign.
+Neither is urgent and no contracts have ever been issued.

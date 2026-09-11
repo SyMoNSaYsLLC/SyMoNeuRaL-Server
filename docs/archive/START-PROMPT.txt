@@ -1,0 +1,56 @@
+Paste this to the fresh agent as its first message.
+
+Start the session from this directory. Permissions are already set in
+.claude/settings.local.json, but the CLI flag is belt-and-braces and costs nothing:
+
+    cd /home/google/MIT_AI_Training/MIT_AI_Training && claude --dangerously-skip-permissions
+
+(If you have a minute before bed, run the deploy line at the bottom first — it unblocks
+everything the site is waiting on.)
+
+════════════════════════════════════════════════════════════════════════════════
+
+Read HANDOVER.md in this directory in full before doing anything else. It is written
+for you specifically and it is standalone — you have no prior context and it assumes
+none.
+
+Then read CLAUDE.md for the working agreements.
+
+After that, work section 6, "The work queue", from item 1 downward. Ten items, roughly
+five to seven hours. I am going to bed, so:
+
+- Do not stop to ask me anything. Every decision you need is in HANDOVER.md, and where
+  it isn't, state your assumption in writing and keep going.
+- If an item turns out to be blocked or wrong, write down why and move to the next one.
+  Do not spend the night stuck on one thing.
+- Run subagents in parallel wherever the work is independent — that is a standing
+  instruction, not a suggestion. Read CLAUDE.md for which directories are safe to
+  parallelise and which will clobber each other.
+- The GPU is yours. Use it, always through demo/gpu-governor.sh. You can also use the
+  fine-tuned SyMoNeuRaL chat model as a tool — the API is already up on 127.0.0.1:8800.
+- Item 8 is LoRA training and it is the designated fallback. If you get through
+  everything else, do that. Build the eval harness first.
+
+You are in bypassPermissions mode via .claude/settings.local.json, so tool calls will
+not prompt me. The one thing you genuinely cannot do is sudo — the deploy is mine to
+run and it is the only blocker on the whole project.
+
+Keep a running log of what you did, what you measured, and what worked or didn't, so I
+can read it in the morning. Write it to a new file, OVERNIGHT-LOG.md, and append to it as
+you finish each queue item — do not edit HANDOVER.md, it needs to stay the fixed
+reference you are working from.
+
+Everything user-facing on this site lives or dies on one rule: label every figure as
+measured, vendor, or projected, and never present a projection as a result. Do not break
+that to make a number look better.
+
+════════════════════════════════════════════════════════════════════════════════
+
+THE DEPLOY — this is the only thing an agent cannot do. It must be run in a REAL
+TERMINAL WINDOW. The "!" prefix inside Claude Code runs in the same non-TTY environment
+an agent does and fails identically — confirmed, don't bother trying it:
+
+    sudo /home/google/MIT_AI_Training/MIT_AI_Training/demo/deploy.sh
+
+Read its "MISSING" output rather than trusting the exit status — that check is
+cosmetically broken (subshell swallows the flag) and is on the fix list as queue item 10.

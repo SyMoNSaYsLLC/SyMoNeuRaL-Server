@@ -1,0 +1,13 @@
+# The MCP transport only. Everything else in this package -- the tool implementations, the
+# schema introspection, the agent loop, the ComfyUI client -- runs on the system interpreter
+# with stdlib + httpx, and `backend/api.py` imports it from there.
+#
+# Install into THIS directory's venv, by full path, never into the system interpreter:
+#
+#     python3 -m venv backend/apps/studio/.venv
+#     backend/apps/studio/.venv/bin/pip install -r backend/apps/studio/requirements.txt
+#
+# `.claude/CLAUDE.md`: the serving API deliberately uses only the system interpreter, and the
+# deny rules block the bare `pip install` forms precisely because a stray install there is hard
+# to notice and hard to undo.
+fastmcp>=2.0

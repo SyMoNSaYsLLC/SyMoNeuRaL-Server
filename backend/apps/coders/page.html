@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coders — SyMoNeuRaL</title><link rel="stylesheet" href="/symoneural.css?v=77a47035a3">
+<style>
+.wrap{max-width:64rem;margin:auto;padding:1rem}.presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+button,select,textarea{font:inherit;color:#e4eee8;background:#172019;border:1px solid #63796b;border-radius:.4rem}button:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #22d994;outline-offset:2px}button{padding:.5rem .8rem;cursor:pointer}button:disabled{color:#a3b0a8;background:#202722;border-color:#49584f;cursor:not-allowed}
+.preset[aria-pressed=true]{outline:2px solid #22d994}.kind,.muted{font-size:.9em;color:#a9b8b0}textarea{box-sizing:border-box;width:100%;min-height:6rem;padding:.6rem}
+.ans,.prop,.round,.verdict{border:1px solid #46544c;border-radius:.5rem;padding:.8rem;margin:.8rem 0}.ans h3{margin:0 0 .5rem}
+.txt{white-space:pre-wrap;overflow-wrap:anywhere}.st{font-size:.85em;font-weight:400;color:#a9b8b0}.err{color:#ffa690}.disagree{border-color:#d4ad58}
+.actions{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}details{margin:.8rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}select{max-width:100%}
+</style><main class="wrap">
+<h1>Coders</h1><p>One prompt, separate answers. Compare each coder’s response, ask them to discuss it, and choose for yourself.</p>
+<p class="muted">Local operator session. Uses the provider accounts signed in on this machine. Per-user subscriptions are not connected. Session history lasts until this API restarts.</p>
+<div id="modes" class="muted"></div><div id="presets" class="presets"></div>
+<label for="prompt">Your prompt</label><textarea id="prompt" placeholder="How do you count to 10?"></textarea>
+<p class="actions"><button id="go">Ask</button><span id="status" role="status" aria-live="polite"></span></p>
+<label for="history">Recent sessions</label> <select id="history"><option value="">Choose a session</option></select>
+<div id="out" aria-live="polite"></div></main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let selected = [], busy = false, current = null, poll;
+  async function api(path, body) {
+    const response = await fetch('/local/coders' + path, body === undefined ? {} :
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data = await response.json();
+    if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Request failed (' + response.status + ')');
+    return data;
+  }
+  function setBusy(value) {
+    busy = value; $('go').disabled = value; $('history').disabled = value;
+    document.querySelectorAll('[data-pick],#debate').forEach(b => b.disabled = value);
+  }
+  function answers(list) {
+    return list.map(a => '<article class="ans" data-coder="'+esc(a.coder_id)+'"><h3><span class="who">'+esc(a.display)+'</span> <span class="st">'+esc(a.state)+(a.seconds ? ' · '+esc(a.seconds)+'s' : '')+'</span></h3>'+ (a.text ? '<div class="txt">'+esc(a.text)+'</div>' : '')+(a.error ? '<p class="err">'+esc(a.error)+'</p>' : '')+'</article>').join('');
+  }
+  function render(d) {
+    current = d; location.hash = d.session_id;
+    const rounds = d.rounds || [], latest = rounds.length ? rounds[rounds.length-1] : d;
+    let html = '<p class="txt"><b>User Prompt:</b> '+esc(d.prompt)+'</p>'+(d.fixture ? '<p class="err">Labeled test fixture</p>' : '');
+    html += '<section class="round" data-round="0"><h2>Initial responses</h2>'+answers(d.answers)+'</section>';
+    for (const round of rounds) {
+      html += '<section class="round" data-round="'+round.number+'"><h2>Discussion round '+round.number+'</h2><p class="txt">'+esc(round.clarification)+'</p>'+answers(round.answers)+'<details><summary>Exact shared prompt and record</summary><p>SHA-256: '+esc(round.prompt_sha256)+'</p><pre>'+esc(round.prompt)+'</pre></details></section>';
+    }
+    if (d.state === 'running') html += '<p class="verdict">Waiting for the selected coders…</p>';
+    else {
+      const completed = latest.answers.filter(a => a.state === 'completed').length;
+      html += '<div class="verdict '+(latest.agree === false ? 'disagree' : '')+'">'+(latest.agree === true ? 'The completed answers match under the text comparison. You still decide.' : latest.agree === false ? 'The wording differs. Compare the positions; nothing is chosen for you.' : 'Not enough completed answers to compare.')+' '+completed+'/'+d.coder_ids.length+' coders completed.</div>';
+      for (const a of latest.answers.filter(a => a.state === 'completed' && a.text)) {
+        html += '<div class="prop"><b>'+esc(a.display)+'</b><p class="txt">'+esc(a.text)+'</p><button data-pick="'+esc(a.coder_id)+'">Choose '+esc(a.display)+'’s answer</button></div>';
+      }
+      if (d.debate?.available) html += '<label for="clarification">What should the coders clarify or debate?</label><textarea id="clarification" maxlength="8000" placeholder="Compare the tradeoffs and explain whether you hold or revise your answer."></textarea><p><button id="debate">Discuss one round</button> <span class="muted">'+d.debate.remaining+' of '+d.debate.max_rounds+' discussion rounds remaining. Each round needs your click.</span></p>';
+      else if (d.debate && d.coder_ids.length > 1) html += '<p>Discussion limit reached. All responses remain available for review.</p>';
+    }
+    if (d.decision) html += '<p id="decision"><b>You chose:</b> '+esc(d.decision)+' (round '+d.round_number+')</p>';
+    if (d.decisions?.length) html += '<details><summary>Decision history</summary>'+d.decisions.map(x => '<p>Round '+x.round_number+': '+esc(x.coder_id)+'</p>').join('')+'</details>';
+    $('out').innerHTML = html;
+    document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => perform(() => api('/session/'+d.session_id+'/decide',{coder_id:b.dataset.pick,expected_round:d.round_number})));
+    if ($('debate')) $('debate').onclick = () => {
+      const text = $('clarification').value.trim();
+      if (!text) { $('status').textContent = 'Enter what you want clarified.'; return; }
+      perform(() => api('/session/'+d.session_id+'/debate',{clarification:text,expected_round:d.round_number}));
+    };
+    clearTimeout(poll);
+    if (d.state === 'running') poll = setTimeout(() => load(d.session_id),1000);
+  }
+  async function history() {
+    const d = await api('/sessions');
+    $('history').innerHTML = '<option value="">Choose a session</option>'+d.sessions.map(s => '<option value="'+s.session_id+'">'+esc(s.coder_ids.join(' + '))+' · '+esc(s.session_id)+'</option>').join('');
+    if (current) $('history').value = current.session_id;
+  }
+  async function perform(call) {
+    if (busy) return;
+    setBusy(true); $('status').textContent = 'Waiting for replies…';
+    try { render(await call()); $('status').textContent = ''; await history(); }
+    catch (e) { $('status').textContent = e.message; }
+    finally { setBusy(false); }
+  }
+  async function load(id) {
+    try { render(await api('/session/'+encodeURIComponent(id))); }
+    catch (e) { $('status').textContent = e.message; }
+  }
+  $('go').onclick = () => {
+    const prompt = $('prompt').value.trim();
+    if (!prompt || !selected.length) { $('status').textContent = 'Enter a prompt and select the coders.'; return; }
+    perform(() => api('/ask',{prompt,coder_ids:selected}));
+  };
+  $('history').onchange = () => { if ($('history').value) load($('history').value); };
+  api('/providers').then(d => {
+    $('presets').innerHTML = d.presets.map((p,i) => '<button class="preset" data-i="'+i+'" aria-pressed="false"'+(p.available ? '' : ' disabled title="'+esc(p.detail)+'"')+'>'+esc(p.label)+' <span class="kind">'+p.kind+'</span></button>').join('');
+    document.querySelectorAll('.preset').forEach(b => b.onclick = () => {
+      document.querySelectorAll('.preset').forEach(x => x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true'); selected = d.presets[+b.dataset.i].members;
+    });
+    $('modes').innerHTML = Object.entries(d.modes).map(([k,m]) => '<div><b>'+esc(k)+'</b>: '+(m.available ? 'available' : 'unavailable')+' — '+esc(m.detail)+'</div>').join('');
+    return history();
+  }).then(() => { if (/^[a-f0-9]{16}$/.test(location.hash.slice(1))) load(location.hash.slice(1)); }).catch(e => $('status').textContent = e.message);
+})();
+</script></html>

@@ -1,0 +1,6 @@
+SERVICE_ID	COMPONENT_ID	UNIT	EXEC_START	USER	BIND_ADDRESS	PORT	ARTIFACT_OR_SOURCE	ACTIVE	ENABLED	STATUS
+symoneural-web	symoneural-web	symoneural-web.service	/home/google/Symoneural/web/symoneural-web/build/symoneural-web run --environ --config /etc/caddy/Caddyfile	caddy	*	80,443	web/symoneural-web/build/symoneural-web	active	enabled	INSTALLED
+symoneural-gateway	symoneural-gateway	symoneural-gateway.service	/home/google/Symoneural/backend/apps/gateway/target/release/symoneural-gateway	google	127.0.0.1	8000	backend/apps/gateway/target/release/symoneural-gateway	active	enabled	INSTALLED
+symoneural-api	symoneural-api	symoneural-api.service	/usr/bin/python3 /home/google/Symoneural/backend/api.py	google	127.0.0.1	8800	backend/api.py	active	enabled	INSTALLED
+symoneural-deploy	symoneural-platform	symoneural-deploy.service	bash scripts/deploy.sh --prune	root	-	-	scripts/deploy.sh	inactive	not-installed	NOT_INSTALLED
+symoneural-progress	symoneural-platform	symoneural-progress.timer (user)	build_intake/archive_tasks/build_progress	google	-	-	tools/	inactive	enabled	STOPPED_FOR_MUTATION_WINDOW

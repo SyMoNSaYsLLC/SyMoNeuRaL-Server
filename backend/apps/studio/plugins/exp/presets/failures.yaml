@@ -1,0 +1,55 @@
+# Every way a manifest entry can go wrong, in one file, so the states have somewhere to be seen.
+#
+# Nothing here is a trap: mounting this preset is safe, and the failures stay inside the entries
+# that cause them. Mounted as written, the eight entries below land like this -- measured, run
+# `python3 -m apps.studio.plugins.exp.cli --preset failures` and read the table:
+#
+#   bus            active     the one entry here that does its job
+#   no-such-module failed     `use:` names a module that does not import
+#   bad-config     failed     a config value its schema will not take
+#   raises         failed     the body raises
+#   undeclared     failed     reaches for a service it did not declare
+#   waiting-room   group      a container, not a mount, so it has no fiber state of its own
+#   waiting        pending    its `bus` is isolated and nothing in the group provides one
+#   off            disabled   never mounted; see the note on the quoting below
+#
+# So: one active, four failed, one pending, one disabled, one group. This preset is mostly
+# failure by design -- that is what it is for -- and the point it demonstrates is that no
+# failure here stops the mount or takes `bus` down with it.
+plugins:
+  # Deliberately the same config as `dev`. The preset-switch demonstration -- "a diff, not a
+  # rebuild", on the page's Mount button and in `routes.py::preset` -- rests on this entry being
+  # byte-identical in both manifests: `Loader._reconcile` restarts an entry whose config changed,
+  # so a different `history` here would make the one example chosen to illustrate "left alone"
+  # the one that restarts.
+  - id: bus
+    use: apps.studio.plugins.exp.plugins.bus
+    config: {history: 200}
+
+  - id: no-such-module
+    use: apps.studio.plugins.exp.plugins.does_not_exist
+
+  - id: bad-config
+    use: apps.studio.plugins.exp.plugins.clock
+    config: {interval: "not a number"}
+
+  - id: raises
+    use: apps.studio.plugins.exp.plugins.explode
+    config: {mode: body}
+
+  - id: undeclared
+    use: apps.studio.plugins.exp.plugins.explode
+    config: {mode: undeclared}
+
+  # PENDING, not failed. Its `bus` is isolated into this group's realm and nothing inside the
+  # group provides one, so the recorder waits -- and would start by itself the moment one
+  # appeared. `missing: ["bus"]` is what the plugin table shows for it.
+  - id: waiting-room
+    isolate: [bus]
+    plugins:
+      - {id: waiting, use: apps.studio.plugins.exp.plugins.recorder}
+
+  # Quoted deliberately: YAML 1.1 reads a bare `off` as the boolean false. See `Entry.__init__`.
+  - id: "off"
+    use: apps.studio.plugins.exp.plugins.memory
+    disabled: true

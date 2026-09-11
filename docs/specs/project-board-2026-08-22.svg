@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900" role="img" aria-labelledby="title desc">
+  <title id="title">SyMoNeuRaL Project Board Snapshot — 2026-08-22</title>
+  <desc id="desc">A dated SVG snapshot of the SyMoNeuRaL board. It is not the live reading surface; run/progress.html remains authoritative.</desc>
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .panel { fill: #161b22; stroke: #30363d; stroke-width: 2; rx: 18; }
+      .active { fill: #1f2a1f; stroke: #3fb950; stroke-width: 3; rx: 18; }
+      .queued { fill: #161b22; stroke: #30363d; stroke-width: 2; rx: 18; }
+      .blocked { fill: #261b1b; stroke: #f85149; stroke-width: 2; rx: 18; }
+      .notice { fill: #2b2111; stroke: #d29922; stroke-width: 2; rx: 18; }
+      .title { fill: #f0f6fc; font: 700 34px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .subtitle { fill: #8b949e; font: 500 18px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .phase { fill: #f0f6fc; font: 700 22px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .body { fill: #c9d1d9; font: 500 17px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .small { fill: #c9d1d9; font: 500 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .muted { fill: #8b949e; font: 500 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .green { fill: #3fb950; font: 700 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .red { fill: #f85149; font: 700 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .yellow { fill: #d29922; font: 700 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .line { stroke: #30363d; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .pill { fill: #21262d; stroke: #30363d; stroke-width: 1; rx: 12; }
+      .pillText { fill: #c9d1d9; font: 600 14px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .mono { fill: #c9d1d9; font: 600 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .monoMuted { fill: #8b949e; font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#30363d"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1500" height="900"/>
+
+  <text class="title" x="60" y="68">SyMoNeuRaL Project Board Snapshot</text>
+  <text class="subtitle" x="60" y="100">Preserved as docs/specs/project-board-2026-08-22.svg · snapshot time: 2026-08-22 09:19 EDT</text>
+
+  <rect class="notice" x="60" y="125" width="1380" height="82"/>
+  <text class="yellow" x="90" y="158">DATED SNAPSHOT — NOT A LIVE READING</text>
+  <text class="body" x="90" y="187">run/progress.html remains the live surface. When Commit A lands, this board becomes historical record rather than current state.</text>
+
+  <rect class="active" x="60" y="240" width="1380" height="150"/>
+  <text class="phase" x="90" y="280">Phase 0 — Clear Tree / Gateway Fold</text>
+  <text class="body" x="90" y="315">NOW: run the Gateway fold re-run from /home/google/Symoneural and paste the tail.</text>
+  <text class="mono" x="90" y="347">Expected: 97 pytest passed · frontend.mjs 63/63 · rows:13 · no top-level gateway · gateway sub under miner</text>
+  <rect class="pill" x="1220" y="265" width="165" height="34"/>
+  <text class="yellow" x="1242" y="288">PENDING INPUT</text>
+
+  <path class="line" d="M750 390 L750 430"/>
+
+  <rect class="panel" x="60" y="430" width="420" height="130"/>
+  <text class="phase" x="85" y="470">Commit A</text>
+  <text class="body" x="85" y="503">Gateway fold only.</text>
+  <text class="muted" x="85" y="532">Includes generated site/index.html.</text>
+
+  <rect class="panel" x="540" y="430" width="420" height="130"/>
+  <text class="phase" x="565" y="470">Commit B</text>
+  <text class="body" x="565" y="503">Studio harness gap doc.</text>
+  <text class="muted" x="565" y="532">#89 moves to 50%, not closed.</text>
+
+  <rect class="panel" x="1020" y="430" width="420" height="130"/>
+  <text class="phase" x="1045" y="470">Commit C</text>
+  <text class="body" x="1045" y="503">#81 closure evidence.</text>
+  <text class="muted" x="1045" y="532">PROJECT-TASKS + CLOSED-TASKS only.</text>
+
+  <path class="line" d="M270 560 L270 605"/>
+  <path class="line" d="M750 560 L750 605"/>
+  <path class="line" d="M1230 560 L1230 605"/>
+
+  <rect class="queued" x="60" y="605" width="260" height="190"/>
+  <text class="phase" x="85" y="643">Phase 1</text>
+  <text class="body" x="85" y="675">Deploy/restart guard</text>
+  <text class="body" x="85" y="703">#75 safe export</text>
+  <text class="body" x="85" y="731">#92 figure SHA</text>
+  <text class="muted" x="85" y="763">after Phase 0</text>
+
+  <rect class="queued" x="350" y="605" width="260" height="190"/>
+  <text class="phase" x="375" y="643">Phase 2</text>
+  <text class="body" x="375" y="675">Miner to 100%</text>
+  <text class="body" x="375" y="703">engine + governor</text>
+  <text class="body" x="375" y="731">ASIC + page</text>
+  <text class="muted" x="375" y="763">R-176</text>
+
+  <rect class="queued" x="640" y="605" width="260" height="190"/>
+  <text class="phase" x="665" y="643">Phase 3</text>
+  <text class="body" x="665" y="675">Studio to 100%</text>
+  <text class="body" x="665" y="703">plugin surface</text>
+  <text class="body" x="665" y="731">permissions + #88</text>
+  <text class="muted" x="665" y="763">before Phase 4</text>
+
+  <rect class="queued" x="930" y="605" width="260" height="190"/>
+  <text class="phase" x="955" y="643">Phase 4</text>
+  <text class="body" x="955" y="675">Modelgraph</text>
+  <text class="body" x="955" y="703">function blocks</text>
+  <text class="body" x="955" y="731">7B-Q4 + small tenant</text>
+  <text class="muted" x="955" y="763">after Studio</text>
+
+  <rect class="queued" x="1220" y="605" width="220" height="190"/>
+  <text class="phase" x="1245" y="643">Phase 4.8 / 5</text>
+  <text class="body" x="1245" y="675">Therapist</text>
+  <text class="body" x="1245" y="703">optional v2 cutover</text>
+  <text class="muted" x="1245" y="731">later gates only</text>
+
+  <rect class="blocked" x="60" y="825" width="1380" height="52"/>
+  <text class="red" x="90" y="858">DO NOT START:</text>
+  <text class="body" x="215" y="858">Therapist implementation · modelgraph patch adoption · v2 commissioning · whole-repo ZIP exports · deploy before Commit A/B/C</text>
+</svg>

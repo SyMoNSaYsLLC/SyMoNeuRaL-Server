@@ -1,0 +1,64 @@
+2026-08-17 10:03:21  wait     'minerbuild' wants the card
+2026-08-17 10:03:24  evict    stopping 'image' to make room -- the weight sets do not co-fit
+2026-08-17 10:03:24  drain    settled at 1100 MiB after 0s (floor 1500 MiB)
+2026-08-17 10:03:24  acquire  'minerbuild' holds the card -- 14759 MiB free, waited 3s
+
+
+kawpowminer 1.2.4+commit.8bd0d598.dirty
+Build: linux/release/gnu
+
+[94m i [35m10:03:24 [94mkawpowminer [0mSelected pool localhost:0
+[94m i [35m10:03:24 [94mkawpowminer [0mEstablished connection to localhost:0
+[94m i [35m10:03:24 [94mkawpowminer [0mSpinning up miners...
+[33mcu [35m10:03:24 [94mcuda-0    [0mUsing Pci Id : 01:00.0 NVIDIA GeForce RTX 5070 Ti (Compute 12.0) Memory : 15.49 GB
+[94m i [35m10:03:24 [94msim       [0mEpoch : [97m66[0m Difficulty : [97m4.29 Gh[0m
+[94m i [35m10:03:24 [94msim       [0mJob: [97mcdf99335… block 500000[0m localhost:0
+[94m i [35m10:03:25 [94msim       [0mUsing block 500,000, difficulty 1
+[33mcu [35m10:03:25 [94mcuda-0    [0mGenerating DAG + Light : 1.54 GB
+[33mcu [35m10:03:25 [94mcuda-0    [0mGenerated DAG + Light in 591 ms. 13.95 GB left.
+[33mcu [35m10:03:25 [94mcuda-0    [0mPre-compiled period 166,666 CUDA ProgPow kernel for arch 12.0
+[33mcu [35m10:03:25 [94mcuda-0    [0mLaunching period 166,666 ProgPow kernel
+[33mcu [35m10:03:25 [94mcuda-0    [0mPre-compiled period 166,667 CUDA ProgPow kernel for arch 12.0
+[32m m [35m10:03:29 [94mkawpowminer [0m[32m0:00[0m[1;97m A0[0m [1;36m0.00 h[0m - cu0 [36m0.00[0m
+[32m m [35m10:03:34 [94mkawpowminer [0m[32m0:00[0m[1;97m A0[0m [1;36m39.05 Mh[0m - cu0 [36m39.05[0m
+[32m m [35m10:03:39 [94mkawpowminer [0m[32m0:00[0m[1;97m A0[0m [1;36m52.55 Mh[0m - cu0 [36m52.55[0m
+[32m m [35m10:03:44 [94mkawpowminer [0m[32m0:00[0m[1;97m A0[0m [1;36m52.63 Mh[0m - cu0 [36m52.63[0m
+[33mcu [35m10:03:45 [94mcuda-0    [0m[97mJob: cdf99335… Sol: 0x32c6c0d6925505ed[0m
+[94m i [35m10:03:45 [94mkawpowminer [0m[92m**Accepted[0m   4 ms. localhost:0
+[33mcu [35m10:03:48 [94mcuda-0    [0m[97mJob: cdf99335… Sol: 0x32c6c0d69c266eba[0m
+[94m i [35m10:03:48 [94mkawpowminer [0m[92m**Accepted[0m   3 ms. localhost:0
+[32m m [35m10:03:49 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m52.57 Mh[0m - cu0 [36m52.57[0m
+[32m m [35m10:03:54 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m52.59 Mh[0m - cu0 [36m52.59[0m
+[32m m [35m10:03:59 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m52.44 Mh[0m - cu0 [36m52.44[0m
+[32m m [35m10:04:04 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m49.24 Mh[0m - cu0 [36m49.24[0m
+[32m m [35m10:04:09 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m48.51 Mh[0m - cu0 [36m48.51[0m
+[32m m [35m10:04:14 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m48.50 Mh[0m - cu0 [36m48.50[0m
+[32m m [35m10:04:19 [94mkawpowminer [0m[32m0:00[0m[1;97m A2[0m [1;36m49.23 Mh[0m - cu0 [36m49.23[0m
+[32m m [35m10:04:24 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m49.51 Mh[0m - cu0 [36m49.51[0m
+[32m m [35m10:04:29 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.60 Mh[0m - cu0 [36m48.60[0m
+[32m m [35m10:04:34 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m52.02 Mh[0m - cu0 [36m52.02[0m
+[32m m [35m10:04:39 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m50.74 Mh[0m - cu0 [36m50.74[0m
+[32m m [35m10:04:44 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.21 Mh[0m - cu0 [36m48.21[0m
+[32m m [35m10:04:49 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.69 Mh[0m - cu0 [36m48.69[0m
+[32m m [35m10:04:54 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.51 Mh[0m - cu0 [36m48.51[0m
+[32m m [35m10:04:59 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.51 Mh[0m - cu0 [36m48.51[0m
+[32m m [35m10:05:04 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.62 Mh[0m - cu0 [36m48.62[0m
+[32m m [35m10:05:09 [94mkawpowminer [0m[32m0:01[0m[1;97m A2[0m [1;36m48.35 Mh[0m - cu0 [36m48.35[0m
+[33mcu [35m10:05:09 [94mcuda-0    [0m[97mJob: cdf99335… Sol: 0x32c6c0d78a26bc8a[0m
+[94m i [35m10:05:09 [94mkawpowminer [0m[92m**Accepted[0m   3 ms. localhost:0
+[32m m [35m10:05:14 [94mkawpowminer [0m[32m0:01[0m[1;97m A3[0m [1;36m48.53 Mh[0m - cu0 [36m48.53[0m
+[32m m [35m10:05:19 [94mkawpowminer [0m[32m0:01[0m[1;97m A3[0m [1;36m48.61 Mh[0m - cu0 [36m48.61[0m
+[32m m [35m10:05:24 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.39 Mh[0m - cu0 [36m48.39[0m
+[32m m [35m10:05:29 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.31 Mh[0m - cu0 [36m48.31[0m
+[32m m [35m10:05:34 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.47 Mh[0m - cu0 [36m48.47[0m
+[32m m [35m10:05:39 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.49 Mh[0m - cu0 [36m48.49[0m
+[32m m [35m10:05:44 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.52 Mh[0m - cu0 [36m48.52[0m
+[32m m [35m10:05:49 [94mkawpowminer [0m[32m0:02[0m[1;97m A3[0m [1;36m48.36 Mh[0m - cu0 [36m48.36[0m
+[94m i [35m10:05:54 [94mmain      [0mGot interrupt ...
+[94m i [35m10:05:54 [94mmain      [0mSimulation results : [1;97mMax 52.631720 Mh Mean 48.357568 Mh[0m
+[94m i [35m10:05:54 [94mmain      [0mDisconnected from localhost:0
+[94m i [35m10:05:54 [94mmain      [0mShutting down miners...
+[94m i [35m10:05:54 [94mmain      [0mTerminated!
+
+
+2026-08-17 10:05:54  release  'minerbuild' releasing

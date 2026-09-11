@@ -1,0 +1,10 @@
+=== DEBUGFS NAME MATCHES ===
+/sys/kernel/debug/dri/0000:01:00.0/DP-3/output_bpc
+/sys/kernel/debug/dri/0000:01:00.0/DP-2/output_bpc
+/sys/kernel/debug/dri/0000:01:00.0/DP-1/output_bpc
+/sys/kernel/debug/dri/0000:01:00.0/HDMI-A-1/output_bpc
+
+=== TRACEFS NAME MATCHES ===
+
+=== TRACE BUFFER CONTAINS AI MARKER? ===
+TRACE_AI_MARKER=ABSENT

@@ -1,0 +1,29 @@
+.lede {
+  max-width: var(--read);
+  margin: 0 0 var(--s5);
+  font-size: var(--t4);
+  color: var(--dim);
+}
+
+.grid {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--s4);
+  font-size: var(--t5);
+  color: var(--dim);
+}
+
+.list li + li {
+  margin-top: var(--s2);
+}
+
+.status {
+  font-size: var(--t6);
+  color: var(--faint);
+  margin: 0;
+}

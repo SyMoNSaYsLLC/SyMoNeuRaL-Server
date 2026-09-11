@@ -1,0 +1,57 @@
+# Two isolated sessions over one shared bus -- what `isolate` is for.
+#
+# `bus` is mounted once, at the top, and both sessions see it: they were not asked to fork it.
+# `llm`, `memory` and `asker` are forked per session, so `session-a.llm` and `session-b.llm` are
+# two different objects under one name, and neither session can reach the other's. `asker` has to
+# be in that list for the same reason the other two are: without it the second session's `asker`
+# lands in the root namespace where the first one already is, and `b.ask` fails to mount with
+# "'asker' is already provided". Two sessions of one shape need two of everything they own.
+#
+# `intercept` on session-b declares a default for anything under it that *injects* `llm`: the
+# consumer gets a proxy that merges `temperature: 0.0` into every call, and it neither asked for
+# that nor can see it, because the config lives on the group rather than in the plugin.
+#
+# `asker` is what makes that observable rather than declared. It injects `llm`, calls it once at
+# mount, and keeps the reply. Both sessions mount the same file with the same config, so the two
+# `answers[0]["temperature"]` readings are 0.7 under `session-a` and 0.0 under `session-b` --
+# measured, and the only difference between them being the `intercept:` block on
+# `session-b` below. Delete those two lines and both readings become 0.7.
+#
+# The CLI does not print it: `Loader.state` serialises service *keys* and never service
+# contents, so `--json` gives you the two realms and nothing about what is inside them.
+#
+#     cd backend && python3 -m apps.studio.plugins.exp.cli --preset sessions
+#     #  asker  realm=session-a.asker#3  epoch=1  Asker <- a.ask
+#     #  asker  realm=session-b.asker#6  epoch=1  Asker <- b.ask
+#
+# Two places do show the number. `POST /api/exp/call` calls the method again on a live service
+# and returns what it got back -- measured through a `TestClient` with the preset mounted:
+#
+#     {"service": "session-a.asker#3:asker", "method": "ask"}
+#     #  -> {"prompt": "hello", "temperature": 0.7, "model": "echo", "text": "a> olleh"}
+#     {"service": "session-b.asker#6:asker", "method": "ask"}
+#     #  -> {"prompt": "hello", "temperature": 0.0, "model": "echo", "text": "b> olleh"}
+#
+# (that route needs `SYMONEURAL_EXP_ENABLED=1` and the token; the `#N` suffixes are mount order and
+# will differ if you edit this file). And offline, with no gate and no server, it is asserted by
+# `test_exp.py::InterceptTests::test_the_sessions_preset_shows_both_sides_of_one_declaration`,
+# which mounts this exact file. The proxy doing the merging is `_Intercepted` in `context.py`.
+plugins:
+  - id: bus
+    use: apps.studio.plugins.exp.plugins.bus
+
+  - id: session-a
+    isolate: [llm, memory, asker]
+    plugins:
+      - {id: a.llm,    use: apps.studio.plugins.exp.plugins.echo_llm, config: {prefix: "a> "}}
+      - {id: a.memory, use: apps.studio.plugins.exp.plugins.memory}
+      - {id: a.ask,    use: apps.studio.plugins.exp.plugins.asker}
+
+  - id: session-b
+    isolate: [llm, memory, asker]
+    intercept:
+      llm: {temperature: 0.0}
+    plugins:
+      - {id: b.llm,    use: apps.studio.plugins.exp.plugins.echo_llm, config: {prefix: "b> "}}
+      - {id: b.memory, use: apps.studio.plugins.exp.plugins.memory}
+      - {id: b.ask,    use: apps.studio.plugins.exp.plugins.asker}

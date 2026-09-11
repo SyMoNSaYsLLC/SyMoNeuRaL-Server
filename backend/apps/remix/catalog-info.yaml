@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: symoneural-remix
+  description: Playlist orchestrator — ordered sets, not piles of songs.
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: experimental
+  owner: symonsaysllc
+  system: applications

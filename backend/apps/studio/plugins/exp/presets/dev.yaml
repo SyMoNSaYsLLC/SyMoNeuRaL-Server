@@ -1,0 +1,37 @@
+# The default manifest: five of the eight plugins in `plugins/`.
+#
+# Not here: `explode` (it fails on purpose -- `failures` is where it belongs), `echo_llm` and
+# `asker` (their point is `intercept` and per-session forking, which needs the groups in
+# `sessions`; `asker` is the consumer that turns that declaration into a different number, and
+# mounted here with no group above it there would be nothing to shape it).
+#
+# Load it:   await loader.apply(preset_path("dev"))
+#            POST /api/exp/preset {"name": "dev"}
+#
+# Edit it and hit reload and only what you changed restarts -- `Loader.apply` diffs by entry
+# id. That is the behaviour to check first if you are evaluating whether this runtime does what
+# it says.
+plugins:
+  - id: bus
+    use: apps.studio.plugins.exp.plugins.bus
+    config: {history: 200}
+
+  - id: memory
+    use: apps.studio.plugins.exp.plugins.memory
+
+  - id: gpu
+    use: apps.studio.plugins.exp.plugins.gpu
+
+  # Disabled on purpose. This is the only entry in the default preset that does perpetual
+  # work, and the API process it mounts into is the live one -- a background ticker nobody
+  # asked for is not something a demonstration should install by default. Switch it on from
+  # the page, or with `POST /api/exp/enable {"id": "clock", "on": true}`; that is the hot-plug
+  # demonstration, and watching `recorder` start receiving is the reactive one.
+  - id: clock
+    use: apps.studio.plugins.exp.plugins.clock
+    config: {interval: 2.0, topic: tick}
+    disabled: true
+
+  - id: recorder
+    use: apps.studio.plugins.exp.plugins.recorder
+    config: {topic: tick, keep: 50}

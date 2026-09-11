@@ -1,0 +1,16 @@
+APPLICATION_ID	DISPLAY_NAME	PARENT_APPLICATION_ID	PRIMARY_COMPONENT_ID	RUNTIME_COMPONENTS	SERVING_PATH	ENGINE_DEPENDENCIES	STATUS	EVIDENCE
+chat	Chat	-	symoneural-api	symoneural-api|symoneural-llm	/chat.html|/livestack/chat	symoneural-llm	ASSETS_READY_ON_DEMAND	api.py serves directly; no backend/apps/chat module; /api/status ready = weights+engine present, not resident
+image	Image	-	symoneural-api	symoneural-api|symoneural-diffuse	/image.html|/livestack/image	symoneural-diffuse	ASSETS_READY_ON_DEMAND	FLUX bundle present; symoneural-image-engine is a display label, not a component
+sigils	Sigils	-	symoneural-api	symoneural-api|symoneural-diffuse	/sigils.html	symoneural-diffuse	DEGRADED	text/chroma path serves; photographic matte dead, u2net.onnx absent
+remix	Remix	-	symoneural-api	symoneural-api|symoneural-llm	/remix.html	symoneural-llm	ASSETS_READY_ON_DEMAND	backend/apps/remix; client of the chat surface, no weights of its own
+ravencalc	RavenCalc	-	symoneural-api	symoneural-api	/ravencalc.html	none	STATUS_READY	backend/apps/ravencalc; no GPU dependency
+project	Project	-	symoneural-api	symoneural-api	/project.html	none	STATUS_READY	backend/apps/project
+coder	Coder	-	symoneural-api	symoneural-api	/live-stack/coder|/livestack/coder	none	STATUS_READY	backend/apps/coder; ENABLED+TOKEN gated; reads at /local/coder/* not delegated by Caddy
+coders	Multi-Coder	-	symoneural-api	symoneural-api	/coders	none	DISABLED_BY_DEFAULT	SYMONEURAL_CODERS_ENABLED unset in live env; /coders 404 loopback and public
+dispatchos	DispatchOS	-	symoneural-api	symoneural-api	/demo/dispatchos	none	STATUS_READY	backend/apps/dispatchos; basicauth at the edge
+studio	Studio	-	symoneural-api	symoneural-api|symoneural-ui	/studio	symoneural-ui	DEGRADED	inference surface enabled true; render backend :8188 unreachable, unit offline
+reinforce	Reinforce	studio	symoneural-api	symoneural-api	plugin surface	none	OFF_BY_DESIGN	backend/apps/studio/plugins/reinforce; cupy deliberately off the serving interpreter
+exp	Exp	studio	symoneural-api	symoneural-api	/exp	none	STATUS_READY	backend/apps/studio/plugins/exp
+live	Live	-	symoneural-api	symoneural-api	/livestack/live	none	STATUS_READY	backend/apps/live; router at /api/live
+streamer	Streamer	-	symoneural-api	symoneural-api	/streamer.html|/streamer-watch.html	none	STATUS_READY	PEER of Live, NOT a child: separate module, router at /api/streamer, no import either direction. Prompt hypothesis Streamer->Live DISPROVEN
+miner	Miner	-	symoneural-api	symoneural-api|cryptominer	/miner.html	none	DISABLED	offline by config; miner.env absent; all three subs offline

@@ -1,0 +1,51 @@
+# EXPORT_SCOPE -- DispatchOS customer deliverable
+#
+# Consumed by tools/export_snapshot.sh (A-2). Allow-list: a path absent from this file
+# cannot leave the box, and nothing here is exported until an export is separately
+# authorized. Authorized 2026-09-02 as Option B: the customer-facing page plus the
+# application source that is specifically this application's.
+#
+# ## What is deliberately NOT here
+#
+# apps/accounts -- SHARED PLATFORM SOURCE. Category 2, ruled 2026-09-02 and NOT authorized
+# for inclusion. store.py imports password primitives from it and authz.py consults it for
+# entitlement, but "imported by the application" is not "owned by the application": it is
+# named in the architecture as a shared consumed service and has more than one consumer.
+#
+# RECORDED CONSEQUENCE: the authorized source export references shared platform
+# functionality that is not itself included in the customer export. The exported source is
+# therefore NOT a self-contained or independently buildable distribution, and it is not
+# meant to be. Option B is "page + application-specific source", not "whatever makes the
+# result run".
+#
+# Do not resolve that consequence by copying, vendoring, duplicating, exposing or otherwise
+# exporting shared platform source. Broadening this manifest to satisfy an import is
+# explicitly forbidden.
+#
+# ENFORCEMENT GAP, verified 2026-09-02: A-2's stage-2 protected-class check does NOT
+# mechanically reject ordinary shared platform source -- such source is not a secret, not
+# training material and not runtime state, so it passes stage 2 unflagged. Protection against
+# exporting shared-but-unprotected platform source therefore rests on the discipline of this
+# manifest and on review. No mechanical ownership guard exists, and building one was
+# deliberately excluded from A-4; it is tracked as a separate open decision.
+#
+# Also absent, each for its own reason:
+#   tests                     not part of the deliverable under this ruling (Option C refused)
+#   run/                      runtime state; the exporter refuses it at stage 2 regardless
+#   ops/ reverse-proxy conf   internal infrastructure configuration
+#   tools/ provisioning CLI   operator tooling, and the sole entitlement writer
+#   archives/ prior exports   self-labelled internal-only; contain infrastructure config
+#   __pycache__, .pytest_cache  build artefacts, not source
+#
+# One path per line, repo-relative. Blank lines and # comments ignored.
+
+# --- the customer-facing page -------------------------------------------------------
+backend/apps/dispatchos/page.py
+
+# --- application-specific source ----------------------------------------------------
+backend/apps/dispatchos/__init__.py
+backend/apps/dispatchos/routes.py
+backend/apps/dispatchos/store.py
+backend/apps/dispatchos/quotes.py
+backend/apps/dispatchos/ai.py
+backend/apps/dispatchos/authz.py

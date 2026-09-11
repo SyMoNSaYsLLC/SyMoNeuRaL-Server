@@ -1,0 +1,19 @@
+COMPONENT_ID	CANONICAL_NAME	COMPONENT_CLASS	IMPLEMENTATION_STATUS	PRODUCTION_STATUS	PARENT_COMPONENT_ID	ALIASES	SOURCE_ROOT	SOURCE_LANGUAGE	SOURCE_REVISION	BUILD_SYSTEM	BUILD_AUTHORITY	PRODUCTION_ROLE	OPEN_BLOCKER
+symoneural-platform	SyMoNeuRaL	PLATFORM	IMPLEMENTED	PRODUCTION	-	Symoneural;SyMoNeuRaL	/home/google/Symoneural	multi	f2a4a8fa	mixed	self	canonical product tree	-
+symoneural-web	symoneural-web	SERVICE_EDGE	IMPLEMENTED	PRODUCTION	symoneural-platform	-	web/symoneural-web	Go	f2a4a8fa	go-build	self	TLS edge :80/:443	no-manifest
+symoneural-gateway	symoneural-gateway	SERVICE_GATEWAY	IMPLEMENTED	PRODUCTION	symoneural-platform	-	backend/apps/gateway	Rust	f2a4a8fa	cargo	self	routing/relay :8000	-
+symoneural-api	symoneural-api	SERVICE_API	IMPLEMENTED	PRODUCTION	symoneural-platform	-	backend/api.py	Python	f2a4a8fa	none-interpreted	self	API/orchestration :8800	-
+symoneural-llm	symoneural-llm	ENGINE_NATIVE	IMPLEMENTED	PRODUCTION	symoneural-platform	-	symoneural-llm	C++/CUDA	f2a4a8fa	cmake	self	language inference	-
+symoneural-llm-cli	symoneural-llm-cli	ENGINE_TOOL	IMPLEMENTED	SUPPORT	symoneural-llm	-	symoneural-llm	C++	f2a4a8fa	cmake	self	engine CLI	-
+symoneural-diffuse	symoneural-diffuse	ENGINE_NATIVE	IMPLEMENTED	PRODUCTION	symoneural-platform	symoneural-image-engine	symoneural-diffuse	C++/CUDA	f2a4a8fa	cmake	self	diffusion image generation	no-manifest
+symoneural-ui	symoneural-ui	ENGINE_THIRDPARTY_FORK	IMPLEMENTED	DEGRADED	symoneural-platform	ComfyUI	symoneural-ui	Python	f2a4a8fa	pyproject	upstream-fork	Studio render backend	backend-down
+symoneural-cli	symoneural-cli	OPERATOR_TOOL	IMPLEMENTED	SUPPORT	symoneural-platform	-	bin/symoneural-cli	Python	f2a4a8fa	none-interpreted	self	operator/client CLI	-
+symoneural-code	symoneural-code	OPERATOR_TOOL	IMPLEMENTED	SUPPORT	symoneural-cli	-	bin/symoneural-code	Bash	f2a4a8fa	none-interpreted	self	coder front door	-
+symoneural-discovery	symoneural-discovery	OPERATOR_TOOL	IMPLEMENTED	SUPPORT	symoneural-platform	-	bin/symoneural-discovery	Python	f2a4a8fa	none-interpreted	self	discovery tool	-
+symoneural-desktop	symoneural-desktop	CLIENT_APP	IMPLEMENTED	NOT_IN_SERVER_RELEASE	symoneural-platform	-	desktop-client	Rust/Tauri	f2a4a8fa	cargo	self	desktop client	out-of-server-scope
+symoneural-buildv2	symoneural-buildv2	BUILD_AUTHORITY	IMPLEMENTED	NOT_AN_APPLICATION	-	-	archive/buildv2	multi	external	external	build/qualification authority	-	
+symoneural-adaptive-fabric	Symon Adaptive Fabric	PLANNED	NOT_IMPLEMENTED	NOT_IN_RELEASE	-	Hardware Profiler;Model Advisor;Placement Policy;Residency Manager;Transfer Policy;Prefill Pipeline;Memory Governor	-	-	-	-	-	design proposal only	not-implemented
+symoneural-listen	symoneural-listen	ENGINE_NATIVE	IMPLEMENTED	PRODUCTION	symoneural-platform	Symon Listen;whisper surface	symoneural-listen	C++	ba6171db	cmake	self	speech recognition, CPU only	no-version-flag
+symoneural-miner	symoneural-miner	ENGINE_THIRDPARTY_FORK	IMPLEMENTED	OFFLINE_BY_CONFIG	symoneural-platform	kawpowminer fork	symoneural-miner	C++/CUDA	ba6171db	cmake	self	mining control: GPU, ASIC and settlement	upstream-gpl3-not-first-party
+symoneural-audit	symoneural-audit	OPERATOR_TOOL	IMPLEMENTED	SUPPORT	symoneural-platform	-	symoneural-audit	Python	ba6171db	none-interpreted	self	finds move-fragile path resolution	-
+symoneural-miner-core	symoneural-miner-core	ENGINE_FIRSTPARTY_PARTIAL	EXISTING-INCOMPLETE	NOT_IN_RELEASE	symoneural-platform	first-party miner layers	symoneural-miner-core	Python	7f1a6d2a	none-interpreted	self	Keccak, Stratum client and fail-closed config; NOT a complete miner	kawpow-algorithm-and-kernel-not-implemented

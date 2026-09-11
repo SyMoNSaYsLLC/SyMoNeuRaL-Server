@@ -1,0 +1,292 @@
+path	type	owner	mode	size_bytes	size_mb	mtime	primary_class	reference_state	proposed_action	proposed_destination	sha256	note
+/home/google/.ICEauthority	file	google	644	0	0.00	2026-05-18 17:47	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.Xauthority	file	google	600	51	0.00	2026-09-01 21:22	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.adminrunconfigfull.google.kate-swp	file	google	644	61	0.00	2026-06-26 15:27	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.agents	dir	google	755	53	0.00	2026-07-10 16:12	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.ais	dir	google	755	0	0.00	2026-06-28 16:33	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.ais1	dir	google	755	9447	0.01	2026-06-28 16:37	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.aitk	dir	google	775	187277	0.18	2026-07-10 12:49	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.android	dir	google	750	6090173	5.81	2026-08-13 00:56	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bash_history	file	google	600	16162	0.02	2026-09-03 04:21	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bash_history-03657.tmp	file	google	600	12948	0.01	2026-07-14 06:57	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bash_history-06317.tmp	file	google	600	0	0.00	2026-07-16 15:15	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bash_history-09970.tmp	file	google	600	0	0.00	2026-07-18 05:24	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bashrc	file	google	644	6054	0.01	2026-08-24 18:00	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.bashrc.bak.pre-darwin_build	file	google	644	5638	0.01	2026-07-28 20:15	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.brev	dir	google	770	1641	0.00	2026-08-16 05:01	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.cache	dir	google	755	10566710911	10077.20	2026-09-03 02:55	ACTIVE	LIVE_CONSUMER	KEEP			live tool/session state
+/home/google/.cargo	dir	google	775	365962842	349.01	2026-09-02 15:09	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.claude	dir	google	775	5423234485	5172.00	2026-09-03 04:28	ACTIVE	LIVE_CONSUMER	KEEP			live tool/session state
+/home/google/.claude-science	dir	google	775	0	0.00	2026-08-09 23:48	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.claude.json	file	google	600	72515	0.07	2026-09-03 04:32	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.claude.json.backup	file	google	600	64436	0.06	2026-08-25 08:44	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.claude.json.tmp.62234.b6698aa7007d	file	google	600	30391	0.03	2026-07-08 02:50	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.cmake	dir	google	775	57	0.00	2026-08-17 09:31	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.codex	dir	google	755	774006582	738.15	2026-09-03 04:33	ACTIVE	LIVE_CONSUMER	KEEP			live tool/session state
+/home/google/.config	dir	google	755	27171322080	25912.59	2026-09-03 04:22	ACTIVE	LIVE_CONSUMER	KEEP			live tool/session state
+/home/google/.copilot	dir	google	775	4393	0.00	2026-08-19 03:43	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.cups	dir	google	755	68	0.00	2026-06-21 08:13	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.cupy	dir	google	775	8450679	8.06	2026-08-16 11:48	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.dmrc	file	google	644	35	0.00	2026-05-18 17:47	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.dotnet	dir	google	775	1195627210	1140.24	2026-07-25 13:19	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.dsh	dir	google	775	32951	0.03	2026-08-21 17:02	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.dub	dir	google	775	38452642	36.67	2026-07-25 13:38	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.fehbg	file	google	774	79	0.00	2026-07-14 05:37	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.floorp	dir	google	755	109397533	104.33	2026-07-01 00:12	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.flutter	file	google	644	78	0.00	2026-06-29 15:43	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.fonts	dir	google	755	282050724	268.98	2026-06-30 06:47	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.gemini	dir	google	755	18472596	17.62	2026-06-27 01:45	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.git-credentials	file	google	600	142	0.00	2026-08-29 16:11	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.gitconfig	file	google	644	457	0.00	2026-08-25 17:40	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.gitconfig-symon	file	google	644	66	0.00	2026-06-30 20:22	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.gnupg	dir	google	755	1290	0.00	2026-09-02 16:17	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.gradle	dir	google	775	1817429	1.73	2026-08-13 00:54	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.gradle-dist	dir	google	775	151734464	144.71	2026-08-13 00:53	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.gtkrc-2.0	file	google	664	342	0.00	2026-09-03 01:57	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.hf-cli	dir	google	775	43994122	41.96	2026-07-02 01:07	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.hplip	dir	google	755	465	0.00	2026-06-30 00:36	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.humming	dir	google	775	2535290	2.42	2026-07-20 07:02	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.icons	dir	google	755	162996567	155.45	2026-08-28 11:34	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.idlerc	dir	google	775	250	0.00	2026-07-17 14:15	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.inputrc	file	google	664	30	0.00	2026-07-21 16:17	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.inputrc.tmp	file	google	664	0	0.00	2026-07-21 16:16	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.java	dir	google	755	325025	0.31	2026-02-17 20:57	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.jdks	dir	google	775	307551872	293.30	2026-08-13 00:51	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.junie	dir	google	755	0	0.00	2026-02-17 21:02	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.keras	dir	google	775	120	0.00	2026-08-16 12:38	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.links2	dir	google	700	1039	0.00	2026-07-24 16:14	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.local	dir	google	755	19945113117	19021.14	2026-07-25 14:06	ACTIVE	LIVE_CONSUMER	KEEP			live tool/session state
+/home/google/.minikube	dir	google	755	782	0.00	2026-06-16 10:44	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.mozilla	dir	google	755	137213073	130.86	2026-02-13 02:35	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.mtpaint	file	google	644	258	0.00	2026-02-14 13:49	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.net	dir	google	700	41834048	39.90	2026-07-07 05:00	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.npm	dir	google	755	1287838427	1228.18	2026-08-28 14:43	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.npm-global	dir	google	755	455761008	434.65	2026-06-29 03:17	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.npmrc	file	google	644	32	0.00	2026-06-29 04:31	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.npmrc.bak	file	google	644	32	0.00	2026-06-29 04:31	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.nsightsystems	dir	google	775	209	0.00	2026-07-12 14:47	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.nuget	dir	google	775	205	0.00	2026-07-25 13:19	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.nv	dir	google	755	952689292	908.56	2026-07-16 15:11	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.nvidia-settings-rc	file	google	664	3043	0.00	2026-08-25 08:25	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.opencode	dir	google	755	239331824	228.24	2026-06-30 20:51	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.passwd-s3fs	file	google	600	30	0.00	2026-06-25 17:09	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.pki	dir	google	755	65983	0.06	2026-02-12 04:11	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.profile	file	google	644	1147	0.00	2026-08-28 07:31	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.pyenv	dir	google	755	199732955	190.48	2026-06-24 23:39	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.pytest_cache	dir	google	775	532	0.00	2026-07-30 21:02	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.qwen	dir	google	755	20144	0.02	2026-06-29 04:53	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.redhat	dir	google	775	36	0.00	2026-07-07 06:25	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.repo_.gitconfig.json	file	google	664	539	0.00	2026-07-14 04:58	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.repoconfig	dir	google	775	4678	0.00	2026-07-14 04:57	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.rustup	dir	google	775	620842538	592.08	2026-08-13 00:49	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.sentry-native	dir	google	755	943	0.00	2026-06-18 12:56	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.smbcredentials	file	google	600	35	0.00	2026-06-25 09:51	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.sqlite_history	file	google	600	616	0.00	2026-07-14 08:42	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.ssh	dir	google	700	4411	0.00	2026-07-01 21:51	PERSONAL	LIVE_CONSUMER	KEEP			credential/secret material - protected
+/home/google/.step	dir	google	700	0	0.00	2026-08-16 23:11	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.subversion	dir	google	775	20990	0.02	2026-07-07 04:51	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.sudo_as_admin_successful	file	google	644	0	0.00	2026-06-30 04:38	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.swiftpm	dir	google	775	3163394453	3016.85	2026-07-25 13:59	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.swt	dir	google	775	82	0.00	2026-07-17 13:40	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.symon-yocto	dir	google	775	620519154	591.77	2026-08-13 08:02	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.symoneural-full	dir	google	700	23241847	22.17	2026-08-20 10:58	DURABLE_EVIDENCE	REFERENCED	KEEP			IP vault, mode 700; holds REBUILD.md, MANIFEST.md, pre-rotation credential file
+/home/google/.symonlauncher	dir	google	775	219	0.00	2026-08-13 02:52	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.themes	dir	google	755	19286924	18.39	2026-08-21 12:05	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.tilelang	dir	google	775	0	0.00	2026-08-24 22:42	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.triton	dir	google	775	19126965	18.24	2026-07-05 11:49	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.var	dir	google	755	3167931132	3021.17	2026-02-12 02:38	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.venvs	dir	google	775	26359551143	25138.43	2026-08-24 18:28	ACTIVE	REFERENCED	KEEP			installed runtimes incl. vLLM 0.25.1 (.venvs/vllm); doc-referenced 8x
+/home/google/.viminfo	file	google	600	1753	0.00	2026-07-14 05:34	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.vscode	dir	google	755	724172205	690.62	2026-07-10 12:55	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.vscode-shared	dir	google	755	24576	0.02	2026-06-30 21:17	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.wget-hsts	file	google	644	1708	0.00	2026-09-03 02:55	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xinitrc	file	google	644	182	0.00	2026-07-14 05:30	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xorgxrdp.10.log	file	google	644	21630	0.02	2026-09-02 05:50	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xorgxrdp.10.log.old	file	google	644	23336	0.02	2026-09-01 06:26	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xpaint	dir	google	755	0	0.00	2026-02-14 13:13	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xsession	file	google	775	246	0.00	2026-08-07 00:01	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.xsession-errors	file	google	600	807597	0.77	2026-09-03 01:57	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.zcompdump	file	google	644	51488	0.05	2026-06-24 21:06	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.zsh_history	file	google	644	1189	0.00	2026-06-30 21:06	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/.zshrc	file	google	644	1613	0.00	2026-07-05 13:58	PERSONAL	UNKNOWN_REFERENCE	KEEP			dotfile/dot-dir; out of cleanup scope
+/home/google/AI_PURGE_PSEUDOFS	dir	root	755	22518	0.02	2026-08-30 11:42	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			root-owned; not writable by this user
+/home/google/Claude	dir	google	700	152151	0.15	2026-08-19 04:06	PERSONAL	UNKNOWN_REFERENCE	KEEP			mode 700 agent data
+/home/google/ClaudeAlienware	dir	google	775	173851460	165.80	2026-08-30 11:49	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			separate agent workspace (app.py, backups, plugins); purpose not established
+/home/google/ClaudePromptLogs	dir	google	775	163565	0.16	2026-08-25 04:12	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		prompt logs
+/home/google/ComfyUI-Installs	dir	google	775	7518632446	7170.33	2026-08-22 11:28	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			ComfyUI install tree (TestingforChatGPT); NOT the repo-symlinked ComfyUI-Shared
+/home/google/ComfyUI-Shared	dir	google	775	1746389116	1665.49	2026-08-21 15:17	ACTIVE	LIVE_CONSUMER	KEEP			target of repo symlink references/ComfyUI-Shared
+/home/google/ContribPersonalLillyAIProject	dir	google	775	15749427	15.02	2026-08-14 01:25	PERSONAL	UNREFERENCED	KEEP			personal third-party project
+/home/google/Desktop	dir	google	755	303835	0.29	2026-09-03 04:14	PERSONAL	UNKNOWN_REFERENCE	REVIEW			PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+/home/google/DifficultCode	dir	google	775	943735	0.90	2026-08-26 12:27	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			purpose not established
+/home/google/Documents	dir	google	755	71538734	68.22	2026-09-02 17:20	PERSONAL	UNKNOWN_REFERENCE	REVIEW			PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+/home/google/DonaldNorris	dir	google	775	3132044	2.99	2026-08-23 16:22	PERSONAL	UNREFERENCED	KEEP			personal/third-party material
+/home/google/DonaldNorris.zip	file	google	664	3129192	2.98	2026-08-23 16:24	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	e626d73a21e52de88b6b24612c3cec52786bf84dc708dadd1e4c624984270c9b	archive bundle
+/home/google/Donnie.zip	file	google	664	3133101	2.99	2026-08-23 16:17	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	2a3db4b09e9405d3b62db8fb32999cf18c4b206af75b47d83a1366b18edd6e9f	archive bundle
+/home/google/Downloads	dir	google	775	35371032931	33732.45	2026-09-03 04:16	PERSONAL	UNKNOWN_REFERENCE	REVIEW			SCANNED: holds project artifacts incl. CRITICAL symoneural-vault-2026-08-19-v2.tar.gz (only located copy of the LoRA weights, manifest row 0) and 7 proven duplicates (manifest rows 15a-15g). Bulk is personal media. Never blanket-clean.
+/home/google/FT-B整机测试刷机SD卡母片	dir	google	775	13042155	12.44	1901-12-13 15:45	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			vendor SD-card image tree; mtime 1901 (bad timestamp)
+/home/google/FakeDesktop	dir	google	775	288742442	275.37	2026-08-26 06:17	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			mirrors Documents/SyMoNeuRaL trees; relationship to real Desktop not established
+/home/google/HashingManifestSignsChecksums	dir	google	775	239392891	228.30	2026-08-28 16:30	DUPLICATE	UNREFERENCED	DELETE_EXACT_DUPLICATE			delete the CHILD path HashingManifestSignsChecksums/Symoneural-yocto-compiled-code-scan-20260828T200848Z (the diff -rq proof covers the child); parent holds only that child (ls -A: 1 entry) so it is left empty. See manifest row 13.
+/home/google/InternalUSEONLY	dir	google	775	2487553	2.37	2026-08-29 18:20	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		internal-only material; paired archive exists
+/home/google/InternalUSEONLY.tar.gz	file	google	664	114980	0.11	2026-08-29 06:18	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	de53d7eef67162409a8b4842df6cc201c1267252938e69336dc1add678eef2bd	archive bundle
+/home/google/MIT_AI_Training	file	google	664	300348	0.29	2026-08-24 19:40	ARCHIVE	COMMENT	MOVE	SyMoNeuRaL-Workspace/archives/	c3cfc42ade0affca16f160b1383dd1630158f8d6a7ae15670aa0ebdb5efbbb46	300 KB UTF-8 text; 176 repo hits are COMMENT/DOC prose, not consumers
+/home/google/MIT_AI_Training.zip	file	google	664	36060	0.03	2026-08-06 22:38	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	49afce7d870c251ba341873dcd2bb8a774c35729de49344af3163d0d4ffa29c0	archive bundle
+/home/google/Music	dir	google	755	18279591	17.43	2026-09-03 02:49	PERSONAL	UNKNOWN_REFERENCE	REVIEW			PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+/home/google/Pictures	dir	google	755	1222976792	1166.32	2026-09-03 04:10	PERSONAL	UNKNOWN_REFERENCE	REVIEW			PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+/home/google/Platforms	dir	google	775	2556812	2.44	2026-08-24 13:49	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			Apple iPhoneSimulator/MacOSX platform SDKs
+/home/google/Platforms.tar.gz	file	google	664	234786924	223.91	2026-08-19 18:59	ARCHIVE	UNREFERENCED	KEEP		cb8081dc637c4144b45616d923f6cb24d0498739937a1e4004643f503c51c8ed	KEEP - archive is 90x LARGER (223.91 MB) than the extracted Platforms/ directory (2.44 MB); it is the primary copy of the Apple SDK payload, not a redundant one. Manifest row 12.
+/home/google/Prompt2.md	file	google	644	7223	0.01	2026-08-30 14:39	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/Public	dir	google	755	0	0.00	2026-06-30 06:24	PERSONAL	UNKNOWN_REFERENCE	KEEP			user data tree; inventory only - check for project bundles before any action
+/home/google/RAVENCALC.md	dir	google	775	501311	0.48	2026-08-16 14:51	ARCHIVE	UNREFERENCED	REVIEW			directory despite .md name
+/home/google/SYMONEURAL-GATEWAY-DEPLOY-REFACTOR-CODER-PROMPT (1).txt	file	google	664	35688	0.03	2026-08-26 11:59	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/SYMONEURAL-GATEWAY-DEPLOY-REFACTOR-CODER-PROMPT.txt	file	google	664	35688	0.03	2026-08-26 11:59	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/ServerTransfer	dir	google	775	12656902267	12070.56	2026-08-28 15:26	BACKUP	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/backups/		12.06 GB of backup zips incl. .claudehomefolder.zip 4.76 GB
+/home/google/Source code and binaries.docx	file	google	664	8088	0.01	2026-07-21 01:42	PERSONAL	UNREFERENCED	KEEP			document
+/home/google/Source code and binaries.pdf	file	google	664	88113	0.08	2026-07-21 01:44	PERSONAL	UNREFERENCED	KEEP			document
+/home/google/Source code for Model.docx	file	google	664	8022	0.01	2026-07-21 01:45	PERSONAL	UNREFERENCED	KEEP			document
+/home/google/SyMoNeuRaL-Backups	dir	google	775	3871223929	3691.89	2026-08-24 22:23	BACKUP	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/backups/		runtime-2026-08-24 backup tree
+/home/google/SyMoNeuRaL-Builds	dir	google	775	1949231376	1858.93	2026-08-25 08:46	BUILD	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/builds/		model-lab, runtime-validation, vllm-fa2-sm120 build outputs
+/home/google/SyMoNeuRaL-Projects	dir	google	775	2750311765	2622.90	2026-08-30 10:12	ARCHIVE	SYMLINK	REVIEW			contains symlink Symoneural -> canonical repo; DO NOT follow symlink when deleting
+/home/google/SyMoNeuRaL-dependencies-runtimes.zip	file	google	664	10884	0.01	2026-08-26 19:10	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	51ef02cca31e821f5a197168ea9c44704bdec2c082626d48be1c4569ba598d9f	archive bundle
+/home/google/SyMoNeuRaL-transfer-20260826-224447	dir	google	775	40782103	38.89	2026-08-26 18:44	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		transfer bundle
+/home/google/SyMoNeuRaL_Claude_Coder_Closure_Pack_v3.zip	file	google	664	74481595	71.03	2026-08-30 08:58	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	226fb1c42865e22930865863fc4dfceab5b291e380fcc35da528375e38c4eda4	archive bundle
+/home/google/SyMoNeuRaL_Runtime_Engineering_Guide	dir	google	775	2766	0.00	2026-08-25 07:55	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		guide tree; paired zip in ServerTransfer
+/home/google/SymonSaysLLC	dir	google	775	1044363	1.00	2026-09-02 20:14	PERSONAL	UNREFERENCED	REVIEW			business entity documents
+/home/google/Symoneural	dir	google	775	164480212658	156860.55	2026-09-03 02:41	ACTIVE	LIVE_CONSUMER	KEEP			canonical repo; 4 systemd units ExecStart/WorkingDirectory here
+/home/google/Symoneural-Extended	dir	google	775	112924203	107.69	2026-08-29 19:50	ARCHIVE	REFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		extended/fullstack variant tree
+/home/google/Symoneural-VLLM-fa2Cabi3	file	google	664	536854	0.51	2026-08-25 07:53	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		vLLM fa2 ABI evidence file
+/home/google/Symoneural-information-scan-20260828T193658Z	dir	google	700	1817252	1.73	2026-08-28 15:37	DURABLE_EVIDENCE	REFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		information scan evidence
+/home/google/Symoneural-yocto-compiled-code-scan-20260828T200848Z	dir	google	700	239392891	228.30	2026-08-28 16:17	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		RETAIN this copy; the HashingManifestSignsChecksums copy is the proven duplicate
+/home/google/Symoneural-yocto-compiled-code-scan-20260828T200848Z.tar.gz	file	google	664	20745642	19.78	2026-08-28 16:19	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	6f22173f73c89336fc9dd28a4a77ac09e83b723aed7b6e6a87dad0cfe552698f	archive bundle
+/home/google/Symoneural-yocto-phase2-audit-20260828T204955Z	dir	google	775	244801	0.23	2026-08-28 17:01	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		yocto phase2 audit evidence
+/home/google/Symoneuralorg	file	google	664	30676	0.03	2026-08-20 07:45	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		org notes file
+/home/google/Symoneuraltree.md	file	google	664	101645195	96.94	2026-09-03 04:21	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/	6f5f2066d48b2b676c9092b5ee03c0dc899dbb404fb4f7b29e763913318be5e5	project note/handoff
+/home/google/Symoneuraltree.zip	file	google	664	5588196	5.33	2026-09-03 04:22	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	ec87f1b5f88c836a37b2966f2c0443d2625dd0e7ddff6083030ea21ed880ee1f	archive bundle
+/home/google/Templates	dir	google	755	0	0.00	2026-06-30 06:24	PERSONAL	UNKNOWN_REFERENCE	KEEP			user data tree; inventory only - check for project bundles before any action
+/home/google/TensorRT-LLM	dir	google	775	2256996446	2152.44	2026-08-18 02:03	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			upstream NVIDIA repo clone; re-clonable
+/home/google/Toolchains	dir	google	775	117269720	111.84	2026-08-28 07:02	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			cross-build toolchains
+/home/google/Videos	dir	google	755	0	0.00	2026-07-10 19:24	PERSONAL	UNKNOWN_REFERENCE	REVIEW			PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+/home/google/_archive-20260901	dir	google	775	29239702	27.89	2026-09-01 03:29	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		already-organized archive with MANIFEST.txt
+/home/google/a-series-decision-gate.md	file	google	664	7911	0.01	2026-09-01 21:36	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a1-committed-clean-checkpoint.md	file	google	664	4376	0.00	2026-09-01 21:30	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a1-control-models-implemented.md	file	google	664	5249	0.01	2026-09-01 19:42	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a2-committed-clean-checkpoint.md	file	google	664	3782	0.00	2026-09-01 19:33	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a2-export-blocked-on-manifest.md	file	google	664	4564	0.00	2026-09-01 17:27	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a2-export-implemented.md	file	google	664	5712	0.01	2026-09-01 17:33	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-architecture-decisions-ready.md	file	google	664	11008	0.01	2026-09-01 21:50	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-committed-clean-checkpoint.md	file	google	664	4308	0.00	2026-09-01 23:23	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-implementation-plan.md	file	google	664	11782	0.01	2026-09-01 21:53	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-implemented-awaiting-gate.md	file	google	664	6623	0.01	2026-09-01 22:03	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-plan-revised.md	file	google	664	9300	0.01	2026-09-01 21:45	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a3-route-classification.md	file	google	664	9441	0.01	2026-09-01 21:41	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-auth-slot-resolved.md	file	google	664	6477	0.01	2026-09-02 02:46	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-boundaries-recorded.md	file	google	664	7097	0.01	2026-09-02 01:05	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-config-asset-boundary-decisions.md	file	google	664	11227	0.01	2026-09-02 01:00	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-customer-provisioned.md	file	google	664	7385	0.01	2026-09-02 02:31	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-decision-gate.md	file	google	664	13497	0.01	2026-09-01 23:45	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-enablement-blocked-on-privilege.md	file	google	664	5939	0.01	2026-09-02 01:32	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-enablement-verification-failed.md	file	google	664	6039	0.01	2026-09-02 01:57	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-export-scope-committed.md	file	google	664	5819	0.01	2026-09-02 00:29	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-export-scope-content-decision.md	file	google	664	8903	0.01	2026-09-02 00:02	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-export-scope-populated.md	file	google	664	6201	0.01	2026-09-02 00:16	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-protected-exclusions-recorded.md	file	google	664	7670	0.01	2026-09-02 01:11	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-record-reconciled-post-provisioning.md	file	google	664	6824	0.01	2026-09-02 02:39	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-record-reconciliation.md	file	google	664	8342	0.01	2026-09-02 00:38	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-regression-repaired.md	file	google	664	5970	0.01	2026-09-02 00:56	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-runtime-prerequisite-enabled.md	file	google	664	6174	0.01	2026-09-02 02:23	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-runtime-prerequisite-plan.md	file	google	664	13785	0.01	2026-09-02 01:24	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/a4-shared-service-map-ruling.md	file	google	664	8710	0.01	2026-09-02 02:54	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		a-series decision/checkpoint record
+/home/google/bentoml	dir	google	775	966820	0.92	2026-08-18 23:51	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			third-party serving framework tree
+/home/google/brand.tar.gz	file	google	664	1540569	1.47	2026-08-25 19:57	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	5b7e332f0daff57e079e1a11964c84801ec04dfea3f2ed9f65da3c6a8d87f4b0	archive bundle
+/home/google/browser-webapp-purge.sh	file	google	700	4340	0.00	2026-08-31 11:01	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		operator script
+/home/google/claude-home.tar.gz.part-000	file	google	664	524288000	500.00	2026-08-25 09:48	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	76db249057df1a8cfad2787647587f368aaacb004f7f3862d327468fa0f0313a	archive bundle
+/home/google/docs.tar.gz	file	google	664	11079891	10.57	2026-08-25 19:39	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	ba58ae5100094635fa9417324412b685a75de2381d45949878c3f2a110c72a73	archive bundle
+/home/google/docs.zip	file	google	664	2016070	1.92	2026-08-29 19:50	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	fca6b5f06e2e6e95caaa55d5c35c47fc0869b7788a26c7a2cf620936eac969f8	archive bundle
+/home/google/experiments	dir	google	775	2583293530	2463.62	2026-08-24 10:58	ARCHIVE	UNREFERENCED	REVIEW			capacity-lab, symoneural-hybrid experiment trees
+/home/google/followupsept1.md	file	google	664	11006	0.01	2026-09-01 15:52	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/go	dir	google	775	1495373478	1426.10	2026-08-26 15:07	ACTIVE	REFERENCED	KEEP			Go module/bin tree; .zshrc adds go/bin to PATH
+/home/google/googletree.md	file	google	664	89402	0.09	2026-09-03 04:20	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/	10da600c33af5bcc50342c352443c0335cb7f731e5c36977480fbf11dfd25f9e	project note/handoff
+/home/google/googletree.zip	file	google	664	17456	0.02	2026-09-03 04:22	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	f2be3d30459012dc359c779a27797c989dc21814c5fc284000ccbd9a55cce130	archive bundle
+/home/google/hiranktesting	dir	google	775	22518	0.02	2026-08-30 11:44	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			purpose not established
+/home/google/ia.Wallpapers	dir	google	775	421403810	401.88	2026-08-28 12:00	PERSONAL	UNREFERENCED	KEEP			wallpaper git repo
+/home/google/install-ulaa-browser.sh	file	google	664	975	0.00	2026-09-03 02:21	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		operator script
+/home/google/iphoneremote.md	file	google	664	8671	0.01	2026-09-01 17:11	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/lockdown-20260831T152822Z.log	file	root	644	292	0.00	2026-08-31 11:28	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T152935Z.log	file	root	644	292	0.00	2026-08-31 11:29	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T152952Z.log	file	root	644	292	0.00	2026-08-31 11:29	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T153020Z.log	file	root	644	292	0.00	2026-08-31 11:30	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T153049Z.log	file	root	644	292	0.00	2026-08-31 11:30	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T153130Z.log	file	root	644	292	0.00	2026-08-31 11:31	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T153240Z.log	file	root	644	292	0.00	2026-08-31 11:32	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/lockdown-20260831T153319Z.log	file	root	644	292	0.00	2026-08-31 11:33	DURABLE_EVIDENCE	UNREFERENCED	REVIEW			log file (root-owned lockdown logs)
+/home/google/makecudasamples.docx	file	google	664	59249	0.06	2026-08-16 11:20	PERSONAL	UNREFERENCED	KEEP			document
+/home/google/network-localize.sh	file	google	700	5060	0.00	2026-08-31 11:14	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		operator script
+/home/google/ninjatraining	dir	google	775	337121843	321.50	2026-08-24 20:11	ARCHIVE	UNREFERENCED	REVIEW			Symoneural-OE tree
+/home/google/providerapikeys.txt	file	google	664	725	0.00	2026-08-20 08:14	PERSONAL	UNKNOWN_REFERENCE	KEEP			CREDENTIAL MATERIAL - protected, never move or delete
+/home/google/review	dir	google	775	0	0.00	2026-08-22 12:46	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			top-level 'review' dir shadows repo review/; contents not established
+/home/google/roughpromptreview	file	google	664	150240	0.14	2026-09-01 15:45	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		prompt review notes
+/home/google/run.tar.gz	file	google	664	256850855	244.95	2026-08-25 19:39	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	cad15a4997044f4b0596e4c3aee9df2e7cb03de82fd818b2309a5226c1cf74ff	archive bundle
+/home/google/scripts.tar.gz	file	google	664	70916	0.07	2026-08-25 19:39	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	3f9d1e0a23572a475f7ade89b750c02629296da13ffff55e5574b01e170f190e	archive bundle
+/home/google/sept1-authorization-gate.md	file	google	664	5843	0.01	2026-09-01 17:21	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/handoffs/		project note/handoff
+/home/google/server-recover	dir	google	775	160632167	153.19	2026-08-30 11:51	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		AI purge inventory + rootfs recovery evidence
+/home/google/src	dir	google	775	26114870198	24905.08	2026-08-21 13:09	THIRD_PARTY_LAB	UNREFERENCED	REVIEW			46 upstream OSS git repos (chromium, linux, llvm-project, v8, WebKit...); 24.9 GB, re-clonable
+/home/google/staging-image-2026-09-03	dir	google	775	7670	0.01	2026-09-03 03:22	STAGING	UNREFERENCED	DELETE_DISPOSABLE_STAGING			this session's model staging; payloads adopted, only hf metadata left; superseded by Codex commit 1d72cc6e
+/home/google/symon-full-lockdown.sh	file	google	700	11070	0.01	2026-08-31 11:14	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		operator script
+/home/google/symoneural-108-cli-build-20260829T163014Z	dir	google	700	24506	0.02	2026-08-29 12:32	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-108-phase0-cutover-intent-20260829T162025Z	dir	google	700	18042	0.02	2026-08-29 12:23	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-108-phase1-engine-install-20260829T162519Z	dir	google	700	15734	0.02	2026-08-29 12:28	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-108-phase1a-abi-20260829T164106Z	dir	google	700	587497208	560.28	2026-08-29 12:46	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-108-phase2-serving-proof-20260829T165111Z	dir	google	700	665020	0.63	2026-08-29 12:54	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-108-postboot-20260829T152526Z	dir	google	700	75919	0.07	2026-08-29 11:31	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-62-implementation-20260829T172005Z	dir	google	700	90077	0.09	2026-08-29 14:05	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-62-publish-20260829T181354Z	dir	google	700	10787444	10.29	2026-08-29 14:34	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-application-repair-handoff-20260902	dir	google	775	17508	0.02	2026-09-02 17:56	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-artifact-custody-20260829T185451Z	dir	google	700	207183	0.20	2026-08-29 15:27	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-artifact-distribution-20260829T195229Z	dir	google	700	32165	0.03	2026-08-29 16:16	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-build-20260902	dir	google	775	4461285064	4254.61	2026-09-02 16:21	BUILD	WORKTREE	UNKNOWN_STOP			CONTAINS 2 REGISTERED GIT WORKTREES (src, src-b); see manifest rows for parts
+/home/google/symoneural-coder-handoff-20260829T204630Z	dir	google	700	110856	0.11	2026-08-30 08:08	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-coder-rotation-record-20260902-180724	dir	google	700	635335	0.61	2026-09-02 18:07	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-commit-boundaries-20260829T183925Z	dir	google	700	36027	0.03	2026-08-29 14:47	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-corpus-audit-20260829T233921Z	dir	google	700	40455	0.04	2026-08-29 20:06	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-cutover-rollback-20260826-154113	dir	google	555	67650254	64.52	2026-08-26 15:41	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		read-only (dr-xr-xr-x) rollback evidence, 64.5 MB
+/home/google/symoneural-donnie-account-20260829T110519Z	dir	google	700	110991	0.11	2026-08-29 07:24	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-donnie-password-rotation-20260829T112335Z	dir	google	700	78165	0.07	2026-08-29 07:24	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-engine-repro-20260829T090952Z	dir	google	775	1237755985	1180.42	2026-08-29 05:09	BUILD	REFERENCED	MOVE	SyMoNeuRaL-Workspace/builds/		engine reproduction root, 1.15 GB
+/home/google/symoneural-evidence-transfer-20260903.zip	file	google	664	77427	0.07	2026-09-03 02:31	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	74b791196e4e8285941340bf9cad65c2eded02ca2a537ae6121ceee8c3c93fb7	archive bundle
+/home/google/symoneural-frontend-composition-20260829T133510Z	dir	google	700	22574368	21.53	2026-08-29 10:15	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-frontend-reconciliation-20260829T114548Z	dir	google	700	23171065	22.10	2026-08-29 08:59	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-frontend-semantics-20260829T150845Z	dir	google	700	4793	0.00	2026-08-29 11:08	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1-20260902	dir	google	775	20173	0.02	2026-09-02 17:06	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1-unit-backup-20260902-165938	dir	google	775	1179	0.00	2026-09-02 16:59	BACKUP	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/backups/		systemd unit backup taken before gate1
+/home/google/symoneural-gate1.1-20260902	dir	google	775	18022	0.02	2026-09-02 17:20	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1.1-independent-20260902-173948	dir	google	700	100294	0.10	2026-09-02 17:47	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1.1-reconciliation-20260902-173223	dir	google	775	24323	0.02	2026-09-02 17:35	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1.1-rerun-20260902-192600	dir	google	775	16074	0.02	2026-09-02 19:25	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gate1.1-verification-20260902	dir	google	775	11285	0.01	2026-09-02 17:29	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gateway-custody-20260829T193314Z	dir	google	700	125519	0.12	2026-08-29 15:46	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-gateway-publish-migration-20260826-122026	dir	google	775	319915	0.31	2026-08-26 15:39	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		gateway publish migration evidence
+/home/google/symoneural-home-cleanup-audit-20260903	dir	google	775	4839	0.00	2026-09-03 04:31	DURABLE_EVIDENCE	LIVE_CONSUMER	KEEP			this audit's evidence root
+/home/google/symoneural-information-scan.py	file	google	664	52893	0.05	2026-08-28 15:35	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		scan tool, 52 KB
+/home/google/symoneural-ingress-decision-20260902	dir	google	775	33712	0.03	2026-09-02 16:49	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-livestack-reconciliation-20260902	dir	google	775	41678	0.04	2026-09-02 16:40	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-merge4.tar.gz	file	google	664	14247125	13.59	2026-08-24 13:39	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	003560cb3c86b355f159e1f5424bd3f0235b6c9adf9071422982f0aeeed92e6f	archive bundle
+/home/google/symoneural-model-downloads-20260902	dir	google	700	634	0.00	2026-09-02 18:22	STAGING	REFERENCED	REVIEW			model staging from 2026-09-02; verify no unadopted payload before removal
+/home/google/symoneural-owner-authorization-audit-20260902T151355Z	dir	google	775	851905	0.81	2026-09-02 11:25	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-provenance-checkpoint-20260903	dir	google	775	11566	0.01	2026-09-03 04:14	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-quarantine-generated.sh	file	google	775	14764	0.01	2026-08-28 15:12	ACTIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/imports/		quarantine script, executable
+/home/google/symoneural-r184-r185-record-20260902-181008	dir	google	700	620849	0.59	2026-09-02 18:10	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-r184-reconciliation-20260902	dir	google	700	23934	0.02	2026-09-02 19:54	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-r186-record-20260902-181751	dir	google	700	158756	0.15	2026-09-02 18:17	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-r188-record-20260902-185435	dir	google	700	162471	0.15	2026-09-02 18:54	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-registry-20260902	dir	google	775	232693	0.22	2026-09-02 14:53	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-repo-2026-08-19.tar.gz	file	google	664	89472788	85.33	2026-08-19 17:08	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	d71595424d7f1096fece3c9438cb282e822c6fed0e545f5898902522cd03bdcc	archive bundle
+/home/google/symoneural-session-closeout-20260902	dir	google	775	27941	0.03	2026-09-02 20:15	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-start-of-day-20260903	dir	google	700	26096	0.02	2026-09-03 02:49	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-start-of-day-divergence-20260903	dir	google	775	24705	0.02	2026-09-03 03:07	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural-start-of-day-final-20260903	dir	google	775	15249	0.01	2026-09-03 03:13	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		dated coder/gate evidence root
+/home/google/symoneural_fullstack_example	dir	google	775	121853	0.12	2026-08-22 12:25	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/		fullstack example tree; paired archive exists
+/home/google/symoneural_fullstack_example.zip	file	google	664	70953	0.07	2026-08-24 13:39	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	4ebf77ada683ee25128fb58a56cb4d7e2c7151a0f900539b7fb9a29f2f1aadc8	archive bundle
+/home/google/symoneural_tbd	dir	google	700	44069201	42.03	2026-08-30 10:09	UNKNOWN_STOP	UNREFERENCED	UNKNOWN_STOP			'tbd' recovery tree, 42 MB, purpose not established
+/home/google/symoneuralsept1.zip	file	google	664	41003163	39.10	2026-09-01 00:14	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	807f94d3cb2bd9451d3919e79bbe9fe5c78c84906c22748ce4481b101891ae23	archive bundle
+/home/google/systemd-status-finds	dir	google	775	166688	0.16	2026-08-27 08:07	DURABLE_EVIDENCE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/evidence/		systemd status capture
+/home/google/thinclient_drives	dir	google	775	0	0.00	2026-08-28 17:19	PERSONAL	UNKNOWN_REFERENCE	KEEP			xrdp mount point
+/home/google/training.tar.gz	file	google	664	4565791753	4354.28	2026-08-25 20:05	ARCHIVE	UNREFERENCED	MOVE	SyMoNeuRaL-Workspace/archives/	199a7ed2e678b711ae275acf1a3dac3812ed01234d10c88114467001ea15d606	archive bundle

@@ -1,0 +1,78 @@
+Runtimes:
+APIs associated
+
+Runtime:
+API
+
+symoneural-llm:
+chat        → /api/chat
+remix       → /api/remix
+coder       → /local/coder/*
+dispatchos  → /api/dispatchos/*
+
+symoneural-project:
+project     → /api/project/*
+
+symoneural-image-engine:
+image       → /api/image
+sigils      → /api/sigils/*
+live        → /api/live/*
+streamer    → /api/streamer/*
+
+symoneural-ravencalc:
+ravencalc   → /api/ravencalc
+
+symoneural-studio:
+studio      → /api/studio/*
+exp         → /api/exp/*
+train       → /api/train/*
+reinforce  ????? was this listed
+
+symoneural-miner
+miner       → /api/gpuminer/* + /api/asicminer/*
+
+Runtimes I am not sure about:
+symoneural-api
+symoneural-web
+symoneural-gateway
+
+symoneural-llm
+    chat          → /api/chat
+    coder         → /local/coder/*
+    remix         → /api/remix          [if its work is actually LLM-driven]
+    dispatchos    → /api/dispatchos/*   [LLM calls only; DispatchOS itself is an app]
+
+
+symoneural-image-engine
+    image         → /api/image
+    sigils        → /api/sigils/*       [generation portion]
+
+
+symoneural-project
+    project       → /api/project/*
+
+
+symoneural-ravencalc
+    ravencalc     → /api/ravencalc
+
+
+symoneural-studio
+    studio        → /api/studio/*
+    train         → /api/train/*
+        └── Reinforce / LoRA
+
+    exp           → /api/exp/*
+        [ONLY if Exp is actually a Studio-hosted plugin]
+
+
+symoneural-live
+    live          → /api/live/*
+    streamer      → /api/streamer/*
+
+
+symoneural-miner
+    miner         → /api/gpuminer/*
+                    /api/asicminer/*
+
+
+

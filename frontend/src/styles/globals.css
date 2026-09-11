@@ -1,0 +1,148 @@
+/* SyMoNeuRaL design tokens and base elements.
+ *
+ * The values here are TRANSCRIBED from `site/symoneural.css`, which stays the authoritative
+ * legacy stylesheet until a route reaches verified parity and is retired. They are not
+ * re-picked, re-tuned or "modernised": the whole point of this migration is that a page moves
+ * to React without changing what a visitor sees, and a redesigned token would make every
+ * parity comparison meaningless.
+ *
+ * Two of them carry reasoning that must travel with the value, so it is repeated rather than
+ * summarised:
+ *
+ *   --faint  was #77837b, which measured 4.83:1 against --bg -- AA for body text by 0.33 of a
+ *            point, on a token used almost entirely at 10.5-11.5px. #8d9a92 measures 6.52:1.
+ *   --t4     is 14.5px rather than 15px because seventeen legacy HTML files carry
+ *            `<b style="font-size:14.5px">` inline, and an inline style cannot be overridden
+ *            without !important. The token lands on the markup instead of fighting it.
+ *
+ * The type scale is SEVEN SIZES AND ONLY SEVEN. Adding an eighth, or writing a raw px
+ * font-size in any module in this project, defeats a constraint the legacy stylesheet spent
+ * an audit establishing.
+ */
+
+:root {
+  /* ---------- colour ---------- */
+  --bg: #0e100f;
+  --panel: #161a18;
+  --line: #28302b;
+  --fg: #f2f6f3;
+  --dim: #a8b3ac;
+  --faint: #8d9a92;
+  --accent: #2ee08a;
+  --accent-ink: #06170f;
+  --amber: #ffab3d;
+  --panel2: #1c221e;
+  --max: 1120px;
+
+  /* ---------- the type scale: seven sizes ---------- */
+  --t1: 40px;   /* display / hero headline */
+  --t2: 28px;   /* page headings */
+  --t3: 20px;   /* section headings and large readings */
+  --t4: 14.5px; /* lead paragraphs, emphasis, and the body default */
+  --t5: 12.5px; /* body -- the workhorse */
+  --t6: 11.5px; /* secondary text, captions, unit detail lines */
+  --t7: 10.5px; /* the floor: tags, badges, small labels. Nothing renders below it. */
+
+  /* ---------- spacing: a 4px ramp ---------- */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+
+  /* ---------- radius ----------
+     Small-and-square for panels, full round for pills. There is deliberately no large
+     decorative radius: this is an engineered surface, not a templated one. */
+  --r1: 4px;
+  --r2: 8px;
+  --r3: 12px;
+  --rpill: 999px;
+
+  /* ---------- control heights ----------
+     36px is the existing .cta box measured, not chosen. 44px is the touch target, and
+     anything a finger must hit uses --ctl-touch. */
+  --ctl-sm: 28px;
+  --ctl: 36px;
+  --ctl-touch: 44px;
+
+  /* ---------- shell geometry ---------- */
+  --rail: 248px;
+  --bar-h: 66px;
+  --read: 46rem;
+
+  /* ---------- elevation, as surfaces rather than shadows ----------
+     This is a dark UI and a drop shadow on near-black reads as smudge. Depth comes from the
+     surface stepping lighter. */
+  --e0: var(--bg);
+  --e1: var(--panel);
+  --e2: var(--panel2);
+  --e3: #232a25;
+
+  --dur: 0.12s;
+  --ease: ease;
+  --focus: 2px solid var(--accent);
+  --focus-off: 3px;
+}
+
+/* The three named breakpoints the legacy stylesheet is consolidating onto. Custom properties
+   cannot be used inside a media query, so these are written here as the record and the
+   literals below are the only widths any module in this project may branch at:
+     700px   below: one column, drawer navigation
+     1024px  below: rail collapses, workspace stays full width
+     1440px  above: rail plus workspace plus room to spare */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: var(--t4) / 1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Focus is never removed, only replaced. A keyboard user losing the ring on a dark surface
+   cannot tell where they are at all. */
+:focus-visible {
+  outline: var(--focus);
+  outline-offset: var(--focus-off);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+code,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

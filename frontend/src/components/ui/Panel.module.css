@@ -1,0 +1,28 @@
+/* A bordered surface. The site's vocabulary is small-and-square, one step lighter than the
+   page, with the border doing the separating rather than a shadow. */
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  background: var(--e1);
+  padding: var(--s4);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  margin-bottom: var(--s3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--t4);
+  font-weight: 600;
+}
+
+.note {
+  margin: 0;
+  font-size: var(--t6);
+  color: var(--faint);
+}

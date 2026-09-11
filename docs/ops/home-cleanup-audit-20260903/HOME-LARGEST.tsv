@@ -1,0 +1,27 @@
+# 25 largest cleanup candidates. SCOPE: excludes ACTIVE infrastructure held at KEEP (the canonical repo, ComfyUI-Shared, .venvs, live tool state) and PERSONAL dotfiles/credentials held at KEEP. Named project artifacts inside Downloads/ ARE included as individual rows, because the parent tree's PERSONAL class would otherwise hide them.
+rank	path	size_bytes	size_mb	size_gb	primary_class	proposed_action	note
+1	/home/google/Downloads	35371032931	33732.45	32.942	PERSONAL	REVIEW	SCANNED: holds project artifacts incl. CRITICAL symoneural-vault-2026-08-19-v2.tar.gz (only located copy of the LoRA weights, manifest row 0) and 7 proven duplicates (manifest rows 15a-15g). Bulk is personal media. Never blanket-clean.
+2	/home/google/src	26114870198	24905.08	24.321	THIRD_PARTY_LAB	REVIEW	46 upstream OSS git repos (chromium, linux, llvm-project, v8, WebKit...); 24.9 GB, re-clonable
+3	/home/google/ServerTransfer	12656902267	12070.56	11.788	BACKUP	MOVE	12.06 GB of backup zips incl. .claudehomefolder.zip 4.76 GB
+4	/home/google/ComfyUI-Installs	7518632446	7170.33	7.002	THIRD_PARTY_LAB	REVIEW	ComfyUI install tree (TestingforChatGPT); NOT the repo-symlinked ComfyUI-Shared
+5	/home/google/training.tar.gz	4565791753	4354.28	4.252	ARCHIVE	MOVE	archive bundle
+6	/home/google/symoneural-build-20260902	4461285064	4254.61	4.155	BUILD	UNKNOWN_STOP	CONTAINS 2 REGISTERED GIT WORKTREES (src, src-b); see manifest rows for parts
+7	/home/google/SyMoNeuRaL-Backups	3871223929	3691.89	3.605	BACKUP	MOVE	runtime-2026-08-24 backup tree
+8	/home/google/SyMoNeuRaL-Projects	2750311765	2622.90	2.561	ARCHIVE	REVIEW	contains symlink Symoneural -> canonical repo; DO NOT follow symlink when deleting
+9	/home/google/experiments	2583293530	2463.62	2.406	ARCHIVE	REVIEW	capacity-lab, symoneural-hybrid experiment trees
+10	/home/google/TensorRT-LLM	2256996446	2152.44	2.102	THIRD_PARTY_LAB	REVIEW	upstream NVIDIA repo clone; re-clonable
+11	/home/google/SyMoNeuRaL-Builds	1949231376	1858.93	1.815	BUILD	MOVE	model-lab, runtime-validation, vllm-fa2-sm120 build outputs
+12	/home/google/symoneural-engine-repro-20260829T090952Z	1237755985	1180.42	1.153	BUILD	MOVE	engine reproduction root, 1.15 GB
+13	/home/google/Pictures	1222976792	1166.32	1.139	PERSONAL	REVIEW	PERSONAL user tree; REVIEW means scan for project artifacts before any action, as done for Downloads. No blanket action proposed.
+14	/home/google/symoneural-108-phase1a-abi-20260829T164106Z	587497208	560.28	0.547	DURABLE_EVIDENCE	MOVE	dated coder/gate evidence root
+15	/home/google/claude-home.tar.gz.part-000	524288000	500.00	0.488	ARCHIVE	MOVE	archive bundle
+16	/home/google/Downloads/symoneural-vault-2026-08-19-v2.tar.gz	398369206	379.91	0.371	ARCHIVE	KEEP	CRITICAL - only located copy of the LoRA weights and CHAT_ADAPTER; manifest row 0
+17	/home/google/ninjatraining	337121843	321.50	0.314	ARCHIVE	REVIEW	Symoneural-OE tree
+18	/home/google/FakeDesktop	288742442	275.37	0.269	UNKNOWN_STOP	UNKNOWN_STOP	mirrors Documents/SyMoNeuRaL trees; relationship to real Desktop not established
+19	/home/google/run.tar.gz	256850855	244.95	0.239	ARCHIVE	MOVE	archive bundle
+20	/home/google/HashingManifestSignsChecksums	239392891	228.30	0.223	DUPLICATE	DELETE_EXACT_DUPLICATE	delete the CHILD path HashingManifestSignsChecksums/Symoneural-yocto-compiled-code-scan-20260828T200848Z (the diff -rq proof covers the child); parent holds only that child (ls -A: 1 entry) so it is left empty. See manifest row 13.
+21	/home/google/Symoneural-yocto-compiled-code-scan-20260828T200848Z	239392891	228.30	0.223	DURABLE_EVIDENCE	MOVE	RETAIN this copy; the HashingManifestSignsChecksums copy is the proven duplicate
+22	/home/google/Platforms.tar.gz	234786924	223.91	0.219	ARCHIVE	KEEP	KEEP - archive is 90x LARGER (223.91 MB) than the extracted Platforms/ directory (2.44 MB); it is the primary copy of the Apple SDK payload, not a redundant one. Manifest row 12.
+23	/home/google/ClaudeAlienware	173851460	165.80	0.162	UNKNOWN_STOP	UNKNOWN_STOP	separate agent workspace (app.py, backups, plugins); purpose not established
+24	/home/google/server-recover	160632167	153.19	0.150	DURABLE_EVIDENCE	MOVE	AI purge inventory + rootfs recovery evidence
+25	/home/google/Toolchains	117269720	111.84	0.109	THIRD_PARTY_LAB	REVIEW	cross-build toolchains

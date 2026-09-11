@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1720" height="1080" viewBox="0 0 1720 1080" role="img" aria-labelledby="title desc">
+  <title id="title">SyMoNeuRaL Phase 0.6b — CLAUDE.md Migration Gate</title>
+  <desc id="desc">Phase 0.6b R-180 records that CLAUDE.md is migrated, not deleted. Durable rules move to docs/ENGINEERING.md, the ladder moves to docs/ops/MEASUREMENTS.md after 0.5b green, and export policy moves to docs/ops/EXPORTS.md. CLAUDE.md survives as a pointer. Pending input remains 0.5b tail.</desc>
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .panel { fill: #161b22; stroke: #30363d; stroke-width: 2; rx: 18; }
+      .greenPanel { fill: #112418; stroke: #3fb950; stroke-width: 3; rx: 18; }
+      .amberPanel { fill: #2b2111; stroke: #d29922; stroke-width: 3; rx: 18; }
+      .redPanel { fill: #261b1b; stroke: #f85149; stroke-width: 2; rx: 18; }
+      .bluePanel { fill: #101d2b; stroke: #58a6ff; stroke-width: 2; rx: 18; }
+      .purplePanel { fill: #201629; stroke: #bc8cff; stroke-width: 2; rx: 18; }
+      .title { fill: #f0f6fc; font: 700 36px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .subtitle { fill: #8b949e; font: 500 18px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .heading { fill: #f0f6fc; font: 700 24px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .body { fill: #c9d1d9; font: 500 17px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .muted { fill: #8b949e; font: 500 15px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .green { fill: #3fb950; font: 700 16px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .yellow { fill: #d29922; font: 700 16px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .red { fill: #f85149; font: 700 16px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .blue { fill: #58a6ff; font: 700 16px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .purple { fill: #bc8cff; font: 700 16px system-ui, -apple-system, Segoe UI, sans-serif; }
+      .mono { fill: #c9d1d9; font: 600 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .monoSmall { fill: #c9d1d9; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .line { stroke: #30363d; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8b949e; stroke-width: 2; stroke-dasharray: 8 8; fill: none; marker-end: url(#arrow); }
+      .pillGreen { fill: #14301d; stroke: #3fb950; stroke-width: 1; rx: 12; }
+      .pillAmber { fill: #332a16; stroke: #d29922; stroke-width: 1; rx: 12; }
+      .pillBlue { fill: #10243a; stroke: #58a6ff; stroke-width: 1; rx: 12; }
+      .pillPurple { fill: #2a1b36; stroke: #bc8cff; stroke-width: 1; rx: 12; }
+      .pillRed { fill: #351b1b; stroke: #f85149; stroke-width: 1; rx: 12; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#30363d"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1720" height="1080"/>
+  <text class="title" x="60" y="68">SyMoNeuRaL Phase 0.6b — CLAUDE.md Migration</text>
+  <text class="subtitle" x="60" y="100">Snapshot: 2026-08-22 10:09 EDT · R-180 captured · waits behind Phase 0.5b tail</text>
+  <rect class="greenPanel" x="60" y="130" width="1600" height="135"/>
+  <text class="heading" x="90" y="172">Scope update recorded</text>
+  <text class="body" x="90" y="206">Phase 0.6b is now in the scope table after 0.6: migrate CLAUDE.md dependency, do not delete it blindly.</text>
+  <text class="mono" x="90" y="236">R-180 · migration not deletion · own hygiene/docs commit · acceptance grep required</text>
+  <rect class="pillGreen" x="1395" y="156" width="190" height="38"/>
+  <text class="green" x="1424" y="181">SCOPED</text>
+  <rect class="amberPanel" x="60" y="300" width="1600" height="135"/>
+  <text class="heading" x="90" y="342">Queue did not move</text>
+  <text class="body" x="90" y="376">The only current forward-moving input remains the Phase 0.5b tail. 0.6b waits until the fresh measurement ladder exists.</text>
+  <text class="mono" x="90" y="406">pending input: THE 0.5B TAIL · no deploy · no Phase 1 · no 0.6/0.6b before 0.5b green</text>
+  <rect class="pillAmber" x="1330" y="327" width="255" height="38"/>
+  <text class="yellow" x="1355" y="352">HOLDING FOR 0.5B</text>
+  <path class="line" d="M860 435 L860 475"/>
+  <rect class="bluePanel" x="60" y="475" width="500" height="275"/>
+  <text class="heading" x="90" y="515">Migrate durable rules</text>
+  <text class="blue" x="90" y="548">DESTINATION</text>
+  <text class="monoSmall" x="90" y="582">docs/ENGINEERING.md</text>
+  <text class="body" x="90" y="616">Repo operating rules move out of CLAUDE.md into project-owned documentation.</text>
+  <text class="muted" x="90" y="666">This removes the active dependency while preserving the rules.</text>
+  <rect class="bluePanel" x="610" y="475" width="500" height="275"/>
+  <text class="heading" x="640" y="515">Migrate ladder</text>
+  <text class="blue" x="640" y="548">DESTINATION</text>
+  <text class="monoSmall" x="640" y="582">docs/ops/MEASUREMENTS.md</text>
+  <text class="body" x="640" y="616">The fresh 0.5b entry moves only after the full-suite rerun is green.</text>
+  <text class="muted" x="640" y="666">This is why 0.6b cannot precede 0.5b.</text>
+  <rect class="bluePanel" x="1160" y="475" width="500" height="275"/>
+  <text class="heading" x="1190" y="515">Migrate export policy</text>
+  <text class="blue" x="1190" y="548">DESTINATION</text>
+  <text class="monoSmall" x="1190" y="582">docs/ops/EXPORTS.md</text>
+  <text class="body" x="1190" y="616">Safe-export and no-whole-repo-zip rules become repo-owned ops policy.</text>
+  <text class="muted" x="1190" y="666">Zips remain outside scope until hygiene.</text>
+  <path class="dash" d="M860 750 L860 790"/>
+  <rect class="purplePanel" x="60" y="790" width="760" height="150"/>
+  <text class="heading" x="90" y="832">KEEP list</text>
+  <text class="purple" x="90" y="865">EXPLICIT, NOT IMPLIED</text>
+  <text class="monoSmall" x="90" y="899">.claude/settings.local.json — interpreter deny rules</text>
+  <text class="monoSmall" x="90" y="923">.claude/HANDOVER.md — canonical state</text>
+  <text class="monoSmall" x="90" y="947">.claude/worktrees/ — preserved worktree state</text>
+  <rect class="purplePanel" x="860" y="790" width="800" height="150"/>
+  <text class="heading" x="890" y="832">Pointer, not deletion</text>
+  <text class="purple" x="890" y="865">CLAUDE.md SURVIVES SHORT</text>
+  <text class="body" x="890" y="899">It becomes a short onboarding pointer so the say-hi path still works.</text>
+  <text class="monoSmall" x="890" y="929">stale Claude-only files → garbo/ · precedent: 2d2af124</text>
+  <rect class="redPanel" x="60" y="970" width="1600" height="52"/>
+  <text class="red" x="90" y="1003">ACCEPTANCE:</text>
+  <text class="body" x="225" y="1003">inventory classified · grep for active CLAUDE.md dependencies returns pointers and history only</text>
+</svg>

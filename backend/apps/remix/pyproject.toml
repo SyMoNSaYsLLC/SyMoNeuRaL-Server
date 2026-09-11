@@ -1,0 +1,44 @@
+# symoneural_dj packaging.
+#
+# House style (see symon_llm/pyproject.toml): version bounds are lower bounds
+# at what is ACTUALLY INSTALLED in the serving venv (~/.venvs/vllm, python
+# 3.12.13), measured by importlib.metadata on 2026-08-08, not copied from an
+# index. Everything here is pure Python — no torch, no GPU anywhere.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "symoneural-dj"
+version = "0.1.0"
+description = "Playlist orchestrator between the iOS app, the symon engine (:9001) and the Spotify Web API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - all rights reserved" }
+authors = [{ name = "Garrett McDonald" }]
+classifiers = ["Private :: Do Not Upload"]
+
+dependencies = [
+    "fastapi>=0.136",       # measured 0.136.3
+    "uvicorn>=0.51",        # measured 0.51.0
+    "httpx>=0.28",          # measured 0.28.1
+    "python-dotenv>=1.2",   # measured 1.2.2
+    "pillow>=12.3",         # measured 12.3.0 (procedural cover art)
+]
+
+[project.optional-dependencies]
+# The CPU-only test suite: no network, no sockets, no GPU.
+dev = ["pytest>=9.1"]       # measured 9.1.1
+
+[tool.setuptools.packages.find]
+include = ["symoneural_dj*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# `.` lets `import symoneural_dj` resolve from any cwd without an install.
+# `../..` is `backend/`, which is what makes `apps.accounts` and `apps.capture` importable.
+# They are sibling applications, not third-party packages, so they are on the path rather
+# than installed -- an editable install of a sibling is exactly what broke here: the two
+# `.pth` finders survived the directory they pointed at being deleted, and reported a
+# clean `pip list` while every import failed.
+pythonpath = [".", "../.."]

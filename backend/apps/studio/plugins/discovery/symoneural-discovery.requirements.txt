@@ -1,0 +1,48 @@
+# symoneural-discovery — NOT INSTALLED, and not installable by an agent.
+#
+# Install into a venv owned by this app, never the system interpreter: python3 on this box is
+# what symoneural-api runs under, and .claude/CLAUDE.md forbids pip touching it. New
+# dependencies are Garrett's call regardless. Queued for him in GARRETT-INBOX.md.
+#
+# One venv per app, and one requirements file per app, both named after the app rather than
+# identified by which directory they sit in (Garrett's rule, 2026-08-20 — the same rule as the
+# per-app env file). All three per-app artefacts share the stem and differ only in role:
+#
+#   symoneural-discovery.env  ·  symoneural-discovery.venv  ·  symoneural-discovery.requirements.txt
+#
+# so `find . -name 'symoneural-discovery.*'` finds the whole set, and a requirements.txt seen
+# in a diff or an editor tab says which app it belongs to without its path. Run these four
+# from the repo root:
+#
+#   V=backend/apps/studio/plugins/discovery/symoneural-discovery.venv
+#   python3 -m venv $V
+#   $V/bin/pip install -r backend/apps/studio/plugins/discovery/symoneural-discovery.requirements.txt
+#   $V/bin/playwright install chromium
+#
+# The last one is a separate step and is not optional: pip installs the Playwright *library*,
+# and the browser it drives is a further ~150 MB download that `playwright install` fetches.
+# Without it every rendering path raises at launch, not at import, so the failure surfaces
+# mid-crawl rather than at startup.
+#
+# The name departs from apps/sigils/.venv and apps/asicminer/.venv, which are the precedent
+# for a per-app venv but predate the naming rule. Renaming those two and training/.venv is
+# task #25's business, not this app's. `**/symoneural-*.venv/` was added to .gitignore in the
+# same change that chose this name — the pre-existing `**/.venv/` rule matches the literal
+# name `.venv` and would not have caught it, so a venv full of compiled wheels would have been
+# committable. It stays out of the repo and therefore out of the .deb, which is built from
+# `git ls-files`.
+#
+# What is already on the system interpreter, measured 2026-08-20, and therefore what this tool
+# can do today with no venv at all: requests, bs4, lxml, httpx, websockets. That covers
+# `search`, `stats` and `export` in full. Missing are playwright (every rendering path) and
+# anthropic (`answer`, and LLM query expansion). discovery.py imports all five lazily and
+# names the missing one in the error, so the unavailable half reports itself instead of
+# aborting at import — which also keeps test_symoneuraldiscovery.py collectable.
+#
+# python-dotenv is deliberately absent: envfile.py does that job in stdlib. See its docstring.
+
+playwright
+beautifulsoup4
+lxml
+requests
+anthropic

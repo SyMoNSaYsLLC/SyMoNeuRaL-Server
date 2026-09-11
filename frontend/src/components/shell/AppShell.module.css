@@ -1,0 +1,198 @@
+/* The application shell: a rail, a header, and a workspace.
+ *
+ * Geometry comes from the tokens rather than from new numbers -- --rail is 248px because the
+ * legacy chat rail is 248px, and --bar-h is 66px because that is the measured height of
+ * `header .bar` on the existing pages. A near-miss here is what makes a migrated page look
+ * subtly wrong beside one that has not moved yet.
+ *
+ * Only the three named breakpoints are used: 700px and 1024px. There is no third value
+ * invented in this file.
+ */
+
+.shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--rail) 1fr;
+  background: var(--e0);
+}
+
+.rail {
+  grid-column: 1;
+  border-right: 1px solid var(--line);
+  background: var(--e1);
+  padding: var(--s5) var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+  /* The rail scrolls independently so a long workspace never pushes navigation off-screen. */
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.wordmark {
+  font-size: var(--t4);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--fg);
+}
+
+.wordmark span {
+  color: var(--accent);
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  min-height: var(--ctl);
+  padding: 0 var(--s3);
+  border-radius: var(--r1);
+  font-size: var(--t5);
+  color: var(--dim);
+  text-decoration: none;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.navLink:hover {
+  background: var(--e2);
+  color: var(--fg);
+}
+
+.navLinkActive {
+  background: var(--e3);
+  color: var(--fg);
+}
+
+.railFoot {
+  margin-top: auto;
+  font-size: var(--t7);
+  color: var(--faint);
+}
+
+.main {
+  grid-column: 2;
+  min-width: 0; /* lets wide tables scroll inside the workspace instead of stretching it */
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  min-height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  padding: var(--s3) var(--s5);
+  border-bottom: 1px solid var(--line);
+  background: var(--e1);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--t7);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--t3);
+  line-height: 1.2;
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.workspace {
+  flex: 1;
+  min-width: 0;
+  padding: var(--s5);
+}
+
+/* The drawer toggle only exists below the phone breakpoint. */
+.navToggle {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .main {
+    grid-column: 1;
+  }
+
+  .navToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--ctl-touch);
+    min-width: var(--ctl-touch);
+    padding: 0 var(--s3);
+    border: 1px solid var(--line);
+    border-radius: var(--r1);
+    background: var(--e2);
+    color: var(--fg);
+    font-size: var(--t5);
+    cursor: pointer;
+  }
+
+  /* The drawer replaces the rail rather than overlaying a shrunken copy of it: the links are
+     the same links, at touch size. Deleting navigation on a phone is what the legacy header
+     used to do, and it is the defect this layout exists to avoid. */
+  .drawer {
+    border-bottom: 1px solid var(--line);
+    background: var(--e1);
+    padding: var(--s3) var(--s5) var(--s4);
+  }
+
+  .drawer .navLink {
+    min-height: var(--ctl-touch);
+    font-size: var(--t4);
+  }
+}
+
+@media (min-width: 1025px) {
+  .drawer {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .header,
+  .workspace {
+    padding-left: var(--s4);
+    padding-right: var(--s4);
+  }
+
+  .title {
+    font-size: var(--t4);
+  }
+}

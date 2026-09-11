@@ -1,0 +1,49 @@
+=== PROCESS TABLE MATCHES ===
+
+=== /proc METADATA FILES CONTAINING AI MARKERS ===
+Only filenames are reported; environment contents are NOT printed.
+/proc/380380/comm
+/proc/1710/cmdline
+/proc/304821/cmdline
+/proc/380380/cmdline
+/proc/380402/cmdline
+/proc/380404/cmdline
+/proc/380441/cmdline
+/proc/380459/cmdline
+/proc/1962/maps
+/proc/1963/maps
+/proc/1964/maps
+/proc/1965/maps
+/proc/2037/maps
+/proc/2038/maps
+/proc/2039/maps
+/proc/2040/maps
+/proc/2736/maps
+/proc/304496/maps
+/proc/304821/maps
+/proc/380380/maps
+/proc/380402/maps
+/proc/380404/maps
+/proc/380441/maps
+/proc/380459/maps
+/proc/380380/environ
+/proc/380402/environ
+/proc/380404/environ
+/proc/380441/environ
+/proc/380459/environ
+/proc/410424/environ
+/proc/410426/environ
+
+=== EXECUTABLE SYMLINK TARGETS ===
+/proc/304821/exe -> /usr/lib/claude-desktop/resources/chrome-native-host
+/proc/380380/exe -> /home/google/.local/share/claude/versions/2.1.236
+/proc/380402/exe -> /home/google/.local/share/claude/versions/2.1.236
+/proc/380404/exe -> /home/google/.local/share/claude/versions/2.1.236
+/proc/380441/exe -> /home/google/.local/share/claude/versions/2.1.236
+/proc/380459/exe -> /home/google/.local/share/claude/versions/2.1.236
+
+=== OPEN FILE DESCRIPTORS ===
+/proc/304496/fd/243 -> /home/google/.config/google-chrome/Default/HistoryEmbeddings
+/proc/304496/fd/285 -> /home/google/.config/google-chrome/Default/HistoryEmbeddings-journal
+/proc/304821/fd/9 -> /home/google/.config/Claude/logs/chrome-native-host.log
+/proc/380380/fd/11 -> /home/google/.claude/daemon.log

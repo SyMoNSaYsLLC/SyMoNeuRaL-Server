@@ -1,0 +1,11 @@
+COMPONENT_ID	SOURCE_ROOT	SOURCE_REVISION	BUILD_AUTHORITY	TOOLCHAIN	BUILD_COMMAND	OUTPUT_ARTIFACT	ARTIFACT_SHA256_16	INSTALL_PATH	RUNTIME_CONSUMER	CHAIN_STATUS
+symoneural-web	web/symoneural-web	f2a4a8fa	self	go (system)	go build -> build/symoneural-web	web/symoneural-web/build/symoneural-web	b0d3234f9543bce2	in-tree	symoneural-web.service	OPEN_NO_MANIFEST
+symoneural-gateway	backend/apps/gateway	f2a4a8fa	self	cargo/rustc	ops/build-gateway.sh -> target/release	backend/apps/gateway/target/release/symoneural-gateway	61f8df5bc8ca4b4b	in-tree	symoneural-gateway.service	CLOSED_3WAY_SHA256
+symoneural-api	backend	f2a4a8fa	self	cpython3.13	none (interpreted)	backend/api.py	41fb2fa2bae65a72	in-tree	symoneural-api.service	CLOSED_INTERPRETED
+symoneural-llm	engines/symoneural-llm	f2a4a8fa	self	cmake/nvcc	cmake --build build	engines/symoneural-llm/build/bin/symoneural-llm	619b918f3f0ac362	in-tree	api.py LLM_ENGINE	MANIFEST_PRESENT
+symoneural-llm-cli	engines/symoneural-llm	f2a4a8fa	self	cmake	cmake --build build	engines/symoneural-llm/build/bin/symoneural-llm-cli	4216a62be146264b	in-tree	operator	MANIFEST_PRESENT
+symoneural-diffuse	engines/symoneural-diffuse	f2a4a8fa	self	cmake/nvcc	cmake --build build	engines/symoneural-diffuse/build/bin/symoneural-diffuse	e0390b78949a3d34	in-tree	api.py DIFFUSE_ENGINE	OPEN_NO_MANIFEST
+symoneural-cli	bin/symoneural-cli	f2a4a8fa	self	cpython3.13	none (interpreted)	bin/symoneural-cli	ec550a5efa0125b4	in-tree	operator	CLOSED_INTERPRETED
+symoneural-code	bin/symoneural-code	f2a4a8fa	self	bash	none (interpreted)	bin/symoneural-code	3ad0f97e7b9344a0	in-tree	operator -> symoneural-cli repl	CLOSED_INTERPRETED
+symoneural-discovery	bin/symoneural-discovery	f2a4a8fa	self	cpython3.13	none (interpreted)	bin/symoneural-discovery	e4f7c91f4a43856d	in-tree	operator	CLOSED_INTERPRETED
+symoneural-ui	engines/symoneural-ui	f2a4a8fa	upstream-fork	cpython3.13	none (interpreted)	engines/symoneural-ui	-	in-tree	Studio render backend (:8188 down)	OPEN_BACKEND_DOWN

@@ -1,0 +1,83 @@
+[package]
+name = "symoneural-gateway"
+version = "0.1.0"
+edition = "2021"
+description = "Front-door HTTP gateway for symoneural.com: proxies to the FastAPI control plane, validates payloads in WASM."
+
+# LicenseRef-SyMoNeuRaL-Proprietary. Copyright (c) 2026 SymonSays LLC. All rights reserved.
+# SyMoNeuRaL is a subdivision of SymonSays LLC. Full text: <repo>/LICENSE
+#
+# This said `Apache-2.0` until 2026-08-26 and that was simply wrong: this crate is
+# SyMoNeuRaL-authored first-party source, not upstream code, so it was publishing an open
+# licence for work that is proprietary. The crates it DEPENDS on keep their own licences --
+# axum, tokio, tower and the rest are unaffected by this line, which describes this package
+# only. `license-file` rather than `license` because LicenseRef-* is not an SPDX expression
+# Cargo will accept.
+license-file = "../../../LICENSE"
+
+# The binary is `symoneural-gateway`.
+#
+# RENAMED from `symon-gateway` on 2026-08-26. The runtime-identity contract requires every
+# first-party executable, argv[0] and process `comm` to begin with `symoneural-`, and this
+# binary was the one live violation: the unit was `symoneural-gateway.service`, but the thing
+# it executed was called `symon-gateway`, so `ss -lptn` and `/proc/<pid>/comm` both reported
+# a name that exists nowhere in the approved roster.
+#
+# `ops/symoneural-gateway.service` must agree with whatever is here -- an ExecStart pointing
+# at the old filename is a unit that fails to start, and it fails at boot rather than now.
+[[bin]]
+name = "symoneural-gateway"
+path = "src/main.rs"
+
+[dependencies]
+# `ws` is not decoration. `backend/api.py:1697` serves `/api/ws`, and a proxy that cannot
+# carry the upgrade turns the rack's "pushed live over one socket" claim back into polling --
+# which is the exact regression that got Apache dropped for Caddy.
+axum = { version = "0.8", features = ["macros", "http2", "ws"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "net"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "cors", "limit"] }
+hyper = "1"
+http = "1"
+http-body-util = "0.1"
+bytes = "1"
+futures-util = "0.3"
+
+# `stream` is what makes the SSE passthrough a passthrough rather than a buffer-and-forward.
+reqwest = { version = "0.12", default-features = false, features = ["stream", "json", "rustls-tls"] }
+
+# The client half of the WebSocket relay. reqwest cannot do this: it returns a response body
+# stream and never hands back the upgraded socket, so the handshake can only be completed by a
+# real WebSocket client.
+#
+# 0.29 because that is what axum 0.8.9 itself links. Pinning 0.26 here compiled fine and was
+# still wrong: cargo simply built *both*, so the binary carried two tungstenite stacks and two
+# incompatible `Message` types with identical names -- the kind of duplicate that surfaces as
+# an inscrutable trait error the day someone tries to pass one to the other. `ws.rs` converts
+# between the axum and tungstenite message types explicitly regardless, so a future skew stays
+# a compile error rather than a runtime one.
+tokio-tungstenite = { version = "0.29", default-features = false, features = ["connect", "handshake"] }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+wasmtime = "27"
+wasmtime-wasi = "27"
+
+utoipa = { version = "5", features = ["axum_extras"] }
+# 9.x, not 8.x. utoipa-swagger-ui 8 is built against axum 0.7; against axum 0.8 it fails with
+# `the trait bound Router<_>: From<SwaggerUi> is not satisfied`, which reads like a missing
+# feature flag rather than a version mismatch. `vendored` embeds the Swagger UI assets in the
+# binary instead of fetching them at build time -- no network at build, nothing to serve off disk.
+utoipa-swagger-ui = { version = "9", features = ["axum", "vendored"] }
+
+anyhow = "1"
+thiserror = "2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

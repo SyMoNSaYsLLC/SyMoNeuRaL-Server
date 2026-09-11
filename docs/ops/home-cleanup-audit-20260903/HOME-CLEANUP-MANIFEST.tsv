@@ -1,0 +1,57 @@
+order	action	source	destination	precondition	expected_identity	rollback	evidence_for_action
+0	KEEP	/home/google/Downloads/symoneural-vault-2026-08-19-v2.tar.gz	-	none	sha256 86aa9d85f7894640ace5e21b59aff2549b10bab72482dd41d8a6bbdab117644f, 398369206 bytes	n/a	CRITICAL - ONLY LOCATED COPY of training/adapter/{adapter_model.safetensors,symoneural-lora.gguf}, adapter-qwen36/adapter_model.safetensors and run/reinforce/adapters/*/adapter_model.safetensors. None of these exist on the live filesystem. Must survive any Downloads cleanup.
+1	KEEP	/home/google/Symoneural	-	none	HEAD at execution time	n/a	canonical repo; 4 systemd units resolve ExecStart/WorkingDirectory here; pid 1505 live
+2	KEEP	/home/google/ComfyUI-Shared	-	none	dir with input/models/output	n/a	target of repo symlink references/ComfyUI-Shared (SYMLINK, EXEC)
+3	KEEP	/home/google/.venvs	-	none	holds vllm 0.25.1	n/a	installed runtime tree; deleting removes a working vLLM install
+4	KEEP	/home/google/.symoneural-full	-	none	22.17 MB, mode 700	n/a	IP vault; holds REBUILD.md, MANIFEST.md and a pre-rotation credential file
+5	KEEP	/home/google/providerapikeys.txt	-	none	725 bytes	n/a	CREDENTIAL MATERIAL - explicitly protected, must not be swept
+6	KEEP	/home/google/.ssh	-	none	mode 700	n/a	credential material
+7	KEEP	/home/google/.gnupg	-	none	mode 700	n/a	credential material
+8	KEEP	/home/google/.git-credentials	-	none	142 bytes	n/a	credential material
+9	KEEP	/home/google/.smbcredentials	-	none	35 bytes	n/a	credential material
+10	KEEP	/home/google/.passwd-s3fs	-	none	30 bytes	n/a	credential material
+11	KEEP	/home/google/.config/rclone/rclone.conf	-	none	present	n/a	rclone-gdrive.service RequiresMountsFor + RCLONE_CONFIG; backs /mnt/gdrive
+12	KEEP	/home/google/Platforms.tar.gz	-	none	sha256 cb8081dc637c4144b45616d923f6cb24d0498739937a1e4004643f503c51c8ed	n/a	archive is 90x larger than Platforms/; it is the primary copy of the SDK payload
+13	DELETE_EXACT_DUPLICATE	/home/google/HashingManifestSignsChecksums/Symoneural-yocto-compiled-code-scan-20260828T200848Z	-	/home/google/Symoneural-yocto-compiled-code-scan-20260828T200848Z still present and intact	239392891 bytes, 19 files, byte-identical	re-extract from Symoneural-yocto-compiled-code-scan-20260828T200848Z.tar.gz (sha256 6f22173f73c89336fc9dd28a4a77ac09e83b723aed7b6e6a87dad0cfe552698f)	diff -rq against the retained copy returned exit 0 with no differences | parent /home/google/HashingManifestSignsChecksums holds ONLY this child (ls -A: 1 entry), so it is left empty and may be removed in the same step
+14	DELETE_EXACT_DUPLICATE	/home/google/SYMONEURAL-GATEWAY-DEPLOY-REFACTOR-CODER-PROMPT (1).txt	-	unsuffixed original still present	sha256 a1cb56de8b434cc89109e923f66c1903e74c168075c1c53b6901b3f3d84d9967	restore by copying the retained unsuffixed original	sha256 equal and cmp reports byte-identical
+15	DELETE_DISPOSABLE_STAGING	/home/google/staging-image-2026-09-03	-	PROVENANCE.json at 1d72cc6e still records the four upstream_revision/sha256 values	88 KB of hf metadata only; no model payloads remain	none required - the four payloads are adopted in backend/models/image/ and the digests are now committed	payloads moved out on adoption; provenance evidence superseded by Codex commit 1d72cc6e
+15a	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural-repo-2026-08-19.tar.gz	-	/home/google/symoneural-repo-2026-08-19.tar.gz still present	sha256 d71595424d7f1096fece3c9438cb282e822c6fed0e545f5898902522cd03bdcc, 89472788 bytes	copy back from the retained top-level file	identical sha256 to the retained top-level copy
+15b	DELETE_EXACT_DUPLICATE	/home/google/Downloads/Symoneural-yocto-compiled-code-scan-20260828T200848Z.tar.gz	-	/home/google/Symoneural-yocto-compiled-code-scan-20260828T200848Z.tar.gz still present	sha256 6f22173f73c89336fc9dd28a4a77ac09e83b723aed7b6e6a87dad0cfe552698f, 20745642 bytes	copy back from the retained top-level file	identical sha256 to the retained top-level copy
+15c	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural.zip.part-00	-	symoneural.zip.part00 still present	sha256 f98d11fbb5ba77b72d6cd2661aafb2b7dbb8b369591f82b71cc37dcbdfff69cc, 19922944 bytes	copy back from symoneural.zip.part00	identical sha256 to symoneural.zip.part00
+15d	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural.zip.part-01	-	symoneural.zip.part01 still present	sha256 bf2739836deba0d5f9e90a02a40e51fc425af7951d1fa6b5cafb2e0326997e2f, 19922944 bytes	copy back from symoneural.zip.part01	identical sha256 to symoneural.zip.part01
+15e	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural.zip (1).part01	-	symoneural.zip.part01 still present	sha256 bf2739836deba0d5f9e90a02a40e51fc425af7951d1fa6b5cafb2e0326997e2f, 19922944 bytes	copy back from symoneural.zip.part01	identical sha256 to symoneural.zip.part01
+15f	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural.zip.part-02	-	symoneural.zip.part02 still present	sha256 0214a8bdd7b83e524073f2c34737542087d25473290acf265f548d751fd24515, 14790007 bytes	copy back from symoneural.zip.part02	identical sha256 to symoneural.zip.part02
+15g	DELETE_EXACT_DUPLICATE	/home/google/Downloads/symoneural.zip (1).part02	-	symoneural.zip.part02 still present	sha256 0214a8bdd7b83e524073f2c34737542087d25473290acf265f548d751fd24515, 14790007 bytes	copy back from symoneural.zip.part02	identical sha256 to symoneural.zip.part02
+16	MOVE	/home/google/ServerTransfer	/home/google/SyMoNeuRaL-Workspace/backups/ServerTransfer	destination parent exists and is on /dev/nvme0n1p5	12.06 GB, 19 entries	mv back to /home/google/ServerTransfer	BACKUP class; no systemd, process, symlink or EXEC reference
+17	MOVE	/home/google/SyMoNeuRaL-Backups	/home/google/SyMoNeuRaL-Workspace/backups/SyMoNeuRaL-Backups	same-filesystem rename	3871223929 bytes	mv back	BACKUP class; unreferenced
+18	MOVE	/home/google/symoneural-gate1-unit-backup-20260902-165938	/home/google/SyMoNeuRaL-Workspace/backups/symoneural-gate1-unit-backup-20260902-165938	same-filesystem rename	dir	mv back	systemd unit backup; unreferenced
+19	MOVE	/home/google/SyMoNeuRaL-Builds	/home/google/SyMoNeuRaL-Workspace/builds/SyMoNeuRaL-Builds	same-filesystem rename	1949231376 bytes	mv back	BUILD outputs; unreferenced
+20	MOVE	/home/google/symoneural-engine-repro-20260829T090952Z	/home/google/SyMoNeuRaL-Workspace/builds/symoneural-engine-repro-20260829T090952Z	same-filesystem rename	1.15 GB	mv back	engine reproduction root; DOC-referenced only
+21	MOVE	/home/google/symoneural-build-20260902/gocache-b	/home/google/SyMoNeuRaL-Workspace/builds/symoneural-build-20260902/gocache-b	must NOT touch sibling src/ or src-b/	go build cache	mv back	disposable Go build cache; separable from the worktrees
+22	MOVE	/home/google/symoneural-build-20260902/gocache-c	/home/google/SyMoNeuRaL-Workspace/builds/symoneural-build-20260902/gocache-c	must NOT touch sibling src/ or src-b/	go build cache	mv back	disposable Go build cache; separable from the worktrees
+23	MOVE	all 97 DURABLE_EVIDENCE dated roots listed in HOME-INVENTORY.tsv with proposed_action=MOVE and destination evidence/	/home/google/SyMoNeuRaL-Workspace/evidence/<same basename>	one mv per entry, exact paths from the inventory; no wildcards	per-entry size in inventory	mv each back to /home/google/<basename>	dated coder/gate evidence; no EXEC/SYMLINK/WORKTREE reference to any of them
+24	MOVE	the a-series and session markdown records listed in HOME-INVENTORY.tsv with destination handoffs/	/home/google/SyMoNeuRaL-Workspace/handoffs/<same basename>	one mv per entry	per-entry size in inventory	mv each back	handoff/decision records; DOC-only references
+25	MOVE	the archive bundles listed in HOME-INVENTORY.tsv with destination archives/	/home/google/SyMoNeuRaL-Workspace/archives/<same basename>	one mv per entry; archive sha256 in inventory must match before and after	per-entry sha256 in HOME-INVENTORY.tsv	mv each back	ARCHIVE class; hashes recorded so the move is verifiable
+26	REVIEW	/home/google/src	-	owner decision	24.9 GB, 46 upstream OSS git repos	n/a	THIRD_PARTY_LAB, re-clonable; largest single reclaim if owner approves
+27	REVIEW	/home/google/Downloads	-	MUST preserve symoneural-vault-2026-08-19-v2.tar.gz (row 0) and the retained members of every proven duplicate set	33.7 GB; bulk is personal (Win11 ISO 8.08 GB, Projects_Crypto 7.2 GB, Imagesandvideos 7.3 GB)	n/a	SCANNED: holds real project artifacts incl. the critical vault archive and 7 proven duplicates; the remainder is personal media and is not cleanup material
+28	REVIEW	/home/google/ComfyUI-Installs	-	confirm nothing under backend/apps/studio resolves into it	7.17 GB	n/a	THIRD_PARTY_LAB; distinct from the repo-symlinked ComfyUI-Shared
+29	REVIEW	/home/google/TensorRT-LLM	-	owner decision	2.15 GB	n/a	upstream clone, re-clonable
+30	REVIEW	/home/google/bentoml	-	owner decision	third-party tree	n/a	THIRD_PARTY_LAB
+31	REVIEW	/home/google/Toolchains	-	owner decision	111.84 MB	n/a	cross-build toolchains; may be needed by a future build
+32	REVIEW	/home/google/Platforms	-	owner decision	2556812 bytes	n/a	near-empty stub; the payload lives in Platforms.tar.gz which is KEEP
+33	REVIEW	/home/google/ServerTransfer/SyMoNeuRaL-Builds	-	do not auto-delete	sha256 a3d73677fe00e69a073a987ba3152f62f951d82f08101daeb84fd0986db48ace	n/a	same size and payload listing as the .zip sibling but a different hash; extension-less zip
+34	REVIEW	/home/google/Symoneuraltree.md	-	verify Symoneuraltree.zip contains it	101645195 bytes	n/a	96.9 MB text file with a likely archive sibling; containment unverified
+35	REVIEW	/home/google/experiments	-	owner decision	2.41 GB	n/a	capacity-lab and symoneural-hybrid experiment trees
+36	REVIEW	/home/google/ninjatraining	-	owner decision	321.50 MB	n/a	Symoneural-OE tree
+37	REVIEW	/home/google/SyMoNeuRaL-Projects	-	MUST NOT follow the Symoneural symlink	contains symlink to canonical repo	n/a	deleting the parent must not traverse into /home/google/Symoneural
+38	REVIEW	/home/google/FT-B整机测试刷机SD卡母片	-	owner decision	12.44 MB, mtime 1901	n/a	vendor SD-card image tree with a corrupt timestamp
+39	UNKNOWN_STOP	/home/google/symoneural-build-20260902/src	-	STOP - requires a repository mutation gate	registered git worktree at 98326529	n/a	removal requires 'git worktree remove'; a plain rm leaves stale .git/worktrees admin files
+40	UNKNOWN_STOP	/home/google/symoneural-build-20260902/src-b	-	STOP - requires a repository mutation gate	registered git worktree at 98326529	n/a	same as src; git-administered path, not free-standing clutter
+41	UNKNOWN_STOP	/home/google/review	-	STOP	dir	n/a	shadows the repo's own review/; contents and purpose not established
+42	UNKNOWN_STOP	/home/google/ClaudeAlienware	-	STOP	165.80 MB	n/a	separate agent workspace; purpose not established
+43	UNKNOWN_STOP	/home/google/FakeDesktop	-	STOP	275.37 MB	n/a	mirrors Documents/SyMoNeuRaL trees; relationship to the real Desktop not established
+44	UNKNOWN_STOP	/home/google/symoneural_tbd	-	STOP	42.03 MB	n/a	'tbd' recovery tree; purpose not established
+45	UNKNOWN_STOP	/home/google/DifficultCode	-	STOP	dir	n/a	purpose not established
+46	UNKNOWN_STOP	/home/google/hiranktesting	-	STOP	dir	n/a	purpose not established
+47	UNKNOWN_STOP	/home/google/AI_PURGE_PSEUDOFS	-	STOP	root-owned	n/a	owned by root; not writable by this user and origin unknown
+48	UNKNOWN_STOP	/home/google/lockdown-20260831T15*.log (8 files, exact paths in HOME-INVENTORY.tsv)	-	STOP	292 bytes each, root-owned	n/a	root-owned logs; not this user's to remove

@@ -1,0 +1,13 @@
+ALIAS	CANONICAL_COMPONENT_ID	ALIAS_TYPE	EVIDENCE
+symoneural-image-engine	symoneural-diffuse	DISPLAY_RUNTIME_LABEL	backend/apps/appdocs.py:77,127,134 runtime= string; site/documentation.html:83 rendered from it; no source root, no build target, no artifact of this name
+ComfyUI	symoneural-ui	UPSTREAM_PROJECT_NAME	engines/symoneural-ui is a fork; upstream name never the component identity (R-182)
+Symoneural	symoneural-platform	CASE_VARIANT	repo dir /home/google/Symoneural
+SyMoNeuRaL	symoneural-platform	BRAND_SPELLING	docs and site use the styled form
+Live Stack	symoneural-api	SURFACE_LABEL	/livestack/* pages served by api.py; observability/status naming, not a component
+Symon Hardware Profiler	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source; design proposal only
+Symon Model Advisor	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source
+Symon Placement Policy	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source
+Symon Residency Manager	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source
+Symon Transfer Policy	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source
+Symon Prefill Pipeline	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source
+Symon Memory Governor	symoneural-adaptive-fabric	PLANNED_SUBCOMPONENT	0 tracked matches in source; distinct from scripts/gpu-governor.sh which IS implemented

@@ -1,0 +1,290 @@
+/* DispatchOS-specific styling. It stays with the application that owns it; nothing here is
+   promoted to the shared shell unless a second application actually needs it. */
+
+.layout {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  align-items: start;
+}
+
+.column {
+  display: grid;
+  gap: var(--s4);
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------- tables
+
+   The wrapper scrolls, not the page. A dispatch board has more columns than a phone has
+   width, and the alternative -- letting the table set the page width -- is the horizontal
+   overflow the responsive audit spent 384 combinations eliminating. */
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t5);
+  white-space: nowrap;
+}
+
+.table th,
+.table td {
+  padding: var(--s2) var(--s3);
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.table th {
+  font-size: var(--t7);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 600;
+  background: var(--e2);
+  position: sticky;
+  top: 0;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.rowButton {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  font-size: var(--t5);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.selected td {
+  background: var(--e3);
+}
+
+/* ---------------------------------------------------------------- badges */
+
+.badge {
+  display: inline-block;
+  padding: 2px var(--s2);
+  border-radius: var(--rpill);
+  font-size: var(--t7);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  background: var(--e2);
+  color: var(--dim);
+}
+
+.badgeActive {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.badgeTerminal {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* ---------------------------------------------------------------- forms */
+
+.form {
+  display: grid;
+  gap: var(--s3);
+}
+
+.field {
+  display: grid;
+  gap: var(--s1);
+}
+
+.label {
+  font-size: var(--t6);
+  color: var(--dim);
+}
+
+.input {
+  min-height: var(--ctl);
+  padding: 0 var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--r1);
+  background: var(--e0);
+  color: var(--fg);
+  font-size: var(--t5);
+  width: 100%;
+}
+
+textarea.input {
+  min-height: calc(var(--ctl) * 2);
+  padding: var(--s2) var(--s3);
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+
+.pair {
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 700px) {
+  .pair {
+    grid-template-columns: 1fr;
+  }
+
+  .input {
+    min-height: var(--ctl-touch);
+  }
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.button {
+  min-height: var(--ctl);
+  padding: 0 var(--s4);
+  border: 1px solid var(--line);
+  border-radius: var(--r1);
+  background: var(--e2);
+  color: var(--fg);
+  font-size: var(--t5);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--e3);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+@media (pointer: coarse) {
+  .button {
+    min-height: var(--ctl-touch);
+  }
+}
+
+/* ---------------------------------------------------------------- messages and notes */
+
+.error {
+  margin: 0;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--amber);
+  border-radius: var(--r1);
+  background: var(--e2);
+  color: var(--amber);
+  font-size: var(--t5);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--t6);
+  color: var(--faint);
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--t5);
+  color: var(--faint);
+}
+
+.dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s1) var(--s3);
+  font-size: var(--t5);
+}
+
+.dl dt {
+  color: var(--faint);
+  font-size: var(--t6);
+}
+
+.dl dd {
+  margin: 0;
+}
+
+.trail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--t6);
+  color: var(--dim);
+  display: grid;
+  gap: var(--s1);
+}
+
+.composed {
+  border: 1px solid var(--line);
+  border-radius: var(--r1);
+  padding: var(--s3);
+  background: var(--e0);
+  font-size: var(--t5);
+  display: grid;
+  gap: var(--s2);
+}
+
+.composedBody {
+  margin: 0;
+  color: var(--dim);
+  white-space: normal;
+}
+
+.signIn {
+  max-width: 380px;
+  display: grid;
+  gap: var(--s3);
+}
+
+.quoteLines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--t5);
+  display: grid;
+  gap: var(--s1);
+}
+
+.quoteLines li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+.noFigure {
+  font-size: var(--t3);
+  color: var(--faint);
+}

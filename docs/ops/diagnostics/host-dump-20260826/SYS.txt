@@ -1,0 +1,106 @@
+=== LOADED MODULES RELEVANT TO GPU / AI ACCELERATION ===
+NVIDIA entries are expected and intentionally retained for CUDA.
+nvidia_uvm 1933312 0 - Live 0xffffffffc1eeb000 (O)
+nvidia_drm 151552 7 - Live 0xffffffffc095b000 (O)
+nvidia_modeset 1925120 11 nvidia_drm, Live 0xffffffffc1c95000 (O)
+nvidia 17956864 133 nvidia_uvm,nvidia_modeset, Live 0xffffffffc0b73000 (O)
+drm_ttm_helper 16384 2 nvidia_drm, Live 0xffffffffc089d000
+drm_kms_helper 253952 2 nvidia_drm,drm_ttm_helper, Live 0xffffffffc069d000
+drm 774144 13 nvidia_drm,nvidia,drm_ttm_helper,ttm,drm_kms_helper, Live 0xffffffffc0708000
+video 81920 2 dell_wmi,nvidia_modeset, Live 0xffffffffc06bc000
+
+=== /sys NAME MATCHES ===
+/sys/class/leds/input19::kana
+/sys/class/leds/input19::numlock
+/sys/class/leds/input19::compose
+/sys/class/leds/input19::capslock
+/sys/class/leds/input19::scrolllock
+/sys/class/input
+/sys/class/input/input34
+/sys/class/input/input24
+/sys/class/input/input32
+/sys/class/input/input22
+/sys/class/input/input30
+/sys/class/input/input20
+/sys/class/input/input3
+/sys/class/input/input29
+/sys/class/input/input19
+/sys/class/input/input1
+/sys/class/input/input27
+/sys/class/input/input25
+/sys/class/input/input33
+/sys/class/input/input23
+/sys/class/input/input31
+/sys/class/input/input21
+/sys/class/input/input11
+/sys/class/input/input2
+/sys/class/input/input28
+/sys/class/input/input18
+/sys/class/input/input26
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/fan3_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/temp3_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/temp4_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/fan1_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/temp1_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/temp5_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/fan2_input
+/sys/devices/platform/PNP0C14:05/wmi_bus/wmi_bus-PNP0C14:05/F1DDEE52-063C-4784-A11E-8A06684B9B01/hwmon/hwmon3/temp2_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp6_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp3_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp10_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp7_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp4_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp11_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp8_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp1_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp5_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp9_input
+/sys/devices/platform/coretemp.0/hwmon/hwmon5/temp2_input
+/sys/devices/platform/PNP0C14:04/wmi_bus/wmi_bus-PNP0C14:04/9DBB5994-A997-11DA-B012-B622A1EF5492/input
+/sys/devices/platform/PNP0C14:04/wmi_bus/wmi_bus-PNP0C14:04/9DBB5994-A997-11DA-B012-B622A1EF5492/input/input21
+/sys/devices/platform/pcspkr/input
+/sys/devices/platform/pcspkr/input/input20
+/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input24
+/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input22
+/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input25
+/sys/devices/pci0000:00/0000:00:01.0/0000:01:00.1/sound/card1/input23
+/sys/devices/pci0000:00/0000:00:1b.0/0000:02:00.0/nvme/nvme0/hwmon1/temp1_input
+/sys/devices/pci0000:00/0000:00:1b.0/0000:02:00.0/nvme/nvme0/hwmon1/temp2_input
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input32
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input30
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input29
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input27
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input33
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input31
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input28
+/sys/devices/pci0000:00/0000:00:1f.3/sound/card0/input26
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4054.0007/input
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4054.0007/input/input18
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19/input19::kana
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19/input19::numlock
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19/input19::compose
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19/input19::capslock
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7:1.1/0003:046D:C534.0002/0003:046D:4075.0006/input/input19/input19::scrolllock
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-5/1-5.3/1-5.3.1/1-5.3.1:1.3/0003:047F:02E6.0004/input
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-5/1-5.3/1-5.3.1/1-5.3.1:1.3/0003:047F:02E6.0004/input/input11
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3.1/1-3.1:1.0/0003:047F:0162.0008/input
+/sys/devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3.1/1-3.1:1.0/0003:047F:0162.0008/input/input34
+/sys/devices/virtual/thermal/thermal_zone2/hwmon4/temp1_input
+/sys/devices/virtual/thermal/thermal_zone0/hwmon0/temp1_input
+/sys/devices/virtual/thermal/thermal_zone1/hwmon2/temp1_input
+/sys/devices/virtual/input
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input2
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0E:00/input
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0E:00/input/input1
+/sys/devices/LNXSYSTM:00/LNXPWRBN:00/input
+/sys/devices/LNXSYSTM:00/LNXPWRBN:00/input/input3
+/sys/devices/intel_pt/caps/single_range_output
+/sys/devices/intel_pt/caps/output_subsys
+/sys/devices/intel_pt/caps/topa_output
+/sys/module/damon_lru_sort/parameters/commit_inputs
+/sys/module/acpi/parameters/aml_debug_output
+/sys/module/damon_reclaim/parameters/commit_inputs
+/sys/module/nvidia_modeset/parameters/output_rounding_fix

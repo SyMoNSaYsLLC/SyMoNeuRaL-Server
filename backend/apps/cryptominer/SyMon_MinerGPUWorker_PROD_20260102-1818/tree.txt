@@ -1,0 +1,13 @@
+.env.example
+README.md
+data/.gitkeep
+docs/CONTROL_BOARD_NOTES.md
+docs/MINER_MODEL_QUICKMAP.md
+logs/.gitkeep
+requirements.txt
+run_worker.py
+src/__init__.py
+src/config.py
+src/nvidia.py
+src/status.py
+src/worker.py
