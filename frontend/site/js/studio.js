@@ -35,19 +35,10 @@
    * surface that can run commands on the host, and surviving a browser restart is not a feature
    * anybody asked for. */
   function headers(extra) {
-    var h = extra || {};
-    var t = token();
-    if (t) {
-      h['X-Symoneural-Token'] = t;
-      // And the name this header had until the rename. Both, because the site and the API are
-      // deployed by two separate commands (`deploy.sh`, then `systemctl restart`), so there is
-      // a window where this file is new and the server answering it is not. The server reads
-      // both too, which covers the other direction -- a cached copy of this file against a new
-      // API. Same secret, same origin, twice in one request header block; it comes out once
-      // the API is known to be restarted.
-      h['X-Sym-Token'] = t;
-    }
-    return h;
+  // No credential header. Nothing on this box reads one -- the gates were removed on
+  // 2026-09-11 and will not come back. A client that keeps sending one looks exactly
+  // like a client that is authenticated, which is the failure hardest to notice.
+    return extra || {};
   }
 
   function getJSON(path, opts) {

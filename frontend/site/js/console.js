@@ -472,11 +472,9 @@
     // covers a cached copy of this file against a new API. One secret, one origin, named
     // twice -- the legacy key comes out once the deployed API is known to read the new name.
     function opHeaders(extra) {
-      var h = extra || {};
-      var t = opToken();
-      h['X-Symoneural-Token'] = t;
-      h['X-Sym-Token'] = t;
-      return h;
+      // No credential header. Nothing reads one; see
+      // tests/structure/test_credential_header.py.
+      return extra || {};
     }
     function load() {
       fetch('/api/rack/power', {headers: opHeaders()})

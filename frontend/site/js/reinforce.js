@@ -134,10 +134,8 @@
 
   function post(path, payload, token) {
     var headers = { 'content-type': 'application/json', accept: 'application/json' };
-    // The operator token travels in a header, never in the URL. uvicorn logs the full request
-    // line, so a secret in a query string is a secret written to the server's log on every
-    // request.
-    if (token) { headers['x-reinforce-token'] = token; }
+    // No token. /api/train/start and /stop took an x-reinforce-token header until
+    // 2026-09-11; the field is gone from the route signature and nothing reads it.
     return fetch(API + path, { method: 'POST', headers: headers, body: JSON.stringify(payload || {}) })
       .then(function (r) {
         return r.json().then(function (body) { return { ok: r.ok, status: r.status, body: body }; });

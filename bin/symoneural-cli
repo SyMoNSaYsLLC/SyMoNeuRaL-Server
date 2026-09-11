@@ -544,15 +544,11 @@ def api_open(path: str, *, base: str, method: str = "GET", body: object = None,
     req.add_header("Accept", accept)
     if data is not None:
         req.add_header("Content-Type", "application/json")
-    if (token := studio_token()):
-        req.add_header("X-Symoneural-Token", token)
-        # And the name it replaced. This CLI is installed from a .deb and the API is a systemd
-        # unit; nothing makes them the same version at the same moment, so a freshly upgraded
-        # CLI can be the first thing to talk to an API that has not been restarted yet -- and
-        # `symoneural-cli agent` reporting 401 against a token that is plainly correct is the
-        # worst failure to diagnose from this end. Drop this line once the deployed API is
-        # known to read the new name.
-        req.add_header("X-Sym-Token", token)
+    # No credential header. This sent X-Symoneural-Token and the name it replaced until
+    # 2026-09-11; the server side is gone and neither is read. A client that keeps sending
+    # one looks exactly like a client that is authenticated, which is why
+    # tests/structure/test_credential_header.py now points this way rather than at the
+    # agreement between senders and readers that no longer exists.
     return urllib.request.urlopen(req, timeout=timeout)
 
 
