@@ -144,6 +144,39 @@ def subdir_readme(comp: str, sub: str, files: list) -> str:
     return "\n".join(lines)
 
 
+def tests_readme(comp: str, files: list) -> str:
+    """The component's test directory, from the tests actually there."""
+    rows = [(f"`{f.name}`", first_line(f)) for f in files]
+    return "\n".join([
+        f"# `tests/component/{comp}/` — what the {comp} surface must do",
+        "",
+        f"Run: `python3 -m pytest tests/component/{comp} -q`",
+        "",
+        *table(rows, ("file", "")),
+        "",
+        "## Two things that bite here",
+        "",
+        "These moved out of `backend/` on 2026-09-11. **`from . import X` has no package to be",
+        f"relative to** — import the component by name: `from {comp} import {comp}`. And **`HERE`",
+        "and `ROOT` are the repository root**, not this directory; the root `conftest.py` puts",
+        "`backend/` on the path, in exactly one place.",
+        "",
+        "## What a test here has to do",
+        "",
+        "Exercise the surface, not the file. A test that reads source and asserts a string is a",
+        "grep with a test's authority — #94 archived on eighteen such checks over a surface that",
+        "was dead on arrival.",
+        "",
+        "Prove the behaviour changed: break it on purpose, watch this fail, then fix it. A test",
+        "that passes before and after your change tested nothing.",
+        "",
+        f"See [`../README.md`](../README.md) for the convention and",
+        f"[`../../../backend/{comp}/README.md`](../../../backend/{comp}/README.md) for what",
+        f"`{comp}` is.",
+        "",
+    ])
+
+
 STUB = """# backend/{name}/
 
 > **Write this paragraph.** What is this surface for, who calls it, and what will bite
@@ -181,6 +214,21 @@ def main() -> int:
             else:
                 readme.write_text(new, encoding="utf-8")
                 written += 1
+
+        # The component's tests, from the tests actually there.
+        tdir = ROOT / "tests" / "component" / directory.name
+        if tdir.is_dir():
+            tfiles = sorted(f for f in tdir.glob("*.py") if f.name != "__init__.py")
+            if tfiles:
+                treadme = tdir / "README.md"
+                want = tests_readme(directory.name, tfiles)
+                have = treadme.read_text(encoding="utf-8") if treadme.is_file() else ""
+                if want != have:
+                    if args.check:
+                        stale.append(str(treadme.relative_to(ROOT)))
+                    else:
+                        treadme.write_text(want, encoding="utf-8")
+                        written += 1
 
         # Every subdirectory that holds something says what it is for, where somebody
         # standing in it will read it. Generated, so it cannot drift from the tree.
