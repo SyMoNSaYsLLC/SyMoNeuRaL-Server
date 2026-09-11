@@ -46,7 +46,7 @@ class ScriptShape(unittest.TestCase):
         """A constant duplicated in two files is a constant that will drift. The script
         cannot import Python, so the number is repeated -- and this reads BOTH and compares,
         which is the only way a repeated constant stays honest."""
-        mod = (ROOT / "backend" / "apps" / "accounts" / "__init__.py").read_text()
+        mod = (ROOT / "backend" / "accounts" / "__init__.py").read_text()
         m = re.search(r"^MIN_SECRET_CHARS\s*=\s*(\d+)", mod, re.M)
         self.assertIsNotNone(m, "MIN_SECRET_CHARS is gone from apps/accounts")
         s = re.search(r"^MIN_CHARS=(\d+)", SCRIPT.read_text(), re.M)

@@ -373,7 +373,7 @@ class TheEnvNameTripwire(unittest.TestCase):
     The same one-way rule as `TheTripwire`, applied to the other half of the rename. It exists
     because the header rule did not catch the defect it should have: `symoneuralexp/page.js`
     displayed `SYM_EXP_ENABLED=1` and `SYM_EXP_TOKEN` to the operator as the configuration to
-    set, long after the reader had been renamed, and `site/exp.js` carried the same four
+    set, long after the reader had been renamed, and `frontend/site/js/exp.js` carried the same four
     strings. 1225 tests passed over it. `symoneuralexp/test_exp.py:1243-1246` pins the two
     constants and byte-compares the generated copy, so both halves were self-consistently
     wrong: the assertions were symbolic, and the strings they never read were the ones an

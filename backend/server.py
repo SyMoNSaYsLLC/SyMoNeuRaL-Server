@@ -733,8 +733,6 @@ def external_holder() -> str | None:
 #: Older than this and the row is `unreachable`. Three missed polls, so one slow answer does
 #: not flap the rack -- the failure this must not have is a surface that alternates.
 
-#: surface -> (row, monotonic fetched_at, error or None). Absent means never yet polled.
-_delegated_rows: dict[str, tuple[dict | None, float, str | None]] = {}
 
 
 

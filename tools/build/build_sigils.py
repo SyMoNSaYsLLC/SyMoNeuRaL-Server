@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate site/sigils.html -- the SyMoNeuRaL Sigils surface page.
+"""Generate frontend/site/pages/sigils.html -- the SyMoNeuRaL Sigils surface page.
 
     python3 tools/build/build_sigils.py
 
@@ -28,7 +28,7 @@ import sys
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_pages  # noqa: E402  -- for NAV, SHELL and the live GPU panel. Read, not run:

@@ -226,7 +226,7 @@ class InvocableDocsTests(unittest.TestCase):
         CLAUDE.md listed four suites and it was the fifth. `project.mjs` then proved the
         same point a second time from a different direction: it was 15/16, and the red was
         `/api/news/ticker` 404ing because its harness mounts only the project router while
-        `site/ui.js` fetches the ticker on every page. Nothing about the streamer rename
+        `frontend/site/js/ui.js` fetches the ticker on every page. Nothing about the streamer rename
         broke it and nothing about it was hard to fix; it simply went unrun.
         """
         on_disk = self._browser_suites()

@@ -547,7 +547,7 @@ class TestUnitState(unittest.TestCase):
                     self.assertEqual(state, "offline", f"{reading} produced {state}")
 
     def test_the_only_states_this_surface_can_emit_are_known_to_the_frontend(self):
-        """`site/console.js:47` lights the LED for anything that is not literally `offline`."""
+        """`frontend/site/js/console.js:47` lights the LED for anything that is not literally `offline`."""
         seen = set()
         rec = types.SimpleNamespace(nonce=1, at_block=1)
         for cleared in (None, rec):
@@ -695,7 +695,7 @@ class TestCacheAndRefresher(unittest.TestCase):
 class TestDetailEncoding(unittest.TestCase):
     """The detail line is the delivery channel to the rack, and it carries —, · and ….
 
-    `site/gateway.html` sets `d.textContent = u.detail`, so whatever survives the JSON
+    `frontend/site/pages/gateway.html` sets `d.textContent = u.detail`, so whatever survives the JSON
     round trip is what the operator reads. Checked here rather than assumed: a mangled
     character would be the difference between an answer he can read off the rack and one
     he cannot.

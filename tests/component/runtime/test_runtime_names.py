@@ -113,13 +113,13 @@ class EveryRuntimeNameResolves(unittest.TestCase):
         Asserted against the source rather than against a remembered value, so it stays
         true if the engine is renamed again.
         """
-        asr = (ROOT / "backend" / "apps" / "voice" / "asr.py").read_text()
+        asr = (ROOT / "backend" / "voice" / "asr.py").read_text()
         self.assertIn("symoneural-listen", asr)
         voice = next(a for a in appdocs.APPLICATIONS if a.id == "voice")
         self.assertEqual("symoneural-listen", voice.runtime)
 
     def test_image_and_sigils_name_the_engine_they_actually_execute(self):
-        render = (ROOT / "backend" / "apps" / "sigils" / "render.py").read_text()
+        render = (ROOT / "backend" / "sigils" / "render.py").read_text()
         self.assertIn("symoneural-diffuse", render)
         for app_id in ("image", "sigils"):
             with self.subTest(app=app_id):

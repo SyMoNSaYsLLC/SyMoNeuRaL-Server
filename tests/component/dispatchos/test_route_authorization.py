@@ -309,14 +309,14 @@ class BoundaryTests(unittest.TestCase):
         self.assertEqual(routes.COOKIE, "symon_dispatchos")
 
     def test_guards_still_present_and_used(self):
-        src = (ROOT / "backend" / "apps" / "dispatchos" / "routes.py").read_text()
+        src = (ROOT / "backend" / "dispatchos" / "routes.py").read_text()
         for fn in ("def _signed_in", "def _operator", "def _require_enabled",
                    "def _owned_or_403", "def _visible"):
             self.assertIn(fn, src, f"{fn} was removed or renamed")
 
     def test_no_session_or_login_import_from_shared_accounts(self):
         """Only password primitives may come from shared accounts. No auth merge."""
-        src = (ROOT / "backend" / "apps" / "dispatchos" / "store.py").read_text()
+        src = (ROOT / "backend" / "dispatchos" / "store.py").read_text()
         for banned in ("read_session", "create_session", "login(", "new_session"):
             self.assertNotIn(f"accounts import {banned}", src)
         self.assertIn("from accounts import (WeakPassword, check_password_or_dummy",

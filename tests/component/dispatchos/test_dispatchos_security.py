@@ -19,7 +19,7 @@ from unittest import mock
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 sys.path.insert(0, str(ROOT / "backend"))
 
-STORE_PATH = ROOT / "backend" / "apps" / "dispatchos" / "store.py"
+STORE_PATH = ROOT / "backend" / "dispatchos" / "store.py"
 SPEC = importlib.util.spec_from_file_location("dispatchos_security_store", STORE_PATH)
 assert SPEC and SPEC.loader
 store = importlib.util.module_from_spec(SPEC)
@@ -122,7 +122,7 @@ class TestLoginSecurity(Base):
 class TestRouteSecurity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.source = (ROOT / "backend" / "apps" / "dispatchos" / "routes.py").read_text(
+        cls.source = (ROOT / "backend" / "dispatchos" / "routes.py").read_text(
             encoding="utf-8")
 
     def test_login_hashing_runs_off_the_event_loop(self):

@@ -1,4 +1,4 @@
-"""Generate `site/project.html` -- the web client for `backend/project`.
+"""Generate `frontend/site/pages/project.html` -- the web client for `backend/project`.
 
     python3 tools/build/build_project.py && python3 tools/build/build_cachebust.py
 
@@ -13,7 +13,7 @@ caught it and restamped in `8c8b89f`.
 Nothing downstream catches it, which is what makes it worth a docstring: `scripts/deploy.sh`
 strips `?v=` before checking that references resolve, so a destamped page deploys perfectly
 quietly and the reference check stays green. Check it directly instead --
-`grep -c '?v=' site/project.html` must be non-zero before calling this surface done.
+`grep -c '?v=' frontend/site/pages/project.html` must be non-zero before calling this surface done.
 
 `backend/project/README.md` closes its "What is NOT implemented" list with, in first
 place, *"There is no page."* The API has been complete and usable from `curl` since it was
@@ -25,7 +25,7 @@ advertises it. This is that page.
 
 Every other generator that touches `site/` rewrites a page some other generator also writes;
 `.claude/CLAUDE.md` calls that out as the real hazard when several agents run at once. This
-one writes `site/project.html` and nothing else, so it cannot clobber another writer. It
+one writes `frontend/site/pages/project.html` and nothing else, so it cannot clobber another writer. It
 imports `build_pages` for `SHELL` and `NAV` but never calls `build_pages.page()`, which would.
 
 ## Every class name is prefixed `pj-`
@@ -61,7 +61,7 @@ import sys
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_pages  # noqa: E402  -- for NAV and SHELL. Read, not run: importing it is safe

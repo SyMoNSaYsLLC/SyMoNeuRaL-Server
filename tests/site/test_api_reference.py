@@ -177,7 +177,7 @@ class NoVendorDocumentationUI(unittest.TestCase):
         how nineteen unreferenced PNGs ended up in the live webroot.
         """
         strays = sorted(
-            p.name for p in (ROOT / "site").glob("*")
+            p.name for p in (ROOT / "frontend" / "site").glob("*")
             if any(name in p.name.lower() for name in RETIRED)
         )
         self.assertEqual(strays, [], "retired documentation-UI assets are still in site/")

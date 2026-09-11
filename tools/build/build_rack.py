@@ -41,7 +41,7 @@ import re
 # usually a directory that exists. Assert rather than trust it.
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 INDEX = SITE / "index.html"
 
 import sys as _sys

@@ -31,7 +31,7 @@ import re
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 
 # Alternation is ordered longest-first. Python's re backtracks, so `js` before `json`
 # would still resolve correctly here -- but the same ordering mistake in a `find -regex`

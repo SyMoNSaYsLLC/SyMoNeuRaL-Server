@@ -41,7 +41,7 @@ import _art  # noqa: E402
 # usually a directory that exists. Assert rather than trust it.
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 API = "http://127.0.0.1:8800/api/image"
 GEN = "http://127.0.0.1:8800/api/gen/"
 

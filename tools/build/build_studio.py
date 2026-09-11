@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate site/studio.html and site/studio.js -- the SyMoNeuRaL Studio surface.
+"""Generate frontend/site/pages/studio.html and frontend/site/js/studio.js -- the SyMoNeuRaL Studio surface.
 
     python3 tools/build/build_studio.py
 
@@ -43,7 +43,7 @@ the API, so two runs produce byte-identical files.
 ## This script destamps the page. Run `tools/build/build_cachebust.py` after it, every time
 
 `page.html` carries plain `href="/symoneural.css"` and `src="/studio.js"`, and that is what this
-writes. The committed `site/studio.html` carries nine `?v=<hash>` stamps instead, added by
+writes. The committed `frontend/site/pages/studio.html` carries nine `?v=<hash>` stamps instead, added by
 `tools/build/build_cachebust.py`. So a bare run of this generator produces a diff that removes every
 stamp and reads like a harmless refresh -- and a commit taken at that moment ships a page whose
 CSS and JS are cacheable for a week with no way to invalidate them. `.claude/CLAUDE.md` records
@@ -52,7 +52,7 @@ this happening to seven pages at once via `build_pages.py`; this script is not a
     python3 tools/build/build_studio.py && python3 tools/build/build_cachebust.py
 
 `test_studio.py::PageTests::test_the_built_page_is_this_generators_output_with_stamps_added`
-fails on a destamped `site/studio.html`, so the omission is caught by the suite rather than by a
+fails on a destamped `frontend/site/pages/studio.html`, so the omission is caught by the suite rather than by a
 visitor holding a week-old stylesheet.
 """
 from __future__ import annotations
@@ -63,8 +63,8 @@ import sys
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
-APP = ROOT / "backend" / "apps" / "studio"
+SITE = ROOT / "frontend" / "site"
+APP = ROOT / "backend" / "studio"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_pages  # noqa: E402  -- for NAV and SHELL. Read, never called: `page()` writes the

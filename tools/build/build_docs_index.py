@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate the platform documentation index into `site/documentation.html`.
+"""Generate the platform documentation index into `frontend/site/pages/documentation.html`.
 
     python3 tools/build/build_docs_index.py
 
 ## Why this exists, and why it is a generator rather than static markup
 
 Handshake 6.1 added a hand-written index of the twenty-two scoped application documentation
-pages to `site/documentation.html`, guarded by two-way drift tests. That was the right call at
+pages to `frontend/site/pages/documentation.html`, guarded by two-way drift tests. That was the right call at
 the time -- nothing generated that file as a whole, and an index that fetched `/api` at page
 load would be blank whenever the API was down, which is the one thing a documentation index
 must never be.
@@ -51,7 +51,7 @@ import sys
 # usually a directory that exists. Assert rather than trust it.
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 PAGE = SITE / "documentation.html"
 
 # `backend/` on the path, not `backend/`: the registry is `apps.appdocs`, and importing it

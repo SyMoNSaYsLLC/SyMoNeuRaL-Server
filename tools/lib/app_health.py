@@ -109,7 +109,7 @@ def browser_coverage(name: str) -> tuple[str, str]:
     the first viewport with a 16/16 suite passing over it. `exists` and `grep` ask what
     is written on disk. Only a browser asks whether it works.
     """
-    site = REPO / "site"
+    site = REPO / "frontend" / "site"
     pages = [f.name for f in site.glob("*.html")
              if name in f.name or name in f.read_text(errors="replace")[:40000]]
     suites = [f.name for f in (REPO / "tests").glob("*.mjs")

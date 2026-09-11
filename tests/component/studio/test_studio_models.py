@@ -122,7 +122,7 @@ class RouteIsReachable(unittest.TestCase):
 
         Then 12 -> 13 for `apps/news` at `/api/news` -- the live ticker's collector.
         One router carrying one read-only endpoint, and the bar itself is drawn by
-        `site/ui.js` rather than by a page of its own, so again this moved by one.
+        `frontend/site/js/ui.js` rather than by a page of its own, so again this moved by one.
 
         Then 13 -> 14 for `apps/live` at `/api/live` -- the OBS stream. One router carrying
         all five of its routes including the segment bytes, and the page at `/livestack/live`

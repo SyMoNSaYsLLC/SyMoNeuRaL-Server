@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Produce site/training.html: the manual, rebranded as SyMoNeuRaL Training.
+"""Produce frontend/site/pages/training.html: the manual, rebranded as SyMoNeuRaL Training.
 
 The source is the already-generated symoneural-manual.html rather than the markdown, and
 that is a deliberate choice. That file carries a purpose-built long-form layout, a nested
@@ -33,7 +33,7 @@ import re
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SRC = ROOT / "docs" / "symoneural-manual.html"
-DST = ROOT / "site" / "training.html"
+DST = ROOT / "frontend" / "site" / "pages" / "training.html"
 
 # Remap the document's own design tokens onto the SyMoNeuRaL palette, and bolt the site
 # header on top so this reads as part of the site rather than an attachment to it.
@@ -54,7 +54,7 @@ OVERRIDE = """
   --shadow:0 1px 2px rgba(0,0,0,.5);
   /* The site's seven-size type scale, restated here because this page deliberately
      links no stylesheet -- it is a self-contained document, so it cannot reference
-     site/symoneural.css's tokens. Keep these values identical to that file's :root.
+     frontend/site/css/symoneural.css's tokens. Keep these values identical to that file's :root.
      They govern the SyMoNeuRaL bar only; the manual's own body type is a separate
      rem-based scale that belongs to the generated document, not to the site. */
   --t1:40px; --t2:28px; --t3:20px; --t4:14.5px; --t5:12.5px; --t6:11.5px; --t7:10.5px;

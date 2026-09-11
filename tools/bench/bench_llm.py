@@ -3,7 +3,7 @@
 
 Two questions, and neither is answerable by reading a file:
 
-  * **tok/s.** `site/index.html` and `site/controlboard.html` publish `151 tok/s`
+  * **tok/s.** `frontend/site/pages/index.html` and `frontend/site/pages/controlboard.html` publish `151 tok/s`
     labelled *measured*, and `.claude/HANDOVER.md` carries 100.6 and 129.6 from two
     different sessions. Those three numbers cannot all describe the same workload,
     and two of them were taken on counting prompts -- `1,2,3,4,5,6,7,8,9,10` is the
@@ -401,7 +401,7 @@ def _r(v, places: int = 2):
 
 
 def api_reported_rate(repeats: int) -> dict:
-    """What the *site* shows. `site/chat.html:321` renders the API's `tok_per_s`,
+    """What the *site* shows. `frontend/site/pages/chat.html:321` renders the API's `tok_per_s`,
     and `api.py:2868` computes it as tokens over wall-clock across the SSE stream.
     Recorded separately so the two can be compared instead of conflated.
     """
@@ -473,7 +473,7 @@ def markdown(d: dict) -> str:
         ttfts = [s["ttft_s"] for s in a["samples"] if s.get("ttft_s")]
         L += ["## What the site reports, for comparison", "",
               f"`POST /api/chat` returns `tok_per_s` computed as tokens over "
-              f"wall-clock (`api.py:2868`), which is what `site/chat.html` renders: "
+              f"wall-clock (`api.py:2868`), which is what `frontend/site/pages/chat.html` renders: "
               f"**{a['mean']} tok/s** over {len(a['samples'])} prose replies, against "
               f"the engine's **{engine_prose} tok/s** for the same workload — a gap of "
               + (f"{gap:.1f}%" if gap is not None else "?") + ". "

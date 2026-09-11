@@ -256,7 +256,7 @@ class TestDenylist(Base):
         manual and CLAUDE.md says explicitly that it IS publishable.
         """
         for rel in ("training/train_lora.py", "frontend/site/docs/symoneural-manual.md",
-                    "training/adapters.md", "site/index.html", "keyboard.py"):
+                    "training/adapters.md", "frontend/site/pages/index.html", "keyboard.py"):
             p = self.ws / rel
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text("fine\n")

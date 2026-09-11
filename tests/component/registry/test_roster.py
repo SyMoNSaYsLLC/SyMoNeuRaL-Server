@@ -250,7 +250,7 @@ class RosterMatchesControlboardTests(unittest.TestCase):
 
 
 class GeneratedFallbackTests(unittest.TestCase):
-    """`site/index.html`'s pre-JS fallback, which `tools/build/build_rack.py` writes from the roster.
+    """`frontend/site/pages/index.html`'s pre-JS fallback, which `tools/build/build_rack.py` writes from the roster.
 
     This is the assertion that catches the half of the work that is easy to forget: the row
     was added to the roster and `build_rack.py` was never re-run, so the committed page still
@@ -259,7 +259,7 @@ class GeneratedFallbackTests(unittest.TestCase):
     """
 
     def _fallback(self) -> str:
-        html = (REPO / "site" / "index.html").read_text()
+        html = (REPO / "frontend" / "site" / "pages" / "index.html").read_text()
         self.assertIn("<noscript>", html)
         return html.split("<noscript>", 1)[1].split("</noscript>", 1)[0]
 

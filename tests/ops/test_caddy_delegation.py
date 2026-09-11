@@ -53,7 +53,7 @@ import unittest.mock
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 API = REPO / "backend" / "server.py"
 CADDYFILE = REPO / "ops" / "Caddyfile"
-SITE = REPO / "site"
+SITE = REPO / "frontend" / "site"
 
 
 def _api_page_paths() -> set[str]:
@@ -274,7 +274,7 @@ class InstallCaddyCannotEvictTheFirstPartyRuntime(unittest.TestCase):
     """
 
     SCRIPT = REPO / "scripts" / "install-caddy.sh"
-    UNIT = REPO / "ops" / "symoneural-web.service"
+    UNIT = REPO / "ops" / "units" / "symoneural-web.service"
 
     def test_the_conflicts_declaration_that_makes_this_dangerous_still_exists(self):
         """If Conflicts= is ever dropped, the guard below is arguing about nothing and the

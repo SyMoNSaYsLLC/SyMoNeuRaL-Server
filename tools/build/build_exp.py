@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Generate site/exp.html and site/exp.js -- the SyMoNeuRaL Exp surface.
+"""Generate frontend/site/pages/exp.html and frontend/site/js/exp.js -- the SyMoNeuRaL Exp surface.
 
     python3 tools/build/build_exp.py
 
 This is the filename `backend/server.py`'s 404 for `/exp` names, so it is the filename this file
-has to keep: the route reads `site/exp.html` at request time and tells the operator to run this
+has to keep: the route reads `frontend/site/pages/exp.html` at request time and tells the operator to run this
 generator when it is not there.
 
 ## Why the rack row was already live before this page existed
@@ -56,8 +56,8 @@ import sys
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
-APP = ROOT / "backend" / "apps" / "studio" / "plugins" / "exp"
+SITE = ROOT / "frontend" / "site"
+APP = ROOT / "backend" / "studio" / "plugins" / "exp"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_pages  # noqa: E402  -- for NAV and SHELL. Read, never called: `page()` writes the

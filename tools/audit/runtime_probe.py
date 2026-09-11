@@ -736,7 +736,7 @@ def probe_training_interpreter() -> None:
 
 def probe_gateway() -> None:
     """The Rust binary the unit runs, exercised through its own forwarding path."""
-    exe = ROOT / "backend" / "apps" / "gateway" / "target" / "release" / "symoneural-gateway"
+    exe = ROOT / "backend" / "gateway" / "target" / "release" / "symoneural-gateway"
     if not exe.is_file():
         record("symoneural-gateway", "forwarding", SKIP, "binary absent")
         return
@@ -772,7 +772,7 @@ def probe_web() -> None:
 
 def probe_ravencalc() -> None:
     """Start the split surface's own uvicorn on its registered port, ask it, stop it."""
-    svc = ROOT / "backend" / "apps" / "ravencalc" / "service.py"
+    svc = ROOT / "backend" / "ravencalc" / "service.py"
     if not svc.is_file():
         record("symoneural-ravencalc", "own-uvicorn", SKIP, "service absent")
         return

@@ -39,7 +39,7 @@ class TheConsoleIsNotPublic(unittest.TestCase):
     def test_the_page_is_not_in_the_site_directory(self):
         """`deploy.sh` publishes any .html under site/. An operator surface must not be
         there -- safety rule 1."""
-        self.assertFalse((ROOT / "site" / "operator.html").exists(),
+        self.assertFalse((ROOT / "frontend" / "site" / "pages" / "operator.html").exists(),
                          "operator.html is in site/, which deploy.sh publishes to the "
                          "public webroot")
 

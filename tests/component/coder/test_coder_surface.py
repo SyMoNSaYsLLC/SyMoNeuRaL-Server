@@ -39,7 +39,7 @@ import unittest
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 API = REPO / "backend" / "server.py"
 CADDYFILE = REPO / "ops" / "Caddyfile"
-SITE = REPO / "site"
+SITE = REPO / "frontend" / "site"
 PAGE = SITE / "coder.html"
 PAGE_JS = SITE / "coder.js"
 PAGE_CSS = SITE / "coder.css"
@@ -207,7 +207,7 @@ class CoderSurfaceTests(unittest.TestCase):
         404s, and a standing invitation to 'fix' it by adding the route."""
         js = _no_comments(PAGE_JS.read_text())
         self.assertNotIn("/api/coder", js,
-                         "site/coder.js fetches /api/coder; the reads live at /local/coder")
+                         "frontend/site/js/coder.js fetches /api/coder; the reads live at /local/coder")
         fetched = set(re.findall(r"['\"](/[a-z0-9/_-]+)[?'\"]", js))
         remote = sorted(p for p in fetched
                         if p.startswith("/api") or p.startswith("/local"))
@@ -280,7 +280,7 @@ class CoderSurfaceTests(unittest.TestCase):
         self.assertIn('src="/coder.js', html, "the page does not load its own script")
         inline = re.findall(r"<script(?![^>]*\ssrc=)[^>]*>(.*?)</script>", html, re.S)
         bodies = [b for b in inline if b.strip()]
-        self.assertEqual(bodies, [], "site/coder.html carries an inline <script> body")
+        self.assertEqual(bodies, [], "frontend/site/pages/coder.html carries an inline <script> body")
 
     def test_no_ellipsis_rule_anywhere_in_the_page_or_its_stylesheet(self):
         """Barred sitewide by `.claude/CLAUDE.md`, and this is the page where it would cost
@@ -297,7 +297,7 @@ class CoderSurfaceTests(unittest.TestCase):
                                     f"{f.name} contains an ellipsis rule; let it wrap")
 
     def test_the_page_declares_no_generator(self):
-        """`site/coder.html` is hand-authored and tracked, like `site/live.html`.
+        """`frontend/site/pages/coder.html` is hand-authored and tracked, like `frontend/site/pages/live.html`.
 
         The 404 body in `api.py` sends the next person to `git checkout`, and it must not name
         a `tools/build_coder.py` that does not exist -- pointing at a missing generator is how

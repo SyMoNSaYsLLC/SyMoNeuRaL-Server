@@ -12,7 +12,7 @@ while every static occurrence in `site/` was already clean. A check that greps t
 goes green in that state, which is why `test_rendered_response_fields` computes real
 expressions and reads the values a browser would actually display.
 
-**`site/credits.html` is asserted the other way round, and that is deliberate.** SymPy is
+**`frontend/site/pages/credits.html` is asserted the other way round, and that is deliberate.** SymPy is
 BSD-3-Clause. The licence does not require the name in the interface, but it does require
 the copyright notice in accompanying documentation, and once the pages stop naming it
 `credits.html` and `LICENSES.md` become the whole of the disclosure. So this file fails if
@@ -29,7 +29,7 @@ import re
 import unittest
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-SITE = REPO / "site"
+SITE = REPO / "frontend" / "site"
 
 #: Matched case-insensitively: the JS comment shipped in `ravencalc.html` spells it
 #: lowercase, and a rename that tidied the capitalised ones only would still ship it.
@@ -246,10 +246,10 @@ class NoUpstreamIdentifiersTests(unittest.TestCase):
 
     **The scope here is deliberately wider than #74's two declared checks, and the gap
     between them was real, not hypothetical.** Those checks are
-    `ngrep dsw- -- site/symoneural.css` and `ngrep deepseek -- site/ui.js`: one token per
+    `ngrep dsw- -- frontend/site/css/symoneural.css` and `ngrep deepseek -- frontend/site/js/ui.js`: one token per
     file, and each file checked for the token it happened not to contain. Both were green
-    while `site/symoneural.css` named the upstream twice. That is the same failure this
-    task already recorded once -- `ngrep SymPy -- site/ravencalc.html` covered one page of
+    while `frontend/site/css/symoneural.css` named the upstream twice. That is the same failure this
+    task already recorded once -- `ngrep SymPy -- frontend/site/pages/ravencalc.html` covered one page of
     fifteen and fixing that one page flipped it green while thirteen others still said it.
     So this scans **every** served asset for **both** tokens, and the generators too,
     because a page fixed by hand is undone by the next build.

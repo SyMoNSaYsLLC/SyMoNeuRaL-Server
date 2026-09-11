@@ -26,7 +26,7 @@ import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 GOV = ROOT / "scripts" / "gpu-governor.sh"
-GPU_PY = ROOT / "backend" / "apps" / "gpu.py"
+GPU_PY = ROOT / "backend" / "gpu.py"
 CARDWIDE_FLOOR = 1500
 
 
@@ -49,7 +49,7 @@ def isolated(tag: str, with_gpu_py: bool) -> pathlib.Path:
     (r / "backend" / "server.py").write_text("")          # the governor's root guard
     shutil.copy2(GOV, r / "scripts" / "gpu-governor.sh")
     if with_gpu_py:
-        shutil.copy2(GPU_PY, r / "backend" / "apps" / "gpu.py")
+        shutil.copy2(GPU_PY, r / "backend" / "gpu.py")
     return r
 
 
@@ -101,7 +101,7 @@ class DrainFailsClosedWithoutPython(unittest.TestCase):
     def test_a_broken_gpu_py_is_treated_as_missing(self):
         """Not just absent: present and exiting non-zero must fail the same way."""
         root = isolated("broken", with_gpu_py=True)
-        (root / "backend" / "apps" / "gpu.py").write_text(
+        (root / "backend" / "gpu.py").write_text(
             "import sys\nsys.exit(3)\n")
         rc, out = drain(root, "/no/such/process/path/")
         self.assertIn("FALLBACK", out)
@@ -111,7 +111,7 @@ class DrainFailsClosedWithoutPython(unittest.TestCase):
         """The case the `case $out in *[!0-9]*` guard exists for: stdout that is not a
         number must never become one."""
         root = isolated("garbage", with_gpu_py=True)
-        (root / "backend" / "apps" / "gpu.py").write_text(
+        (root / "backend" / "gpu.py").write_text(
             "print('drained, probably')\n")
         rc, out = drain(root, "/no/such/process/path/")
         self.assertIn("FALLBACK", out)

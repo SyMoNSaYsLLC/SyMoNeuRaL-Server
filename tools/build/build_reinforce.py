@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate site/reinforce.html and site/reinforce.js -- the SyMoNeuRaL Reinforce training bay.
+"""Generate frontend/site/pages/reinforce.html and frontend/site/js/reinforce.js -- the SyMoNeuRaL Reinforce training bay.
 
     python3 tools/build/build_reinforce.py
 
@@ -10,7 +10,7 @@
 No generator built them into a page, no script copied them, no test loaded them. `page.js` says
 in its own second line where it was meant to go:
 
-    Deploys to `site/reinforce.js`; `page.html` loads it with `<script src="/reinforce.js" defer>`.
+    Deploys to `frontend/site/js/reinforce.js`; `page.html` loads it with `<script src="/reinforce.js" defer>`.
 
 That deploy step did not exist. This file is it.
 
@@ -59,8 +59,8 @@ import sys
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
-APP = ROOT / "backend" / "apps" / "studio" / "plugins" / "reinforce"
+SITE = ROOT / "frontend" / "site"
+APP = ROOT / "backend" / "studio" / "plugins" / "reinforce"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_pages  # noqa: E402  -- for NAV and SHELL. Read, never called: `page()` writes the
@@ -180,7 +180,7 @@ def main() -> int:
     # ---- fixes whose SOURCE lives outside the frontend allowlist -------------------
     # `backend/studio/plugins/reinforce/page.html` is this page's authored fragment, and
     # it is under `backend/`, which Handshake 6.2 does not permit writing. Two corrections
-    # made in 6.1 were applied to the GENERATED `site/reinforce.html` and were therefore
+    # made in 6.1 were applied to the GENERATED `frontend/site/pages/reinforce.html` and were therefore
     # reverted the moment this generator next ran -- which is exactly what happened on
     # 2026-08-29. A fix applied to generated output is not a fix; it is a countdown.
     #

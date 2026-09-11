@@ -26,7 +26,7 @@ import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 TOOL = ROOT / "tools" / "lib" / "sabotage_matrix.py"
-SUITE = ROOT / "backend" / "apps" / "test_control_plane_matrix.py"
+SUITE = ROOT / "backend" / "test_control_plane_matrix.py"
 
 #: The nine the branch originally claimed, plus two the pre-merge review made necessary, plus one
 #: added after the post-merge count failure. Raise this when cases are added -- a stale floor here

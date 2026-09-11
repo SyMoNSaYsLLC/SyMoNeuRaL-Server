@@ -35,7 +35,7 @@ class TestPasswordSecurityContract(unittest.TestCase):
 class TestRouteSecurityContract(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.path = ROOT / "backend" / "apps" / "accounts" / "routes.py"
+        cls.path = ROOT / "backend" / "accounts" / "routes.py"
         cls.source = cls.path.read_text(encoding="utf-8")
         cls.tree = ast.parse(cls.source, filename=str(cls.path))
 

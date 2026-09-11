@@ -562,7 +562,7 @@ class RackUnit(unittest.TestCase):
         self.assertTrue(detail.strip())
 
     def test_the_state_word_is_one_console_js_already_understands(self):
-        # site/console.js:47 -- `u.state === 'offline' ? 'led' : 'led on'`. Any state that is
+        # frontend/site/js/console.js:47 -- `u.state === 'offline' ? 'led' : 'led on'`. Any state that is
         # not exactly `offline` lights the green LED, so inventing a word here would light an
         # LED that means nothing. Guide's state must be one of the words already in use.
         self.assertIn(guide.unit_state()[0], {"ready", "busy", "loading", "offline"})

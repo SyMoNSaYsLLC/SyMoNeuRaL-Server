@@ -3,7 +3,7 @@
 `.claude/CLAUDE.md` names the failure this guards: #94 shipped a desktop client whose
 eighteen checks went green over a chat surface that was dead on arrival, because every check
 asked what was written on disk and none could ask whether the thing worked. `exists
-site/dashboard.html` would pass over a page whose every element id had been renamed.
+frontend/site/pages/dashboard.html` would pass over a page whose every element id had been renamed.
 
 So these assert the three joins that actually break:
 
@@ -26,10 +26,10 @@ import re
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-HTML = ROOT / "site" / "dashboard.html"
-JS = ROOT / "site" / "dashboard.js"
-CSS = ROOT / "site" / "dashboard.css"
-ROUTES = ROOT / "backend" / "apps" / "metricsroutes.py"
+HTML = ROOT / "frontend" / "site" / "pages" / "dashboard.html"
+JS = ROOT / "frontend" / "site" / "js" / "dashboard.js"
+CSS = ROOT / "frontend" / "site" / "css" / "dashboard.css"
+ROUTES = ROOT / "backend" / "metricsroutes.py"
 
 
 class TheFilesExist(unittest.TestCase):

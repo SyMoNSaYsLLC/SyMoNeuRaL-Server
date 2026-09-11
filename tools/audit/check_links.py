@@ -36,7 +36,7 @@ and `backend/server.py`.
 BROKEN line.** A link to a path FastAPI serves and the webroot does not is reported broken here
 even though it works in a browser, and the tempting repair -- "fix" the link -- breaks a link
 that was right. That has not happened yet (the watch surface shipped as a file,
-`site/streamer-watch.html`, and Reinforce as `site/reinforce.html`), but several sessions are
+`frontend/site/pages/streamer-watch.html`, and Reinforce as `frontend/site/pages/reinforce.html`), but several sessions are
 adding surfaces at once and any of them could add the first one. A BROKEN line naming a path
 with no dot in it is that case until proven otherwise.
 """

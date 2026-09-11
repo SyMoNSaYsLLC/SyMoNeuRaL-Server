@@ -3,7 +3,7 @@
 
     python3 tools/build/build_split.py     # site/{overview,livestack,controlboard,receipts}.html
 
-Runs AFTER every generator that writes into `site/index.html` and BEFORE build_cachebust.
+Runs AFTER every generator that writes into `frontend/site/pages/index.html` and BEFORE build_cachebust.
 
 ## Why these exist alongside the tabbed front page
 
@@ -43,7 +43,7 @@ import re
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 
 # The authored page-family map -- see tools/lib/page_families.py for why it is not restated here.
 import sys as _sys
@@ -53,7 +53,7 @@ import page_families  # noqa: E402
 # ------------------------------------------------------------------ entitlement filtering
 #
 # The Live Stack catalogue must not offer a customer application the viewer is not entitled
-# to open. The page is GENERATED, so the filter belongs here and never in site/livestack.html
+# to open. The page is GENERATED, so the filter belongs here and never in frontend/site/pages/livestack.html
 # -- a hand edit there is overwritten by the next run of this script.
 #
 # The generated page is static, so this cannot be a build-time decision: entitlement is
@@ -151,7 +151,7 @@ def main() -> int:
         # This file's own docstring already made the argument and the markup had not caught
         # up: *"Separate pages have no gate to fall off."* The attribute is what lets the
         # stylesheet act on that, per page, without weakening the front page's budget.
-        # `data-family` is emitted STATICALLY here, not left to site/shell.js. Measured in
+        # `data-family` is emitted STATICALLY here, not left to frontend/site/js/shell.js. Measured in
         # 6.1: with scripting off these pages fell back to the 1120px prose width. The value
         # comes from the one authored map in tools/lib/page_families.py rather than being typed
         # here, so the generator and the tests cannot disagree about it.

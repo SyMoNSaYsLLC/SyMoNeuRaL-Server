@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Front page as one screen of chrome with four tabbed panels.
 
-    python3 tools/build/build_tabs.py        # site/index.html
+    python3 tools/build/build_tabs.py        # frontend/site/pages/index.html
 
 Runs AFTER build_masthead / build_rack / build_console and BEFORE build_cachebust. It moves
 nothing: it inserts a tab strip above the masthead and lets JavaScript show one panel at a
@@ -65,14 +65,14 @@ import re
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 
 BEGIN = "<!-- BEGIN tabs (build_tabs.py) -->"
 END = "<!-- END tabs -->"
 JS_BEGIN = "<!-- BEGIN tabs-js (build_tabs.py) -->"
 JS_END = "<!-- END tabs-js -->"
 
-# The media query, in one place. The CSS copy in site/symoneural.css and the matchMedia call
+# The media query, in one place. The CSS copy in frontend/site/css/symoneural.css and the matchMedia call
 # in SCRIPT below must both say exactly this.
 GATE = "(min-width:1301px) and (min-height:740px)"
 

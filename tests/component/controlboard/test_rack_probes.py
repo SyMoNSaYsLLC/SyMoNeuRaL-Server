@@ -159,7 +159,7 @@ class ProbesDriveTheStates(unittest.TestCase):
                           "at how the rack states are derived now")
 
     def test_sigils_status_derives_offline_from_weights_present(self):
-        source = (ROOT / "backend" / "apps" / "sigils" / "routes.py").read_text()
+        source = (ROOT / "backend" / "sigils" / "routes.py").read_text()
         self.assertIn("if not render.weights_present():", source)
         self.assertIn('"image engine not installed on this box"', source)
 

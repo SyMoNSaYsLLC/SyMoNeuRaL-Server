@@ -1,6 +1,6 @@
-"""The type scale in site/symoneural.css is enforceable, so enforce it.
+"""The type scale in frontend/site/css/symoneural.css is enforceable, so enforce it.
 
-site/symoneural.css carries a comment saying "EVERY font-size in this file references one
+frontend/site/css/symoneural.css carries a comment saying "EVERY font-size in this file references one
 of these seven. Adding an eighth here, or writing a raw px size anywhere below, defeats
 the point: the scale is meant to be enforceable, and it is checked by re-running the type
 audit and counting the distinct sizes the DOM reports."
@@ -27,7 +27,7 @@ import re
 import pytest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-CSS = ROOT / "site" / "symoneural.css"
+CSS = ROOT / "frontend" / "site" / "css" / "symoneural.css"
 
 # `var(--t3)`, optionally `!important`.
 TOKEN = re.compile(r"^var\(--t[1-7]\)(\s*!important)?$")

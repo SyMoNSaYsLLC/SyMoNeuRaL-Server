@@ -69,7 +69,7 @@ ENV_NAME = re.compile(r"[A-Z][A-Z0-9_]*")
 # the scan then found no gates and the suite went green over an unexamined codebase.
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = REPO / "backend"
-# backend/apps/ was flattened into per-component directories on 2026-09-11. This pointed
+# backend/ was flattened into per-component directories on 2026-09-11. This pointed
 # at the vanished path and walked an empty tree, so every check below passed over nothing
 # while cryptominer and asicminer were still refusing callers. Walk backend/ itself.
 
@@ -153,7 +153,7 @@ class TokenOkAcceptsEverything(unittest.TestCase):
         went red for the right reason on 2026-09-11 when the last one went.
 
         Kept non-vacuous by the walk assertion: if `_source_files()` ever returns nothing --
-        which is exactly what happened when `backend/apps/` was flattened and this file kept
+        which is exactly what happened when `backend/` was flattened and this file kept
         pointing at it -- an empty gate list is not evidence of anything.
         """
         self.assertGreater(len(_source_files()), 100,

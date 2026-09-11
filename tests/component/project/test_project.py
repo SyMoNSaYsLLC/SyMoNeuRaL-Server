@@ -85,7 +85,7 @@ class Base(unittest.TestCase):
         (self.root / "site").mkdir(parents=True)
         (self.root / "docs").mkdir()
         (self.root / "training" / "adapter").mkdir(parents=True)
-        (self.root / "site" / "index.html").write_text("<h1>hi</h1>\n")
+        (self.root / "frontend" / "site" / "pages" / "index.html").write_text("<h1>hi</h1>\n")
         (self.root / "docs" / "manual.md").write_text("publishable\n")
         # A stand-in for the real corpus. Never the real one -- this test file must not be
         # able to read the trade secret even if every guard in the module were removed.
@@ -187,9 +187,9 @@ class TestPathContainment(Base):
 
     def test_an_absolute_path_inside_the_root_is_accepted_and_stored_relative(self):
         p = self.mkproject()
-        r = store.link_file(p["id"], str(self.root / "site" / "index.html"))
+        r = store.link_file(p["id"], str(self.root / "frontend" / "site" / "pages" / "index.html"))
         self.assertTrue(r["ok"], r)
-        self.assertEqual(r["file"]["path"], "site/index.html")
+        self.assertEqual(r["file"]["path"], "frontend/site/pages/index.html")
 
     def test_a_symlink_whose_target_escapes_is_rejected(self):
         p = self.mkproject()
@@ -267,7 +267,7 @@ class TestTradeSecret(Base):
     def test_no_endpoint_returns_file_contents(self):
         """This surface references files; it never holds or serves a copy."""
         p = self.mkproject()
-        store.link_file(p["id"], "site/index.html")
+        store.link_file(p["id"], "frontend/site/pages/index.html")
         r = store.list_files(p["id"])
         blob = repr(r)
         self.assertNotIn("<h1>hi</h1>", blob)
@@ -591,7 +591,7 @@ class TestRackUnit(Base):
             self.assertIn(routes.status()["state"], ("ready", "busy", "queued", "offline"))
 
     def test_the_bus_is_cpu_and_not_a_fifth_invented_value(self):
-        """`site/console.js` prints `--` for a bus it does not recognise."""
+        """`frontend/site/js/console.js` prints `--` for a bus it does not recognise."""
         self.assertEqual(routes.status()["bus"], "cpu")
         self.assertIn(routes.status()["bus"], ("gpu", "cpu", "asic", "net"))
 
@@ -651,8 +651,8 @@ class TestRackUnit(Base):
             self.assertNotIn(str(n + 1), routes.status()["detail"])
 
     def test_the_href_points_at_a_page_that_is_not_a_404(self):
-        """`deploy.sh`'s reference check can fail the build; site/project.html does not exist."""
-        site = store.ROOT / "site"
+        """`deploy.sh`'s reference check can fail the build; frontend/site/pages/project.html does not exist."""
+        site = store.ROOT / "frontend" / "site"
         href = routes.status()["href"].lstrip("/")
         if site.is_dir():
             self.assertTrue((site / href).is_file(),
@@ -725,7 +725,7 @@ class TestReadings(Base):
         store.create_item(p["id"], "b")
         store.update_item(store.list_items(p["id"])["items"][0]["id"], state="done")
         store.add_event(p["id"], "note", "x")
-        store.link_file(p["id"], "site/index.html")
+        store.link_file(p["id"], "frontend/site/pages/index.html")
         r = store.readings()
         self.assertEqual((r["projects"], r["items"], r["items_open"], r["events"],
                           r["files"]), (1, 2, 1, 1, 1))
@@ -864,7 +864,7 @@ class TestRoutes(Base):
         """`X-Sym-Token` is the name this credential had until the rename, and `_deny` still
         reads it. Presented ALONE, deliberately: sending both names passes with the fallback
         deleted, so a test that did that would pin nothing. The reason the fallback exists is
-        that the sender is cached JavaScript -- `site/project.html` holds the fetch -- and
+        that the sender is cached JavaScript -- `frontend/site/pages/project.html` holds the fetch -- and
         `site/` is deployed by a different command from the API restart, so a browser can be
         presenting the old name while its token is perfectly good.
         """
@@ -912,10 +912,10 @@ class TestRoutes(Base):
         self.client.post(f"/api/project/{pid}/events", headers=self.auth,
                          json={"kind": "session", "text": "added the unit"})
         self.client.post(f"/api/project/{pid}/files", headers=self.auth,
-                         json={"path": "site/index.html"})
+                         json={"path": "frontend/site/pages/index.html"})
         got = self.client.get(f"/api/project/{pid}", headers=self.auth).json()
         self.assertEqual(len(got["items"]), 1)
-        self.assertEqual(got["files"][0]["path"], "site/index.html")
+        self.assertEqual(got["files"][0]["path"], "frontend/site/pages/index.html")
         self.assertEqual(got["events"], 1)
         done = self.client.patch(f"/api/project/{pid}/items/{iid}", headers=self.auth,
                                  json={"state": "done",

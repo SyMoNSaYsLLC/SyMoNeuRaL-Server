@@ -241,7 +241,7 @@ class TheRackAdmitsWhenASurfaceIsGone(unittest.TestCase):
 
 
 class TheRackPageDoesNotRenderADeadSurfaceAsPowered(unittest.TestCase):
-    """`site/console.js` must never light a plate for a state it does not know.
+    """`frontend/site/js/console.js` must never light a plate for a state it does not know.
 
     This is the display half of `unreachable`, and it was missed once. The API gained the
     fifth state and `leds()` still read `state === 'offline' ? dark : lit` -- an allow-list of
@@ -255,7 +255,7 @@ class TheRackPageDoesNotRenderADeadSurfaceAsPowered(unittest.TestCase):
     file, and the assertion error was misattributed to a different edit in the same script.
     """
 
-    CONSOLE = ROOT / "site" / "console.js"
+    CONSOLE = ROOT / "frontend" / "site" / "js" / "console.js"
 
     @staticmethod
     def _node() -> str | None:
@@ -271,7 +271,7 @@ class TheRackPageDoesNotRenderADeadSurfaceAsPowered(unittest.TestCase):
             a = src.index("  var LIVE = {")
             b = src.index("function powered(state) { return !!LIVE[state]; }") + 49
         except ValueError:
-            self.fail("site/console.js has no LIVE/powered() predicate -- the rack would fall "
+            self.fail("frontend/site/js/console.js has no LIVE/powered() predicate -- the rack would fall "
                       "through to lit for any unrecognised state")
         harness = src[a:b] + """
 const out = {};
@@ -311,7 +311,7 @@ console.log(JSON.stringify(out));
 
 
 class TheUnitTemplate(unittest.TestCase):
-    TEMPLATE = ROOT / "ops" / "symoneural-surface@.service"
+    TEMPLATE = ROOT / "ops" / "units" / "symoneural-surface@.service"
 
     def test_it_exists_and_is_a_template(self):
         self.assertTrue(self.TEMPLATE.is_file())

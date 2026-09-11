@@ -134,6 +134,13 @@ def _diff(old: dict, new: dict) -> dict:
     if gpu_delta:
         out["gpu"] = gpu_delta
     return out
+# The cache lives with the only thing that writes it. It was declared in server.py
+# and reached across from here, so every poll raised NameError -- the rows never
+# warmed and every delegated surface read as unknown.
+#: surface -> (row, monotonic fetched_at, error or None). Absent means never yet polled.
+_delegated_rows: dict[str, tuple[dict | None, float, str | None]] = {}
+
+
 async def poll_delegated() -> None:
     """Keep `_delegated_rows` warm for every surface another process owns."""
     while True:

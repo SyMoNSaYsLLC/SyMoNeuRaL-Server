@@ -19,7 +19,7 @@ turns into a no-op when a fetch fails is worse than no test. The reading it comp
 is the one `ops/registry/MAINTENANCE-SURFACES.md` was written from, and refreshing it is a
 deliberate edit in both places.
 
-**One list, two files, asserted equal.** The list lives in `site/ui.js` because that is what
+**One list, two files, asserted equal.** The list lives in `frontend/site/js/ui.js` because that is what
 the browser executes, and in `ops/registry/MAINTENANCE-SURFACES.md` because that is where the
 reason for each entry is written down. `test_list_matches_the_document` is what stops those
 two from drifting -- which they would, because taking a surface off maintenance is exactly the
@@ -32,9 +32,9 @@ import re
 import unittest
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-UI_JS = REPO / "site" / "ui.js"
+UI_JS = REPO / "frontend" / "site" / "js" / "ui.js"
 DOC = REPO / "ops" / "registry" / "MAINTENANCE-SURFACES.md"
-SITE = REPO / "site"
+SITE = REPO / "frontend" / "site"
 
 #: The rack reading `ops/registry/MAINTENANCE-SURFACES.md` was written from, read from
 #: `GET /api/status` at 08:23 EDT on 2026-08-26 and pasted here rather than fetched. Frozen on
@@ -59,7 +59,7 @@ DISPATCH_PATHS = {"/demo/dispatchos", "/share-dispatchos.html"}
 
 
 def ui_js_list() -> list[str]:
-    """The DOWN array out of `site/ui.js`, parsed rather than grepped.
+    """The DOWN array out of `frontend/site/js/ui.js`, parsed rather than grepped.
 
     Parsed because a substring search over a 400-line file cannot tell an entry in the array
     from the same path mentioned in a comment three lines above it -- and this file's comments
@@ -67,7 +67,7 @@ def ui_js_list() -> list[str]:
     """
     src = UI_JS.read_text(encoding="utf-8")
     m = re.search(r"var\s+DOWN\s*=\s*\[(.*?)\]", src, re.S)
-    assert m, "site/ui.js no longer declares a DOWN array; the banner block was removed or renamed"
+    assert m, "frontend/site/js/ui.js no longer declares a DOWN array; the banner block was removed or renamed"
     return re.findall(r"'([^']+)'", m.group(1))
 
 
@@ -105,7 +105,7 @@ class MaintenanceBannerTests(unittest.TestCase):
         in_doc = {bare(p) for p in doc_list()}
         self.assertEqual(
             in_js, in_doc,
-            "site/ui.js and ops/registry/MAINTENANCE-SURFACES.md disagree about which surfaces "
+            "frontend/site/js/ui.js and ops/registry/MAINTENANCE-SURFACES.md disagree about which surfaces "
             "are down. Only in ui.js: %s. Only in the document: %s."
             % (sorted(in_js - in_doc), sorted(in_doc - in_js)))
 

@@ -23,7 +23,7 @@ import re
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-UNIT = ROOT / "ops" / "symoneural-gateway.service"
+UNIT = ROOT / "ops" / "units" / "symoneural-gateway.service"
 INSTALLER = ROOT / "scripts" / "install-gateway.sh"
 
 
@@ -88,7 +88,7 @@ class GatewayUnitPathTests(unittest.TestCase):
             "another. Both files can be individually plausible while the box serves the "
             "binary neither of them describes -- which is the 2026-08-26 state.")
 
-        cargo = (ROOT / "backend" / "apps" / "gateway" / "Cargo.toml").read_text()
+        cargo = (ROOT / "backend" / "gateway" / "Cargo.toml").read_text()
         bin_section = re.search(r"^\[\[bin\]\](.*?)(?=^\[|\Z)", cargo, re.M | re.S)
         self.assertIsNotNone(bin_section, "the gateway crate declares no [[bin]] section")
         bin_name = re.search(r'^\s*name = "([^"]+)"', bin_section.group(1), re.M)

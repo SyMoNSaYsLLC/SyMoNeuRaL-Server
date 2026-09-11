@@ -364,7 +364,7 @@ def collect() -> dict:
     # first-party binaries, deploy is deployment configuration. Un-enumerated is not the
     # same as unclassified, and reporting the first as the second invents a problem.
     d["FIRST_PARTY_SOURCE_BYTES"] = _sum_paths([
-        ROOT / "backend", ROOT / "site", ROOT / "web", ROOT / "ops", ROOT / "scripts",
+        ROOT / "backend", ROOT / "frontend" / "site", ROOT / "web", ROOT / "ops", ROOT / "scripts",
         ROOT / "tools", ROOT / "restore", ROOT / "ops" / "registry", ROOT / "desktop-client",
         ROOT / "bin", ROOT / "deploy", ROOT / "review", ROOT / "brand"])
     d["CANONICAL_RUNTIME_BYTES"] = _sum_paths([

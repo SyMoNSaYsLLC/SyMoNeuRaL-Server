@@ -59,8 +59,8 @@ EXPECTED = ["chat", "image", "remix", "ravencalc", "miner", "streamer", "coder",
 #: plugins in the code, so the rows were claiming two plugins of one application were
 #: independent runtimes standing beside their own parent. Same rule as `gateway`: the id is
 #: unchanged, `/reinforce.html` and `/exp` still answer, and this map is what asserts the
-#: reading survived rather than the surface being quietly deleted -- `site/reinforce.html`
-#: and `site/exp.html` read their own state out of `/api/status`, so a child that stopped
+#: reading survived rather than the surface being quietly deleted -- `frontend/site/pages/reinforce.html`
+#: and `frontend/site/pages/exp.html` read their own state out of `/api/status`, so a child that stopped
 #: being reported anywhere would make both pages read "not present" to every visitor.
 FOLDED = {"gateway": "miner", "guide": "streamer", "train": "studio", "exp": "studio"}
 
@@ -69,13 +69,13 @@ FOLDED = {"gateway": "miner", "guide": "streamer", "train": "studio", "exp": "st
 #: single entry, `{"streamer": "tuner"}`: `apps/tuner` and `apps/guide` had been merged into
 #: `apps/streamer` (Garrett: "you need to migrate tuner and guide to be 1") while the merged
 #: package went on publishing `id="tuner"`, on the reasoning that the id reaches
-#: `site/console.js` and the page, so renaming the row would be a visitor-facing change made
+#: `frontend/site/js/console.js` and the page, so renaming the row would be a visitor-facing change made
 #: for an internal reason.
 #:
 #: That reasoning was overtaken by the instruction, not refuted by it: Garrett then said "i
 #: said tuner and guide needed to be merged and migrated to streamer" -- the migration is the
 #: namespace and the visitor-facing surfaces, not just the Python package. So the row is
-#: `streamer`, the page is `site/streamer.html`, and module name and row id agree again. A map
+#: `streamer`, the page is `frontend/site/pages/streamer.html`, and module name and row id agree again. A map
 #: that exists to preserve a retired name is a place for the next one to hide, which is why it
 #: is deleted rather than emptied. Read the id from `apps/streamer/routes.py::status()`.
 

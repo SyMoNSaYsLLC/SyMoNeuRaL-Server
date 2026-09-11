@@ -34,7 +34,7 @@ import sys
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-SITE = ROOT / "site"
+SITE = ROOT / "frontend" / "site"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import page_families  # noqa: E402
@@ -92,7 +92,7 @@ class TheFamilyIsInTheMarkup(unittest.TestCase):
     def test_every_page_carries_the_family_its_authored_map_gives_it(self):
         """The 224px defect, asserted statically.
 
-        Before 6.2 the family was set by `site/shell.js`, so with scripting off 14 pages fell
+        Before 6.2 the family was set by `frontend/site/js/shell.js`, so with scripting off 14 pages fell
         back to the 1120px prose width -- measured 1120 against 1344 at a 1440px viewport. The
         attribute is now in the markup, and this compares the markup against the one authored
         map rather than against a second copy of it.

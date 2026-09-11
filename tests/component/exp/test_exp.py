@@ -1284,7 +1284,7 @@ class PageTests(unittest.TestCase):
         self.assertIn(build_exp.SCRIPT_TAG, stripped)
 
     def test_the_built_page_is_the_generators_output_with_stamps_added(self):
-        """`site/exp.html` must be `tools/build/build_exp.py`'s output plus cache-bust stamps.
+        """`frontend/site/pages/exp.html` must be `tools/build/build_exp.py`'s output plus cache-bust stamps.
 
         The generator emits plain `href="/symoneural.css"`; `tools/build/build_cachebust.py` rewrites
         those to `?v=<hash>`. So a bare generator run leaves the page destamped and the diff reads
@@ -1297,9 +1297,9 @@ class PageTests(unittest.TestCase):
         from unittest import mock
 
         root = ROOT
-        built = root / "site" / "exp.html"
+        built = root / "frontend" / "site" / "pages" / "exp.html"
         if not built.is_file():
-            self.skipTest("site/exp.html not generated in this checkout")
+            self.skipTest("frontend/site/pages/exp.html not generated in this checkout")
         sys.path.insert(0, str(root / "tools"))
         try:
             import build_exp
@@ -1314,13 +1314,13 @@ class PageTests(unittest.TestCase):
             generated = (tmp / "exp.html").read_text()
             generated_js = (tmp / "exp.js").read_text()
         self.assertEqual(re.sub(r"\?v=[0-9a-f]+", "", shipped), generated,
-                         "site/exp.html is not build_exp.py's output; regenerate it")
+                         "frontend/site/pages/exp.html is not build_exp.py's output; regenerate it")
         self.assertTrue(re.findall(r"\?v=[0-9a-f]+", shipped),
-                        "site/exp.html carries no ?v= stamps -- a generator ran without "
+                        "frontend/site/pages/exp.html carries no ?v= stamps -- a generator ran without "
                         "`python3 tools/build/build_cachebust.py` after it, so its CSS and JS are "
                         "cacheable for a week with no way to invalidate them")
-        self.assertEqual((root / "site" / "exp.js").read_text(), generated_js,
-                         "site/exp.js is not a copy of this app's page.js")
+        self.assertEqual((root / "frontend" / "site" / "js" / "exp.js").read_text(), generated_js,
+                         "frontend/site/js/exp.js is not a copy of this app's page.js")
 
     def test_the_page_names_no_legacy_env_var_to_the_operator(self):
         """The four strings an operator actually types, pinned as literals.
@@ -1338,7 +1338,7 @@ class PageTests(unittest.TestCase):
         cannot see it -- three correct occurrences elsewhere in the file satisfy a pairing
         rule. `SYM_EXP_` is not a substring of `SYMONEURAL_EXP_`, so this is unambiguous.
         `apps/test_credential_header.py::TheEnvNameTripwire` is the repo-wide net; this is the
-        per-occurrence one, and the byte-copy assertion above carries it to `site/exp.js`.
+        per-occurrence one, and the byte-copy assertion above carries it to `frontend/site/js/exp.js`.
         """
         self.assertNotIn("SYM_EXP_", self.js,
                          "page.js names a legacy SYM_EXP_* variable to the operator")

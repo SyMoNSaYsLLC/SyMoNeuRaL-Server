@@ -41,7 +41,7 @@ import unittest
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 DEPLOY = REPO / "scripts" / "deploy.sh"
 API = REPO / "backend" / "server.py"
-INDEX = REPO / "site" / "index.html"
+INDEX = REPO / "frontend" / "site" / "pages" / "index.html"
 
 
 def _is_route(ref: str) -> bool:
@@ -170,7 +170,7 @@ def _livestack_names() -> list[str]:
 def _linked_extensionless() -> set[str]:
     r"""Extensionless local hrefs on the front page -- what the check would actually look up.
 
-    Multi-segment for the same reason as above: `site/index.html` links `/livestack/live`, and
+    Multi-segment for the same reason as above: `frontend/site/pages/index.html` links `/livestack/live`, and
     with `[\w-]*` this returned `livestack` only, so the link the deploy actually chokes on
     was invisible on both sides of the comparison.
     """
@@ -199,7 +199,7 @@ class ReferenceCheckTests(unittest.TestCase):
                       "api.py serves /livestack/live but the parser did not find it -- the "
                       "route regex is back to matching a single path segment")
         self.assertIn("livestack/live", _linked_extensionless(),
-                      "site/index.html links /livestack/live but the href regex did not "
+                      "frontend/site/pages/index.html links /livestack/live but the href regex did not "
                       "find it")
 
     def test_studio_and_exp_are_not_reported_missing(self):
@@ -336,7 +336,7 @@ class ReferenceCheckTests(unittest.TestCase):
             "the tile must link /livestack/<name> -- that is the whole of the 2026-08-22 "
             "decision."))
 
-        site = REPO / "site"
+        site = REPO / "frontend" / "site"
         offenders = sorted(
             f"{p.name}:{m}"
             for p in list(site.glob("*.html")) + list(site.glob("*.js"))
@@ -353,7 +353,7 @@ class ReferenceCheckTests(unittest.TestCase):
                          if not _is_route(r))
         self.assertEqual(unknown, [], (
             f"scripts/deploy.sh reports {unknown} as MISSING files, but api.py serves them as "
-            "routes and site/index.html links them. The next deploy will exit non-zero for a "
+            "routes and frontend/site/pages/index.html links them. The next deploy will exit non-zero for a "
             "page that works. Add them to is_route()."))
 
     def test_the_allowlist_does_not_swallow_real_files(self):

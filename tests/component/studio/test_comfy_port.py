@@ -40,7 +40,7 @@ import re
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-BRIDGE = ROOT / "backend" / "apps" / "studio" / "comfy.py"
+BRIDGE = ROOT / "backend" / "studio" / "comfy.py"
 LAUNCHER = ROOT / "scripts" / "symoneural-ui.sh"
 
 # The variable both sides must read. `comfy.py` reads it directly; `symoneural-ui.sh` reads it first
@@ -152,7 +152,7 @@ class ComfyPortAgreementTests(unittest.TestCase):
 # the constant, which is the half of the rename that is easy to remember; the half
 # that gets forgotten is the mount two thousand lines away in `api.py`.
 API = ROOT / "backend" / "server.py"
-GATE = ROOT / "backend" / "apps" / "studio" / "gate.py"
+GATE = ROOT / "backend" / "studio" / "gate.py"
 
 #: What the editor's URL prefix may not contain. This is task #74 item 2's standard --
 #: the upstream name must not appear in a URL a visitor sees -- enforced here rather

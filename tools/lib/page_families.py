@@ -2,18 +2,18 @@
 
 A page's family decides how much width its layout is given: `--max` is 1120px for prose and
 wider for a dashboard, a workspace or a workbench. Handshake 6.1 established the families by
-measurement and set them from `site/shell.js`; 6.2 moves the authority into static markup so
+measurement and set them from `frontend/site/js/shell.js`; 6.2 moves the authority into static markup so
 the layout does not depend on JavaScript having run.
 
 ## Why this is a module and not a map in each place that needs one
 
 The families were about to exist in four places at once -- the generators that emit the
-markup, the hand-authored pages that carry it, `site/shell.js`, and the test that checks it.
+markup, the hand-authored pages that carry it, `frontend/site/js/shell.js`, and the test that checks it.
 Four hand-maintained copies of one fact is the failure `backend/ROSTER.md` was written
 about, arriving in the frontend.
 
 So: this file is the authored source. The generators IMPORT it and emit `data-family` from it.
-`site/shell.js` no longer carries a map at all -- it reads the static attribute and only
+`frontend/site/js/shell.js` no longer carries a map at all -- it reads the static attribute and only
 supplies a fallback when one is genuinely absent. The test READS this map and verifies the
 rendered pages agree with it, rather than restating the pairs a second time.
 
@@ -32,13 +32,13 @@ deliberate and is the substance of the rule rather than an omission: `index`, `a
 easier. A map whose default was "wider" would have widened them by forgetting them.
 
 `streamer-watch.html` is also deliberately absent: it has no site header at all, which is why
-`site/shell.js` returns early on it.
+`frontend/site/js/shell.js` returns early on it.
 """
 
 from __future__ import annotations
 
 #: page filename (as written into `site/`) -> family. The keys are FILENAMES, not routes,
-#: because that is what a generator knows about the file it is writing. `site/shell.js` maps
+#: because that is what a generator knows about the file it is writing. `frontend/site/js/shell.js` maps
 #: routes to the same families for the pages that also answer at an extensionless address.
 FAMILIES: dict[str, str] = {
     # ---- workbench: input, settings, output canvas ------------------------------------
@@ -75,7 +75,7 @@ NO_FAMILY: dict[str, str] = {
     "credits.html": "prose; long attribution lists read better at a bounded measure",
     "build.html": "prose",
     "training.html": "the manual; already carries its own <main> and is not a shell page",
-    "streamer-watch.html": "no site header at all; site/shell.js returns early on it",
+    "streamer-watch.html": "no site header at all; frontend/site/js/shell.js returns early on it",
     "share-dispatchos.html": "no site header; served behind the door",
 }
 

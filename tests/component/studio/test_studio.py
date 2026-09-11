@@ -562,7 +562,7 @@ class PageTests(unittest.TestCase):
         return (tmp / "studio.html").read_text(), (tmp / "studio.js").read_text()
 
     def test_the_built_page_is_this_generators_output_with_stamps_added(self):
-        """`site/studio.html` must be this generator's output plus cache-bust stamps.
+        """`frontend/site/pages/studio.html` must be this generator's output plus cache-bust stamps.
 
         The generator emits plain `href="/symoneural.css"`; `tools/build/build_cachebust.py` rewrites
         those to `?v=<hash>` so a week-old cached stylesheet can never be served against new
@@ -571,27 +571,27 @@ class PageTests(unittest.TestCase):
         leaves behind, which `.claude/CLAUDE.md` records happening to seven pages at once --
         fails here with the stamp count it is missing rather than shipping.
         """
-        built = ROOT / "site" / "studio.html"
+        built = ROOT / "frontend" / "site" / "pages" / "studio.html"
         if not built.is_file():
-            self.skipTest("site/studio.html not generated in this checkout")
+            self.skipTest("frontend/site/pages/studio.html not generated in this checkout")
         shipped = built.read_text()
         with tempfile.TemporaryDirectory() as td:
             html, js = self._regenerate(pathlib.Path(td))
         stamps = re.findall(r"\?v=[0-9a-f]+", shipped)
         self.assertEqual(re.sub(r"\?v=[0-9a-f]+", "", shipped), html,
-                         "site/studio.html is not build_studio.py's output; regenerate it")
+                         "frontend/site/pages/studio.html is not build_studio.py's output; regenerate it")
         self.assertTrue(stamps,
-                        "site/studio.html carries no ?v= stamps -- a generator was run without "
+                        "frontend/site/pages/studio.html carries no ?v= stamps -- a generator was run without "
                         "`python3 tools/build/build_cachebust.py` afterwards, so its CSS and JS are "
                         "cacheable for a week with no way to invalidate them")
-        shipped_js = ROOT / "site" / "studio.js"
+        shipped_js = ROOT / "frontend" / "site" / "js" / "studio.js"
         self.assertEqual(shipped_js.read_text(), js,
-                         "site/studio.js is not a copy of the app's page.js")
+                         "frontend/site/js/studio.js is not a copy of the app's page.js")
 
     def test_the_built_page_kept_the_id_its_stylesheet_hangs_off(self):
-        built = ROOT / "site" / "studio.html"
+        built = ROOT / "frontend" / "site" / "pages" / "studio.html"
         if not built.is_file():
-            self.skipTest("site/studio.html not generated in this checkout")
+            self.skipTest("frontend/site/pages/studio.html not generated in this checkout")
         html = built.read_text()
         self.assertIn('id="studio"', html)
         self.assertNotIn('class="wrap">\n      <div class="wrap"', html)

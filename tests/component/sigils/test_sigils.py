@@ -442,7 +442,7 @@ class TestMountedAndMetered(unittest.TestCase):
     def test_the_surface_is_mounted(self):
         """The defect this whole surface shipped with.
 
-        `site/sigils.html` was live and reachable while api.py contained no occurrence of
+        `frontend/site/pages/sigils.html` was live and reachable while api.py contained no occurrence of
         the string 'sigil' anywhere in it, so every route the page called answered 404. The
         page looked finished; nothing behind it was connected.
         """
