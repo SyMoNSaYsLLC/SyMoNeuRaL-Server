@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# GitHub MCP server, launched for Claude Code over stdio.
+#
+# The binary ships inside the Claude Desktop package. We do not copy it: a copy
+# would go stale the next time that package updates, and silently, because a
+# stripped Go binary gives no version to compare. We exec the packaged one and
+# fail loudly if the package moves.
+#
+# The credential is read from the gh keyring at launch and never written to a
+# config file. `claude mcp add --env GITHUB_PERSONAL_ACCESS_TOKEN=...` would put
+# a live token in ~/.claude.json in plain text; this keeps it in the keyring,
+# where `gh auth login` put it, and out of every file this repo can leak.
+set -euo pipefail
+
+BIN=/usr/lib/claude-desktop/resources/app.asar.unpacked/resources/github-mcp/github-mcp-server
+
+if [[ ! -x "$BIN" ]]; then
+  echo "symoneural-github-mcp: $BIN is missing or not executable." >&2
+  echo "  It ships with the claude-desktop package. Reinstall it, or point BIN" >&2
+  echo "  at another build of github-mcp-server." >&2
+  exit 127
+fi
+
+if ! token=$(gh auth token 2>/dev/null) || [[ -z "$token" ]]; then
+  echo "symoneural-github-mcp: no GitHub token in the gh keyring." >&2
+  echo "  Run: gh auth login" >&2
+  exit 78   # EX_CONFIG
+fi
+
+# --read-only until the owner asks otherwise: an MCP server that can push, merge
+# and delete is not something to switch on by default. Drop the flag to write.
+#
+# The server runs behind fill_result_type.py because 1.6.0 omits the resultType
+# field that protocol revision 2026-07-28 requires, while echoing back that very
+# revision -- so the client will not apply its compatibility bridge and rejects
+# the tool list. See that file for the measurement. Remove the shim when upstream
+# starts sending the field; the shim leaves an existing one alone, so removing it
+# is not urgent.
+export GITHUB_PERSONAL_ACCESS_TOKEN="$token"
+HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+exec "$HERE/../tools/mcp/fill_result_type.py" -- \
+     "$BIN" stdio --read-only "$@"
