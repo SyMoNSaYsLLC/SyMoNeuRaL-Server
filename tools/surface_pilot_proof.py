@@ -47,7 +47,7 @@ SCRATCH_API_PORT = 8899          # never 8800: production keeps serving througho
 SURFACE = "ravencalc"
 
 sys.path.insert(0, str(BACKEND))
-from registry.ports import port_of                                  # noqa: E402
+from registry.lib.ports import port_of                                  # noqa: E402
 
 SURFACE_PORT = port_of(SURFACE)
 

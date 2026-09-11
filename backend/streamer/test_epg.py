@@ -18,9 +18,9 @@ import unittest
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import epg
-from .safefetch import Policy
-from .xtream import XtreamCreds
+from .lib import epg
+from .lib.safefetch import Policy
+from .lib.xtream import XtreamCreds
 
 B64 = lambda s: base64.b64encode(s.encode()).decode()          # noqa: E731 - readability here
 

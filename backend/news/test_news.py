@@ -19,8 +19,11 @@ import time
 
 import pytest
 
-from . import collect, feeds, fetch, rank
-from .parse import Item, clean, parse_feed
+from .apps import collect
+from .apps import feeds
+from .lib import fetch
+from .apps import rank
+from .apps.parse import Item, clean, parse_feed
 
 HERE = pathlib.Path(__file__).resolve().parent
 

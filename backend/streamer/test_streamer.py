@@ -35,8 +35,8 @@ import urllib.parse
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
-from streamer import m3u, routes, safefetch, sessions, xtream          # noqa: E402
-from streamer.safefetch import BlockedURL, Policy, Scrubber            # noqa: E402
+from streamer.apps import m3u, routes, safefetch, sessions, xtream          # noqa: E402
+from streamer.lib.safefetch import BlockedURL, Policy, Scrubber            # noqa: E402
 
 SENTINEL_USER = "zz-streamer-test-user-zz"
 SENTINEL_PASS = "Hunter2-CorrectHorseBatteryStaple-9times"
@@ -248,7 +248,7 @@ class TestValidateUrl(unittest.TestCase):
         out = subprocess.run(
             [sys.executable, "-c",
              "import sys; sys.path.insert(0, %r)\n"
-             "from streamer.safefetch import Policy\n"
+             "from streamer.lib.safefetch import Policy\n"
              "print(Policy().allow_private)"
              % str(pathlib.Path(__file__).resolve().parents[1])],
             capture_output=True, text=True, timeout=60, env=env)
@@ -1007,7 +1007,7 @@ class TestUserAgent(unittest.TestCase):
         out = subprocess.run(
             [sys.executable, "-c",
              "import sys; sys.path.insert(0, %r)\n"
-             "from streamer.safefetch import Policy\n"
+             "from streamer.lib.safefetch import Policy\n"
              "print(Policy().user_agent)"
              % str(pathlib.Path(__file__).resolve().parents[1])],
             capture_output=True, text=True, timeout=60, env=env)

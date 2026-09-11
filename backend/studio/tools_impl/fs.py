@@ -23,8 +23,8 @@ import signal
 import subprocess
 import threading
 
-from .. import workspace
-from ..registry import tool
+from ..lib import workspace
+from ..lib.registry import tool
 
 # Reading a whole 125 KB api.py into a 7B model's context is a legitimate thing to want and
 # an easy way to blow the window by accident. The cap is a default, not a ceiling -- the

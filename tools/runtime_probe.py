@@ -61,7 +61,7 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from registry import runtimes  # noqa: E402
+from registry.lib import runtimes  # noqa: E402
 
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 
@@ -776,7 +776,7 @@ def probe_ravencalc() -> None:
     if not svc.is_file():
         record("symoneural-ravencalc", "own-uvicorn", SKIP, "service absent")
         return
-    from registry import ports
+    from registry.lib import ports
     port = ports.port_of("ravencalc")
     if port is None:
         record("symoneural-ravencalc", "own-uvicorn", SKIP, "no port in ops/PORTS.tsv")

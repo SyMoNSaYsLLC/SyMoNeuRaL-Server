@@ -55,7 +55,7 @@ def _fresh_app_store(tmp: pathlib.Path):
     """A temporary application store, switched on, with the surface enabled."""
     os.environ["SYMONEURAL_DISPATCHOS_ENABLED"] = "1"
     os.environ["SYMONEURAL_DISPATCHOS_DB"] = str(tmp / "app.db")
-    from dispatchos import store
+    from dispatchos.lib import store
     importlib.reload(store)
     store.init_db()
     return store
@@ -65,7 +65,7 @@ class RouteClassMatrixTests(unittest.TestCase):
     """T1 -- every pair carries exactly its assigned class, enumerated."""
 
     def setUp(self):
-        from dispatchos import authz, routes
+        from dispatchos.apps import authz, routes
         self.authz, self.routes = authz, routes
 
     def _declared(self) -> dict[tuple[str, str], str]:
@@ -170,7 +170,7 @@ class MigrationIdempotenceTests(unittest.TestCase):
             c.commit()
 
             os.environ["SYMONEURAL_DISPATCHOS_DB"] = str(db)
-            from dispatchos import store
+            from dispatchos.lib import store
             importlib.reload(store)
 
             with sqlite3.connect(db) as conn:
@@ -199,7 +199,7 @@ class FailClosedTests(unittest.TestCase):
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp(prefix="a3-fc-"))
         self.store = _fresh_app_store(self.tmp)
-        from dispatchos import authz
+        from dispatchos.apps import authz
         self.authz = authz
 
     def tearDown(self):
@@ -261,7 +261,7 @@ class ExemptionTests(unittest.TestCase):
     """T6-T9 -- the four exemptions stay reachable, entitlement never consulted."""
 
     def setUp(self):
-        from dispatchos import authz
+        from dispatchos.apps import authz
         self.authz = authz
 
     def test_t6_t7_t8_exempt_classes_do_no_checks(self):

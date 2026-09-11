@@ -42,7 +42,7 @@ def _find_root(start: pathlib.Path) -> pathlib.Path:
 ROOT = _find_root(pathlib.Path(__file__).resolve())
 sys.path.insert(0, str(ROOT / "backend"))
 
-from registry import appdocs                                            # noqa: E402
+from registry.lib import appdocs                                            # noqa: E402
 
 #: Read from the registry, NOT duplicated here. A copy of this set in the test would be a
 #: second source of truth, and the first thing it would do is drift -- which is the whole

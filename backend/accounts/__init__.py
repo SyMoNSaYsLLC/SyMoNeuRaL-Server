@@ -944,8 +944,8 @@ def unit_state() -> tuple[str, str]:
 #
 # `symoneural_dj` binds to these:
 #     from accounts import AccountsModule, InsufficientFunds, build_router
-from .meter import InsufficientFunds, Meter  # noqa: E402
-from .module import SESSION_COOKIE, AccountsModule, Identity, User  # noqa: E402
+from .lib.meter import InsufficientFunds, Meter  # noqa: E402
+from .lib.module import SESSION_COOKIE, AccountsModule, Identity, User  # noqa: E402
 
 
 def __getattr__(name):

@@ -15,7 +15,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from registry import ports  # noqa: E402
+from registry.lib import ports  # noqa: E402
 
 OUT = ROOT / "docs" / "ops" / "PORTS.md"
 

@@ -103,22 +103,22 @@ RUN.mkdir(exist_ok=True)
 # deliberately thin: `class GpuQueue` could not come with it, because it calls
 # `bus.announce()`, `push_rack()` and therefore `build_status()` -- the rack, which is
 # most of this file. That extraction is blocked behind the rack's, not behind gpu.py.
-# `record_engine` by NAME, not `from hardware import gpu`: this file already binds
+# `record_engine` by NAME, not `from hardware.lib import gpu`: this file already binds
 # `gpu = GpuQueue(QUEUE_DEPTH)` below, which SHADOWS the module -- so `gpu.record_engine`
 # resolved to the queue instance and would have raised AttributeError at the next engine
 # spawn. Import succeeded regardless, because nothing calls it at import time. Caught by
 # asking the imported module for the attribute rather than trusting that `import api` passing
 # meant the wiring was right.
-from hardware.gpu import record_engine
-from hardware import telemetry
-# Imported as a module, not `from hardware.modelmetrics import record_timings`, so the
+from hardware.lib.gpu import record_engine
+from hardware.lib import telemetry
+# Imported as a module, not `from hardware.lib.modelmetrics import record_timings`, so the
 # metrics buffer has one identity. `apps/gpu.md` records what the alternative cost.
-from hardware import modelmetrics  # noqa: E402
-from hardware import metricsroutes  # noqa: E402
-from runtime import runtimeconfig  # noqa: E402
+from hardware.lib import modelmetrics  # noqa: E402
+from hardware import router as metricsroutes  # noqa: E402
+from runtime.lib import runtimeconfig  # noqa: E402
 runtimeconfig.load()
 
-from runtime import symoneuralenv  # noqa: E402
+from runtime.lib import symoneuralenv  # noqa: E402
 symoneuralenv.promote()
 
 import asicminer  # noqa: E402
@@ -131,7 +131,7 @@ import licensing  # noqa: E402  -- contract keys and the dev-fee disclosure
 # The port registry. Nothing in this file names a surface port as a literal any more: which
 # surfaces run as their own process, and on which port, is `ops/PORTS.tsv`. See apps/ports.py
 # for why it refuses to report a surface delegated unless the registry also gives it a port.
-from registry import ports  # noqa: E402
+from registry.lib import ports  # noqa: E402
 import httpx  # noqa: E402  -- only for polling a delegated surface's /healthz; see poll_delegated
 
 import streamer  # noqa: E402  -- the IPTV surface AND the Guide that filters
@@ -209,7 +209,7 @@ import controlboard as rackpower  # noqa: E402  -- the per-unit power switch. Bo
 # because it is the only one that rewrites another surface's rack reading, and reading the
 # import list top to bottom should end at the thing that has the last word.
 
-from registry import appdocs  # noqa: E402  -- the per-application documentation registry and
+from registry.lib import appdocs  # noqa: E402  -- the per-application documentation registry and
 # renderer. Deliberately after every surface import above and deliberately importing none of
 # them: it holds no reference to a router, only to path PREFIXES, and reads the real route
 # table out of `app.routes` at request time. That is what keeps it from becoming a second
@@ -482,7 +482,7 @@ _RATE_SUGGESTED = {
 }
 
 
-from runtime.ratelimits import BUDGETS as _BUDGETS
+from runtime.lib.ratelimits import BUDGETS as _BUDGETS
 
 
 def _rate_for(surface: str) -> tuple[int, int]:
@@ -786,7 +786,7 @@ async def asic_refresher() -> None:
 # published cap from its own process, and the alternatives were to import this or to write a
 # second one -- and a second implementation of a published cap is the exact drift
 # `ratelimits.py` was created to end. The reasoning moved with the code.
-from runtime.ratelimits import (allowed as _allowed,  # noqa: E402
+from runtime.lib.ratelimits import (allowed as _allowed,  # noqa: E402
                              client_key_from_headers as _client_key_from_headers,
                              limiters_for as _limiters_for)
 
@@ -1182,7 +1182,7 @@ def extract_math(prompt: str) -> tuple[str, str, str] | None:
     prose, code and pasted logs fall out on their own.
     """
     try:
-        from ravencalc import ravencalc
+        from ravencalc.apps import ravencalc
     except ImportError:
         return None
 
@@ -1246,7 +1246,7 @@ def _parses(ravencalc, text: str) -> bool:
 
 
 def _compute_exact(operation: str, expression: str, variable: str) -> dict | None:
-    from ravencalc import ravencalc
+    from ravencalc.apps import ravencalc
     doc = {"schema": "ravencalc/request/v1", "operation": operation, "expression": expression}
     if operation in {"differentiate", "integrate", "limit", "series", "solve"}:
         doc["variable"] = variable
@@ -1545,7 +1545,7 @@ async def lifespan(_: FastAPI):
     if dispatchos.enabled():
         try:
             dispatchos.init_db()
-            log.info("dispatchos surface enabled; store at %s", dispatchos.store.db_path())
+            log.info("dispatchos surface enabled; store at %s", dispatchos.lib.store.db_path())
         except Exception:
             # A store that will not open is a reason for that surface to answer 503, not a
             # reason for the whole API to fail to start. `status()` reports it as offline.
@@ -1573,7 +1573,7 @@ async def lifespan(_: FastAPI):
                  if ports.delegated_surfaces() else None)
     if newsfeed:
         log.info("news surface enabled; %d sources, %d search engines, %.0fs interval",
-                 len(news.feeds.SOURCES), len(news.feeds.SEARCHES), news.interval_s())
+                 len(news.apps.feeds.SOURCES), len(news.apps.feeds.SEARCHES), news.interval_s())
     # The project store is created by `store.connect()`, which every write route goes
     # through -- but the rack poll uses `probe()`, read-only by design, so before this line
     # existed a fresh install reported "no project store initialised" until someone happened
@@ -1601,7 +1601,7 @@ async def lifespan(_: FastAPI):
         delegates.cancel()
     # Without this a reload leaks one ffmpeg per live stream: the sessions outlive the
     # process that spawned them and nothing else knows their pids.
-    streamer.sessions.MANAGER.shutdown()
+    streamer.lib.sessions.MANAGER.shutdown()
     # Closes the socket and cancels the reconnect loop. Without it a `--reload` cycle leaves
     # the old task backing off against an OBS the new process is also connecting to, which is
     # two clients holding one credential and a reconnect storm nobody can see from a log.
@@ -2908,7 +2908,7 @@ async def ws_calc(ws: WebSocket, msg: dict) -> None:
         await ws.send_text(json.dumps({"t": "error", "code": 422, "error": str(exc)[:300]}))
         return
     try:
-        from ravencalc import ravencalc
+        from ravencalc.apps import ravencalc
     except ImportError:
         await ws.send_text(json.dumps({"t": "error", "code": 503,
                                        "error": "RavenCalc is unavailable."}))
@@ -3189,7 +3189,7 @@ async def calc(body: CalcRequest,
     which is reported rather than rounded up to success.
     """
     try:
-        from ravencalc import ravencalc
+        from ravencalc.apps import ravencalc
     except ImportError:
         raise HTTPException(503, "RavenCalc is unavailable.")
 

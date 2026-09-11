@@ -43,7 +43,7 @@ def _repo_root() -> pathlib.Path:
 ROOT = _repo_root()
 sys.path.insert(0, str(ROOT / "backend"))
 
-from registry import ports, runtimes  # noqa: E402
+from registry.lib import ports, runtimes  # noqa: E402
 
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"
 
@@ -134,7 +134,7 @@ class SurfaceIsARealRackUnit(unittest.TestCase):
     """
 
     def test_every_surface_is_an_id_appdocs_declares(self):
-        from registry import appdocs
+        from registry.lib import appdocs
         ids = {a.id for a in appdocs.APPLICATIONS}
         self.assertIn("sigils", ids, "reading appdocs failed; this check would be vacuous")
         self.assertNotIn("sigil", ids, "if `sigil` ever becomes a real unit id, the "
@@ -165,7 +165,7 @@ class SurfaceIsARealRackUnit(unittest.TestCase):
         `main.py`, `training/.venv/bin/python`). Two different questions. This test pins the
         difference so nobody "fixes" one to match the other.
         """
-        from registry import appdocs
+        from registry.lib import appdocs
         by_id = {a.id: a.runtime for a in appdocs.APPLICATIONS}
         self.assertEqual("symoneural-studio", by_id["train"])
         self.assertEqual("training", runtimes.get("training", "train")["RUNTIME"])

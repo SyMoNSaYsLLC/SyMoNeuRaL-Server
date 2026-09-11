@@ -54,7 +54,7 @@ class SweepCoversEveryApplication(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from registry import appdocs
+        from registry.lib import appdocs
         cls.appdocs = appdocs
         cls.table = probe_apps.route_table()
         cls.paths = {r.path for r in cls.table}
@@ -64,7 +64,7 @@ class SweepCoversEveryApplication(unittest.TestCase):
         # string. A new application whose auth wording matches none of them would
         # fall through to "public" and be waved past the boundary probe, which is
         # the one outcome that must not happen silently.
-        from registry import appdocs
+        from registry.lib import appdocs
         part = probe_apps.partition(self.table)
         for app in appdocs.APPLICATIONS:
             for route in part["owned"][app.id]:
@@ -77,7 +77,7 @@ class SweepCoversEveryApplication(unittest.TestCase):
         # The specific silent failure: an auth string reworded so that neither
         # "loopback" nor "session cookie" nor "operator" appears in it, leaving a
         # credential-bearing surface probed as though nothing guards it.
-        from registry import appdocs
+        from registry.lib import appdocs
         part = probe_apps.partition(self.table)
         for app in appdocs.APPLICATIONS:
             if app.auth.lower().startswith("public"):

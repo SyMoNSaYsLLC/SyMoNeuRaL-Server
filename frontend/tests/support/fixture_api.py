@@ -57,7 +57,7 @@ def main() -> int:
     from fastapi import FastAPI
 
     import dispatchos
-    from dispatchos import store
+    from dispatchos.lib import store
 
     store.init_db()
     # `seed_demo_users` is not used: it only knows the four real account names, and seeding

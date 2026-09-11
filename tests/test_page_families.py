@@ -132,7 +132,7 @@ class TheDocumentationIndexIsGenerated(unittest.TestCase):
         checked, so an application added to the registry and not regenerated fails here rather
         than going missing from the index quietly."""
         sys.path.insert(0, str(ROOT / "backend"))
-        from registry import appdocs
+        from registry.lib import appdocs
         html = read("documentation.html")
         found = sorted(set(re.findall(r'href="/docs/([a-z]+)"', html)))
         self.assertEqual(found, sorted(a.id for a in appdocs.APPLICATIONS))

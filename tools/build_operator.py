@@ -108,7 +108,7 @@ def classify(method: str, path: str, lease: str) -> tuple[str, str]:
 
 
 def collect() -> dict:
-    from registry import appdocs                                   # noqa: PLC0415
+    from registry.lib import appdocs                                   # noqa: PLC0415
 
     # `fetch()` reads at most 400 bytes -- it exists to probe status codes, not to pull
     # documents -- so the schema comes through a full read. Trying to parse a truncated

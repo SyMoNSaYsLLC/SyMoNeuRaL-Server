@@ -24,7 +24,7 @@ class TheConsoleIsGenerated(unittest.TestCase):
 
     def test_every_application_appears(self):
         """Either as the owner of a route, or in the explicit no-route list."""
-        from registry import appdocs
+        from registry.lib import appdocs
         text = PAGE.read_text()
         for a in appdocs.APPLICATIONS:
             with self.subTest(app=a.id):

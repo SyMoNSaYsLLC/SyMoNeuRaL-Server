@@ -45,7 +45,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from registry import runtimes  # noqa: E402
+from registry.lib import runtimes  # noqa: E402
 
 LOCKS = ROOT / "restore" / "locks"
 MANIFEST = ROOT / "restore" / "manifests" / "DEPENDENCIES.tsv"

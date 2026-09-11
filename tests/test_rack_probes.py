@@ -125,7 +125,7 @@ class ProbePathsAgreeWithDisk(unittest.TestCase):
         a name that is not there must flip it -- proving the reading derives from these
         paths and not from anything softer.
         """
-        from sigils import render
+        from sigils.lib import render
         self.assertTrue(render.DIFFUSE_ENGINE.is_file(),
                         f"sigils probes {render.DIFFUSE_ENGINE}, which is not on disk")
         for k, p in render.WEIGHTS.items():

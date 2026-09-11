@@ -33,8 +33,8 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, ConfigDict
 
-from . import store
-from .store import API_VERSION
+from .lib import store
+from .lib.store import API_VERSION
 
 # The credential header, and the name it replaced. Declared here rather than in `store`
 # because `store.authorize` takes a token, not a request: the wire spelling is this

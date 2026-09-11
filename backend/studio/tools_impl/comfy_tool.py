@@ -43,8 +43,11 @@ import secrets
 import time
 from typing import Any
 
-from .. import comfy, graph as graphlib, workflows, workspace
-from ..registry import tool
+from ..lib import comfy
+from ..lib import graph as graphlib
+from ..apps import workflows
+from ..lib import workspace
+from ..lib.registry import tool
 
 __all__ = ["generate_image", "run_workflow", "comfy_status", "list_comfy_nodes",
            "list_workflows", "execute"]

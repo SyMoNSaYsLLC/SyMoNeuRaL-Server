@@ -91,7 +91,7 @@ class StoreLayoutTests(unittest.TestCase):
         taken late in the evening belongs to *tomorrow's* file, and a store that quietly used
         local time would split a day's records across two files for four hours out of every
         twenty-four -- readable, but silently wrong for anything counting per day."""
-        self.assertEqual(capture.store._utc_day(),
+        self.assertEqual(capture.lib.store._utc_day(),
                          datetime.now(timezone.utc).strftime("%Y-%m-%d"))
 
     def test_appends_accumulate_rather_than_overwrite(self):

@@ -47,7 +47,7 @@ to an account id; they are not world-readable by accident.
 """
 from __future__ import annotations
 
-from .store import CaptureError, CaptureStore
+from .lib.store import CaptureError, CaptureStore
 
 __all__ = ["CaptureStore", "CaptureError"]
 __version__ = "0.1.0"

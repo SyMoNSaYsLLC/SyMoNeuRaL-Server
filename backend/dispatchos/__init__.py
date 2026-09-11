@@ -36,10 +36,13 @@ is the outer door and is not the roles. See `routes.py`.
 """
 from __future__ import annotations
 
-from . import ai, page, quotes, store
-from .ai import ModelUnusable, set_ask_model
+from .lib import ai
+from .apps import page
+from .apps import quotes
+from .lib import store
+from .lib.ai import ModelUnusable, set_ask_model
 from .router import router, ui_router
-from .store import DispatchError, enabled, init_db
+from .lib.store import DispatchError, enabled, init_db
 
 __all__ = [
     "router", "ui_router", "set_ask_model", "status", "init_db", "enabled",

@@ -65,7 +65,8 @@ import time
 import uuid
 from dataclasses import dataclass
 
-from . import dataset_guard, presets, registry, rewards, rollout
+from . import dataset_guard, presets, rewards, rollout
+from . import registry
 from .registry import GIB, ROOT
 
 GOVERNOR = ROOT / "scripts" / "gpu-governor.sh"

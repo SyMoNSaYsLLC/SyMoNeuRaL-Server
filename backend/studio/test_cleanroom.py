@@ -24,7 +24,8 @@ import shutil
 import tempfile
 import unittest
 
-from . import registry, workspace
+from .lib import registry
+from .lib import workspace
 from .tools_impl import cleanroom
 
 

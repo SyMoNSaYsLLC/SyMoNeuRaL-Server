@@ -76,6 +76,6 @@ package must not import the application it plugs into.
 from __future__ import annotations
 
 from .router import PACKS, router, status
-from .render import MODEL_NAME, REDRAW_SUFFIX, SUFFIX, SURFACE
+from .lib.render import MODEL_NAME, REDRAW_SUFFIX, SUFFIX, SURFACE
 
 __all__ = ["router", "status", "PACKS", "SUFFIX", "REDRAW_SUFFIX", "SURFACE", "MODEL_NAME"]

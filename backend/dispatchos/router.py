@@ -33,7 +33,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict
 
-from . import ai, authz, page, quotes, store
+from .lib import ai
+from .apps import authz
+from .apps import page
+from .apps import quotes
+from .lib import store
 
 log = logging.getLogger("symoneural.dispatchos")
 

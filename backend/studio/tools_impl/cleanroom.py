@@ -85,8 +85,9 @@ import re
 import shutil
 import subprocess
 
-from .. import inference, workspace
-from ..registry import tool
+from ..lib import inference
+from ..lib import workspace
+from ..lib.registry import tool
 
 # ---------------------------------------------------------------------------
 # the wire

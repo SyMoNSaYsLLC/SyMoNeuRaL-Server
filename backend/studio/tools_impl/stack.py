@@ -24,8 +24,8 @@ import os
 import pathlib
 import re
 
-from .. import workspace
-from ..registry import tool
+from ..lib import workspace
+from ..lib.registry import tool
 
 
 def _apps_dir() -> pathlib.Path | None:

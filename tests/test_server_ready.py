@@ -43,7 +43,7 @@ import unittest
 import urllib.error
 import urllib.request
 
-from registry import roster
+from registry.lib import roster
 
 REPO = pathlib.Path(__file__).resolve().parents[1]
 DOC = REPO / "docs" / "SERVER-READY.md"

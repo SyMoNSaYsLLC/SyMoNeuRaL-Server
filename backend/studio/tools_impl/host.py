@@ -48,8 +48,8 @@ import shutil
 import signal
 import subprocess
 
-from .. import workspace
-from ..registry import tool
+from ..lib import workspace
+from ..lib.registry import tool
 
 MAX_OUTPUT = 100_000
 DEFAULT_TIMEOUT = 120

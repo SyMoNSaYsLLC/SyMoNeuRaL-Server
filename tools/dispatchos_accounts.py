@@ -129,7 +129,7 @@ def main() -> int:
 
     # Imported here rather than at module scope so --show-path works without the backend
     # importing cleanly, which is the one thing you want when something is already wrong.
-    from dispatchos import store
+    from dispatchos.lib import store
 
     store.init_db()
 

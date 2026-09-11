@@ -18,7 +18,7 @@ import pathlib
 import sys
 import unittest
 
-from runtime import symoneuralenv as env  # noqa: E402
+from runtime.lib import symoneuralenv as env  # noqa: E402
 
 
 class PromoteTests(unittest.TestCase):

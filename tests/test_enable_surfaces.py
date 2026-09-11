@@ -221,7 +221,7 @@ class EnableSurfacesTests(unittest.TestCase):
         `chain.OPERATOR_NETWORKS` there. A name in one and not the other is either an argument
         the script accepts and the surface refuses, or a working value nobody can discover.
         Read rather than executed, for the reason the module docstring gives."""
-        from gateway import chain          # noqa: PLC0415 -- see module docstring
+        from gateway.lib import chain          # noqa: PLC0415 -- see module docstring
         for name in chain.OPERATOR_NETWORKS:
             with self.subTest(network=name):
                 self.assertIn(name, self.text,

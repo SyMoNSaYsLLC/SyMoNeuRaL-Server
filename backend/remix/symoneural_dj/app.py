@@ -230,7 +230,7 @@ def create_app(
         # Money: hold the per-playlist cost up front (owner free). Settled on
         # success, refunded on failure — inside run_job.
         try:
-            hold_id = accounts.meter.hold(
+            hold_id = accounts.lib.meter.hold(
                 ident.user_id, ident.user.role, "playlist", settings.playlist_cost)
         except InsufficientFunds as exc:
             return JSONResponse({"error": str(exc)}, status_code=402)  # Payment Required

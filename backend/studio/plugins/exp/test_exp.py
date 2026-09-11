@@ -53,7 +53,8 @@ import unittest
 from unittest import mock
 
 from . import fiber as fibermod
-from . import cli, gate, loader as loadermod, registry
+from . import cli, gate, loader as loadermod
+from . import registry
 from .context import Context, ContextError, Runtime
 from .plugins import CATALOGUE
 

@@ -30,7 +30,7 @@ import unittest
 import zlib
 
 
-from sigils import matte, png, render, routes  # noqa: E402
+from sigils.apps import matte, png, render, routes  # noqa: E402
 
 #: The exact regex `backend/server.py:1788` matches an attacker-controlled path segment
 #: against before serving a render. Copied here rather than imported, because importing

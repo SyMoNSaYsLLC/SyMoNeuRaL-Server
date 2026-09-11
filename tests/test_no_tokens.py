@@ -17,7 +17,7 @@ has no opinion about tokens at all, and nothing stops the next surface from grow
 The obvious shape is a list of the modules that had gates. That shape is what caused the bug
 this file was written after: the first removal pass worked from a hand-made list of five
 modules, and the tree actually had **nine** `token_ok` functions plus two more gates that do
-not use that name. `project.store.token_ok` was still refusing every caller while
+not use that name. `project.lib.store.token_ok` was still refusing every caller while
 `apps/project/routes.py::_deny` above it had been opened -- a half-removed gate, which is
 worse than either end state because the surface's behaviour then depends on which door you
 came in by.

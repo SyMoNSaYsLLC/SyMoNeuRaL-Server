@@ -45,7 +45,8 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 
-from . import asr, tts
+from .lib import asr
+from .lib import tts
 
 router = APIRouter()
 

@@ -20,12 +20,14 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 
-from . import epg, safefetch, xtream
-from .m3u import MAX_CHANNELS, parse_m3u
-from .safefetch import BlockedURL, FetchError, Policy, Scrubber
-from .sessions import (MANAGER, MAX_SESSIONS, PLAYLIST_NAME, SEGMENT_RE, FFMPEG,
+from .lib import epg
+from .lib import safefetch
+from .lib import xtream
+from .apps.m3u import MAX_CHANNELS, parse_m3u
+from .lib.safefetch import BlockedURL, FetchError, Policy, Scrubber
+from .lib.sessions import (MANAGER, MAX_SESSIONS, PLAYLIST_NAME, SEGMENT_RE, FFMPEG,
                        StreamerBusy, StreamerError)
-from .xtream import XtreamCreds, XtreamError
+from .lib.xtream import XtreamCreds, XtreamError
 
 log = logging.getLogger("symoneural.streamer")
 

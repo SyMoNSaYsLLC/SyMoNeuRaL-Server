@@ -194,7 +194,7 @@ class RenderedResponseFieldTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from ravencalc import ravencalc
+        from ravencalc.apps import ravencalc
 
         cls.ravencalc = ravencalc
 

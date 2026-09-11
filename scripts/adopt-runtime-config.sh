@@ -109,7 +109,7 @@ sys.path.insert(0, "apps")
 # pass. This is the whole question: does the file alone carry the configuration?
 for k in [k for k in os.environ if k.startswith(("SYM_", "SYMONEURAL_"))]:
     del os.environ[k]
-from runtime import runtimeconfig
+from runtime.lib import runtimeconfig
 names = runtimeconfig.load(warn=False)
 bad = runtimeconfig.rejected()
 print(f"  config dir: {runtimeconfig.config_dir()}")

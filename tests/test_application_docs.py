@@ -38,7 +38,7 @@ BACKEND = pathlib.Path(__file__).resolve().parent.parent
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
-from registry import appdocs  # noqa: E402
+from registry.lib import appdocs  # noqa: E402
 
 
 def _router():
@@ -272,7 +272,7 @@ class EveryApplicationIsReachable(unittest.TestCase):
     def test_every_rack_row_has_a_documentation_page(self):
         """The rack is what a visitor clicks from, so a row with no scoped docs is the
         gap this task exists to close. Read from ROSTER.md, the identity authority."""
-        from registry import roster
+        from registry.lib import roster
         for row in roster.rows():
             with self.subTest(row=row["id"]):
                 self.assertIn(row["id"], appdocs.BY_ID,

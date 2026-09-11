@@ -26,7 +26,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
-from registry import runtimes  # noqa: E402
+from registry.lib import runtimes  # noqa: E402
 
 OUT = ROOT / "docs" / "ops" / "RUNTIMES.md"
 

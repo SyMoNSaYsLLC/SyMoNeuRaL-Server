@@ -63,7 +63,8 @@ import os
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, ConfigDict
 
-from . import dataset_guard, enabled, jobs, presets, registry, rewards, rollout
+from . import dataset_guard, enabled, jobs, presets, rewards, rollout
+from . import registry
 
 router = APIRouter(tags=["reinforce"])
 

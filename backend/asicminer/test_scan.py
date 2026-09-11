@@ -14,7 +14,7 @@ import pathlib
 import sys
 import unittest
 
-from asicminer import scan  # noqa: E402
+from asicminer.lib import scan  # noqa: E402
 
 
 class TestRefusesPublicRanges(unittest.TestCase):

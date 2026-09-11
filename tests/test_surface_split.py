@@ -33,7 +33,7 @@ def _repo_root() -> pathlib.Path:
 ROOT = _repo_root()
 sys.path.insert(0, str(ROOT / "backend"))
 
-from registry import ports  # noqa: E402
+from registry.lib import ports  # noqa: E402
 
 
 class TheRegistryIsTheOnlyPlaceAPortLives(unittest.TestCase):
@@ -134,15 +134,15 @@ class ExactlyOneProcessAnswers(unittest.TestCase):
                           "ravencalc is not delegated, so the monolith MUST answer it")
 
     def test_the_surface_process_serves_the_same_route(self):
-        from ravencalc import service
+        from ravencalc.lib import service
         paths = [getattr(r, "path", None) for r in service.app.routes]
         self.assertIn("/api/ravencalc", paths)
         self.assertIn("/healthz", paths)
 
     def test_the_surface_enforces_the_same_published_cap(self):
         """Not a second policy. The whole reason the limiter moved into `apps.ratelimits`."""
-        from runtime import ratelimits
-        from ravencalc import service
+        from runtime.lib import ratelimits
+        from ravencalc.lib import service
         self.assertIs(service.ratelimits.BUDGETS, ratelimits.BUDGETS)
         self.assertEqual((240, 6000), ratelimits.BUDGETS["ravencalc"])
 

@@ -22,7 +22,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from live import hls, obs, routes
+from live.lib import hls, obs, routes
 
 REPO = Path(__file__).resolve().parents[3]
 

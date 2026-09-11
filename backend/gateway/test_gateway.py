@@ -34,8 +34,8 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 import gateway  # noqa: E402
-from gateway import abi, address, chain, routes  # noqa: E402
-from gateway.keccak import _sponge, keccak256  # noqa: E402
+from gateway.lib import abi, address, chain, routes  # noqa: E402
+from gateway.lib.keccak import _sponge, keccak256  # noqa: E402
 
 # The live USDT TRC-20 contract on mainnet. Used only as a known-good *address*; nothing in
 # this file contacts a node.

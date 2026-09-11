@@ -229,17 +229,21 @@ import logging
 import os
 import time
 
-from . import abi, address, chain
-from .chain import NODES, OPERATOR_NETWORKS
+from .lib import abi
+from .lib import address
+from .lib import chain
+from .lib.chain import NODES, OPERATOR_NETWORKS
 from .router import router
 # The settlement half. `entitlement.verify` is reached through the module rather than
 # re-exported bare: `from .verify import ...` below binds the NAME `verify` to the
 # submodule as a side effect of importing it, so a bare `verify` here would silently
 # become the module and any caller expecting the function would get a TypeError.
-from . import entitlement, store as clearance_store, verify as settlement_verify
-from .entitlement import Entitlement, EntitlementError, mint
-from .store import Clearance, ClearanceStore
-from .verify import Granted, Refused, verify_payment
+from .lib import store as clearance_store
+from .apps import verify as settlement_verify
+from .lib import entitlement
+from .lib.entitlement import Entitlement, EntitlementError, mint
+from .lib.store import Clearance, ClearanceStore
+from .apps.verify import Granted, Refused, verify_payment
 
 __all__ = ["Clearance", "ClearanceStore", "Entitlement", "EntitlementError",
            "Granted", "Refused", "clearance_store", "entitlement", "mint",

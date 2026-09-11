@@ -42,8 +42,8 @@ def _find_root(start: pathlib.Path) -> pathlib.Path:
 ROOT = _find_root(pathlib.Path(__file__).resolve())
 sys.path.insert(0, str(ROOT / "backend"))
 
-from runtime import ratelimits                                          # noqa: E402
-from registry import appdocs                                             # noqa: E402
+from runtime.lib import ratelimits                                          # noqa: E402
+from registry.lib import appdocs                                             # noqa: E402
 
 
 class PublishedEqualsEnforced(unittest.TestCase):

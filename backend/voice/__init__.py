@@ -76,7 +76,8 @@ from __future__ import annotations
 import hmac
 import os
 
-from . import asr, tts
+from .lib import asr
+from .lib import tts
 from .router import router
 
 __all__ = ["router", "status", "enabled", "token_ok", "installed", "asr", "tts"]

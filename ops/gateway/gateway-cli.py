@@ -46,7 +46,7 @@ ROOT = HERE.parent.parent                      # <repo>/ops/gateway -> <repo>
 #
 # We want ONE implementation of base58check and one `NODES` map, so that an address this tool
 # accepts is exactly an address the rack validates and both talk to the same endpoints. But a
-# plain `import gateway.address` executes the package `__init__`, which imports
+# plain `import gateway.lib.address` executes the package `__init__`, which imports
 # `routes.py`, which imports FastAPI — and this venv deliberately does not have FastAPI in it.
 #
 # That import error is the design working. The operator tool must not drag the public web
@@ -260,7 +260,7 @@ def cmd_deploy(args) -> int:
     print("\nVerify it independently — this tool saying SUCCESS is not the same as the chain "
           "agreeing:")
     print(f"  SYMONEURAL_GATEWAY_NETWORK={args.network} SYMONEURAL_GATEWAY_CONTRACT={addr} \\")
-    print(f"    python3 -c \"from gateway import chain; "
+    print(f"    python3 -c \"from gateway.lib import chain; "
           f"print(chain.probe('{args.network}', '{addr}'))\"")
     return 0
 

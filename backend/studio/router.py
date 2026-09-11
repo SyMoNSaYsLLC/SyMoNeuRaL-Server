@@ -48,12 +48,18 @@ import os
 import time
 import typing
 
-from . import httpclient
+from .lib import httpclient
 import websockets
 from fastapi import APIRouter, Query, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from . import agent, comfy, graph as graphmod, inference, registry, workflows, workspace
+from .lib import graph as graphmod
+from .lib import agent
+from .lib import comfy
+from .lib import inference
+from .lib import registry
+from .apps import workflows
+from .lib import workspace
 from .gate import (COOKIE, COOKIE_LEGACY, COOKIE_PATH, HEADER, enabled, local_bypass,
                    present_token,
                    token_ok)

@@ -1142,7 +1142,7 @@ class LifespanWiringTests(unittest.TestCase):
         off. The guard lives inside `bootstrap()`; calling past it defeats it."""
         calls = {ast.unparse(n.func) for n in ast.walk(self.lifespan)
                  if isinstance(n, ast.Call)}
-        for bypass in ("project.init_db", "project.store.init_db", "store.init_db"):
+        for bypass in ("project.init_db", "project.lib.store.init_db", "store.init_db"):
             self.assertNotIn(bypass, calls,
                              f"{bypass} bypasses the enabled() guard in bootstrap()")
 

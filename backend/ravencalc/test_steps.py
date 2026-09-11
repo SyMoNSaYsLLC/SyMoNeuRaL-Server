@@ -14,10 +14,10 @@ import sys
 import unittest
 
 
-from ravencalc import ravencalc  # noqa: E402
-from ravencalc import steps  # noqa: E402
-from ravencalc import symbolic  # noqa: E402
-from ravencalc.ravencalc import parse, make_symbols  # noqa: E402
+from ravencalc.apps import ravencalc  # noqa: E402
+from ravencalc.apps import steps  # noqa: E402
+from ravencalc.lib import symbolic  # noqa: E402
+from ravencalc.apps.ravencalc import parse, make_symbols  # noqa: E402
 
 
 def variable_of(expression, name: str):

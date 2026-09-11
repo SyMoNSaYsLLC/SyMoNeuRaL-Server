@@ -39,7 +39,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 import voice  # noqa: E402
-from voice import asr, routes, tts  # noqa: E402
+from voice.lib import asr, routes, tts  # noqa: E402
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

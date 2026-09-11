@@ -38,7 +38,12 @@ from typing import Callable, Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
-from . import listen, matte, png, render, segment, upload
+from .lib import listen
+from .apps import matte
+from .apps import png
+from .lib import render
+from .lib import segment
+from .lib import upload
 
 log = logging.getLogger("symoneural.sigils")
 

@@ -22,7 +22,7 @@ import unittest
 
 import sympy  # noqa: E402
 
-from ravencalc import ravencalc  # noqa: E402
+from ravencalc.apps import ravencalc  # noqa: E402
 
 
 def request(**fields) -> dict:

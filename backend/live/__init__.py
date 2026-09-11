@@ -27,9 +27,9 @@ working. `README.md` has the exact settings and the reason for each one.
 """
 from __future__ import annotations
 
-from . import hls          # noqa: F401  -- the video path; imported so a syntax error in it
-from . import obs          # fails the boot loudly rather than at the first request
-from .obs import Bridge
+from .lib import hls          # noqa: F401  -- the video path; imported so a syntax error in it
+from .lib import obs          # fails the boot loudly rather than at the first request
+from .lib.obs import Bridge
 from .router import enabled, router, status  # noqa: F401
 
 # The one bridge. Constructed at import so `routes.py` can read it without a global lookup

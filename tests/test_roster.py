@@ -25,7 +25,7 @@ import pathlib
 import re
 import unittest
 
-from registry import roster
+from registry.lib import roster
 from test_status_rack import EXPECTED, _row_id, _unit_calls
 
 REPO = pathlib.Path(__file__).resolve().parents[1]

@@ -53,7 +53,7 @@ import _art  # noqa: E402
 # so this pulls in a parser and nothing else. Importing `api.py` here would build every rate
 # limiter, resolve the GPU governor and mount `site/`.
 _sys.path.insert(0, str(ROOT / "backend"))
-from registry import roster  # noqa: E402
+from registry.lib import roster  # noqa: E402
 
 # The two renders that flank the rack. They are here rather than in a row of their own for
 # the same reason the masthead's two are: the rack is 1120px wide inside a 1900px viewport

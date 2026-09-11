@@ -39,7 +39,7 @@ from . import (AccountExists, AccountsError, AccountsUnavailable, InvalidEmail,
 
 log = logging.getLogger("symoneural.accounts")
 
-from .module import SESSION_COOKIE
+from .lib.module import SESSION_COOKIE
 
 def _no_store(response: Response) -> None:
     """Authenticated/session responses must never be reused from a browser cache."""
@@ -378,14 +378,14 @@ def build_router(accounts, *, secure_cookies: bool = False,
         ident = _require(request)
         if ident.is_owner:
             return {"entries": [], "note": "owner actions are free and are not metered"}
-        return {"entries": accounts.meter.history(ident.user_id)}
+        return {"entries": accounts.lib.meter.history(ident.user_id)}
 
     @api.get("/admin/users", summary="Every account (owner only)")
     async def _users(request: Request) -> dict:
         _require_owner(request)
         rows = accounts.accounts.listing()
         for row in rows:
-            row["balance"] = accounts.meter.balance(str(row.get("id", "")))
+            row["balance"] = accounts.lib.meter.balance(str(row.get("id", "")))
         return {"count": len(rows), "accounts": rows}
 
     @api.post("/admin/credit", summary="Add SyMoN tokens to an account (owner only)")
@@ -397,7 +397,7 @@ def build_router(accounts, *, secure_cookies: bool = False,
             raise HTTPException(400, "amount must be positive")
         if accounts.accounts.public(body.account_id) is None:
             raise HTTPException(404, "no such account")
-        balance = accounts.meter.credit(body.account_id, body.amount, body.note or "admin")
+        balance = accounts.lib.meter.credit(body.account_id, body.amount, body.note or "admin")
         return {"account_id": body.account_id, "balance": balance}
 
     return api
