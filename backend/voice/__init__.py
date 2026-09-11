@@ -44,7 +44,7 @@ can be transcribed *while* a chat generation is running, instead of after it.
   evicting a peer session's work for. **Do not publish a round-trip figure until it is.**
 - **Every timing here was taken at load average 6.5-7.5 on 20 CPUs** with a dozen agent
   sessions writing this repo, which biases them slow. They are ceilings.
-- **The chat model is text-only.** `SymonChat S1-7B` (Qwen2.5-7B-Instruct) has no audio path
+- **The chat model is text-only.** the chat model is text-only and has no audio path
   any more than it has the vision projector `/chat.html` rules out. Speech to speech here is
   ASR -> text -> TTS, and the page must say so.
 

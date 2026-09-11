@@ -8,7 +8,7 @@
     POST /api/voice/speak        503 until something that speaks is installed
 
 Speech to speech is `transcribe` -> **the existing `/api/chat`** -> `speak`. It is not a third
-route and there is no audio-native model here: `SymonChat S1-7B` is text-only, so a spoken turn
+route and there is no audio-native model here: the chat model is text-only, so a spoken turn
 is ASR -> the text model -> TTS and no page may imply otherwise.
 
 **The one thing a voice path must not become.** `api.py`'s `Turn.role` is

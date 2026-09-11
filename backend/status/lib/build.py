@@ -334,7 +334,7 @@ def build_status() -> Status:
                  # its numbers are real cannot hide where its weights came from.
                  spec=CHAT_MODEL_LABEL + (" + persona adapter" if ctx.adapter_applies()
                                           else " · Q4_K_M"),
-                 detail="~5 GB when loaded · SymonChat S1-7B"),
+                 detail=f"{CHAT_MODEL.stat().st_size // 2**30} GiB on disk · {CHAT_MODEL_LABEL}" if CHAT_MODEL.is_file() else CHAT_MODEL_LABEL),
             Unit(id="image", label="SyMoNeuRaL Image", slot="2U",
                  state=gpu_unit("image", image_ok), bus="gpu", href="/image.html",
                  spec="SymonImage F1 · q4_k",

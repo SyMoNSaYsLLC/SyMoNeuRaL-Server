@@ -36,6 +36,7 @@ That is the clean separation the deliverable asked for, and it is also the only 
 """
 from __future__ import annotations
 
+from core.config import CHAT_MODEL_LABEL
 import json
 import os
 from dataclasses import dataclass
@@ -156,7 +157,7 @@ class InferenceError(RuntimeError):
     """The backend answered, and what it said was not a completion."""
 
 
-LLAMACPP = Backend("llamacpp", LLAMACPP_URL, "SymonChat S1-7B")
+LLAMACPP = Backend("llamacpp", LLAMACPP_URL, CHAT_MODEL_LABEL)
 OLLAMA = Backend("ollama", OLLAMA_URL, "qwen2.5:7b-instruct")
 
 

@@ -199,7 +199,7 @@ DOCS_HEADER = """
       <b>SyMoNeu<i>RaL</i></b>
     </a>
     <nav>
-      <a class="live" href="/chat.html"><s></s>Talk to the box</a>
+      <a class="live" href="/chat.html"><s></s>Ask SyMon</a>
       <a class="live" href="/image.html"><s></s>Make it draw</a>
       <a href="/ravencalc.html">RavenCalc</a>
       <a href="/#rack">Stack</a>
