@@ -3058,7 +3058,7 @@ def gen_models(write_tsv) -> int:
     for rel, role, note in (
         ("training/adapter", "the SyMoNeuRaL persona LoRA trained against the 7B base",
          "THIS is the first-party model asset. No download replaces it: it is the output "
-         "of training performed here. ops/docs/EXPORTS.md names it as a protected "
+         "of training performed here. ops/registry/EXPORTS.md names it as a protected "
          "artefact by path."),
         ("training/adapter-qwen36", "a second trained adapter",
          "Same class as above; travels for the same reason."),
@@ -3983,7 +3983,7 @@ Definitive: the four absent models are referenced only by scripts/fetch-models.s
       for rel, role, note in (
           ("training/adapter", "the SyMoNeuRaL persona LoRA trained against the 7B base",
            "THIS is the first-party model asset. No download replaces it: it is the output "
-           "of training performed here. ops/docs/EXPORTS.md names it as a protected "
+           "of training performed here. ops/registry/EXPORTS.md names it as a protected "
            "artefact by path."),
           ("training/adapter-qwen36", "a second trained adapter", "Same class as above."),
           ("training/corpus.jsonl", "the training dataset",
@@ -4318,10 +4318,10 @@ Five of seven on-disk models verify sha256 = YES against PROVENANCE.json. But my
       backend/apps/test_modelops.py
       backend/models/NAMES.md
       backend/models/PROVENANCE.json
-      ops/docs/nim-on-one-card.md
-      ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md
-      ops/docs/MODEL-LICENSES.md
-      ops/docs/SYMONEURAL-MODEL-BUNDLES.md
+      backend/hardware/docs/nim-on-one-card.md
+      ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md
+      models/docs/MODEL-LICENSES.md
+      models/docs/SYMONEURAL-MODEL-BUNDLES.md
       backend/coder/docs/coder-spec.md
       backend/studio/docs/qlora-upgrade.md
       scripts/fetch-models.sh
@@ -4329,9 +4329,9 @@ Five of seven on-disk models verify sha256 = YES against PROVENANCE.json. But my
   symon-1.0-27b-q2_k_xl.gguf:
       backend/models/NAMES.md
       backend/models/PROVENANCE.json
-      ops/docs/nim-on-one-card.md
-      ops/docs/MODEL-LICENSES.md
-      ops/docs/SYMONEURAL-MODEL-BUNDLES.md
+      backend/hardware/docs/nim-on-one-card.md
+      models/docs/MODEL-LICENSES.md
+      models/docs/SYMONEURAL-MODEL-BUNDLES.md
       frontend/site/docs/symoneural-manual.html
       frontend/site/docs/symoneural-manual.md
       scripts/fetch-models.sh
@@ -4339,15 +4339,15 @@ Five of seven on-disk models verify sha256 = YES against PROVENANCE.json. But my
   symon-1.0-27b-vision-f16.gguf:
       backend/models/NAMES.md
       backend/models/PROVENANCE.json
-      ops/docs/nim-on-one-card.md
-      ops/docs/MODEL-LICENSES.md
-      ops/docs/SYMONEURAL-MODEL-BUNDLES.md
+      backend/hardware/docs/nim-on-one-card.md
+      models/docs/MODEL-LICENSES.md
+      models/docs/SYMONEURAL-MODEL-BUNDLES.md
       scripts/fetch-models.sh
   symon-1.0-32b-q2_k_xl.gguf:
       backend/models/NAMES.md
       backend/models/PROVENANCE.json
-      ops/docs/MODEL-LICENSES.md
-      ops/docs/SYMONEURAL-MODEL-BUNDLES.md
+      models/docs/MODEL-LICENSES.md
+      models/docs/SYMONEURAL-MODEL-BUNDLES.md
       scripts/fetch-models.sh
 
 ############ provenance records for the four ############
@@ -4498,7 +4498,7 @@ fi
 #
 # This is NOT the NIM container route. nvcr.io/nim/qwen/qwen3-32b:1.0.0 is refused on three
 # independent grounds -- it does not fit, NGC marks it end-of-support, and NVIDIA AI
-# Enterprise licenses it for use rather than redistribution. See ops/docs/nim-on-one-card.md.
+# Enterprise licenses it for use rather than redistribution. See backend/hardware/docs/nim-on-one-card.md.
 # The GGUF here is Apache-2.0 and carries none of those problems.
 if [ "${SYMONEURAL_FETCH_32B:-${SYM_FETCH_32B:-0}}" = "1" ]; then
   echo "chat surface (32B tier, opt-in):"
@@ -5131,11 +5131,11 @@ models.py: five-way reference taxonomy
   corpus.jsonl                           CURRENT_PRODUCTION req=YES
       refs: reinforce,chat
   symon-1.0-27b-q2_k_xl.gguf             HISTORICAL         req=NO
-      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];ops/docs/nim-on-one-card.md[DOCUMENTATION_ONLY];ops/docs/MODEL-LICENSES.md[DO
+      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];backend/hardware/docs/nim-on-one-card.md[DOCUMENTATION_ONLY];models/docs/MODEL-LICENSES.md[DO
   symon-1.0-27b-vision-f16.gguf          HISTORICAL         req=NO
-      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];ops/docs/nim-on-one-card.md[DOCUMENTATION_ONLY];ops/docs/MODEL-LICENSES.md[DO
+      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];backend/hardware/docs/nim-on-one-card.md[DOCUMENTATION_ONLY];models/docs/MODEL-LICENSES.md[DO
   symon-1.0-32b-q2_k_xl.gguf             HISTORICAL         req=NO
-      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];ops/docs/MODEL-LICENSES.md[DOCUMENTATION_ONLY];ops/docs/SYMONEURAL-MODEL-
+      refs: backend/models/NAMES.md[CATALOGUE];backend/models/PROVENANCE.json[CATALOGUE];models/docs/MODEL-LICENSES.md[DOCUMENTATION_ONLY];ops/registry/SYMONEURAL-MODEL-
 (timeout 10m)
 
 
@@ -8735,9 +8735,9 @@ All four are mine, and each is a legitimate catch. Fixing:
 
 ● Bash(cd /home/google/Symoneural
   echo "############ 1. the capability matrix marks the 14B ABSENT; it is now on disk ############"
-  grep -n 'symon-1.0-14b-q4_k_m' ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md | head -4
+  grep -n 'symon-1.0-14b-q4_k_m' ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md | head -4
   echo
-  grep -nE 'ABSENT|absent' ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md | head -6)
+  grep -nE 'ABSENT|absent' ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md | head -6)
 ############ 1. the capability matrix marks the 14B ABSENT; it is now on disk ############
 61:| 14B | `symon-1.0-14b-q4_k_m.gguf` | **ABSENT** — named by the tuner registry, on disk nowhere |
 109:`symon-1.0-14b-q4_k_m` and the 0.5b draft, and **no serving default points at it** — `CHAT_MODEL`
@@ -8754,7 +8754,7 @@ All four are mine, and each is a legitimate catch. Fixing:
   import pathlib
 
   # ---- 1. the capability matrix: the 14B is no longer absent
-  p = pathlib.Path("ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md"); t = p.read_text()
+  p = pathlib.Path("ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md"); t = p.read_text()
   old = "| 14B | `symon-1.0-14b-q4_k_m.gguf` | **ABSENT** — named by the tuner registry, on disk nowhere |"
   new = ("| 14B | `symon-1.0-14b-q4_k_m.gguf` | **PRESENT** since 2026-09-08 — fetched through "
          "`scripts/fetch-models.sh` at the owner's instruction; 8,988,110,976 bytes, exactly the "
@@ -8845,7 +8845,7 @@ All 62 pass. Committing and running the final full suite:
 
   A STALE CAPABILITY MATRIX, CREATED BY THE FETCH
 
-  ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md marked symon-1.0-14b-q4_k_m.gguf
+  ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md marked symon-1.0-14b-q4_k_m.gguf
   "ABSENT -- on disk nowhere". Fetching it made that false within the hour, and
   test_control_plane_matrix caught the disagreement. The row now says PRESENT with the
   measured byte count and sha256 -- and says explicitly what it is NOT: still not a
@@ -12489,7 +12489,7 @@ def gen_models(write_tsv) -> int:
     for rel, role, note in (
         ("training/adapter", "the SyMoNeuRaL persona LoRA trained against the 7B base",
          "THIS is the first-party model asset. No download replaces it: it is the output "
-         "of training performed here. ops/docs/EXPORTS.md names it as a protected "
+         "of training performed here. ops/registry/EXPORTS.md names it as a protected "
          "artefact by path."),
         ("training/adapter-qwen36", "a second trained adapter",
          "Same class as above; travels for the same reason."),
@@ -17329,7 +17329,7 @@ Measured reality in hand. Correcting the state registry to the paths that exist 
           "training/adapter",
           "rsync -a <backup>/ training/adapter/",
           "test -d training/adapter && ls training/adapter",
-          "YES (protected artefact -- ops/docs/EXPORTS.md names it by path)",
+          "YES (protected artefact -- ops/registry/EXPORTS.md names it by path)",
       ),
       StateStore(
           "training-corpus", "reinforce", "symoneural-api",
@@ -17789,7 +17789,7 @@ Measured reality in hand. Correcting the state registry to the paths that exist 
           "training/adapter",
           "rsync -a <backup>/ training/adapter/",
           "test -d training/adapter && ls training/adapter",
-          "YES (protected artefact -- ops/docs/EXPORTS.md names it by path)",
+          "YES (protected artefact -- ops/registry/EXPORTS.md names it by path)",
       ),
       StateStore(
           "training-corpus", "reinforce", "symoneural-api",
@@ -24285,7 +24285,7 @@ STATE_STORES: tuple[StateStore, ...] = (
         "training/adapter",
         "rsync -a <backup>/ training/adapter/",
         "test -d training/adapter",
-        "YES (protected artefact -- ops/docs/EXPORTS.md names it explicitly)",
+        "YES (protected artefact -- ops/registry/EXPORTS.md names it explicitly)",
     ),
     StateStore(
         "training-corpus", "reinforce", "symoneural-api",

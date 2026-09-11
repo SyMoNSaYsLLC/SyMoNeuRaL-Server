@@ -18,7 +18,7 @@ the key ceremony and **stopped before generating any material.**
 | HEAD | `1f6b3ca9` | `1f6b3ca9` — **unchanged, no commit** |
 | Secret signing keys | 0 | **0 — none generated** |
 | Release fingerprints | 0 | **0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## Why this stopped
 
@@ -157,7 +157,7 @@ files, which I should have scoped. Correct statement: **0 SyMoNeuRaL release sig
 | Previous HEAD | `1f6b3ca9` — **unchanged** |
 | Commit subject | **none — no commit created** |
 | Files changed | **none** |
-| `git status --short` | ` M ops/docs/EXPORTS.md` |
+| `git status --short` | ` M ops/registry/EXPORTS.md` |
 | `git diff --cached --name-only` | *(empty — nothing staged)* |
 | Ceremony UTC timestamp | **N/A — ceremony not performed** |
 | Primary fingerprint | **N/A — no primary created** |
@@ -179,7 +179,7 @@ files, which I should have scoped. Correct statement: **0 SyMoNeuRaL release sig
 | Signed release tags created | **0** |
 | Signed artifacts created | **0** |
 | Archives created | **0** |
-| `ops/docs/EXPORTS.md` | **untouched and unstaged** |
+| `ops/registry/EXPORTS.md` | **untouched and unstaged** |
 | No private material entered repository | **CONFIRMED — none exists anywhere** |
 | No private material entered export staging | **CONFIRMED — none exists** |
 | No service granted signing-key access | **CONFIRMED — no key exists; and see Blocker 1, which is why none was created** |
@@ -236,7 +236,7 @@ and external release authorization.
 repo   /home/google/Symoneural
 HEAD   1f6b3ca9   [P2] non-forgeable release identity
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 KEY CEREMONY BLOCKED — SERVICE UID CO-TENANCY (§13) AND NO OFFLINE CUSTODY MEDIA (§7)

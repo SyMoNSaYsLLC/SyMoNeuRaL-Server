@@ -184,7 +184,7 @@ the number.
 
 **Every unmanifested weight is injured reserve or walk-on by rule, never a working option.** The
 blocker is the same for all 43 and it is named: **no recorded provenance, therefore no recorded
-licence, therefore no lawful basis to serve or redistribute output.** `ops/docs/PROVENANCE.md`
+licence, therefore no lawful basis to serve or redistribute output.** `models/docs/PROVENANCE.md`
 measures the gap; this table is the roster consequence of it.
 
 **Note what is in there.** `minimax_h3_*` (19.53 GiB diffusion + 4.85 GiB video VAE + a turbo
@@ -468,7 +468,7 @@ rollback       : the bundle is the rollback; nothing has replaced it
 > **The code is blameless.** `asr.py:106-109` returns `"whisper-cli missing at <path>"` and
 > `sigils/listen.py:85` gates on `WHISPER.is_file()`.
 >
-> **And this repo already knew.** `ops/docs/RUNTIME-PROFILES.md:42` and
+> **And this repo already knew.** `backend/hardware/docs/RUNTIME-PROFILES.md:42` and
 > `backend/registry/docs/symoneural-runtime-registry.md:90` both say whisper.cpp is **`absent`**, the latter
 > naming `contrib/` explicitly — and **task #104 records it outright**: *"`contrib/` **does not
 > exist**, and two live things cite it… `apps/voice`'s whisper binary lives there"*, measured at
@@ -624,12 +624,12 @@ any depth chart for it has to say.
 
 ---
 
-### OpenEmbedded / Yocto / SDK  ·  `ops/docs/YOCTO-LAYER-LICENSES.md`
+### OpenEmbedded / Yocto / SDK  ·  `backend/asicminer/docs/YOCTO-LAYER-LICENSES.md`
 **Classification** FUTURE/AUDIT · **Priority** `commercial_ready_first` (and therefore currently blocked)
 
 - **Option 1 — Current/Proven** — **local/dev only.** **proof** licence scope documented; no customer artefact built. **recommendation** STARTER = the local build, and nothing is claimed beyond it.
 - **Option 2 — Near Upgrade** — a **draft** SDK contract. **first-time record** first package build is **local/dev only**; first SDK contract is a **draft**. **recommendation** CANDIDATE.
-- **Option 3 — Future/Blocked** — customer install. **blocker** **BLOCKED until rollback, update and support docs exist** — plus `build provenance: none` and no reproducibility check on any engine here (`ops/docs/PROVENANCE.md` §4). **recommendation** an attestation over a build nobody has reproduced attests to an event, not an artefact; reproducibility comes first.
+- **Option 3 — Future/Blocked** — customer install. **blocker** **BLOCKED until rollback, update and support docs exist** — plus `build provenance: none` and no reproducibility check on any engine here (`models/docs/PROVENANCE.md` §4). **recommendation** an attestation over a build nobody has reproduced attests to an event, not an artefact; reproducibility comes first.
 
 ---
 
@@ -646,6 +646,6 @@ any depth chart for it has to say.
   corrected earlier in this file.
 - **Commercial mode is off, Phase 1 is not started, nothing is deployed, auth is unchanged.**
 
-**Related** `ops/docs/OPENAI-GPT-OSS-MIGRATION.md` · `ops/docs/PROVENANCE.md` ·
-`ops/docs/SECURITY-AUDIT.md` · `ops/docs/MODEL-LICENSES.md` · `ops/docs/SYMONEURAL-MODEL-BUNDLES.md` ·
+**Related** `models/docs/OPENAI-GPT-OSS-MIGRATION.md` · `models/docs/PROVENANCE.md` ·
+`ops/audits/SECURITY-AUDIT.md` · `models/docs/MODEL-LICENSES.md` · `models/docs/SYMONEURAL-MODEL-BUNDLES.md` ·
 `tools/lib/bootcamp_scout.py` · `tools/lib/bootcamp_referee.py`

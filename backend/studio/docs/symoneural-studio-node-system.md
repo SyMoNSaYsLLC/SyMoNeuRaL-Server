@@ -5,8 +5,8 @@ Companion to `backend/studio/docs/symoneural-studio-upgrade-scope.md`, which hol
 direction, the execution targets and the security boundaries; this file holds the data
 structures.
 
-Contracts: `ops/docs/MODEL-REGISTRY.md`, `ops/docs/HARDWARE-PROFILES.md`,
-`ops/docs/RUNTIME-PROFILES.md`, `ops/docs/GPU-GOVERNOR.md`. Runtime side of the same
+Contracts: `models/docs/MODEL-REGISTRY.md`, `backend/hardware/docs/HARDWARE-PROFILES.md`,
+`backend/hardware/docs/RUNTIME-PROFILES.md`, `scripts/docs/GPU-GOVERNOR.md`. Runtime side of the same
 architecture: `backend/registry/docs/symoneural-runtime-registry.md`,
 `backend/hardware/docs/symoneural-model-hot-swap.md` (task #104).
 
@@ -67,7 +67,7 @@ GET /api/studio/nodes/{node_type}
 | `model_family` | which families this node is valid for (scope spec §3.5) |
 | `hardware` | requirements; every figure **labelled** measured / vendor / projected |
 | `model_requirements` | resolved through the model registry |
-| `supported_runtimes` | `runtime_id`s that can execute this node (`ops/docs/RUNTIME-PROFILES.md`) |
+| `supported_runtimes` | `runtime_id`s that can execute this node (`backend/hardware/docs/RUNTIME-PROFILES.md`) |
 | `required_model_family` | llm / image / asr / embedding / vision / audio / video |
 | `required_model_format` | gguf / safetensors / diffusers / onnx / bin |
 | `hardware_badges` | the ten values in scope spec §8 |
@@ -220,7 +220,7 @@ example with its keys normalised to the canonical spellings above:
 
 **`vllm-cloud` is `installed-not-serving` on this box** — corrected 2026-08-23 at `507e09ee`;
 this line read `absent`, which was false (vLLM 0.25.1 is installed outside the repo and imports,
-but **no service runs**; `ops/docs/VLLM-BENCH-PARITY.md` §1). `symoneural-llm` is `built`.
+but **no service runs**; `models/docs/VLLM-BENCH-PARITY.md` §1). `symoneural-llm` is `built`.
 
 **And this correction is an argument for the design in this section, not against it.** A node
 listing a runtime does **not** assert that runtime is running — the router refuses by maturity

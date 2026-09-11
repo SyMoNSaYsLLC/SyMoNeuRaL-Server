@@ -26,7 +26,7 @@ Nothing else. Staged with one explicit path; verified before commit that the pol
 ## 3. Post-commit `git status --short`
 
 ```
- M ops/docs/EXPORTS.md      ← pre-existing, prior authorization, untouched
+ M ops/registry/EXPORTS.md      ← pre-existing, prior authorization, untouched
 ?? (planning document)      ← pre-existing, remains untracked
 ```
 

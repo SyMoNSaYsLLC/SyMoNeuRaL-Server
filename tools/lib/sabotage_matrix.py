@@ -41,9 +41,9 @@ SUITE = "apps/test_control_plane_matrix.py"
 
 MATRIX = "backend/controlboard/docs/symoneural-control-plane-matrix.md"
 BOOTCAMP = "backend/studio/docs/symoneural-bootcamp.md"
-CAPABILITY = "ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md"
-BENCHMARKS = "ops/docs/MODEL-BENCHMARKS.md"
-PARITY = "ops/docs/VLLM-BENCH-PARITY.md"
+CAPABILITY = "ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md"
+BENCHMARKS = "models/docs/MODEL-BENCHMARKS.md"
+PARITY = "models/docs/VLLM-BENCH-PARITY.md"
 
 #: (label, file, find, replace, test id it must turn red)
 CASES: list[tuple[str, str, str, str, str]] = [

@@ -111,7 +111,7 @@ reader slot is the thing to change.
 | Item | Value |
 |---|---|
 | HEAD | `98326529` |
-| `git status --short` | ` M ops/docs/EXPORTS.md` (nothing staged) |
+| `git status --short` | ` M ops/registry/EXPORTS.md` (nothing staged) |
 | Physical removable-device count | **0** |
 | Accepted-device count | **0** |
 | Candidate A / B / C | **none detected**, all fields not assessable, **accepted NO** |
@@ -167,7 +167,7 @@ one package, no service impact, no reboot.
 repo   /home/google/Symoneural
 HEAD   98326529   [D-11] credential custody decided
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 CUSTODY MEDIA NOT ACCEPTED — OWNER REVIEW REQUIRED

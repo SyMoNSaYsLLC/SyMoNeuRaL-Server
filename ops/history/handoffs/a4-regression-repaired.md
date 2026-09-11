@@ -68,7 +68,7 @@ $ git diff --cached --stat        (pre-commit)
  3 files changed, 1692 insertions(+), 2 deletions(-)
 
 $ git status --short              (post-commit)
- M ops/docs/EXPORTS.md      ← pre-existing, prior authorization, untouched
+ M ops/registry/EXPORTS.md      ← pre-existing, prior authorization, untouched
 ```
 
 ## 7. Confirmations

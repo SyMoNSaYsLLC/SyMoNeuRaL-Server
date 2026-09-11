@@ -21,7 +21,7 @@ stopped the ceremony at the gate with two blockers. This window resolves **Block
 | D-11 release authority | NOT ESTABLISHED | **NOT ESTABLISHED** |
 | Secret signing keys | 0 | **0** |
 | System accounts created | — | **0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## The ruling
 
@@ -131,7 +131,7 @@ application/runtime services   -> CANNOT read signing-subkey bytes (different UI
 | Previous HEAD | `1f6b3ca9` |
 | Commit subject | `[D-11] Sept1.md: custody principal decided - dedicated non-login release-custody UID` |
 | Files changed | **`Sept1.md` only** — `+112`, pure insertion (new §22.3b) |
-| `git status --short` | ` M ops/docs/EXPORTS.md` |
+| `git status --short` | ` M ops/registry/EXPORTS.md` |
 | `git diff --cached --name-only` | `Sept1.md` (at commit time); EXPORTS.md staged **0** |
 | Custody-principal ruling | **DEDICATED NON-LOGIN RELEASE-CUSTODY UID** |
 | Recommended account class | **system account, UID < 1000** |
@@ -147,7 +147,7 @@ application/runtime services   -> CANNOT read signing-subkey bytes (different UI
 | Service UID | **`google`, uid 1000** |
 | Operator UID | **`google`, uid 1000** — *identical, which is the whole problem* |
 | Privilege bridges | **gpg-agent socket (real)**, ACLs honoured, operator sudo (by design), umask `0002` |
-| `ops/docs/EXPORTS.md` | **untouched and unstaged** |
+| `ops/registry/EXPORTS.md` | **untouched and unstaged** |
 | System account created | **NO** |
 | Custody directory created | **NO** |
 | sudo policy changed | **NO** |
@@ -200,7 +200,7 @@ repo   /home/google/Symoneural
 HEAD   4108bef4   [D-11] custody principal decided
 prev   1f6b3ca9   [P2] non-forgeable release identity
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 CUSTODY PRINCIPAL DECIDED — DEDICATED NON-LOGIN RELEASE-CUSTODY UID

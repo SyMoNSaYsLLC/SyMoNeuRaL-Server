@@ -9,6 +9,8 @@
 !/models/NAMES.md
 !/models/licenses/
 !/models/licenses/**
+!/models/docs/
+!/models/docs/**
 *.gguf
 *.safetensors
 *.bin

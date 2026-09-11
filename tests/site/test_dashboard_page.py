@@ -15,7 +15,7 @@ So these assert the three joins that actually break:
    is not harmful, it is a lie about how the system works, and this page is the reference
    for how to call these routes.
 
-None of this proves the page RENDERS. That needs a browser, and `ops/docs/MEASUREMENTS.md`
+None of this proves the page RENDERS. That needs a browser, and `ops/registry/MEASUREMENTS.md`
 records that this host has none -- so the honest position is that these are joins, not a
 smoke test, and the page's real verification is still outstanding.
 """

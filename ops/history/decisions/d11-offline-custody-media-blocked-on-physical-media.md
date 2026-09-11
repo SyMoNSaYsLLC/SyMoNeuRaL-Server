@@ -21,7 +21,7 @@ but **could not provision it** — no suitable removable media is physically pre
 | Blocker 2 — media **provisioning** | OPEN | **BLOCKED — 0 media present** |
 | D-11 release authority | NOT ESTABLISHED | **NOT ESTABLISHED** |
 | Secret keys / fingerprints | 0 / 0 | **0 / 0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## Removable media inventory (read-only; nothing modified)
 
@@ -134,9 +134,9 @@ in the repository, in documentation, or in any handoff. **No credential was impr
 | Previous HEAD | `4108bef4` |
 | Commit subject | `[D-11] Sept1.md: offline custody topology decided; provisioning blocked on media` |
 | Files changed | **`Sept1.md` only** — `+122`, pure insertion (new §22.3c) |
-| `git status --short` | ` M ops/docs/EXPORTS.md` |
+| `git status --short` | ` M ops/registry/EXPORTS.md` |
 | `git diff --cached --name-only` | `Sept1.md` (at commit); EXPORTS.md staged **0** |
-| `ops/docs/EXPORTS.md` | **untouched and unstaged** |
+| `ops/registry/EXPORTS.md` | **untouched and unstaged** |
 | Custody system account | **NOT created** |
 | Final custody GnuPG home | **NOT created** |
 | Service changed / restarted | **NO / NO** |
@@ -198,7 +198,7 @@ repo   /home/google/Symoneural
 HEAD   16ea27ca   [D-11] offline custody topology decided; provisioning blocked
 prev   4108bef4   [D-11] custody principal decided
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 OFFLINE CUSTODY MEDIA DECIDED — PROVISIONING BLOCKED ON PHYSICAL MEDIA

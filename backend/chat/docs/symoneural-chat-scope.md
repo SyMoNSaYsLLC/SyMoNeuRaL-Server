@@ -22,7 +22,7 @@ The page currently carries **`SymonChat S1-7B`** (`site/chat.html:85`) and **`pe
 
 **These are preserved only while current files and tests still prove them.** Anything not proven
 is marked AUDIT rather than restated. The registry is the eventual home for this truth
-(`ops/docs/MODEL-REGISTRY.md`), and once it exists **the page must not hardcode a model label** —
+(`models/docs/MODEL-REGISTRY.md`), and once it exists **the page must not hardcode a model label** —
 `symoneural-parameters.md` §4 is the general form of that rule.
 
 **Forbidden without current proof:** token/sec · pricing · throughput · multi-user capacity ·

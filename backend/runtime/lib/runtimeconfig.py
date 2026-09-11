@@ -213,7 +213,7 @@ def load(*, warn: bool = True) -> list[str]:
 
     if warn and _loaded:
         # Names only. A count and a list of NAMES is what an operator needs to see; the values
-        # are exactly what must never reach a log, and `ops/docs/EXPORTS.md` is explicit that a
+        # are exactly what must never reach a log, and `ops/registry/EXPORTS.md` is explicit that a
         # credential which has been displayed is spent.
         log.info("loaded %d runtime config name(s) from %s: %s",
                  len(_loaded), config_dir(), ", ".join(sorted(_loaded)))

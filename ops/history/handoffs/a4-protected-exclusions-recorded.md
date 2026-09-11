@@ -91,7 +91,7 @@ $ git diff --cached --stat        (pre-commit)
  1 file changed
 
 $ git status --short              (post-commit)
- M ops/docs/EXPORTS.md      ← pre-existing, prior authorization, NOT swept in
+ M ops/registry/EXPORTS.md      ← pre-existing, prior authorization, NOT swept in
 ```
 
 ---

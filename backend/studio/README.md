@@ -318,4 +318,4 @@ caller is a 7B model:
 
 This is the one idea worth taking from the Cordis-style plugin-harness blueprint (zod/joi
 schema validation at the boundary); the rest of that design is compared against what this
-package already does in `ops/docs/integration-sources.md`.
+package already does in `ops/registry/integration-sources.md`.

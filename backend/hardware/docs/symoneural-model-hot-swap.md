@@ -10,8 +10,8 @@ account, and cannot be explained to a user. This document specifies the operatio
 replaces it.
 
 Companions: `backend/registry/docs/symoneural-runtime-registry.md` (who can serve),
-`ops/docs/GPU-GOVERNOR.md` (who holds the card), `ops/docs/MODEL-REGISTRY.md` (what may be
-loaded), `ops/docs/RUNTIME-PROFILES.md` (the maturity ladder).
+`scripts/docs/GPU-GOVERNOR.md` (who holds the card), `models/docs/MODEL-REGISTRY.md` (what may be
+loaded), `backend/hardware/docs/RUNTIME-PROFILES.md` (the maturity ladder).
 
 ---
 

@@ -4,7 +4,7 @@ Owner, 2026-09-11: *"make sure to bring all testing and benchmarking also"*.
 
 ## Why this counts the tree instead of reading the counts out of MEASUREMENTS.md
 
-`ops/docs/MEASUREMENTS.md` is the one home for suite counts and it is careful, dated prose --
+`ops/registry/MEASUREMENTS.md` is the one home for suite counts and it is careful, dated prose --
 which makes it the wrong thing to scrape. Its own first rule is the reason:
 
 > *"A number with no SHA cannot be checked, only believed; a count carried forward and
@@ -46,7 +46,7 @@ from typing import Any
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = REPO / "backend"
-MEASUREMENTS = REPO / "ops" / "docs" / "MEASUREMENTS.md"
+MEASUREMENTS = REPO / "ops" / "registry" / "MEASUREMENTS.md"
 RESULTS = REPO / "performance" / "results"
 
 #: Vendored third-party suites. Excluded from OUR inventory for the same reason
@@ -100,7 +100,7 @@ def inventory() -> dict[str, Any]:
                   f"{', '.join(EXCLUDE)}",
         "is_a_result": False,
         "note": ("this is how many tests EXIST, not how many pass. Passing requires running "
-                 "them; see commands below. ops/docs/MEASUREMENTS.md is the record of "
+                 "them; see commands below. ops/registry/MEASUREMENTS.md is the record of "
                  "results, each with the commit it was read on."),
     }
 
@@ -123,7 +123,7 @@ def commands() -> list[dict[str, str]]:
             continue
         cmd, _, comment = line.partition("#")
         out.append({"command": cmd.strip(), "note": comment.strip(),
-                    "source": "ops/docs/MEASUREMENTS.md"})
+                    "source": "ops/registry/MEASUREMENTS.md"})
     return out
 
 

@@ -87,5 +87,5 @@ which runtimes accept it · `docs_href` · `api_href`.
 No parameter schema implemented · no control added, removed or relabelled on any page · no
 registry field added · no model or runtime change · no folder migration · no deploy.
 
-Related: `symoneural-studio-node-system.md` §2 (node fields) · `ops/docs/MODEL-REGISTRY.md` ·
-`ops/docs/RUNTIME-PROFILES.md` · `symoneural-generic-contracts.md` (`GenericParameter`).
+Related: `symoneural-studio-node-system.md` §2 (node fields) · `models/docs/MODEL-REGISTRY.md` ·
+`backend/hardware/docs/RUNTIME-PROFILES.md` · `symoneural-generic-contracts.md` (`GenericParameter`).

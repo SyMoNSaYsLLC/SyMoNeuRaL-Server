@@ -12,7 +12,7 @@
 # accounts, coder, studio, project and dispatchos all silently off and no error anywhere. A
 # stripped box that reports healthy is worse than one that refuses to boot.
 #
-# VALUES ARE NEVER PRINTED. Not by `plan`, not by `adopt`, not on failure. `ops/docs/EXPORTS.md`
+# VALUES ARE NEVER PRINTED. Not by `plan`, not by `adopt`, not on failure. `ops/registry/EXPORTS.md`
 # is explicit that a credential which has been displayed is spent, and this repo has already had
 # a session-signing secret reach a transcript through a tool that printed what it was reading.
 # Every report below is a count and a list of NAMES.

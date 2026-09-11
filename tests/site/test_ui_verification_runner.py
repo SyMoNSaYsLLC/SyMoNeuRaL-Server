@@ -30,7 +30,7 @@ class UiVerificationRunnerTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("node"), "Node is not installed")
     def test_dry_run_needs_no_browser_or_api_and_shows_exact_order(self):
-        record = ROOT / "ops" / "docs" / "SMOKE-APPLICATIONS.md"
+        record = ROOT / "ops" / "smoke" / "SMOKE-APPLICATIONS.md"
         before = record.read_bytes() if record.exists() else None
         check = subprocess.run(["node", "--check", str(RUNNER)], capture_output=True, text=True)
         self.assertEqual(check.returncode, 0, check.stderr)

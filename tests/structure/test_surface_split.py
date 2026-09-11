@@ -117,7 +117,7 @@ class TheRegistryIsTheOnlyPlaceAPortLives(unittest.TestCase):
         r = subprocess.run([sys.executable, str(ROOT / "tools" / "build" / "build_ports.py"), "--check"],
                            capture_output=True, text=True, timeout=120)
         self.assertEqual(0, r.returncode,
-                         f"ops/docs/PORTS.md is stale -- run tools/build/build_ports.py\n{r.stderr}")
+                         f"ops/registry/PORTS.md is stale -- run tools/build/build_ports.py\n{r.stderr}")
 
 
 class ExactlyOneProcessAnswers(unittest.TestCase):

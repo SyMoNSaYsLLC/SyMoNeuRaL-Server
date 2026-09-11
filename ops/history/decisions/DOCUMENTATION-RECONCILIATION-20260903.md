@@ -52,8 +52,8 @@ Exact starting `git status --short`:
  M PROJECT-TASKS.md
  M backend/server.py
  M backend/apps/ROSTER.md
- M ops/docs/EXPORTS.md
- M ops/docs/MEASUREMENTS.md
+ M ops/registry/EXPORTS.md
+ M ops/registry/MEASUREMENTS.md
 ?? AGENTS.md
 ?? backend/apps/coders/
 ?? site/coders.html
@@ -337,8 +337,8 @@ Exact `git status --short`:
  M PROJECT-TASKS.md
  M backend/server.py
  M backend/apps/ROSTER.md
- M ops/docs/EXPORTS.md
- M ops/docs/MEASUREMENTS.md
+ M ops/registry/EXPORTS.md
+ M ops/registry/MEASUREMENTS.md
 ?? backend/apps/coders/
 ?? site/coders.html
 ?? tests/coders_smoke.mjs
@@ -359,8 +359,8 @@ backend/apps/coders/__init__.py
 backend/apps/coders/page.html
 backend/apps/coders/routes.py
 backend/apps/coders/test_coders.py
-ops/docs/EXPORTS.md
-ops/docs/MEASUREMENTS.md
+ops/registry/EXPORTS.md
+ops/registry/MEASUREMENTS.md
 site/coders.html
 tests/coders_smoke.mjs
 ```

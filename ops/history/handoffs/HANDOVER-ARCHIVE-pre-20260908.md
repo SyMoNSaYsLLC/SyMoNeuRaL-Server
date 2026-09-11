@@ -127,7 +127,7 @@ qualification is claimed. Build the bounded connected response session in the ne
 
 Keep the Gate 1.1 historical FAIL: startup was measured, independent Internet exposure was
 not proven. Same-host HTTPS success does not close that missing proof. Preserve all earlier
-reports and the pre-existing ops/docs/EXPORTS.md change.
+reports and the pre-existing ops/registry/EXPORTS.md change.
 
 ## 2026-09-02 — Coder rotation, launcher requirement, and next handoff
 
@@ -236,7 +236,7 @@ prompt capture is also not claimed: .claude/hooks/capture-prompt.sh was absent a
 The continuing objective includes actual Symon training/LoRA evaluation and working
 channels, not only the production transport chain. Historical gate reports and failures
 remain preserved. No application repair, training, coder process launch, or reboot was
-performed by this documentation update. Preserve the pre-existing ops/docs/EXPORTS.md diff.
+performed by this documentation update. Preserve the pre-existing ops/registry/EXPORTS.md diff.
 
 **Last updated 2026-08-22. Written for a fresh agent with zero prior context.**
 
@@ -279,8 +279,8 @@ performed by this documentation update. Preserve the pre-existing ops/docs/EXPOR
 > 13.3** · engine target `sm_120a` · GPU only, no CPU fallback. Two figures previously
 > carried as 590.48.01 and CUDA 13.1 were simply wrong.
 >
-> Full detail: **`ops/docs/BUILD-BOUNDARY.md`** (the boundary and the baseline) and
-> **`ops/docs/SERVING-PATH.md`** (the completion record, with PROD/REMOVED/AUDIT evidence).
+> Full detail: **`ops/registry/BUILD-BOUNDARY.md`** (the boundary and the baseline) and
+> **`ops/registry/SERVING-PATH.md`** (the completion record, with PROD/REMOVED/AUDIT evidence).
 > Task **#108**.
 
 > **CORRECTION 2026-08-22 — the warning that stood here is now stale, and it was the first thing
@@ -295,7 +295,7 @@ performed by this documentation update. Preserve the pre-existing ops/docs/EXPOR
 > `test_ravencalc.py`, `test_steps.py`); `pytest apps/ravencalc/test_ravencalc.py -q` gives
 > **14 passed**; and the canonical full invocation — `cd backend && python3 -m pytest apps/ -q
 > --ignore=apps/studio/plugins/reinforce/tests --ignore=apps/remix/tests` — gives **1818 passed,
-> 14 skipped in 146.01 s**, matching the figure `ops/docs/MEASUREMENTS.md` records at
+> 14 skipped in 146.01 s**, matching the figure `ops/registry/MEASUREMENTS.md` records at
 > `ca0571b7`. `git status --short` was empty for that run, so the green is the commit's, not a
 > working tree's.
 >
@@ -655,7 +655,7 @@ that test could have found it; every earlier check ran here, where the file exis
 ### Accessibility: the findings were re-measured and the count did not survive
 
 There was no committed sweep — the residual set came from an ad-hoc probe nobody could re-run.
-`tests/accessibility.mjs` now exists and writes `ops/docs/SMOKE-ACCESSIBILITY.md`. Measured
+`tests/accessibility.mjs` now exists and writes `frontend/docs/SMOKE-ACCESSIBILITY.md`. Measured
 **18 findings / 6 root causes**, not the 11/8 that had been carried forward:
 
 - all 3 reported heading jumps reproduced, **plus 2 more** the probe missed (it looked only
@@ -767,8 +767,8 @@ engine `619b918f`, CLI `4216a62b`, gateway `61f8df5b`, `/etc/symoneural/api.env`
 ## 0a-nonies. The Control Plane Matrix landed, and its Runtime column caught two live false claims (2026-08-23, at `507e09ee`)
 
 Four documents plus a test with teeth — `backend/controlboard/docs/symoneural-control-plane-matrix.md`,
-`ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md`, `ops/docs/MODEL-BENCHMARKS.md`,
-`ops/docs/VLLM-BENCH-PARITY.md`, `backend/apps/test_control_plane_matrix.py`. Task **#105**.
+`ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md`, `models/docs/MODEL-BENCHMARKS.md`,
+`models/docs/VLLM-BENCH-PARITY.md`, `backend/apps/test_control_plane_matrix.py`. Task **#105**.
 Bootcamp still owns the competition rules and depth charts; the matrix owns the normalized
 16-dimension record. **No second state document: each file states what it owns in its header.**
 
@@ -1402,7 +1402,7 @@ bentoml_service_runner}.py`, `bentofile.yaml`, `requirements.txt`, `README.md`,
 `DECISIONS.md`, and `.github/workflows/bento-containerize.yml`.
 
 **The one thing you must not misread:** this is not a reversal of the "BentoML loses" verdict in
-`ops/docs/integration-sources.md`. That verdict was about *serving* and *registry*, and it stands —
+`ops/registry/integration-sources.md`. That verdict was about *serving* and *registry*, and it stands —
 `llama-server` still serves, `run/registry.json` is still the registry, nothing in `backend/`
 imports BentoML, `api.py` is byte-identical. What this buys is a **generated Dockerfile**: the
 image recipe comes from `bentofile.yaml` instead of a hand-maintained file that drifts away from
@@ -3156,9 +3156,9 @@ has no hardcoded pool and no devfee strings. The comparison is against Braiins, 
 
 ## 2e. Firmware and the QEMU emulator
 
-Full detail in `ops/docs/antminer-firmware-upgrade.md`,
-`ops/docs/custom-antminer-firmware-options.md` and
-`ops/docs/symoneural-miner-firmware-strategy.md`. The short version:
+Full detail in `backend/asicminer/docs/antminer-firmware-upgrade.md`,
+`backend/asicminer/docs/custom-antminer-firmware-options.md` and
+`backend/asicminer/docs/symoneural-miner-firmware-strategy.md`. The short version:
 
 **Antminer packages open.** A plain signed tarball. `runme.sh` is a signature gate (exits 1–5)
 wrapping an inner one that does a version gate (exit 7 blocks downgrades) then `flash_erase` +
@@ -4647,7 +4647,7 @@ this is the second entry because it happened anyway. Kill by pid from `ss -ltnp`
 the pattern so it cannot match the launcher.
 
 **Qwen3-32B NIM is refused, and the refusal is reproducible.** See
-`ops/docs/nim-on-one-card.md` and `NIM_MODEL=qwen3-32b ./scripts/nim-qwen36.sh preflight`.
+`backend/hardware/docs/nim-on-one-card.md` and `NIM_MODEL=qwen3-32b ./scripts/nim-qwen36.sh preflight`.
 Three independent grounds: 16303 MiB measured against a 19000 MiB floor (which is the
 *27B's* number, deliberately not retuned upward); NGC marks `nvcr.io/nim/qwen/qwen3-32b:1.0.0`
 "End of Support"; and NVIDIA AI Enterprise licenses the container for use, not
@@ -4826,9 +4826,9 @@ to be built is already built. Those are the rows worth carrying forward:
 | **The CLI's "missing" interactive UX is all built** — nine slash commands, permission gating, `@file`, multiline, Ctrl-C, markdown streaming, resume-by-id. `apps/coder` is 2,748 lines with a stamped smoke record, not thin | §3, §4 |
 | **`accounts/meter.py` is built** — balances, holds, ledger, reserve-then-resolve, stale-hold sweep. Wired to one caller, so app-wide metering is PARTIAL | `ops/backend/authority/docs/symoneural-commercial-mode.md` §1 |
 | **The miner page claimed a hashrate the tree cannot produce.** `contrib/` is absent and `build-kawpowminer.sh` is untracked, so a clone has no path to a running miner. Copy corrected; the benchmark kept as provenance | `backend/cryptominer/docs/symoneural-miner-scope.md` |
-| **Three of eleven weights have `license_text: null`** — the unsloth/Qwen3.x files. Apache-2.0 §4 attribution has nothing to travel, so they cannot be redistributed | `ops/docs/MODEL-LICENSES.md` ML-1 |
-| **`AUDIT.md` Q1's premise is stale** — the recipe stopped declaring `LICENSE = "CLOSED"` at `97b92770` | `ops/docs/LICENSE-AUDIT.md` LA-1 |
-| **Yocto's missing artefacts are not missing — they are not yet producible**, because no image has ever been built. All 12 layers and all 9 recipes already carry complete metadata | `ops/docs/YOCTO-LAYER-LICENSES.md` §0 |
+| **Three of eleven weights have `license_text: null`** — the unsloth/Qwen3.x files. Apache-2.0 §4 attribution has nothing to travel, so they cannot be redistributed | `models/docs/MODEL-LICENSES.md` ML-1 |
+| **`AUDIT.md` Q1's premise is stale** — the recipe stopped declaring `LICENSE = "CLOSED"` at `97b92770` | `ops/audits/LICENSE-AUDIT.md` LA-1 |
+| **Yocto's missing artefacts are not missing — they are not yet producible**, because no image has ever been built. All 12 layers and all 9 recipes already carry complete metadata | `backend/asicminer/docs/YOCTO-LAYER-LICENSES.md` §0 |
 
 ### The one thing a fresh agent should read first
 
@@ -4857,7 +4857,7 @@ the raw editor is gone."* This makes the wait affordable; it does not replace it
 
 The original finding, kept because the reasoning is the reusable part:
 
-**`ops/docs/SECURITY-AUDIT.md`, BLOCKER-1.** Three facts that are each fine alone: `ops/Caddyfile:150`
+**`ops/audits/SECURITY-AUDIT.md`, BLOCKER-1.** Three facts that are each fine alone: `ops/Caddyfile:150`
 delegates `/studio` **and** `/studio/*`; `/studio/editor/*` proxies ComfyUI's own editor with a
 catch-all forwarding seven methods plus a WebSocket; and the only thing in front of it is `_guard`'s
 401. **Open task #88 asks for that 401 to be removed**, across eight surfaces. Executed literally,
@@ -4872,8 +4872,8 @@ writing with a date. **The risk type differs per surface and must not be flatten
 
 - **Phase 0.1–0.5: CLOSED** (unchanged by this batch).
 - **Phase 0.6b — the CLAUDE.md migration (R-180) — is NOT recorded as closed anywhere.** The
-  migration itself has landed (`ENGINEERING.md`, `ops/docs/MEASUREMENTS.md`,
-  `ops/docs/EXPORTS.md` all say so in their own headers), but neither `PROJECT-TASKS.md` nor
+  migration itself has landed (`ENGINEERING.md`, `ops/registry/MEASUREMENTS.md`,
+  `ops/registry/EXPORTS.md` all say so in their own headers), but neither `PROJECT-TASKS.md` nor
   `ops/backend/authority/docs/scope-of-work-2026-08-22.md` marks it closed. **Treat it as candidate, not closed.**
 - **Phase 1: NOT STARTED.** Its item 3 is #75, which this batch deliberately **paused at 0/4**.
 - **Deploy: NOT STARTED.** Nothing was deployed and `site/` still carries the pending items above.

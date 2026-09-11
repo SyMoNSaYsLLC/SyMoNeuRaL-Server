@@ -9,7 +9,7 @@
 //
 // What it does NOT prove, and no assertion here should be read as implying: responsive
 // rendering, visual parity with site/, or anything requiring a real browser. Those need a
-// browser run and are recorded as outstanding in ops/docs/FRONTEND-ROUTE-OWNERSHIP.md.
+// browser run and are recorded as outstanding in frontend/docs/FRONTEND-ROUTE-OWNERSHIP.md.
 //
 // ## Why the API is exercised DIRECTLY and not through the Next rewrite
 //

@@ -50,7 +50,7 @@ A second stale element was corrected in the same conflict: a section headed *"un
 ## 3. No implementation files changed
 
 ```
-M  ops/docs/EXPORTS.md      ← documentation only
+M  ops/registry/EXPORTS.md      ← documentation only
 ?? (planning file)          ← pre-existing, untracked
 
 exporter: 0    A-2 test: 0    control/: 0    backend/apps: 0    tools/*.py: 0

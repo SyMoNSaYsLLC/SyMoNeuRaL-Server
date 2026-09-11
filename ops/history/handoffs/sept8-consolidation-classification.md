@@ -41,7 +41,7 @@ ComfyUI-Shared                    1.7 G   model weights
 free on /home                     263 G
 ```
 
-`ops/docs/EXPORTS.md` already excludes weights, `run/`, `review/`, `.env` files and session transcripts; `.gitignore` already excludes `review/` and `run/`. Bulk archives, backups and third-party source trees are the same class. **They get a recorded home and a manifest, not a commit.**
+`ops/registry/EXPORTS.md` already excludes weights, `run/`, `review/`, `.env` files and session transcripts; `.gitignore` already excludes `review/` and `run/`. Bulk archives, backups and third-party source trees are the same class. **They get a recorded home and a manifest, not a commit.**
 
 ## 3. The licence wall — this is a scope change, not a note
 
@@ -75,10 +75,10 @@ What *is* available: ComfyUI runs as **its own Python process** (proxied at `127
 |---|---|---|
 | `SymonSaysLLC` (1.1 M, 26 files) | A-4 / D-11 decision records — same family as the `handoffs/` rulings | `ops/history/decisions/` |
 | `symoneural-docs-reconciliation-20260903` (36 K) | one reconciliation document | `ops/history/decisions/` |
-| `symoneural-lora-restoration-20260903` (48 K) | `LORA-PAYLOADS.tsv`, `SHA256SUMS`, restoration write-up — **metadata only, no weights** | `ops/docs/` |
+| `symoneural-lora-restoration-20260903` (48 K) | `LORA-PAYLOADS.tsv`, `SHA256SUMS`, restoration write-up — **metadata only, no weights** | `ops/registry/` |
 | `DifficultCode` (940 K) | `coder/`, `dispathosbuild/`, `gssymondevalien-ui/` — **looks first-party; needs a read before it moves** | TBD — see gate |
 | `RAVENCALC.md` (544 K) | exploded `.docx` | `docs/` as a real document, re-zipped or converted |
-| `hiranktesting`, `AI_PURGE_PSEUDOFS` (56 K each) | identical-looking host diagnostic dumps (`CGROUPS/KERNEL/EFIVARS/ERRORS`) | `ops/docs/diagnostics/`, deduplicated |
+| `hiranktesting`, `AI_PURGE_PSEUDOFS` (56 K each) | identical-looking host diagnostic dumps (`CGROUPS/KERNEL/EFIVARS/ERRORS`) | `ops/registry/diagnostics/`, deduplicated |
 
 ### B. Record a home + manifest, do NOT git-track (bulk, third-party, weights, evidence)
 
@@ -102,7 +102,7 @@ What *is* available: ComfyUI runs as **its own Python process** (proxied at `127
 
 | Target | Why |
 |---|---|
-| `symoneural-cutover-rollback-20260826-154113` (65 M) | holds a live `*****` environment file and a vendor binary, alongside the rollback manifest and unit files. `ops/docs/EXPORTS.md` rule 3 excludes this class outright. Manifest and unit files can be extracted; **the credential file stays put and untracked.** |
+| `symoneural-cutover-rollback-20260826-154113` (65 M) | holds a live `*****` environment file and a vendor binary, alongside the rollback manifest and unit files. `ops/registry/EXPORTS.md` rule 3 excludes this class outright. Manifest and unit files can be extracted; **the credential file stays put and untracked.** |
 
 ### D. Third-party agent installs — out of scope, already declined once
 

@@ -16,7 +16,7 @@ HEAD `2def42b9` with **A-4 COMPLETE, 19 of 19**. A-4 is not reopened or extended
 | Control point | At `2def42b9` (prev) | Now |
 |---|---|---|
 | HEAD | `2def42b9` | `2def42b9` — **unchanged, no commit** |
-| Tracked mods | `ops/docs/EXPORTS.md` only | `ops/docs/EXPORTS.md` only, untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` only | `ops/registry/EXPORTS.md` only, untouched |
 | A-4 | COMPLETE, 19/19 | **COMPLETE, 19/19 — unchanged** |
 | Keys on box | 0 | **0 — none generated** |
 | Signed artifacts | 0 | **0 — none signed** |
@@ -390,7 +390,7 @@ packages, feeds, SDKs. Nothing internal. A-4 completed with it open, by explicit
 
 ```
 HEAD                      2def42b9  (unchanged, no commit)
-git status --short         M ops/docs/EXPORTS.md   (pre-existing, untouched)
+git status --short         M ops/registry/EXPORTS.md   (pre-existing, untouched)
 keys generated            0        signing infrastructure created  none
 artifacts signed          0        custody records altered         none
 archives produced         0        exporter / manifest changed     no
@@ -408,7 +408,7 @@ Session-secret value was never read. No key material appears in this document.
 repo   /home/google/Symoneural
 HEAD   2def42b9
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 Awaiting owner decision on D-11: authority **A-4**, hierarchy **H-2**, custody **C-2**,

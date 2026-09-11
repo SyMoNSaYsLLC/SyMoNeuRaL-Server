@@ -340,7 +340,7 @@
  * page this banner has to appear on. Appending to that block would have shipped a banner that
  * showed up on exactly one page.
  *
- * THE LIST IS NOT "EVERY PAGE". `ops/docs/MAINTENANCE-SURFACES.md` holds the same list with
+ * THE LIST IS NOT "EVERY PAGE". `ops/registry/MAINTENANCE-SURFACES.md` holds the same list with
  * the reading each entry was put there on, and backend/apps/test_maintenance_banner.py fails
  * if the two disagree. The reason it is a list is the house honesty rule read in the direction
  * people forget: a surface that works and is labelled down is as false as a dead one labelled

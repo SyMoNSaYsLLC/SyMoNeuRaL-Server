@@ -11,12 +11,37 @@ units/             systemd units and timers.
 deploy/            install, verify, roll back. Bash, run as root.
 gateway/           symon-gateway: payload validation in front of the API.
 manifests/         build and model manifests, and the script that regenerates them.
-docs/              measurements, audits, serving records. Written, dated, SHA'd.
+registry/          what is true NOW. Ports, runtimes, serving path, SBOM, measurements.
+audits/            what was true THEN. Dated findings, never maintained.
+smoke/             proof a surface was actually run, not just declared.
 architecture/      the component / service / artifact / alias maps, as TSV.
 authority/         the project rules, glossary and tool policy.
 history/           decisions, handoffs, and the pre-restructure archive.
 guides/            playbooks and the CUDA curriculum.
 ```
+
+## registry vs audits — the split that was missing
+
+`ops/docs/` was 97 files deep and held all of these at once: a port table regenerated every
+build, an audit taken on one morning in August, a firmware note about Antminers, a revenue
+model, and the model benchmark results. An operator looking for a port number read past all
+of it, and nobody could tell which files were maintained.
+
+```
+registry/   what is true NOW.    Wrong => fix it.
+audits/     what was true THEN.  Wrong => it was wrong when taken; leave it as evidence.
+```
+
+Everything that belonged to a component went to that component instead:
+
+| went to | what |
+|---|---|
+| `scripts/docs/` | the GPU governor |
+| `models/docs/` | benchmarks, registry, bundles, licences, provenance |
+| `backend/asicminer/docs/` | Antminer firmware, Yocto layer licences |
+| `backend/hardware/docs/` | hardware and runtime profiles, NIM on one card |
+| `frontend/docs/` | route ownership, the frontend and accessibility smokes |
+| `business/` | identity, appliance, marketplace, revenue, the customer previews |
 
 ## The serving path
 
@@ -37,13 +62,13 @@ anything that takes the GPU lock, and relays `/api/ws` as a real WebSocket.
 Both are TSV because four consumers read them and none hardcodes a port:
 
 ```
-tools/build/build_ports.py     -> ops/docs/PORTS.md        (generated; do not hand-edit)
+tools/build/build_ports.py     -> ops/registry/PORTS.md        (generated; do not hand-edit)
 backend/registry/lib/ports.py  -> the API and every surface process
 ops/units/symoneural-surface@.service
 tools/lib/smoke.py             -> which port to test each surface on
 ```
 
-The Markdown under `ops/docs/` is the *rendering*. Edit the TSV and regenerate; a figure
+The Markdown under `ops/registry/` is the *rendering*. Edit the TSV and regenerate; a figure
 that lives only in prose is how this project once published a test count that was never
 true of the commit beside it.
 
@@ -98,8 +123,8 @@ repository and must not be printed.
 ## Regenerating what is generated
 
 ```bash
-python3 tools/build/build_ports.py        # PORTS.tsv    -> ops/docs/PORTS.md
-python3 tools/build/build_runtimes.py     # RUNTIMES.tsv -> ops/docs/RUNTIMES.md
+python3 tools/build/build_ports.py        # PORTS.tsv    -> ops/registry/PORTS.md
+python3 tools/build/build_runtimes.py     # RUNTIMES.tsv -> ops/registry/RUNTIMES.md
 ops/manifests/regenerate.sh               # build and model manifests
 ```
 

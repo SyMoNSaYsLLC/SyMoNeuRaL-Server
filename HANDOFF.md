@@ -114,7 +114,7 @@ tail -f .private/storage-reorg/latest.log
     If you do want the manifests regenerated, run `tools/build/build_restore_manifests.py` on
     purpose and commit the result, rather than discovering it in `git status` afterwards. Note
     that it is currently *due*: the manifests record nvcc 13.3 and driver 610.57.04, and the
-    box was upgraded to 13.4 / 615.71.09 on 2026-09-09 — see `ops/docs/RUNTIMES.md`.
+    box was upgraded to 13.4 / 615.71.09 on 2026-09-09 — see `ops/registry/RUNTIMES.md`.
 
 12. **The origin certificate renews around 2026-10-16 and that renewal needs the box to be
     reachable from the internet.** Measured 2026-09-10: the origin cert is Let's Encrypt

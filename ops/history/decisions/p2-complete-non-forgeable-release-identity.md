@@ -22,7 +22,7 @@ ceremony.
 | Exporter stages | 1, 2, 2b | **1, 2, 2b, 3** |
 | Exporter test count | 22 | **43** (7 A-2 + 15 P1 + 21 P2) |
 | Signing keys / fingerprints | 0 / 0 | **0 / 0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## The two forgeries P2 closes
 
@@ -207,14 +207,14 @@ refusal — it is not among the 7 candidates. P2 checks run **before** the dry-r
   separate decision, along with per-archive production authorization, export-scope
   re-confirmation, licence/provenance terms, and a recipient verification procedure.
 - **D-12** separate and unimplemented.
-- **`ops/docs/EXPORTS.md`** still modified-and-unstaged; the eventual signing-rule addition is
+- **`ops/registry/EXPORTS.md`** still modified-and-unstaged; the eventual signing-rule addition is
   its own authorization.
 
 ## Verification — measured
 
 ```
 HEAD                       1f6b3ca9      previous HEAD  d73b74af
-git status --short          M ops/docs/EXPORTS.md   (pre-existing, untouched, unstaged)
+git status --short          M ops/registry/EXPORTS.md   (pre-existing, untouched, unstaged)
 git diff --cached           Sept1.md, backend/apps/test_export_snapshot.py,
                            tools/data/export_snapshot.sh, tools/audit/verify_release_identity.sh
 EXPORTS.md staged          0
@@ -235,7 +235,7 @@ repo   /home/google/Symoneural
 HEAD   1f6b3ca9   [P2] non-forgeable release identity
 prev   d73b74af   [P3] confirm public-key distribution channel
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 State: **P1 COMPLETE · P3 CHANNEL CONFIRMED · P2 COMPLETE.** All three pre-key prerequisites

@@ -106,7 +106,7 @@ utilisation, 178.39 W, launched with `-ngl 99` (every layer offloaded, so no CPU
 mapping `libcuda.so.610.57.04` / `libcudart.so.13.3.29`, and the canonical GGUF. Chat measured
 **90.9 tok/s** on a 67-token generation.
 
-Full evidence and the coded migration path: `ops/docs/SERVING-PATH.md`.
+Full evidence and the coded migration path: `ops/registry/SERVING-PATH.md`.
 
 ## The bug this run found, which 37 unit tests could not
 

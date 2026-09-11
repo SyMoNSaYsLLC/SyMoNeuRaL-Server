@@ -224,7 +224,7 @@ the resulting artifacts or the reason none were produced.
   to the receiver** and surfaces to the user; a synthesised-compromise attempt is rejected;
   receiver-is-also-trainer is refused. Evidence of a real receiver run, not only a routed prompt.
 
-Write ops/docs/SMOKE-CODER-LAUNCHER.md only after the actual integrated browser/runtime
+Write ops/registry/SMOKE-CODER-LAUNCHER.md only after the actual integrated browser/runtime
 exercise. Include tested revision, provider/runtime identities, timestamp, actions, outcomes,
 and precise remaining coverage. A full PASS requires the requested single, dual, and
 three-coder paths to work; partial availability is not full completion.

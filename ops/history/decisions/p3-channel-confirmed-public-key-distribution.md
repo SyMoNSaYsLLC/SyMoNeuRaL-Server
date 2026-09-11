@@ -21,7 +21,7 @@ which implemented P1. This window confirms the **P3 channel only** — no P2, no
 | Signing keys | 0 | **0** |
 | Fingerprints | 0 | **0** |
 | Keys published | 0 | **0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## What CHANNEL CONFIRMED means, and what it does not
 
@@ -137,7 +137,7 @@ One file changed: **`Sept1.md` §22.3** — the P3 block, which previously read 
 
 **Verified untouched and byte-identical:** `tools/data/export_snapshot.sh`,
 `backend/apps/test_export_snapshot.py` (**P1 byte-identical**; 22 tests re-run, all pass),
-`ops/docs/EXPORTS.md` (unstaged, `EXPORTS.md staged: 0`), `site/`, `scripts/deploy.sh`, git
+`ops/registry/EXPORTS.md` (unstaged, `EXPORTS.md staged: 0`), `site/`, `scripts/deploy.sh`, git
 signing configuration, service and runtime configuration, release feeds, customer manifests.
 
 ## Errors / notes from this window
@@ -155,18 +155,18 @@ signing configuration, service and runtime configuration, release feeds, custome
 - **P2 — NOT implemented.** Two fail-closed cases remain, including the live one: the exporter
   copies from the **working tree** but labels with `git rev-parse HEAD`, so a modified manifested
   file ships content not matching its stated `source-sha`. This tree has carried
-  ` M ops/docs/EXPORTS.md` throughout; the 7-entry manifest happens not to overlap it.
+  ` M ops/registry/EXPORTS.md` throughout; the 7-entry manifest happens not to overlap it.
 - **Key ceremony — NOT performed.** P1 and P3 are now both settled, which clears two of the three
   recorded pre-key prerequisites; **P2 remains**.
 - **External release NOT authorized.** D-12 separate and unimplemented.
-- **`ops/docs/EXPORTS.md`** still modified-and-unstaged; prerequisite item 9 will eventually add
+- **`ops/registry/EXPORTS.md`** still modified-and-unstaged; prerequisite item 9 will eventually add
   a signing rule there, on its own authorization.
 
 ## Verification — measured
 
 ```
 HEAD                        d73b74af
-git status --short           M ops/docs/EXPORTS.md   (pre-existing, untouched, unstaged)
+git status --short           M ops/registry/EXPORTS.md   (pre-existing, untouched, unstaged)
 staged at commit            Sept1.md only        EXPORTS.md staged: 0
 P1 exporter / tests         byte-identical vs bb9230f4; 22 passed
 site/ and deploy.sh         unchanged
@@ -185,7 +185,7 @@ repo   /home/google/Symoneural
 HEAD   d73b74af   [P3] confirm public-key distribution channel (P3-1 + P3-4)
 prev   bb9230f4   [P1] refuse signing material by path and by content
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 Next authorization: **P2** — exporter refuses `source-sha: UNKNOWN` **and** refuses working-tree

@@ -298,7 +298,7 @@ def preset_rows() -> list[dict[str, Any]]:
 #   3. Process-group kill on deadline, so a wedged child cannot outlive the request.
 
 #: RULE 4, and it is an ALLOW-LIST because the deny-list version of this is unsafe by
-#: construction. `ops/docs/EXPORTS.md` already makes the argument for the exporter and it is
+#: construction. `ops/registry/EXPORTS.md` already makes the argument for the exporter and it is
 #: the same argument here: a deny-list ships anything nobody classified, so one missed name
 #: leaks; an allow-list omits anything nobody classified, so a new secret is absent until
 #: someone deliberately names it. The two architectures give OPPOSITE answers for the variable

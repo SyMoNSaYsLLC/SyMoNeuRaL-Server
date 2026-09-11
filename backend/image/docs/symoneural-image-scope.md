@@ -110,7 +110,7 @@ ComfyUI's own frontend and is AUDIT for exactly that reason (`BOX-REALITY-AUDIT.
 Candidates: the current direct image pipeline · Comfy **private** worker · stable-diffusion.cpp for
 GGUF/quantized local image work · Diffusers where applicable · a future optimised NVIDIA path
 **only after benchmark proof**. **No claim that any of these is running** — the maturity ladder is
-`ops/docs/RUNTIME-PROFILES.md` and the readings are `BOX-REALITY-AUDIT.md` §8.
+`backend/hardware/docs/RUNTIME-PROFILES.md` and the readings are `BOX-REALITY-AUDIT.md` §8.
 
 The model registry owns model id, family, format, local path, provenance/licence, runtime and
 target compatibility, min/recommended VRAM, default **and locked** parameters, supported controls

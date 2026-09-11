@@ -11,10 +11,10 @@ window onto that core, not the core itself.
 Companions: `backend/studio/docs/symoneural-studio-upgrade-scope.md` (product direction),
 `backend/hardware/docs/symoneural-model-hot-swap.md` (residency operations),
 `backend/studio/docs/symoneural-studio-node-system.md` (nodes).
-Contracts: `ops/docs/RUNTIME-PROFILES.md`, `ops/docs/MODEL-REGISTRY.md`,
-`ops/docs/HARDWARE-PROFILES.md`, `ops/docs/GPU-GOVERNOR.md`.
+Contracts: `backend/hardware/docs/RUNTIME-PROFILES.md`, `models/docs/MODEL-REGISTRY.md`,
+`backend/hardware/docs/HARDWARE-PROFILES.md`, `scripts/docs/GPU-GOVERNOR.md`.
 
-**The audit is upstream of this file.** `ops/docs/BOX-REALITY-AUDIT.md` §8 is the authority on
+**The audit is upstream of this file.** `ops/audits/BOX-REALITY-AUDIT.md` §8 is the authority on
 which runtimes exist here. Every runtime named below carries its **maturity level** from
 `RUNTIME-PROFILES.md`, and **nothing in this document claims a service is running.** Two are
 built, one is source-only, four are absent.
@@ -97,7 +97,7 @@ Roles are Garrett's. Levels are measured — see the audit for the evidence behi
   # Corrected 2026-08-23 at 507e09ee: this read `absent`, which was false. vLLM 0.25.1 is
   # installed at /home/google/.venvs/vllm (outside the repo, created 2026-07-20), imports, and
   # sees the 5070 Ti via torch 2.11.0+cu130. NO service runs. The ladder has no word for
-  # "installed, importable, not serving" -- ruling pending, see ops/docs/VLLM-BENCH-PARITY.md §1.
+  # "installed, importable, not serving" -- ruling pending, see models/docs/VLLM-BENCH-PARITY.md §1.
   maturity: installed-not-serving       # NOT a ladder level; a measurement pending a ruling
   targets: [cloud]
   api_styles: [openai-compatible]
@@ -151,7 +151,7 @@ It routes to: `symoneural-llm` · `symoneural-diffuse` · `comfy-private` · `sy
 3. **Never degrade silently.** No substituting a runtime, dropping a node, or falling back to
    CPU to make a job succeed.
 4. **A verdict from an `approximate` profile is itself approximate**, and says so.
-5. **The GPU state is read at decision time.** `ops/docs/GPU-GOVERNOR.md` — and the reading is
+5. **The GPU state is read at decision time.** `scripts/docs/GPU-GOVERNOR.md` — and the reading is
    compute memory, not whole-card, because the whole-card figure includes this box's desktop
    (R-171).
 6. **Account/credit/permission is an input, not a wrapper.** A router that decides first and

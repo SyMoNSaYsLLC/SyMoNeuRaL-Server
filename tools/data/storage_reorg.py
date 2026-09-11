@@ -379,7 +379,7 @@ def _refchatgpt_routes() -> dict[str, str]:
     `Symoneural/Upstream-Source/<project>/<revision>/`, so the revision is part of the
     path -- which is what makes the snapshot immutable and identifiable.
     """
-    tsv = ROOT / "ops" / "docs" / "specs" / "reference" / "UPSTREAM-PINS.tsv"
+    tsv = ROOT / "ops" / "audits" / "reference" / "UPSTREAM-PINS.tsv"
     routes: dict[str, str] = {}
     if not tsv.is_file():
         return routes

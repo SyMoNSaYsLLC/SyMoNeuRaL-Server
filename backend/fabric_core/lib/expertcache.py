@@ -2,7 +2,7 @@
 # Copyright (c) 2026 SyMonSays LLC. All rights reserved.
 #
 # SyMoNeuRaL Adaptive Fabric -- Residency Manager / Transfer Policy.
-# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See ops/docs/EXPORTS.md.
+# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See ops/registry/EXPORTS.md.
 """Expert residency simulation: can a small VRAM cache serve a model too big for the card?
 
 Owner, 2026-09-11: *"see if you can get that gpt oss 120B loaded by using this proprietary

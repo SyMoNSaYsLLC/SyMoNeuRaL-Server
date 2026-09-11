@@ -23,7 +23,7 @@ authorization-sized work items.
 | A-4 | COMPLETE 19/19 | **COMPLETE 19/19 — unchanged** |
 | Signing keys on box | 0 | **0 — none generated** |
 | Signed artifacts | 0 | **0** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## 1. D-11 decision record change
 
@@ -45,7 +45,7 @@ remaining release gates. Numbered 22 because §21 was already "Definition of Don
   **byte-identical** across the diff — verified by grepping both diff sides.
 - L853 / L1081 / L1411 — "D-11 = (d) for A-4 only" is **still true**; editing it would reopen A-4.
 - L1016 / L1047 — release gating statements, still true.
-- `ops/docs/EXPORTS.md` — pre-existing unstaged modification, never staged (verified at commit).
+- `ops/registry/EXPORTS.md` — pre-existing unstaged modification, never staged (verified at commit).
 
 ## 2. Exact final D-11 state
 
@@ -130,7 +130,7 @@ signature on an unidentifiable release* — worse than none, because it looks au
 **Case 2 — working-tree drift. This one is live right now.** The exporter copies from the
 **working tree** (`cp -p "$ROOT/$path"`) but labels the archive with `git rev-parse HEAD`. A
 modified-uncommitted manifested file therefore ships content that **does not correspond to the
-stated `source-sha`**. This session has carried ` M ops/docs/EXPORTS.md` throughout; the current
+stated `source-sha`**. This session has carried ` M ops/registry/EXPORTS.md` throughout; the current
 7-entry manifest happens not to overlap it — **luck, not a guarantee**. Required: **refuse if any
 candidate differs from HEAD.**
 
@@ -221,7 +221,7 @@ second fingerprint path is therefore load-bearing, not belt-and-braces.
 
 - **External release: NOT authorized.** Unchanged.
 - **D-12: unimplemented, separate.** Unchanged.
-- **`ops/docs/EXPORTS.md`** remains modified-and-unstaged from an earlier authorization; must
+- **`ops/registry/EXPORTS.md`** remains modified-and-unstaged from an earlier authorization; must
   never be swept into a commit. Verified unstaged at this commit.
 - **F-1/F-2/F-3** from the prior handoff are now recorded in §22 as P1/P2 work items. F-2 (my own
   depth-capped `/yocto` mis-measurement, corrected to 48 indexes) is folded into the §18 evidence.
@@ -232,7 +232,7 @@ second fingerprint path is therefore load-bearing, not belt-and-braces.
 
 ```
 HEAD                       5063b480
-git status --short          M ops/docs/EXPORTS.md   (pre-existing, untouched, never staged)
+git status --short          M ops/registry/EXPORTS.md   (pre-existing, untouched, never staged)
 staged at commit           Sept1.md only            policy doc staged: 0
 backend/ tools/ control/ site/ ops/ run/            0 changes each
 secret keys on box         0        public keys       0
@@ -250,7 +250,7 @@ repo   /home/google/Symoneural
 HEAD   5063b480   [D-11] record owner ruling as controlling signing architecture
 prev   2def42b9   [A-4] reconcile stale pre-A-series claims
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 Next authorization would be **P1** (exporter signing-material exclusions + tests) — it must land

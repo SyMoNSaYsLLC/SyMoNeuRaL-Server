@@ -176,7 +176,7 @@ customer-staging roots.
 | Previous HEAD | `16ea27ca` |
 | Commit subject | `[D-11] Sept1.md: three-media topology + LUKS at rest; credential custody still open` |
 | Files changed | **`Sept1.md` only** — `+160`, pure insertion (new §22.3d) |
-| `git status --short` | ` M ops/docs/EXPORTS.md` |
+| `git status --short` | ` M ops/registry/EXPORTS.md` |
 | `git diff --cached --name-only` | `Sept1.md` (at commit); EXPORTS.md staged **0** |
 | **Physical media required** | **3** |
 | Roles | A primary · B independent backup · C revocation |
@@ -196,7 +196,7 @@ customer-staging roots.
 | Identity fields at provisioning | role · LUKS UUID · FS UUID · label · capacity/class · UTC |
 | Stale directory disposition | **SAFE TO REMOVE UNDER SEPARATE AUTHORIZATION** |
 
-**Confirmations:** `ops/docs/EXPORTS.md` **untouched and unstaged** · **no packages installed** ·
+**Confirmations:** `ops/registry/EXPORTS.md` **untouched and unstaged** · **no packages installed** ·
 no media formatted · no media partitioned · **no LUKS container created** · **no credentials
 generated** · no custody account · no custody directory · no GnuPG material · no key generated ·
 no fingerprint · no revocation certificate · no public key published · no release tag signed ·
@@ -243,7 +243,7 @@ repo   /home/google/Symoneural
 HEAD   66af2891   [D-11] three-media topology + LUKS at rest
 prev   16ea27ca   [D-11] offline custody topology decided; provisioning blocked
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 OFFLINE CUSTODY DECISIONS COMPLETE — THREE-MEDIA TOPOLOGY + LUKS AT REST

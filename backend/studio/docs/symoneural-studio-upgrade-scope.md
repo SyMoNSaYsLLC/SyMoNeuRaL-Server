@@ -7,9 +7,9 @@ migration does not erase the intended architecture."*
 
 Companion: `backend/studio/docs/symoneural-studio-node-system.md` (registry, graph schema, validator,
 compiler). **RuntimeOps half, task #104:** `backend/registry/docs/symoneural-runtime-registry.md`,
-`backend/hardware/docs/symoneural-model-hot-swap.md`. Contracts: `ops/docs/MODEL-REGISTRY.md`,
-`ops/docs/RUNTIME-PROFILES.md`, `ops/docs/HARDWARE-PROFILES.md`, `ops/docs/GPU-GOVERNOR.md`.
-Measured ground truth: `ops/docs/BOX-REALITY-AUDIT.md`.
+`backend/hardware/docs/symoneural-model-hot-swap.md`. Contracts: `models/docs/MODEL-REGISTRY.md`,
+`backend/hardware/docs/RUNTIME-PROFILES.md`, `backend/hardware/docs/HARDWARE-PROFILES.md`, `scripts/docs/GPU-GOVERNOR.md`.
+Measured ground truth: `ops/audits/BOX-REALITY-AUDIT.md`.
 
 Read `ops/backend/authority/docs/README.md` first: files in this directory are arguments, not state.
 `.claude/HANDOVER.md` is the one state document.
@@ -58,11 +58,11 @@ surface.** The real core is:
 
 | Core component | Where it is specified |
 |---|---|
-| model registry | `ops/docs/MODEL-REGISTRY.md` |
-| **runtime registry** | `backend/registry/docs/symoneural-runtime-registry.md` §2, `ops/docs/RUNTIME-PROFILES.md` |
+| model registry | `models/docs/MODEL-REGISTRY.md` |
+| **runtime registry** | `backend/registry/docs/symoneural-runtime-registry.md` §2, `backend/hardware/docs/RUNTIME-PROFILES.md` |
 | target resolver / **runtime router** | §6 here; `symoneural-runtime-registry.md` §3 |
 | **hot swap manager** | `backend/hardware/docs/symoneural-model-hot-swap.md` |
-| **GPU governor** | `ops/docs/GPU-GOVERNOR.md`, and `ENGINEERING.md` for the rules in force |
+| **GPU governor** | `scripts/docs/GPU-GOVERNOR.md`, and `ENGINEERING.md` for the rules in force |
 | job queue | §5.1 here; `symoneural-model-hot-swap.md` §2 |
 | node / API / docs link contract | §9 here; node-system §2 |
 | **Backstage-style catalog direction** | §11 here |
@@ -649,7 +649,7 @@ customer access to Garrett's raw GPU endpoint.
 **Never committed, and never fetched by this surface:** model weights, caches, virtualenvs,
 `node_modules`, `.env` files, databases, raw transcript history. Studio's registry *describes*
 weights that are already on disk (§3.5); it does not download them, move them, or put them in
-git. `ops/docs/EXPORTS.md` names the artefacts that may never be served or quoted at all.
+git. `ops/registry/EXPORTS.md` names the artefacts that may never be served or quoted at all.
 
 **Custom nodes are never executed in the serving interpreter.** That interpreter is the
 serving path and `ENGINEERING.md` forbids installing into it; an arbitrary-custom-node
@@ -704,7 +704,7 @@ apple-darwin-sdks       windows-mingw-yocto-candidate            android-sdk-can
 ```
 
 `application-lab` and the four `platform-*` components are what stop the catalog from
-describing a single web app. `ops/docs/REPOSITORY-PURPOSE.md` is the entity these all hang off:
+describing a single web app. `business/REPOSITORY-PURPOSE.md` is the entity these all hang off:
 this repo is the backend/server **proving ground**, applications are **incubated** here before
 promotion, and promotion is gated by `GUARDRAILS.md`.
 
@@ -750,7 +750,7 @@ libs/platform-contracts libs/app-contracts
 `apps/apps-lab` and the four `apps/platform-*` directories exist in this list for one reason:
 **a migration must not collapse this repo into a single web app.** It is the SyMoNeuRaL
 backend/server proving ground, applications are incubated here before promotion, and the
-concepts that must survive intact are listed in `ops/docs/REPOSITORY-PURPOSE.md`.
+concepts that must survive intact are listed in `business/REPOSITORY-PURPOSE.md`.
 
 **Three things to settle before any of this moves**, all of them findings rather than opinions:
 
@@ -812,7 +812,7 @@ unless explicitly authorized (header, §11).
 `symoneural.zip.part-00/01/02` concatenate to a 77-file, ~84 MB archive that left this box,
 containing `claudejsonl/` and a nested `symoneuralmostrecent.zip`.
 
-`ops/docs/EXPORTS.md` rule 1 — written 2026-08-22, from the #75 finding the same day — is
+`ops/registry/EXPORTS.md` rule 1 — written 2026-08-22, from the #75 finding the same day — is
 **"No whole-repo zip exports, ever."** Rule 3 excludes session transcripts. Whether
 `training/corpus.jsonl` or `training/build_dataset.py` were inside cannot be determined from
 here: the archive is not on this box in inspectable form. Recorded so it is not lost; it

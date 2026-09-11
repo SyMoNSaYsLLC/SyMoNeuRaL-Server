@@ -20,7 +20,7 @@ three credentials are held. This window closes it.
 | Media provisioning | BLOCKED (0 media) | **BLOCKED (0 media)** — unchanged |
 | Credentials generated | 0 | **0** |
 | D-11 release authority | NOT ESTABLISHED | **NOT ESTABLISHED** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## The ruling
 
@@ -177,10 +177,10 @@ now.**
 | Previous HEAD | `66af2891` |
 | Commit subject | `[D-11] Sept1.md: credential custody decided - offline physical recovery records` |
 | Files changed | **`Sept1.md` only** — `+197`, pure insertion (new §22.3e) |
-| `git status --short` | ` M ops/docs/EXPORTS.md` |
+| `git status --short` | ` M ops/registry/EXPORTS.md` |
 | `git diff --cached --name-only` | `Sept1.md` (at commit); EXPORTS.md staged **0** |
 
-**Confirmations:** `ops/docs/EXPORTS.md` **untouched and unstaged** · **no credentials
+**Confirmations:** `ops/registry/EXPORTS.md` **untouched and unstaged** · **no credentials
 generated** · no packages installed · no media modified · **no LUKS container created** · no
 custody account created · no custody directory created · no GnuPG material created · no key
 generated · no fingerprint created · no revocation certificate created · no public key published
@@ -233,7 +233,7 @@ repo   /home/google/Symoneural
 HEAD   98326529   [D-11] credential custody decided
 prev   66af2891   [D-11] three-media topology + LUKS at rest
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 # D-11 CREDENTIAL CUSTODY DECIDED — OFFLINE PHYSICAL RECOVERY RECORDS

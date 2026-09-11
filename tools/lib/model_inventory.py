@@ -160,7 +160,7 @@ def scan() -> dict:
 def _classify(rel: str, entry: dict | None, is_active: bool) -> str:
     """One label per asset, and `unknown-blocked` is the honest default.
 
-    An unmanifested weight is not "probably fine" -- `ops/docs/LICENSE-AUDIT.md`'s vocabulary
+    An unmanifested weight is not "probably fine" -- `ops/audits/LICENSE-AUDIT.md`'s vocabulary
     says an unrecorded licence is a blocker until provenance exists, because you cannot ship
     what you cannot describe. So no provenance means `unknown-blocked`, whatever the file is.
     """

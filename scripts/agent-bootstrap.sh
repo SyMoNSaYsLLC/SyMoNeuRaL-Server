@@ -22,8 +22,8 @@ for f in \
   .claude/CLAUDE.md \
   .claude/HANDOVER.md \
   ENGINEERING.md \
-  ops/docs/MEASUREMENTS.md \
-  ops/docs/EXPORTS.md \
+  ops/registry/MEASUREMENTS.md \
+  ops/registry/EXPORTS.md \
   PROJECT-TASKS.md
 do
   if [ -e "$f" ]; then

@@ -47,7 +47,7 @@
     "runpath": "/home/google/Symoneural/symoneural-llm/build/bin:",
     "generation": "2026-08-20 -- RETAINED, not promoted",
     "same_build_as_server": false,
-    "skew_note": "bounded accepted skew; see ops/docs/SERVING-PATH.md. No matching CLI could be built."
+    "skew_note": "bounded accepted skew; see ops/registry/SERVING-PATH.md. No matching CLI could be built."
   },
   "custody": {
     "store": "archives/",

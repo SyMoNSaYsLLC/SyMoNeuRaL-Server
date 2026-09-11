@@ -210,7 +210,7 @@ posture is nonetheless **argv, not scope** — see §7.
 |---|---|---|
 | Journal record `{ts, action, path, workspace, pid}`, fsynced pre-mutation | `coder/_journal:421` | DURABLE, **unattributed** |
 | Backups + `.absent` markers under `run/coder-backups/<ws-tag>/` | `coder/__init__.py:476` | DURABLE |
-| Dated response + next-plan Markdown | `review/`, `ops/docs/` | DOCUMENTATION_ONLY |
+| Dated response + next-plan Markdown | `review/`, `ops/registry/` | DOCUMENTATION_ONLY |
 | `{"at", "by"}` on a rack unit | `controlboard/__init__.py:299` | DURABLE |
 | Evidence linked to task / actor / session / lease | — | **ABSENT** |
 

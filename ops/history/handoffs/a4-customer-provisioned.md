@@ -143,7 +143,7 @@ Application login, logout, session store and cookie identity all unchanged. No m
 
 ```
 $ git status --short
- M ops/docs/EXPORTS.md      ← pre-existing, prior authorization, untouched
+ M ops/registry/EXPORTS.md      ← pre-existing, prior authorization, untouched
 ```
 
 **No repository source modified** — no defect blocked the provisioning path. **No commit. No push.** All writes were runtime data under gitignored paths.

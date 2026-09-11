@@ -51,7 +51,7 @@ LOCKS = ROOT / "restore" / "locks"
 MANIFEST = ROOT / "restore" / "manifests" / "DEPENDENCIES.tsv"
 
 #: Production's environment. The engines resolve different libraries with and without it --
-#: see ops/docs/RUNTIMES.md -- and layer C must read the one production actually uses.
+#: see ops/registry/RUNTIMES.md -- and layer C must read the one production actually uses.
 PROD_ENV = {k: v for k, v in os.environ.items() if k != "LD_LIBRARY_PATH"}
 
 

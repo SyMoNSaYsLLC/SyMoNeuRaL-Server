@@ -2,7 +2,7 @@
 #
 # export_snapshot.sh -- the only sanctioned way a snapshot leaves this box.
 #
-# `ops/docs/EXPORTS.md` rule 4 names this script and nothing else. It exists because of the
+# `ops/registry/EXPORTS.md` rule 4 names this script and nothing else. It exists because of the
 # #75 finding: every whole-repo zip shared for review carried `training/corpus.jsonl` and
 # `training/build_dataset.py`, because both are tracked and the zips were built from tracked
 # files. Trade secret exists only while reasonable measures keep it in.
@@ -49,7 +49,7 @@ refuse() { printf '%s: REFUSED -- %s\n' "$PROG" "$*" >&2; exit 3; }
 info() { printf '%s: %s\n' "$PROG" "$*"; }
 
 # --- protected classes ------------------------------------------------------------------
-# Derived from ops/docs/EXPORTS.md rules 2 and 3. These are matched against the CONSTRUCTED
+# Derived from ops/registry/EXPORTS.md rules 2 and 3. These are matched against the CONSTRUCTED
 # set in stage 2. Extended-regex, matched against the repo-relative path.
 #
 # Note the deliberate redundancy with stage 1: nothing here is load-bearing for a correct

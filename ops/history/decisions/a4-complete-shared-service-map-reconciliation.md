@@ -19,7 +19,7 @@ with `SHARED_SERVICE_MAP` as the single remaining `EXISTING-INCOMPLETE` A-4 indi
 | HEAD | `698bef87` | `2def42b9` |
 | A-4 indicators at/above §10 requirement | 18 of 19 | **19 of 19** |
 | `SHARED_SERVICE_MAP` | `EXISTING-INCOMPLETE` | **`DEFINED — satisfied`** |
-| Tracked mods | `ops/docs/EXPORTS.md` only | `ops/docs/EXPORTS.md` only (untouched) |
+| Tracked mods | `ops/registry/EXPORTS.md` only | `ops/registry/EXPORTS.md` only (untouched) |
 | shared API service | active | active — **0 restarts** |
 | Archives produced | 0 | 0 |
 | Model payloads | 0 | 0 |
@@ -155,7 +155,7 @@ Two qualifiers that must travel with that sentence:
 - **D-12 — mechanical ownership guard: unimplemented**, explicitly outside A-4.
 - **Shared web / shared gateway / inference / credits implementation: separately gated.** Each
   is a prerequisite for *other* work; none is required by any A-4 indicator.
-- **`ops/docs/EXPORTS.md` remains modified-and-unstaged** from an earlier authorization. It must
+- **`ops/registry/EXPORTS.md` remains modified-and-unstaged** from an earlier authorization. It must
   never be swept into a commit. Verified unstaged at both commits this window.
 - `LIVE_STACK_ENTRY` is not entitlement-aware — the catalogue advertises the surface to
   unentitled viewers.
@@ -178,7 +178,7 @@ credits/metering store                       absent (unchanged)
 shared web / shared gateway                  inactive (unchanged)
 indicator rows extracted for 11.2            19
 staged files per commit                      1 (Sept1.md)
-ops/docs/EXPORTS.md staged                   no
+ops/registry/EXPORTS.md staged                   no
 ```
 
 ## To resume — exact checkpoint
@@ -188,7 +188,7 @@ repo   /home/google/Symoneural
 HEAD   2def42b9   [A-4] reconcile stale pre-A-series claims with the completion ruling
 prev   20bce542   [A-4] SHARED_SERVICE_MAP recast as dependency map; A-4 complete
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 Session commit chain: `1df394f0` baseline → `728df639` [A-2 exporter] → `a5fb0fbb` [A-1

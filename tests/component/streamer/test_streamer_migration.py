@@ -151,10 +151,10 @@ class NestedGuidePrefixTests(unittest.TestCase):
 
 
 class InvocableDocsTests(unittest.TestCase):
-    """Every command `ops/docs/MEASUREMENTS.md` hands an agent has to be runnable.
+    """Every command `ops/registry/MEASUREMENTS.md` hands an agent has to be runnable.
 
     The commanded suites lived in `.claude/CLAUDE.md` until 2026-08-22, when R-180 moved the
-    whole test-and-ladder section verbatim to `ops/docs/MEASUREMENTS.md`; this class was
+    whole test-and-ladder section verbatim to `ops/registry/MEASUREMENTS.md`; this class was
     repointed in the same commit, because a moved source with an unrepointed consumer is the
     exact unpropagated-move failure it exists to catch.
 
@@ -181,7 +181,7 @@ class InvocableDocsTests(unittest.TestCase):
         return sorted({m for b in blocks for m in self._PATH.findall(b)})
 
     def test_every_test_file_claude_md_tells_you_to_run_exists(self):
-        paths = self._commanded_paths("ops/docs/MEASUREMENTS.md")
+        paths = self._commanded_paths("ops/registry/MEASUREMENTS.md")
         self.assertTrue(paths, "no tests/ invocation found at all -- did the fences move?")
         root = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
         for rel in paths:
@@ -231,7 +231,7 @@ class InvocableDocsTests(unittest.TestCase):
         """
         on_disk = self._browser_suites()
         named = {rel.split("/")[-1]
-                 for rel in self._commanded_paths("ops/docs/MEASUREMENTS.md")}
+                 for rel in self._commanded_paths("ops/registry/MEASUREMENTS.md")}
         unnamed = on_disk - named - self.KNOWN_RED
         self.assertEqual(set(), unnamed,
                          f"browser suites exist that MEASUREMENTS.md never tells anyone to "

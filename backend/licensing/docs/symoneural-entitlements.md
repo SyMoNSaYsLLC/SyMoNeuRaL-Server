@@ -93,7 +93,7 @@ does not have.
   (`symoneural-generic-contracts.md` §3).
 - **A licence-blocked model is not entitleable.** Three of eleven weights currently have no licence
   text on disk, and the commercial-use fields are unrecorded for all eleven
-  (`ops/docs/MODEL-LICENSES.md` ML-1, ML-2). **An entitlement granting commercial use of a model
+  (`models/docs/MODEL-LICENSES.md` ML-1, ML-2). **An entitlement granting commercial use of a model
   whose commercial terms are unrecorded is the exact risk the licence audit exists to stop.**
 - **Deny by default.** An identity with no entitlement record gets the free/offline default, not
   everything.

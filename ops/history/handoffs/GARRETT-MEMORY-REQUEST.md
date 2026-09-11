@@ -170,7 +170,7 @@ Dispositions are exactly: `SUMMARIZED_AND_INDEXED`, `AUTHORITATIVE_IN_GIT`,
 | S01 | `/home/google/Symoneural` (.git) | source history | 2026-08-16 → 2026-09-08 | 618 commits, 6 tags, 20 refs | healthy, fsck 0 | `AUTHORITATIVE_IN_GIT` | yes | yes | git-state record | none | root `bf7c8fb0`, HEAD `5b14957e`; branches and tags enumerated in §8 |
 | S02 | tracked working tree | current source | now | HEAD tree | clean | `AUTHORITATIVE_IN_GIT` | yes | yes | HEAD | none | 0 modifications |
 | S03 | `external/` | third-party reference | — | 149 GB, 82 entries | ignored | `PRIVATE_BACKUP_ONLY` | yes | no | not archived — see notes | third-party licences | read-only by owner rule; **not** in any backup; recoverable from upstreams |
-| S04 | `archive/` | bulk, evidence, transcripts | — | 285 GB | ignored | `PRIVATE_BACKUP_ONLY` | yes | no | not archived | mixed | too large; contents indexed in `ops/docs/CONSOLIDATION-20260908.md` |
+| S04 | `archive/` | bulk, evidence, transcripts | — | 285 GB | ignored | `PRIVATE_BACKUP_ONLY` | yes | no | not archived | mixed | too large; contents indexed in `ops/audits/CONSOLIDATION-20260908.md` |
 | S05 | the five derived engine trees | derived binaries | — | 11 GB | ignored | `AUTHORITATIVE_IN_GIT` (recipe) | yes | recipe only | no | GPL-3.0 for 2 of 5 | rebuilt by `tools/sh/fork_engines.sh` |
 | S06 | worktrees + stash | uncommitted work | — | 4 worktrees, 0 stashes | 7 carried uncommitted state | `PRIVATE_BACKUP_ONLY` | yes | no | `metadata/git/worktree-*` | none | status + diff + diff-binary + untracked captured |
 | S07 | `/home/google/.claude` | Claude Code state | 2026-07 → now | 18,204 files | live | `PRIVATE_BACKUP_ONLY` | yes | no | in pre-migration ZIP | **credentials** | 194 transcripts, 3 memory files |
@@ -458,7 +458,7 @@ backup, `/.claude/` ignored so the later purge cannot dirty the repository.
 **The policy is enforced, not copied.** Its protected-class test failed on first run, and
 that failure was the finding: the retired settings denied destructive shell patterns and
 said nothing about `training/corpus.jsonl`, `build_dataset.py`, the adapter weights, or the
-mode-600 ledgers that `ops/docs/EXPORTS.md` names. **8 refusals were added** and are listed
+mode-600 ledgers that `ops/registry/EXPORTS.md` names. **8 refusals were added** and are listed
 under `deny_added_by_migration`, separate from the 13 `deny_migrated`, so nobody reads the
 old posture as stronger than it was. No `allow` list was migrated.
 
@@ -576,8 +576,8 @@ pre-migration ZIP **plus** its sidecar. Everything else is machine-local.
 | `/home/google/Symoneural` | the project and its 618-commit history | — |
 | `…/ProjectStatus.md` · `…/HANDOFF.md` | canonical state · canonical handoff | tracked |
 | `…/ops/authority/{PROJECT-AUTHORITY.md,TOOL-POLICY.json,START-HERE.txt}` | rules, policy, start-here | tracked |
-| `…/ops/docs/CONSOLIDATION-20260908.md` | where every home directory went | tracked |
-| `…/ops/docs/APPLICATION-VERIFICATION-20260908.md` | the 22-surface sweep | tracked |
+| `…/ops/audits/CONSOLIDATION-20260908.md` | where every home directory went | tracked |
+| `…/ops/audits/APPLICATION-VERIFICATION-20260908.md` | the 22-surface sweep | tracked |
 | `…/symoneural-miner-core/docs/ALGORITHM-GAP.md` | the miner gap, precisely | tracked |
 | `…/run/private/` | imported sessions and memories | 700/600, gitignored |
 | the six `/home/google` artefacts in §15 | backups, inventory, finalizer | 600/700 |
@@ -768,7 +768,7 @@ recorded rather than smoothed over.
   the process restarted, and the fact was never re-measured — the same
   reading-a-stale-record failure this document describes elsewhere. Proved by moving
   `engines/` aside (API 200, chat `ready`), then the five symlinks and the directory were
-  deleted. Blockers renumbered; the root-ownership row corrected; `ops/docs/RECONCILIATION-20260908.md`
+  deleted. Blockers renumbered; the root-ownership row corrected; `ops/audits/RECONCILIATION-20260908.md`
   added as the Phase 2 ledger. Suite re-measured at the new HEAD: still 2360 passed, 0 failed.
 - **v3**, 2026-09-08 05:55. Audited against the addendum's exact wording rather than my
   memory of it, which found two deviations in v1/v2: five history-ledger columns had been

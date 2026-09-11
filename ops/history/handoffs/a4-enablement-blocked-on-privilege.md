@@ -91,7 +91,7 @@ The complete mandatory sequence, unchanged:
 | 12 | D-3(b) separation | **unchanged** — nothing touched |
 | 13 | Regression | **not run** — no change to regress |
 | 14 | Exporter/release | **unchanged** — 7 entries, stage 2 passes, 0 archives |
-| 15 | `git status --short` | ` M ops/docs/EXPORTS.md` — pre-existing, untouched |
+| 15 | `git status --short` | ` M ops/registry/EXPORTS.md` — pre-existing, untouched |
 
 ## Not authorized, not done
 

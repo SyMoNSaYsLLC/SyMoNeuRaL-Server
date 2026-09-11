@@ -19,7 +19,7 @@ physically supplied. **This gate could not detect them.**
 | Architecture decisions | all closed | **all closed** |
 | Physical removable media detected | 0 | **0** |
 | Media accepted | — | **0 of 3** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## Block-device inventory (read-only)
 
@@ -114,7 +114,7 @@ Three removable devices with **nonzero size** should appear. If a device is pres
 | Item | Value |
 |---|---|
 | HEAD | `98326529` |
-| `git status --short` | ` M ops/docs/EXPORTS.md` (nothing staged) |
+| `git status --short` | ` M ops/registry/EXPORTS.md` (nothing staged) |
 | **Physical removable device count** | **0** |
 | Candidate A / B / C | **none detected** — all fields not assessable |
 | Accepted A / B / C | **NO / NO / NO** |
@@ -127,7 +127,7 @@ Three removable devices with **nonzero size** should appear. If a device is pres
 | Read-write mounts created | **0** |
 | Service change / reboot | **NONE / NONE** |
 | Stale `/media` directory | **untouched, not reused as a custody path** |
-| `ops/docs/EXPORTS.md` | **untouched and unstaged** |
+| `ops/registry/EXPORTS.md` | **untouched and unstaged** |
 | LUKS containers created | **0** |
 | Credentials generated | **0** |
 | Custody account / directory created | **NO / NO** |
@@ -159,7 +159,7 @@ external release NOT AUTHORIZED
 repo   /home/google/Symoneural
 HEAD   98326529   [D-11] credential custody decided
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 1. **Insert/connect the three removable media** and **re-run this acceptance gate** (read-only,

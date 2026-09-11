@@ -63,7 +63,7 @@ DOMAINS = {
              open(ROOT/"backend/telemetry.py").read()[:6000],
              open(ROOT/"tools/bench/bench_models.py").read()[:6000]],
     "prose": [open(ROOT/"README.md").read()[:6000],
-              open(ROOT/"ops/docs/MEASUREMENTS.md").read()[:6000],
+              open(ROOT/"ops/registry/MEASUREMENTS.md").read()[:6000],
               open(ROOT/"review/bench/README.md").read()[:6000]],
     "technical": [open(ROOT/"scripts/gpu-governor.sh").read()[:6000],
                   open(ROOT/"backend/fabric_core/expertcache.py").read()[:6000],

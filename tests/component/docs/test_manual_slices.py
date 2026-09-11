@@ -47,7 +47,7 @@ class TheSlicesAreGenerated(unittest.TestCase):
         only one tree is how the 32 lines of breadcrumb drift happened."""
         src = TOOL.read_text()
         self.assertIn("plugins/reinforce/docs", src)
-        self.assertIn('ROOT / "ops" / "docs"', src)
+        self.assertIn('ROOT / "ops" / "registry"', src)
 
 
 if __name__ == "__main__":

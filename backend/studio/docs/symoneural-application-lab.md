@@ -4,7 +4,7 @@
 deploy, and no archive imported** by this document or the commit that introduced it.
 
 This file exists because the next thing that happens to this tree is a migration, and a
-migration needs to know how many applications there are. `ops/docs/REPOSITORY-PURPOSE.md` §2
+migration needs to know how many applications there are. `business/REPOSITORY-PURPOSE.md` §2
 established *that* applications are incubated here; this file is the list. Garrett, 2026-08-22:
 *"Do not migrate the repo as if it contains only `backend/apps/studio`."*
 
@@ -13,13 +13,13 @@ established *that* applications are incubated here; this file is the list. Garre
 > **Docs may describe the future architecture. Implementation must match Garrett's actual box
 > and currently authorized scope.**
 
-`ops/docs/REPOSITORY-PURPOSE.md`, *The rule*. So every column below marked **measured** is a
+`business/REPOSITORY-PURPOSE.md`, *The rule*. So every column below marked **measured** is a
 reading of this disk on 2026-08-22, and every column marked **brief** is Garrett's stated
 purpose for a thing that has not been inspected. The two are never merged.
 
 ## This file does not classify. It points at the file that does
 
-`ops/docs/REPOSITORY-PURPOSE.md` §2 already names `ops/docs/BOX-REALITY-AUDIT.md` as the home
+`business/REPOSITORY-PURPOSE.md` §2 already names `ops/audits/BOX-REALITY-AUDIT.md` as the home
 of the PROD / AUDIT / REMOVED verdict, and `.claude/CLAUDE.md`'s first *never* is *"never
 create a second state document."* A verdict restated here would drift from the audit on the
 first re-measurement, so the **Verdict** column below is a pointer, not a judgement. New
@@ -92,7 +92,7 @@ and **task #89 already tracks it at 50%**. Exp cites it as reference (§3.3); th
 
 **Purpose** is Garrett's brief, verbatim in intent. **On this box** is measured: tracked-file
 counts from `git ls-files` on 2026-08-22. **Verdict** points into
-`ops/docs/BOX-REALITY-AUDIT.md`.
+`ops/audits/BOX-REALITY-AUDIT.md`.
 
 | # | Area | Purpose (brief) | On this box (measured) | Reference archive | Verdict |
 |---|---|---|---|---|---|
@@ -109,7 +109,7 @@ counts from `git ls-files` on 2026-08-22. **Verdict** points into
 
 Two further areas the brief names are already specified elsewhere and are **not** duplicated
 here: **Runtime/ModelOps** is `backend/registry/docs/symoneural-runtime-registry.md` and
-`ops/docs/MODEL-REGISTRY.md`; **Local Agent**, **Worker services** and **Platform targets** are
+`models/docs/MODEL-REGISTRY.md`; **Local Agent**, **Worker services** and **Platform targets** are
 `backend/studio/docs/symoneural-studio-upgrade-scope.md` §5.2 and
 `ops/backend/authority/docs/symoneural-platform-targets.md`.
 

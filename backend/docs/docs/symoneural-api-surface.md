@@ -123,5 +123,5 @@ No new route · no route removed or aliased · no `/api` filesystem or coder too
 gate change · no rate-bucket change · no `ops/Caddyfile` edit · no `api.py` rewrite · no deploy.
 
 Related: `symoneural-live-stack.md` · `symoneural-control-board.md` ·
-`symoneural-coder-project-cli-scope.md` §4 · `ops/docs/GPU-GOVERNOR.md` ·
-`ops/docs/BOX-REALITY-AUDIT.md`.
+`symoneural-coder-project-cli-scope.md` §4 · `scripts/docs/GPU-GOVERNOR.md` ·
+`ops/audits/BOX-REALITY-AUDIT.md`.

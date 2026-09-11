@@ -4,9 +4,9 @@ A matrix of ratings and reachability cells is prose, and prose drifts. These tes
 four documents cannot quietly stop being true:
 
   * `backend/controlboard/docs/symoneural-control-plane-matrix.md`
-  * `ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md`
-  * `ops/docs/MODEL-BENCHMARKS.md`
-  * `ops/docs/VLLM-BENCH-PARITY.md`
+  * `ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md`
+  * `models/docs/MODEL-BENCHMARKS.md`
+  * `models/docs/VLLM-BENCH-PARITY.md`
 
 **Everything here is pure parse plus `stat`.** Nothing is imported from the app, no subprocess is
 launched, and in particular nothing under `scripts/model-staging/` is invoked -- that script rewrites
@@ -36,7 +36,7 @@ import re
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-DOCS = ROOT / "ops" / "docs"
+DOCS = ROOT / "ops" / "registry"
 
 MATRIX = DOCS / "specs" / "symoneural-control-plane-matrix.md"
 CAPABILITY = DOCS / "ops" / "APPLICATION-MODEL-CAPABILITY-MATRIX.md"

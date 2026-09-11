@@ -7,7 +7,7 @@ imported.**
 ## Classification: AUDIT / overhaul
 
 R-176 calls for a full overhaul across **GPU miner · Antminer · Whatsminer/MicroBT ·
-Bitfury/Braiins · emulators.** The verdict lives in `ops/docs/BOX-REALITY-AUDIT.md` §10.6, and
+Bitfury/Braiins · emulators.** The verdict lives in `ops/audits/BOX-REALITY-AUDIT.md` §10.6, and
 this document is the scope behind it.
 
 **Miner stays AUDIT / overhaul until all six of these are true:**
@@ -177,7 +177,7 @@ changed · no gateway code moved · no folder migration · no deploy.
 
 | Concern | Owner |
 |---|---|
-| verdict | `ops/docs/BOX-REALITY-AUDIT.md` §10.6, §8.3 |
+| verdict | `ops/audits/BOX-REALITY-AUDIT.md` §10.6, §8.3 |
 | the miner page's *layout* | open task **#85** — *"the miner page, embedded the way RavenCalc is"* |
 | GPU yield protocol | `backend/cryptominer/docs/miner-preemption.md` — specified, deliberately unimplemented |
 | benchmark provenance | `backend/apps/cryptominer/README.md` §on measurement |

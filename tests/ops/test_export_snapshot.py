@@ -1,6 +1,6 @@
 """tools/data/export_snapshot.sh -- allow-list construction and fail-closed refusal.
 
-`ops/docs/EXPORTS.md` rule 4 makes this script the only sanctioned way a snapshot leaves
+`ops/registry/EXPORTS.md` rule 4 makes this script the only sanctioned way a snapshot leaves
 this box, so the thing worth testing is not that it can write a zip. It is that it REFUSES,
 and that a path nobody classified does not ship.
 

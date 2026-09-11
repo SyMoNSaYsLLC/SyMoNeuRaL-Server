@@ -16,11 +16,11 @@ ready -- so `test_no_ready_surface_is_labelled_down` fails if a page that reads 
 rack ever appears on the list. It uses a recorded reading rather than calling the live API:
 this suite must pass with the network down and with the API stopped, and a test that silently
 turns into a no-op when a fetch fails is worse than no test. The reading it compares against
-is the one `ops/docs/MAINTENANCE-SURFACES.md` was written from, and refreshing it is a
+is the one `ops/registry/MAINTENANCE-SURFACES.md` was written from, and refreshing it is a
 deliberate edit in both places.
 
 **One list, two files, asserted equal.** The list lives in `site/ui.js` because that is what
-the browser executes, and in `ops/docs/MAINTENANCE-SURFACES.md` because that is where the
+the browser executes, and in `ops/registry/MAINTENANCE-SURFACES.md` because that is where the
 reason for each entry is written down. `test_list_matches_the_document` is what stops those
 two from drifting -- which they would, because taking a surface off maintenance is exactly the
 moment somebody edits one file and considers the job done.
@@ -33,10 +33,10 @@ import unittest
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 UI_JS = REPO / "site" / "ui.js"
-DOC = REPO / "ops" / "docs" / "MAINTENANCE-SURFACES.md"
+DOC = REPO / "ops" / "registry" / "MAINTENANCE-SURFACES.md"
 SITE = REPO / "site"
 
-#: The rack reading `ops/docs/MAINTENANCE-SURFACES.md` was written from, read from
+#: The rack reading `ops/registry/MAINTENANCE-SURFACES.md` was written from, read from
 #: `GET /api/status` at 08:23 EDT on 2026-08-26 and pasted here rather than fetched. Frozen on
 #: purpose: see the module docstring. `train` is the rack's id for Reinforce.
 RACK_AT_2026_08_26 = {
@@ -74,7 +74,7 @@ def ui_js_list() -> list[str]:
 def doc_list() -> list[str]:
     """The paths in the document's table, taken from the first column of `| `/x` |` rows."""
     rows = re.findall(r"^\|\s*`(/[^`]*)`\s*\|", DOC.read_text(encoding="utf-8"), re.M)
-    assert rows, "ops/docs/MAINTENANCE-SURFACES.md has no table rows to read"
+    assert rows, "ops/registry/MAINTENANCE-SURFACES.md has no table rows to read"
     return rows
 
 
@@ -105,7 +105,7 @@ class MaintenanceBannerTests(unittest.TestCase):
         in_doc = {bare(p) for p in doc_list()}
         self.assertEqual(
             in_js, in_doc,
-            "site/ui.js and ops/docs/MAINTENANCE-SURFACES.md disagree about which surfaces "
+            "site/ui.js and ops/registry/MAINTENANCE-SURFACES.md disagree about which surfaces "
             "are down. Only in ui.js: %s. Only in the document: %s."
             % (sorted(in_js - in_doc), sorted(in_doc - in_js)))
 

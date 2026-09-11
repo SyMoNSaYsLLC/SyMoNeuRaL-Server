@@ -2,7 +2,7 @@
 
 This package exists because of a design Garrett sent on 2026-08-18 — a Cordis-like plugin
 runtime — and because of the verdict this repository already wrote about it in
-`ops/docs/integration-sources.md` (the repo-level `docs/`, not this one). That verdict said no. This
+`ops/registry/integration-sources.md` (the repo-level `docs/`, not this one). That verdict said no. This
 document explains what changed, what was actually ported, what was deliberately left on the
 table, and — the part `__init__.py` promises — where the plateau is.
 

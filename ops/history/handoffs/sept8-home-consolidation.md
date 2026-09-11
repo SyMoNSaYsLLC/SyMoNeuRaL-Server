@@ -35,7 +35,7 @@ scheme would have created a second source of truth, which this repo forbids.
 **(b) A 291-entry audit already existed and was never authorised.** `HOME-CLEANUP-AUDIT-
 20260903.md` inventoried **291 of 291** top-level entries with zero gaps on 2026-09-03 and
 has been sitting unread. It is a better map than the 26 names in the request. Adopted to
-`ops/docs/home-cleanup-audit-20260903/`; **the remaining phases should be driven from its
+`ops/registry/home-cleanup-audit-20260903/`; **the remaining phases should be driven from its
 manifest, not from a list.**
 
 **(c) The licence wall.** Four engines are MIT-derived, which is why the first-party fork
@@ -48,7 +48,7 @@ migration, and it has not been started.**
 
 ## 2. What moved
 
-Three destinations, one rule each. Full map in `ops/docs/CONSOLIDATION-20260908.md`.
+Three destinations, one rule each. Full map in `ops/audits/CONSOLIDATION-20260908.md`.
 
 | | Tracked | Contents |
 |---|---|---|
@@ -84,7 +84,7 @@ catch it.**
 
 **A 101 MB protected-inventory leak, caught before it was committed.**
 `Symoneuraltree.md` was sitting in the handoff directory — a full filesystem listing that
-names `training/corpus.jsonl` and `training/build_dataset.py`. `ops/docs/EXPORTS.md` rule 2
+names `training/corpus.jsonl` and `training/build_dataset.py`. `ops/registry/EXPORTS.md` rule 2
 puts those in the protected class: *never in an export, never served, never quoted into a
 page or commit message*. Moving the handoff chain into tracked `docs/` would have put that
 inventory in git history permanently. Caught by the grep EXPORTS.md publishes as its own
@@ -140,8 +140,8 @@ suite run, consistent with its lifetime and its argument shape.
 
 ```
 repo    /home/google/Symoneural   branch main   tree CLEAN
-docs    ops/docs/CONSOLIDATION-20260908.md   what moved where and why
-        ops/docs/home-cleanup-audit-20260903/  291-entry map, drives the next phase
+docs    ops/audits/CONSOLIDATION-20260908.md   what moved where and why
+        ops/registry/home-cleanup-audit-20260903/  291-entry map, drives the next phase
 next    (1) decide what backend/apps should actually contain for an engine
         (2) classified pass over Downloads/ -- project vs personal
         (3) integrate symoneural-buildv2 as first-party tooling

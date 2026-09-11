@@ -74,6 +74,6 @@ Any contract type chosen without checking that is a wire that looks typed and is
 No contract implemented · no schema change · no registry field added · no `/generic` route or rack
 row · no folder migration · no deploy.
 
-Related: `symoneural-runtime-registry.md` §1-2 · `ops/docs/MODEL-REGISTRY.md` ·
+Related: `symoneural-runtime-registry.md` §1-2 · `models/docs/MODEL-REGISTRY.md` ·
 `symoneural-studio-node-system.md` §2 · `symoneural-parameters.md` ·
-`ops/docs/HARDWARE-PROFILES.md`.
+`backend/hardware/docs/HARDWARE-PROFILES.md`.

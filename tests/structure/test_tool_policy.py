@@ -100,7 +100,7 @@ class TheProtectedClassesRemainDenied(unittest.TestCase):
         missing = [n for n in MUST_STAY_DENIED if n not in self.blob]
         self.assertEqual([], missing,
                          f"these are no longer denied after the migration: {missing}. "
-                         "ops/docs/EXPORTS.md rules 2 and 3 name them as protected")
+                         "ops/registry/EXPORTS.md rules 2 and 3 name them as protected")
 
 
 class ThePolicyCarriesNoSecrets(unittest.TestCase):

@@ -15,10 +15,10 @@ below still says "the agent", read it as whoever is doing the work.
 | What is the current verified state? | `ProjectStatus.md` |
 | What is the state, what is left, what will bite me? | `HANDOFF.md` |
 | Every folder and what it is for | `README.md` |
-| What may leave this box? | `ops/docs/EXPORTS.md` |
+| What may leave this box? | `ops/registry/EXPORTS.md` |
 | How do I install, start, verify or roll back the API? | `RUNBOOK.md` |
-| Where does each surface listen? | `ops/PORTS.tsv` — rendered as `ops/docs/PORTS.md` |
-| What runs behind a surface, what invokes it, what does it load, does it take the GPU lease? | `ops/RUNTIMES.tsv` — rendered as `ops/docs/RUNTIMES.md` |
+| Where does each surface listen? | `ops/PORTS.tsv` — rendered as `ops/registry/PORTS.md` |
+| What runs behind a surface, what invokes it, what does it load, does it take the GPU lease? | `ops/RUNTIMES.tsv` — rendered as `ops/registry/RUNTIMES.md` |
 | How does any of this come back after a reinstall? | `restore/` — and `THIRD-PARTY-REBUILD-MANIFEST.tsv` for pinned upstreams |
 | Why is the code like this? | `git log` |
 
@@ -31,7 +31,7 @@ record, a reader in `backend/apps/`, a generator that renders the Markdown, and 
 asserting the registries agree with each other.** The Markdown is a rendering, never the
 record; hand-editing it is a change that the next generator run silently discards.
 
-`ops/docs/RUNTIMES.md` is **not** `ops/docs/RUNTIME-PROFILES.md`, which is one word away and
+`ops/registry/RUNTIMES.md` is **not** `backend/hardware/docs/RUNTIME-PROFILES.md`, which is one word away and
 opens *"Status: stub. A contract for something not yet built."* The first is a reading of
 this disk; the second is a maturity ladder for runtimes that mostly are not here, written
 against the retired `engines/symoneural-*` layout. Neither supersedes the other.
@@ -310,8 +310,8 @@ README that says so.
 | What are the rules? | **this file** |
 | What is the state, what is left to do, what will bite me? | **`HANDOFF.md`** |
 | Build, deploy, GPU, environments, honesty, trade secret, serving, branding? | **`ENGINEERING.md`** |
-| Suite counts, the ladder, how to run the tests? | **`ops/docs/MEASUREMENTS.md`** |
-| What may leave this box? | **`ops/docs/EXPORTS.md`** |
+| Suite counts, the ladder, how to run the tests? | **`ops/registry/MEASUREMENTS.md`** |
+| What may leave this box? | **`ops/registry/EXPORTS.md`** |
 | What does the hardware actually do? | `frontend/site/docs/symoneural-manual.md`, and `docs/` |
 | Why is the code like this? | **`git log`** — every commit states its reason |
 
@@ -332,6 +332,6 @@ VERBATIM to the three files in the table above. Same words, project-owned homes.
 work enters, how a task is worked and completed, what never to do) and points at the rest.
 
 **Read `ENGINEERING.md` before touching the build, the card, or an environment.
-Read `ops/docs/MEASUREMENTS.md` before running or quoting a test count. Read
-`ops/docs/EXPORTS.md` before any byte leaves this box.** A rule you did not read still
+Read `ops/registry/MEASUREMENTS.md` before running or quoting a test count. Read
+`ops/registry/EXPORTS.md` before any byte leaves this box.** A rule you did not read still
 applies; the pointer being short is a convenience, not a shrinking of the rules.

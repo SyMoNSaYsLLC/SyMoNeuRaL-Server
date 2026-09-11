@@ -22,7 +22,7 @@ recorded the D-11 ruling and characterized P1/P2/P3. This window implements **P1
 | Signing keys on box | 0 | **0 — none generated** |
 | Signed artifacts | 0 | **0** |
 | A-4 | COMPLETE 19/19 | **unchanged** |
-| Tracked mods | `ops/docs/EXPORTS.md` | `ops/docs/EXPORTS.md` — untouched |
+| Tracked mods | `ops/registry/EXPORTS.md` | `ops/registry/EXPORTS.md` — untouched |
 
 ## Why this had to land before the key ceremony
 
@@ -170,20 +170,20 @@ contains them and is not in any manifest.
 - **P2 — non-forgeable release identity: NOT implemented.** Two fail-closed cases remain,
   including the live one: the exporter copies from the **working tree** but labels with
   `git rev-parse HEAD`, so a modified manifested file ships content not matching its stated
-  `source-sha`. This tree has carried ` M ops/docs/EXPORTS.md` throughout; the 7-entry manifest
+  `source-sha`. This tree has carried ` M ops/registry/EXPORTS.md` throughout; the 7-entry manifest
   happens not to overlap it — luck, not a guarantee.
 - **P3 — public-key distribution: NOT implemented, nothing published.** Recommendation stands:
   `site/release-key.txt` + fingerprint out-of-band.
 - **Key ceremony: NOT performed.** Separately authorized; P1 landing is what unblocks it.
 - **External release: NOT authorized.** D-12 separate and unimplemented.
-- **`ops/docs/EXPORTS.md`** remains modified-and-unstaged; verified unstaged at this commit.
+- **`ops/registry/EXPORTS.md`** remains modified-and-unstaged; verified unstaged at this commit.
   Note prerequisite item 9 will eventually add a signing rule there — on its own authorization.
 
 ## Verification — measured
 
 ```
 HEAD                     bb9230f4
-git status --short        M ops/docs/EXPORTS.md   (pre-existing, untouched, never staged)
+git status --short        M ops/registry/EXPORTS.md   (pre-existing, untouched, never staged)
 git diff --cached         tools/data/export_snapshot.sh, backend/apps/test_export_snapshot.py
 EXPORTS.md staged        0        Sept1.md staged   0
 tests                    22 passed (7 A-2 + 15 P1)
@@ -204,7 +204,7 @@ repo   /home/google/Symoneural
 HEAD   bb9230f4   [P1] export_snapshot.sh: refuse signing material by path and by content
 prev   5063b480   [D-11] record owner ruling as controlling signing architecture
 git status --short:
- M ops/docs/EXPORTS.md
+ M ops/registry/EXPORTS.md
 ```
 
 Next authorization, in the recorded order: **P3 channel confirmation**, then **P2**

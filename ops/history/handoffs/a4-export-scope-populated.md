@@ -112,12 +112,12 @@ stage 2: 0 protected paths -- passed        ← NOT flagged
 
 ```
 $ git status --short
- M ops/docs/EXPORTS.md                    ← PRE-EXISTING, prior authorization
+ M ops/registry/EXPORTS.md                    ← PRE-EXISTING, prior authorization
 ?? (planning document)                    ← PRE-EXISTING, untracked
 ?? <app>/EXPORT-SCOPE.manifest            ← A-4, new
 
 $ git diff --stat
- ops/docs/EXPORTS.md | 30 ++++--    ← pre-existing only
+ ops/registry/EXPORTS.md | 30 ++++--    ← pre-existing only
  1 file changed
 ```
 

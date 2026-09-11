@@ -305,7 +305,7 @@ Consequences worth stating plainly:
   purpose: the engine composes them through CUDA graphs rather than through ever-wider fused
   kernels." **No code path composes anything through a CUDA graph.** That sentence describes
   an intent, not the implementation.
-- `ops/docs/DOCS-INDEX.md`'s "which measurement drives which module" table claims the PCIe cap is
+- `ops/history/archive/DOCS-INDEX.md`'s "which measurement drives which module" table claims the PCIe cap is
   consumed by "`core/context.py` → `pcie_bound`; allocator refuses host spill". There is no
   host-spill code in the allocator; it raises on a capacity cap and mentions PCIe in the
   message.
@@ -435,7 +435,7 @@ def pcie_bound(self) -> bool:
 ```
 
 `core/streams.py:24` states: *"On a Gen 5 ×16 host the same code would benefit; the flag is
-computed, not hard-coded off."* It is hard-coded — on. `ops/docs/DOCS-INDEX.md`'s measurement table
+computed, not hard-coded off."* It is hard-coded — on. `ops/history/archive/DOCS-INDEX.md`'s measurement table
 lists it as consumed from the PCIe measurement. On a Gen 5 ×16 box the engine would still
 report `overlap_profitable: false` over `GET /device`, `recommend_stream_count()` would
 still return 1, and the queue would still refuse a second worker. The driver exposes
@@ -511,7 +511,7 @@ Against that standard, seven items fall short:
    constant** — see 3.2. The `grid-capped` regime band `(0.45, 1.25)` institutionalises it.
 
 6. **`core/streams.py:24` says `pcie_bound` "is computed, not hard-coded off"; it is
-   `return True`** — see 4.2. `ops/docs/DOCS-INDEX.md` repeats the claim in its measurement table.
+   `return True`** — see 4.2. `ops/history/archive/DOCS-INDEX.md` repeats the claim in its measurement table.
 
 7. **README's environment-isolation section is internally inconsistent and describes output
    the script cannot produce.** Line 236 says the samples venv holds "exactly the 4 packages

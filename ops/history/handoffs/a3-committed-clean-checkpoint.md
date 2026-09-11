@@ -87,7 +87,7 @@ The start timestamp is the proof: it still reads 16:28, so the process was never
 
 ```
 $ git status --short
- M ops/docs/EXPORTS.md      ← PRE-EXISTING, prior authorization, deliberately not committed
+ M ops/registry/EXPORTS.md      ← PRE-EXISTING, prior authorization, deliberately not committed
 ?? (planning document)      ← PRE-EXISTING, untracked
 ```
 

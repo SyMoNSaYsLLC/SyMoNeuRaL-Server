@@ -135,7 +135,7 @@ That single commit would make **A-4 complete**.
 
 ```
 $ git status --short
- M ops/docs/EXPORTS.md      ← pre-existing, untouched
+ M ops/registry/EXPORTS.md      ← pre-existing, untouched
 ```
 
 **Nothing changed:** 0 restarts · accounts 1 · correspondences 1 · grants 1 · web inactive · gateway inactive · credits absent · **A-4 record edited: 0** · no commit · no push.

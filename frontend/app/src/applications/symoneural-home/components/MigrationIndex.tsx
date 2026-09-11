@@ -36,7 +36,7 @@ export function MigrationIndex() {
         <Panel title="Still legacy" note="served from site/">
           <p className={styles.status}>
             The remaining 26 pages are unchanged and untouched. The route-ownership map in{" "}
-            <code>ops/docs/FRONTEND-ROUTE-OWNERSHIP.md</code> records which application owns
+            <code>frontend/docs/FRONTEND-ROUTE-OWNERSHIP.md</code> records which application owns
             each one and what it depends on.
           </p>
         </Panel>

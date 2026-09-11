@@ -107,7 +107,7 @@ $ git diff --cached --stat        (pre-commit)
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 $ git status --short              (post-commit)
- M ops/docs/EXPORTS.md      ← pre-existing, NOT swept in
+ M ops/registry/EXPORTS.md      ← pre-existing, NOT swept in
 ```
 
 ---

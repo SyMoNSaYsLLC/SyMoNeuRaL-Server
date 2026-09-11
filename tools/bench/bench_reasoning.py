@@ -7,7 +7,7 @@ specifically to my hardware it will run circles on qwen"*.
 
 ## The question this settles
 
-The 2026-08-22 benchmark (`ops/docs/OPENAI-GPT-OSS-MIGRATION.md` §3d) found gpt-oss faster per
+The 2026-08-22 benchmark (`models/docs/OPENAI-GPT-OSS-MIGRATION.md` §3d) found gpt-oss faster per
 token (166.3 vs 147.6 tok/s) and **ten times more expensive per answer** -- 259 tokens for a
 one-sentence reply against Qwen's 25, so 1.72 s wall clock against 0.21 s. It ran at ONE
 reasoning setting and did not say which.

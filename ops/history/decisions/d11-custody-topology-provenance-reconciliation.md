@@ -194,7 +194,7 @@ As instructed, and pending your review:
 | Item | Value |
 |---|---|
 | HEAD | `98326529` — unchanged |
-| `git status --short` | ` M ops/docs/EXPORTS.md` (nothing staged) |
+| `git status --short` | ` M ops/registry/EXPORTS.md` (nothing staged) |
 | Repository modified | **NO** |
 | Packages installed | **NO** |
 | Devices written / scanned as prerequisite | **NO / NO** |

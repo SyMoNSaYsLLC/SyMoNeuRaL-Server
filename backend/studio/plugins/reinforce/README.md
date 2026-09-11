@@ -96,7 +96,7 @@ symoneural_reinforce/
 ├── bench/                   Benchmark suite vs. the measured dossier figures
 ├── tests/                   112 tests: engine, server, agents, 4 hw constraints
 ├── scripts/run_tests.sh     Constraint-aware runner with venv isolation guard
-└── docs/                    Modular manual — see ops/docs/DOCS-INDEX.md
+└── docs/                    Modular manual — see ops/history/archive/DOCS-INDEX.md
 ```
 
 ---
@@ -253,7 +253,7 @@ the base stack.
 
 ## Documentation
 
-See [`ops/docs/DOCS-INDEX.md`](ops/docs/DOCS-INDEX.md) for the modular manual and, importantly,
+See [`ops/history/archive/DOCS-INDEX.md`](ops/history/archive/DOCS-INDEX.md) for the modular manual and, importantly,
 the table mapping each measured figure to the module that consumes it.
 
 ## Known limits

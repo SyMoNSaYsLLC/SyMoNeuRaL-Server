@@ -16,10 +16,10 @@
 |---|---|
 | Who is starter, who may race, who is cheating, what the six first-time modes are | **`backend/studio/docs/symoneural-bootcamp.md`** |
 | **The 16-dimension record shape, and the measured row per app instance** | **this file** |
-| Which app can actually load which weight | **`ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md`** |
-| Benchmark figures and the SHA each was read on | **`ops/docs/MODEL-BENCHMARKS.md`** |
-| vLLM parity, and why it is unmeasured | **`ops/docs/VLLM-BENCH-PARITY.md`** |
-| Runtime ladder level per family | **`ops/docs/RUNTIME-PROFILES.md`** |
+| Which app can actually load which weight | **`ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md`** |
+| Benchmark figures and the SHA each was read on | **`models/docs/MODEL-BENCHMARKS.md`** |
+| vLLM parity, and why it is unmeasured | **`models/docs/VLLM-BENCH-PARITY.md`** |
+| Runtime ladder level per family | **`backend/hardware/docs/RUNTIME-PROFILES.md`** |
 
 ## 1. The 16 dimensions, defined once
 
@@ -74,7 +74,7 @@ four. A derivation with a hole in it is not a derivation, and the hole is where 
 | **`loopback`** | `S-low` | **`S-med`** | `S-high` |
 | **`public`** | **`S-med`** | **`S-high`** | `S-high` |
 
-**`S-blocked` overrides any cell** when an open `HIGH-n` in `ops/docs/SECURITY-AUDIT.md` names the
+**`S-blocked` overrides any cell** when an open `HIGH-n` in `ops/audits/SECURITY-AUDIT.md` names the
 instance. It is not a worse number; it is a named open finding.
 
 **Gate is recorded and does **not** change the rating**, which is deliberate and worth defending: a
@@ -114,7 +114,7 @@ nobody reads its absence as an oversight.
 | **batch** | many inputs, one queued submission | **available** — `-np 2` on chat; Studio job queue |
 | **bucket** | grouped storage/retention for outputs | **partial** — renders land in `backend/output`; no retention policy |
 | **SDK** | a contract a third party builds against | **draft only** — `backend/vendor/anthropics/*` is vendored SDKs, not ours |
-| **OpenEmbedded / Yocto** | customer image build | **local/dev only** — `ops/docs/YOCTO-LAYER-LICENSES.md`; no customer artefact |
+| **OpenEmbedded / Yocto** | customer image build | **local/dev only** — `backend/asicminer/docs/YOCTO-LAYER-LICENSES.md`; no customer artefact |
 | **wizard** | guided setup that asks rather than assumes | **available** — streamer guide setup asks, does not geolocate |
 | **tuner** | supervised adapter/LoRA training | **built** — `backend/apps/studio/plugins/reinforce`; `train` reads `ready` |
 | **tester** | blinded probe harness | **built** — `tools/lib/bootcamp_referee.py` |
@@ -192,7 +192,7 @@ Footnotes are the derivation, not decoration:
 2. `P-partial` — the FLUX bundle serves, but no stamped throughput figure exists for the image
    path. Its VRAM footprint (~11.8 GiB resident) is recorded in Bootcamp §5, and it is a capacity
    reading rather than a benchmark.
-3. **`S-blocked` is not my judgement.** `ops/docs/SECURITY-AUDIT.md` **HIGH-1** (editor as a
+3. **`S-blocked` is not my judgement.** `ops/audits/SECURITY-AUDIT.md` **HIGH-1** (editor as a
    product surface) and **HIGH-2** (WebSocket origin posture) are open against Studio, and
    `/studio` + `/studio/*` are public paths in `ops/Caddyfile:150`. Live state is `offline`, so
    the exposure is currently latent rather than active — **both facts belong in the row.**
@@ -423,6 +423,6 @@ read as a statement about the tunnel, and nothing here recommends changing it �
 - **404 commits between 2026-08-17 and `7a4e5c98` are not audited.** Every runtime, route and
   state reading here is **measured at `507e09ee` on 2026-08-23** and is not historical proof.
 
-**Related** `backend/studio/docs/symoneural-bootcamp.md` · `ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md` ·
-`ops/docs/MODEL-BENCHMARKS.md` · `ops/docs/VLLM-BENCH-PARITY.md` · `ops/docs/RUNTIME-PROFILES.md` ·
-`ops/docs/SECURITY-AUDIT.md` · `backend/apps/test_control_plane_matrix.py`
+**Related** `backend/studio/docs/symoneural-bootcamp.md` · `ops/audits/APPLICATION-MODEL-CAPABILITY-MATRIX.md` ·
+`models/docs/MODEL-BENCHMARKS.md` · `models/docs/VLLM-BENCH-PARITY.md` · `backend/hardware/docs/RUNTIME-PROFILES.md` ·
+`ops/audits/SECURITY-AUDIT.md` · `backend/apps/test_control_plane_matrix.py`

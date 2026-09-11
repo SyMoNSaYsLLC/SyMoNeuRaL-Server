@@ -97,7 +97,7 @@ Item 2 is a configuration and secret-material change and must stay a separate au
 
 ```
 $ git status --short
- M ops/docs/EXPORTS.md      ← pre-existing, prior authorization, untouched
+ M ops/registry/EXPORTS.md      ← pre-existing, prior authorization, untouched
 ?? (planning document)      ← the only file modified this pass; untracked
 ```
 
