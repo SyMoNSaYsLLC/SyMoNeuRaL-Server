@@ -27,14 +27,12 @@ from __future__ import annotations
 
 import asyncio
 import email.utils
-import time
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, ConfigDict
 
 from .lib import store
-from .lib.store import API_VERSION
 
 # The credential header, and the name it replaced. Declared here rather than in `store`
 # because `store.authorize` takes a token, not a request: the wire spelling is this

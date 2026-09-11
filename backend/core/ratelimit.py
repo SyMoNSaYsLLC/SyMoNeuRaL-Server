@@ -11,7 +11,6 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Request
 
 from core.config import LIMITS, _MINOR, _SEXUAL
-from core.context import ctx
 from runtime.lib.ratelimits import allowed, client_key_from_headers, limiters_for
 
 log = logging.getLogger("symoneural.api")

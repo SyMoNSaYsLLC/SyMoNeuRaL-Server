@@ -25,18 +25,11 @@ routes as if they were the whole API.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import logging
 import os
-import pathlib
-import re
-import secrets
-import signal
 import subprocess
-import sys
 import time
-from contextlib import asynccontextmanager
 from typing import Annotated, Literal
 
 from fastapi import (Depends, FastAPI, HTTPException, Request, Response, WebSocket,
@@ -44,7 +37,6 @@ from fastapi import (Depends, FastAPI, HTTPException, Request, Response, WebSock
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.middleware.gzip import GZipMiddleware
-from starlette.types import ASGIApp, Receive, Scope, Send  # for RackPowerGate, which is raw ASGI on purpose
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -84,11 +76,8 @@ from pydantic import BaseModel, Field
 # spawn. Import succeeded regardless, because nothing calls it at import time. Caught by
 # asking the imported module for the attribute rather than trusting that `import api` passing
 # meant the wiring was right.
-from hardware.lib.gpu import record_engine
-from hardware.lib import telemetry
 # Imported as a module, not `from hardware.lib.modelmetrics import record_timings`, so the
 # metrics buffer has one identity. `apps/gpu.md` records what the alternative cost.
-from hardware.lib import modelmetrics  # noqa: E402
 from hardware import router as metricsroutes  # noqa: E402
 from runtime.lib import runtimeconfig  # noqa: E402
 runtimeconfig.load()
@@ -149,15 +138,12 @@ from core.config import (  # noqa: E402,F401
 )
 import cryptominer  # noqa: E402  -- the GPU miner. A DIFFERENT surface from asicminer:
                     # different hardware and the only tenant that yields to everything.
-import coder      # noqa: E402  -- local-only developer surface. Takes NO GPU lease and
                   # has NO route: it is driven from the desktop session. See §2g.
 import gateway    # noqa: E402  -- TRON licensing surface, see backend/gateway/
-import licensing  # noqa: E402  -- contract keys and the dev-fee disclosure
 # The port registry. Nothing in this file names a surface port as a literal any more: which
 # surfaces run as their own process, and on which port, is `ops/PORTS.tsv`. See apps/ports.py
 # for why it refuses to report a surface delegated unless the registry also gives it a port.
 from registry.lib import ports  # noqa: E402
-import httpx  # noqa: E402  -- only for polling a delegated surface's /healthz; see poll_delegated
 
 import streamer  # noqa: E402  -- the IPTV surface AND the Guide that filters
 # it, merged into one package on Garrett's instruction ("you need to migrate tuner and
@@ -173,7 +159,6 @@ import project  # noqa: E402  -- the shared workspace surface. Brings its
 from streamer import guide  # noqa: E402  -- the library half: matching, clustering,
 # ModelUnusable. Bound to the package, not its names, so nothing of its vocabulary
 # (catalogue, status, unit_state) lands in this module's namespace.
-from streamer.guide import router as guide_routes  # noqa: E402  -- question ->
 # channel filter. Imported as `routes` for the same reason accounts is: the package exports
 # bare names (catalogue, status, unit_state) that would shadow this module's own.
 import sigils  # noqa: E402  -- the sticker surface. Bound to the package for
@@ -234,7 +219,6 @@ import controlboard as rackpower  # noqa: E402  -- the per-unit power switch. Bo
 # because it is the only one that rewrites another surface's rack reading, and reading the
 # import list top to bottom should end at the thing that has the last word.
 
-from registry.lib import appdocs  # noqa: E402  -- the per-application documentation registry and
 
 # Moved out of this file; imported back so the names still resolve here.
 from core.bus import Bus  # noqa: E402,F401
@@ -331,7 +315,6 @@ log = logging.getLogger("symoneural.api")
 #                       per-minute, per-hour
 
 
-from runtime.lib.ratelimits import BUDGETS as _BUDGETS
 
 
 

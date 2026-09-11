@@ -15,7 +15,6 @@ from __future__ import annotations
 import datetime
 import fnmatch
 import hashlib
-import hmac
 import logging
 import os
 import pathlib

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import time
 from contextlib import asynccontextmanager
-from typing import Any
 
 import numpy as np
 from fastapi import FastAPI, HTTPException

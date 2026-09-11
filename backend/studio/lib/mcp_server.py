@@ -63,7 +63,6 @@ if str(_BACKEND) not in sys.path:
     sys.path.insert(0, str(_BACKEND))
 
 from studio import gate, registry, workspace  # noqa: E402
-from studio import tools_impl  # noqa: E402,F401  -- imported to register
 
 try:
     # The vendor name lives in `mcpframework.py` and nowhere else in this package
