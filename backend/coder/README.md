@@ -384,3 +384,17 @@ passes against the broken version.
    actually run through it.
 6. **No model is wired in, by design** (§7). If you want one, the cheap answer is a model
    that is not resident on this card at all.
+
+<!-- generated: do not edit below -->
+
+## Operations
+
+None. This component is a library for others, or is driven from the desktop session rather than over HTTP.
+
+## Documents
+
+- [`code-client-spec.md`](docs/code-client-spec.md)
+- [`coder-spec.md`](docs/coder-spec.md)
+- [`symoneural-coder-project-cli-scope.md`](docs/symoneural-coder-project-cli-scope.md)
+
+<!-- end generated -->

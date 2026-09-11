@@ -508,3 +508,41 @@ Blunt list. Nothing here is hidden behind a "coming soon".
   change, reading computed styles rather than reasoning about the cascade, and folded into
   `<details>` rather than trimmed if it does not fit. Bind any fold handler to `#rack`, never
   to `#units`, which `renderRack()` rewrites on every status push.
+
+<!-- generated: do not edit below -->
+
+## Operations — 19
+
+|  | path | what it does |
+|---|---|---|
+| GET | `/api/project` | List projects |
+| POST | `/api/project` | Create a project |
+| POST | `/api/project/backup` | Write a dated copy of the store |
+| GET | `/api/project/search` | Full-text search over projects, items and events |
+| GET | `/api/project/state` | What this surface is holding, read from the store |
+| DELETE | `/api/project/{pid}` | Delete an archived project |
+| GET | `/api/project/{pid}` | One project, with its items and file references |
+| PATCH | `/api/project/{pid}` | Rename, re-summarise or archive a project |
+| POST | `/api/project/{pid}/draft/items` | Turn a note into candidate item titles |
+| POST | `/api/project/{pid}/draft/summary` | Ask the chat surface to summarise a project |
+| GET | `/api/project/{pid}/events` | What happened, newest first |
+| POST | `/api/project/{pid}/events` | Record a session's work. Append-only |
+| GET | `/api/project/{pid}/files` | Files this project references, with a live stat |
+| POST | `/api/project/{pid}/files` | Reference a repository file from this project |
+| DELETE | `/api/project/{pid}/files/{fid}` | Drop a file reference |
+| GET | `/api/project/{pid}/items` | Work items, filterable by state |
+| POST | `/api/project/{pid}/items` | Add a work item |
+| DELETE | `/api/project/{pid}/items/{iid}` | Delete a work item |
+| PATCH | `/api/project/{pid}/items/{iid}` | Change, reorder or re-state a work item |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `store.py` | The store. SQLite via the stdlib, CPU only, and it never asks for the card. |
+
+## Documents
+
+- [`project-spec.md`](docs/project-spec.md)
+
+<!-- end generated -->

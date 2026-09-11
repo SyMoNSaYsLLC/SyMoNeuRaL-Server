@@ -151,3 +151,30 @@ internet from this address.
 
 `probe.py`'s pyasic type coercion (`_num`, `probe_one`) cannot be tested from the system
 interpreter and is not covered.
+
+<!-- generated: do not edit below -->
+
+## Operations — 3
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/asicminer/emulator` | Start, stop or query the QEMU emulator |
+| GET | `/api/asicminer/firmware` | Firmware packages actually present on this machine |
+| POST | `/api/asicminer/scan` | Discover rigs on a private network |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `fwcheck.py` | Pre-flight a Bitmain firmware package the way the miner's own `runme.sh` will. |
+| `probe.py` | Read real telemetry off Antminer and MicroBT rigs, and print it as JSON. |
+| `scan.py` | Find mining rigs on the operator's own network, then identify what they are. |
+
+## Documents
+
+- [`YOCTO-LAYER-LICENSES.md`](docs/YOCTO-LAYER-LICENSES.md)
+- [`antminer-firmware-upgrade.md`](docs/antminer-firmware-upgrade.md)
+- [`custom-antminer-firmware-options.md`](docs/custom-antminer-firmware-options.md)
+- [`symoneural-miner-firmware-strategy.md`](docs/symoneural-miner-firmware-strategy.md)
+
+<!-- end generated -->

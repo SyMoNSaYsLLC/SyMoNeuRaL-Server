@@ -235,3 +235,25 @@ That fixture is committed on purpose, and `.gitignore` in this directory carries
 `!testdata/*.log` to force it past the repo-root `*.log` rule. Without that negation the
 fixture is never committed, and the suite fails on a fresh checkout while passing on the
 machine that wrote it — the worst way for a test to be broken.
+
+<!-- generated: do not edit below -->
+
+## Operations — 2
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/gpuminer/control` | Start or stop the miner. Starting takes the GPU from every other surface |
+| GET | `/api/gpuminer/status` | What the GPU miner is doing, and what it is reporting |
+
+## Programs — runnable, or driven by a route
+
+| file |  |
+|---|---|
+| `__main__.py` | `python3 -m cryptominer <cmd>`, run from backend/. |
+
+## Documents
+
+- [`miner-preemption.md`](docs/miner-preemption.md)
+- [`symoneural-miner-scope.md`](docs/symoneural-miner-scope.md)
+
+<!-- end generated -->

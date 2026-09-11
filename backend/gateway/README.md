@@ -167,3 +167,37 @@ together they are a working web server, and there is a working web server here a
 
 Until that is settled, the safe deployment is Caddy in front, which is also the only shape that
 does not risk the live site.
+
+<!-- generated: do not edit below -->
+
+## Operations — 1
+
+|  | path | what it does |
+|---|---|---|
+| GET | `/api/gateway/state` | What the Gateway last read from the chain |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `abi.py` | Minimal ABI encoding and decoding for read-only TVM calls. Stdlib, no I/O, no keys. |
+| `address.py` | TRON base58check addresses -- decode, validate, and convert to the hex the TVM uses. |
+| `chain.py` | Read-only TRON node client. Stdlib `urllib` only, no wallet, no key, no signature. |
+| `entitlement.py` | Ed25519 entitlements: minted by the operator, checked by the server. Never the reverse. |
+| `keccak.py` | Keccak-256 -- the hash the TVM derives function selectors from. Pure stdlib. |
+| `settlement_roundtrip.py` | The licence round trip, end to end, printed. Run: cd backend && python3 -m gateway.settlement_roundtrip |
+| `store.py` | The record of licences that have actually cleared. This is what earns `ready`. |
+
+## Programs — runnable, or driven by a route
+
+| file |  |
+|---|---|
+| `__main__.py` | `python3 -m apps.gateway` — read three real TRON networks and print what came back. |
+| `record.py` | Turn a verified on-chain settlement into a recorded clearance. The only writer there is. |
+| `verify.py` | Decide whether a settled on-chain licence covers a specific request. Fail closed, always. |
+
+## Documents
+
+- [`gateway-completion.md`](docs/gateway-completion.md)
+
+<!-- end generated -->

@@ -143,3 +143,20 @@ Written plainly, in the house style:
   human string like `resolved 12/30`.
 - **Taste profile is best-effort.** If the top-artists/tracks calls fail, the
   job proceeds without them rather than failing.
+
+<!-- generated: do not edit below -->
+
+## Operations — 1
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/remix` | Build a sequenced tracklist. |
+
+## Documents
+
+- [`DEPLOY.md`](docs/DEPLOY.md)
+- [`LICENSING.md`](docs/LICENSING.md)
+- [`PRODUCTION-READINESS.md`](docs/PRODUCTION-READINESS.md)
+- [`symoneural-remix-scope.md`](docs/symoneural-remix-scope.md)
+
+<!-- end generated -->

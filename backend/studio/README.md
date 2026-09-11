@@ -319,3 +319,79 @@ caller is a 7B model:
 This is the one idea worth taking from the Cordis-style plugin-harness blueprint (zod/joi
 schema validation at the boundary); the rest of that design is compared against what this
 package already does in `ops/registry/integration-sources.md`.
+
+<!-- generated: do not edit below -->
+
+## Operations — 35
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/exp/add` | Mount one entry without touching anything else. The body is a manifest e |
+| POST | `/api/exp/apply` | Mount an arbitrary manifest: `{"manifest": "<yaml>"}` or `{"manifest": { |
+| POST | `/api/exp/call` | Call a method on a live service: `{"service": "gpu", "method": "vram", " |
+| GET | `/api/exp/catalogue` | What can be mounted: the example plugins, described without mounting the |
+| POST | `/api/exp/enable` |  |
+| GET | `/api/exp/events` | The trace from a sequence cursor. The page polls with the last `seq` it  |
+| POST | `/api/exp/patch` | Replace one entry's config and restart its fiber. `loader/patch-context` |
+| GET | `/api/exp/plugins` |  |
+| POST | `/api/exp/preset` | Mount a named preset. A diff against what is already running, not a rebu |
+| POST | `/api/exp/reload` | Re-import the plugin's module and restart the fiber against the new code |
+| POST | `/api/exp/remove` |  |
+| GET | `/api/exp/services` | Every service in the container, including the ones inside isolated realm |
+| GET | `/api/exp/state` | Everything the page needs for one render, in one call. |
+| POST | `/api/studio/agent` | Stream one agent turn: thinking, every tool call, every raw tool result, |
+| WS | `/api/studio/events` |  |
+| GET | `/api/studio/image` | `GET /view` from ComfyUI, on this origin. |
+| POST | `/api/studio/interrupt` |  |
+| GET | `/api/studio/models` | Models on this machine, read from a pre-computed file |
+| GET | `/api/studio/nodes` | ComfyUI's `/object_info`, proxied. ~2 MB, cached in the client for the p |
+| POST | `/api/studio/queue` | Queue a render and wait for it, returning the images. |
+| GET | `/api/studio/state` | Tokenless, and presence/absence only -- the pattern `apps/gateway` estab |
+| POST | `/api/studio/tool/{name}` | Run one tool directly, bypassing the model. This is what makes the tool  |
+| GET | `/api/studio/tools` | The live registry -- the same list the system prompt is generated from,  |
+| GET | `/api/studio/workflow/{name}` | The prompt graph, plus the same graph run back through `graph.from_promp |
+| GET | `/api/studio/workflows` |  |
+| GET | `/api/train/datasets` | Datasets an operator has staged. Never anything from `training/`. |
+| GET | `/api/train/models` | The model picker: everything on this box, qualified, with the arithmetic |
+| POST | `/api/train/preflight` | Cost the run before a single weight is read. |
+| GET | `/api/train/presets` | The predetermined tuning methods, each costed against a chosen base mode |
+| POST | `/api/train/start` | Start a fine-tune. |
+| GET | `/api/train/status` | The current run, or an honest statement that there is not one. |
+| POST | `/api/train/stop` | Stop a run deliberately. |
+| GET | `/studio` | The Studio, at a clean address. |
+| WS | `/studio/editor/ws` |  |
+| DELETE | `/studio/editor/{path:path}` | Everything else the editor asks for, forwarded to 127.0.0.1:8188 unchang |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `agent.py` | The cognitive loop: prompt, detect a tool call, execute it, feed the result back, synthesise. |
+| `comfy.py` | The ComfyUI bridge: HTTP queueing, WebSocket monitoring, and the GPU lease around both. |
+| `graph.py` | Canvas document -> ComfyUI prompt graph, and the validation that happens on the way. |
+| `httpclient.py` | Facade over the upstream HTTP client (httpx). |
+| `inference.py` | The inference adapter: one interface, two local backends, no cloud. |
+| `mcp_server.py` | The MCP surface: the same tools, over FastMCP, for clients that are not this website. |
+| `registry.py` | Tool registry and JSON Schema introspection, on the standard library alone. |
+| `rows.py` | Lifted from server.py, 2026-09-11. |
+| `workspace.py` | Where SyMoNeuRaL Studio thinks it is. |
+
+## Programs — runnable, or driven by a route
+
+| file |  |
+|---|---|
+| `mcpframework.py` | Facade over the upstream MCP framework (fastmcp). |
+| `workflows.py` | Stock workflows, in ComfyUI's prompt format, built for the weights actually on this disk. |
+
+## Documents
+
+- [`qlora-27b-measured.md`](docs/qlora-27b-measured.md)
+- [`qlora-upgrade.md`](docs/qlora-upgrade.md)
+- [`studio-harness-gap.md`](docs/studio-harness-gap.md)
+- [`symon-ml-review.md`](docs/symon-ml-review.md)
+- [`symoneural-application-lab.md`](docs/symoneural-application-lab.md)
+- [`symoneural-bootcamp.md`](docs/symoneural-bootcamp.md)
+- [`symoneural-studio-node-system.md`](docs/symoneural-studio-node-system.md)
+- [`symoneural-studio-upgrade-scope.md`](docs/symoneural-studio-upgrade-scope.md)
+
+<!-- end generated -->

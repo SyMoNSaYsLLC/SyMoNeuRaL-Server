@@ -461,3 +461,45 @@ Nothing else in `public()` changed, and it still has no field that can hold a cr
   loads something — is defensible too, but the server genuinely cannot know what is in someone's
   `localStorage`, and a unit that is permanently `offline` while working is its own kind of
   dishonest indicator. Overrule me in `status()` if you disagree; it is six lines.
+
+<!-- generated: do not edit below -->
+
+## Operations — 14
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/streamer/epg` | Programme guide for one channel or a grid of them |
+| POST | `/api/streamer/epg/xmltv` | The whole account's guide as XMLTV |
+| POST | `/api/streamer/guide/catalogue` | Kinds, groups and group clusters for a channel list |
+| POST | `/api/streamer/guide/filter` | Turn a question into a channel filter |
+| GET | `/api/streamer/guide/state` | What Guide can do on this box right now |
+| POST | `/api/streamer/playlist` | Parse an M3U playlist supplied by URL or pasted text |
+| DELETE | `/api/streamer/session/{sid}` | Stop a tuning session |
+| GET | `/api/streamer/session/{sid}` | State of one tuning session |
+| POST | `/api/streamer/session/{sid}/stop` | Release a session on page unload |
+| GET | `/api/streamer/state` | Streamer capacity and live sessions |
+| GET | `/api/streamer/stream/{sid}/{name}` | HLS playlist and segments for a session |
+| POST | `/api/streamer/tune` | Start a tuning session for one stream URL |
+| POST | `/api/streamer/xtream/channels` | Fetch an Xtream Codes catalogue |
+| POST | `/api/streamer/xtream/info` | Check an Xtream Codes account |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `epg.py` | Electronic programme guide for the Streamer. Two sources, one shape out. |
+| `safefetch.py` | The one door out. Every outbound byte caused by a visitor-supplied URL goes through here. |
+| `sessions.py` | Tuning sessions: one upstream stream, one ffmpeg, a bounded number of both. |
+| `xtream.py` | Xtream Codes panel client. Protocol only -- no credential outlives the request. |
+
+## Programs — runnable, or driven by a route
+
+| file |  |
+|---|---|
+| `m3u.py` | Extended M3U parsing. Two dialects, deliberately kept apart. |
+
+## Documents
+
+- [`symoneural-streamer-scope.md`](docs/symoneural-streamer-scope.md)
+
+<!-- end generated -->

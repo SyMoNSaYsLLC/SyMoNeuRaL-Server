@@ -248,3 +248,34 @@ The trap, measured in this repo and written up at `site/streamer.html:1989`, is 
 on every Chrome visit and plays nothing at all. **Try `Hls.isSupported()` first and fall back
 to native only where hls.js will not run**, which is Safari. That ordering is a bug fix, not
 a preference, and it already cost this repo one round.
+
+<!-- generated: do not edit below -->
+
+## Operations — 9
+
+|  | path | what it does |
+|---|---|---|
+| GET | `/api/live/hls/{name}` | A playlist or one of its segments |
+| GET | `/api/live/now` | The playlist being written right now |
+| GET | `/api/live/state` | Is he live, what is on disk, and what OBS last reported |
+| GET | `/api/live/usage` | What the recordings cost on disk |
+| GET | `/api/live/vods` | Everything watchable after the fact, newest first |
+| GET | `/live-stack/coder` | SyMoNeuRaL Coder: the browser surface. |
+| GET | `/live-stack/live` | SyMoNeuRaL Live, at the address he asked every app to be at. |
+| GET | `/livestack/coder` | SyMoNeuRaL Coder: the browser surface. |
+| GET | `/livestack/live` | SyMoNeuRaL Live, at the address he asked every app to be at. |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `hls.py` | The playlist directory: what OBS wrote, and which of it is live. |
+| `obs.py` | The obs-websocket v5 bridge: this process is the client, and the password never leaves it. |
+| `verify_bridge.py` | Prove the obs-websocket handshake works, without anybody typing or reading the password. |
+
+## Documents
+
+- [`symoneural-live-scope.md`](docs/symoneural-live-scope.md)
+- [`symoneural-live-stack.md`](docs/symoneural-live-stack.md)
+
+<!-- end generated -->

@@ -68,3 +68,26 @@ Neither is a design question. Both are one decision or one file away.
 - **Anything about speech out.** There is no engine to time.
 - Every timing here was taken at load average 6.5–7.5 on 20 CPUs with a dozen sessions writing
   this repo. They are **ceilings**; a quiet box beats them.
+
+<!-- generated: do not edit below -->
+
+## Operations — 3
+
+|  | path | what it does |
+|---|---|---|
+| POST | `/api/voice/speak` | Text to speech — not built; says so rather than faking it |
+| GET | `/api/voice/state` | What this box can hear and whether it can speak |
+| POST | `/api/voice/transcribe` | Speech to text, on the CPU, without queueing for the GPU |
+
+## Library — no routes, no side effects on import
+
+| file |  |
+|---|---|
+| `asr.py` | Speech to text: ffmpeg to 16 kHz mono, then `symoneural-listen`, then two failure checks. |
+| `tts.py` | Text to speech: the half that is NOT built, written so it reports that rather than faking it. |
+
+## Documents
+
+- [`voice-spec.md`](docs/voice-spec.md)
+
+<!-- end generated -->
