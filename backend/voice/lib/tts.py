@@ -25,7 +25,7 @@ one until somebody put on headphones. It returns 503 and names the command that 
     # report: wall clock, peak RSS, and audio seconds produced per second of compute.
 
 `.venv` lives beside this file because that is where `backend/asicminer/.venv` lives and
-one convention beats two. (`docs/specs/voice-spec.md` §3 first suggested `voice/.venv` at the
+one convention beats two. (`backend/voice/docs/voice-spec.md` §3 first suggested `voice/.venv` at the
 repo root; this is the corrected path and the spec now says so.)
 
 Two things to settle in the same sitting, both cheap then and expensive later:

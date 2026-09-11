@@ -2,7 +2,7 @@
 
 2 sample document(s), each with the verified *On this box* result and the complete upstream README.
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 ## 3_FrameworkInterop — Framework interop
 

@@ -17,7 +17,7 @@ production code path, not a re-implementation.
 It does **not** prove a real payment happened. The licence record is replayed from
 `ops/gateway/artifacts/licence-record.json`, which `ops/gateway/test_contracts.mjs` produced by
 redeeming in a local EVM; the node is a function that returns that record. No TRON network is
-contacted, no money moves, and condition 5 of `docs/specs/gateway-completion.md` §4 — the round
+contacted, no money moves, and condition 5 of `backend/gateway/docs/gateway-completion.md` §4 — the round
 trip completed against a real chain — remains unmet until somebody deploys and buys.
 
 So this is a **rehearsal**, and it writes its clearance to a temporary file rather than to

@@ -157,8 +157,8 @@ formats, not a name collision. Note that `apps/licensing` verifies via `openssl`
 the grounds that the serving interpreter has no asymmetric crypto; that is worth revisiting,
 because `cryptography` 43.0.0 is in fact an OS package here and is what this module uses.
 
-The chain-reading half above reads the chain and reports what it sees. This half is the other one — it decides whether a settlement covers a request. `docs/specs/gateway-completion.md`
-§7 phase 3 calls these items 10–13 and blocks them on `docs/specs/symon-ml-review.md`
+The chain-reading half above reads the chain and reports what it sees. This half is the other one — it decides whether a settlement covers a request. `backend/gateway/docs/gateway-completion.md`
+§7 phase 3 calls these items 10–13 and blocks them on `backend/studio/docs/symon-ml-review.md`
 findings 1 and 2 having written-down answers. Both answers are written down here, because a
 design decision that lives only in a review is not a decision.
 
@@ -404,7 +404,7 @@ def _cleared(net: str, addr: str):
     is the one thing that can light this surface's LED, so every way it can go wrong has to
     land on "not lit". A missing `settlement` package, an unreadable store, a permissions
     error, a partially-written record — all of them mean the same thing here, and it is not
-    "ready". This is the inverse of `docs/specs/symon-ml-review.md` finding 1: that bug turned
+    "ready". This is the inverse of `backend/studio/docs/symon-ml-review.md` finding 1: that bug turned
     a failed check into a grant, and this turns every failed check into a refusal.
 
     `settlement`, NOT `licensing`. `backend/licensing/` is the mining dev-fee model and
@@ -444,7 +444,7 @@ def unit_state(reading: dict | None = None) -> tuple[str, str]:
     ### THE RULE, and it is the whole point of this surface
 
     **No `except` in this package may return anything but `offline`.** A gateway that cannot
-    verify must say so. `docs/specs/symon-ml-review.md` finding 1 is a licence check whose
+    verify must say so. `backend/studio/docs/symon-ml-review.md` finding 1 is a licence check whose
     TRON lookup fell back to `return True`, so blocking `api.trongrid.io` with one iptables
     rule *granted* the licence -- a check that fails open is worse than no check, because the
     surface around it claims the weights are protected.
@@ -458,7 +458,7 @@ def unit_state(reading: dict | None = None) -> tuple[str, str]:
     when nothing could ever earn otherwise. `backend/licensing/` now exists, so the
     honest statement is narrower: **the only `ready` return requires a licence to have
     actually settled** against the configured network and contract, recorded by the code path
-    that verified it -- see `_cleared`. §4 of `docs/specs/gateway-completion.md` lists five
+    that verified it -- see `_cleared`. §4 of `backend/gateway/docs/gateway-completion.md` lists five
     conditions, and that record is the only one that cannot be faked by configuration.
 
     The warning that mattered still stands, and is the reason `_cleared` is not a config
@@ -507,7 +507,7 @@ def unit_state(reading: dict | None = None) -> tuple[str, str]:
 
         # The ONLY route to a lit LED on this surface, and it is deliberately narrow.
         #
-        # `docs/specs/gateway-completion.md` §4 warns that the natural next commit here is
+        # `backend/gateway/docs/gateway-completion.md` §4 warns that the natural next commit here is
         # "the contract is there, so report ready", and that that commit is wrong. It still
         # is. What makes `ready` honest is not configuration but *evidence*: a licence that
         # actually settled against this exact network and this exact contract address,

@@ -1,7 +1,7 @@
 """The HTTP surface. Mounted at `/api/project` by `api.py`; nothing here assumes that prefix.
 
 Three properties this router is built around, all of them from
-`docs/specs/project-spec.md` §3.3, and all of them because Garrett intends to write an
+`backend/project/docs/project-spec.md` §3.3, and all of them because Garrett intends to write an
 iPhone app against this server:
 
 * **No cookies, no server-side session, no login flow.** Authentication is the
@@ -236,7 +236,7 @@ async def search(request: Request, q: str = "", project: str | None = None,
 
     FTS5, which is CPU and exact. There is no embedding model here and adding one would
     make this surface a GPU tenant — evictable, queueable behind a fine-tune, and needing
-    its own arm in the governor's `evict()`. `docs/specs/project-spec.md` §2.3.
+    its own arm in the governor's `evict()`. `backend/project/docs/project-spec.md` §2.3.
     """
     bad = _deny(request)
     if bad:

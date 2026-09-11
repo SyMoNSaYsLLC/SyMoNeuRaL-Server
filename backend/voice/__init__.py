@@ -1,6 +1,6 @@
 """SyMoNeuRaL Voice -- speech in, on the CPU, without ever queueing behind the GPU.
 
-`docs/specs/voice-spec.md` is the design and its §2 holds the measurements this package is
+`backend/voice/docs/voice-spec.md` is the design and its §2 holds the measurements this package is
 built on. HANDOVER §5 item 12 asked for text-to-speech, speech-to-text and speech-to-speech
 wired into SyMoNeuRaL Chat. **This is the input half.** The output half is not built and
 `tts.py` reports that instead of faking it.

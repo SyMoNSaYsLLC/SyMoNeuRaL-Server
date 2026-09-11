@@ -365,7 +365,7 @@ def collect() -> dict:
     # same as unclassified, and reporting the first as the second invents a problem.
     d["FIRST_PARTY_SOURCE_BYTES"] = _sum_paths([
         ROOT / "backend", ROOT / "site", ROOT / "web", ROOT / "ops", ROOT / "scripts",
-        ROOT / "tools", ROOT / "restore", ROOT / "docs", ROOT / "desktop-client",
+        ROOT / "tools", ROOT / "restore", ROOT / "ops" / "docs", ROOT / "desktop-client",
         ROOT / "bin", ROOT / "deploy", ROOT / "review", ROOT / "brand"])
     d["CANONICAL_RUNTIME_BYTES"] = _sum_paths([
         ROOT / "symoneural-llm", ROOT / "symoneural-diffuse", ROOT / "symoneural-listen",

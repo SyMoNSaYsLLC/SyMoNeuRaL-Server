@@ -30,7 +30,7 @@ headers, so a future `handle /local*` block cannot quietly open it.
 
 It does not execute a rotation (R-182), it does not run training (R-185), and it does not
 let a coder change the workspace. Those are separate modes in
-`docs/specs/coder-rotation-launcher-spec.md` and they stay visibly unavailable rather than
+`backend/coders/docs/coder-rotation-launcher-spec.md` and they stay visibly unavailable rather than
 being faked with a disabled-looking button that secretly does nothing.
 """
 from __future__ import annotations
@@ -298,7 +298,7 @@ def preset_rows() -> list[dict[str, Any]]:
 #   3. Process-group kill on deadline, so a wedged child cannot outlive the request.
 
 #: RULE 4, and it is an ALLOW-LIST because the deny-list version of this is unsafe by
-#: construction. `docs/ops/EXPORTS.md` already makes the argument for the exporter and it is
+#: construction. `ops/docs/EXPORTS.md` already makes the argument for the exporter and it is
 #: the same argument here: a deny-list ships anything nobody classified, so one missed name
 #: leaks; an allow-list omits anything nobody classified, so a new secret is absent until
 #: someone deliberately names it. The two architectures give OPPOSITE answers for the variable

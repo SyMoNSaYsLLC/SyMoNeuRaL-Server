@@ -24,7 +24,7 @@ backend/apps/project/
   README.md         this
 ```
 
-Built against `docs/specs/project-spec.md`. Where this implementation departs from the spec,
+Built against `backend/project/docs/project-spec.md`. Where this implementation departs from the spec,
 it says so below and gives the reason.
 
 ---
@@ -372,7 +372,7 @@ test asserts the refusal against that literal string.
 
 ## The coupling with Coder — read this before loosening anything
 
-`docs/specs/coder-spec.md` recommends Coder be local-only: no route, nothing bound beyond
+`backend/coder/docs/coder-spec.md` recommends Coder be local-only: no route, nothing bound beyond
 loopback. **Project is an input to Coder.** If Project holds work items and Coder reads them
 to decide what to do, then a writable Project is a way to put instructions in front of an
 agent that executes commands — **a world-writable Project plus a local Coder is remote code
@@ -500,7 +500,7 @@ Blunt list. Nothing here is hidden behind a "coming soon".
 - **Does "like the claude cowork" mean shared with other people?** Item 7. It changes the auth
   design completely, and it is worth answering before a page is built against this API.
 - **The rack goes to twelve units, and the layout budget was already blown at nine.**
-  `docs/specs/project-spec.md` §5.5 counts nine and measures Live stack **76px over at
+  `backend/project/docs/project-spec.md` §5.5 counts nine and measures Live stack **76px over at
   1301×740** with that many, `train`'s label already wrapping to five lines. That count is
   stale: `backend/server.py` now builds **eleven** — chat, image, remix, ravencalc, train,
   asicminer, gpuminer, tuner, coder, gateway, guide — counted directly, not from the spec.

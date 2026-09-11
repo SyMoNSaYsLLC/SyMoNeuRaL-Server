@@ -362,7 +362,7 @@ def build_status() -> Status:
             # with its own FastAPI app on port 8000, which must NOT be reused here) and the
             # training bay built on it. An agent told to "look at Reinforce" will land on
             # the engine first. That is deliberate on Garrett's part; see
-            # docs/specs/qlora-upgrade.md, which is a spec and not a description of state.
+            # backend/studio/docs/qlora-upgrade.md, which is a spec and not a description of state.
             #
             # The href now points at the bay rather than at the manual. `site/reinforce.html`
             # is written by `tools/build/build_reinforce.py`, which wires up the `page.html` and
@@ -394,7 +394,7 @@ def build_status() -> Status:
             # has been -- `/api/train/*` is served by
             # `studio.plugins.reinforce.routes`. A top-level rack row presented it as an
             # independent runtime peer of Studio, which is a claim the implementation does
-            # not make anywhere. `docs/specs/symoneural-live-stack.md` §4 called this fold
+            # not make anywhere. `backend/live/docs/symoneural-live-stack.md` §4 called this fold
             # "target architecture; may stay separately addressable during transition"; the
             # transition is over and the separate address survives it, because
             # `/reinforce.html` still answers and the child still carries the id `train`.

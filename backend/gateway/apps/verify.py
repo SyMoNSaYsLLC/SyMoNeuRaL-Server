@@ -1,6 +1,6 @@
 """Decide whether a settled on-chain licence covers a specific request. Fail closed, always.
 
-This is where `docs/specs/symon-ml-review.md` finding 1 lands in our code. The reviewed PoC
+This is where `backend/studio/docs/symon-ml-review.md` finding 1 lands in our code. The reviewed PoC
 checked the *recipient* and the *confirmed* flag and nothing else, so any confirmed transfer of
 any token, of any size, at any time granted a permanent licence — and its chain lookup returned
 `True` on failure, so blocking the node with one firewall rule granted it too.

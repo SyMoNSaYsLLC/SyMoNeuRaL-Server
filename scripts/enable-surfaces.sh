@@ -75,7 +75,7 @@ show() {
   # and the one nobody thought of is exactly the one that leaks. The allow-list below inverts
   # the default: a name nobody has classified prints as `<set, N chars>` rather than in full,
   # so a variable added next month is safe before anyone edits this script. Same argument
-  # docs/ops/EXPORTS.md makes for the exporter and `apps/coders.child_env` for provider
+  # ops/docs/EXPORTS.md makes for the exporter and `apps/coders.child_env` for provider
   # children: the two architectures give opposite answers for the unclassified name, and only
   # one of them fails closed.
   #

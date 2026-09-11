@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SyMonSays LLC. All rights reserved.
-# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See docs/ops/EXPORTS.md.
+# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See ops/docs/EXPORTS.md.
 """Slice experts out of a MoE GGUF. Fewer parameters, same active count, same speed.
 
 Owner, 2026-09-11: *"I think we have proven 7B parameters is perfect for my GPU so adjust the

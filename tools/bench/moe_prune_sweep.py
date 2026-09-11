@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: LicenseRef-SyMoNeuRaL-Proprietary
 # Copyright (c) 2026 SyMonSays LLC. All rights reserved.
-# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See docs/ops/EXPORTS.md.
+# PROPRIETARY AND CONFIDENTIAL. Not for distribution. See ops/docs/EXPORTS.md.
 """Prune to every expert count and find where the model breaks. The PROPORTIONAL term.
 
 Owner, 2026-09-11: *"where we pruned 8/32 experts we should start at 1 and add an expert

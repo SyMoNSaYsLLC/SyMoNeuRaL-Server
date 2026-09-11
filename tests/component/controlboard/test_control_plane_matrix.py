@@ -3,10 +3,10 @@
 A matrix of ratings and reachability cells is prose, and prose drifts. These tests exist so the
 four documents cannot quietly stop being true:
 
-  * `docs/specs/symoneural-control-plane-matrix.md`
-  * `docs/ops/APPLICATION-MODEL-CAPABILITY-MATRIX.md`
-  * `docs/ops/MODEL-BENCHMARKS.md`
-  * `docs/ops/VLLM-BENCH-PARITY.md`
+  * `backend/controlboard/docs/symoneural-control-plane-matrix.md`
+  * `ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md`
+  * `ops/docs/MODEL-BENCHMARKS.md`
+  * `ops/docs/VLLM-BENCH-PARITY.md`
 
 **Everything here is pure parse plus `stat`.** Nothing is imported from the app, no subprocess is
 launched, and in particular nothing under `scripts/model-staging/` is invoked -- that script rewrites
@@ -36,7 +36,7 @@ import re
 import unittest
 
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-DOCS = ROOT / "docs"
+DOCS = ROOT / "ops" / "docs"
 
 MATRIX = DOCS / "specs" / "symoneural-control-plane-matrix.md"
 CAPABILITY = DOCS / "ops" / "APPLICATION-MODEL-CAPABILITY-MATRIX.md"
@@ -315,7 +315,7 @@ class ClaimsContradictedByTheDiskFail(unittest.TestCase):
                 # the same line is not asserting it. The blockquote rule above covers a
                 # correction block; this covers a historical LEDGER, where the retraction
                 # is a table cell beside the claim rather than prose beneath it --
-                # docs/history/handoffs/GARRETT-MEMORY-REQUEST.md:146 reads
+                # ops/history/handoffs/GARRETT-MEMORY-REQUEST.md:146 reads
                 #     | vLLM is not installed | `SUPERSEDED`. Present in its venv; ... |
                 # which records that the claim was wrong. Flagging that would make the
                 # repository unable to write down its own corrected mistakes, which is the

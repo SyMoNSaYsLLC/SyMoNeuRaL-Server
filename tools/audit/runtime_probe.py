@@ -12,7 +12,7 @@ This runs the binaries.
 ## The three rules that make this different from `smoke.py`
 
 **1. Production's environment, not this shell's.** `ops/RUNTIMES.tsv` and
-`docs/ops/RUNTIMES.md` record the measurement that forces this: an interactive shell here
+`ops/docs/RUNTIMES.md` record the measurement that forces this: an interactive shell here
 exports `LD_LIBRARY_PATH=/usr/local/cuda/lib64`, the systemd units export **none**, and
 `LD_LIBRARY_PATH` outranks `DT_RUNPATH` in the loader's search order. So
 `symoneural-diffuse` links CUDA **13.3** under systemd and **13.4** in a terminal. A probe

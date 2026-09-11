@@ -5,8 +5,8 @@ Owner, 2026-09-11: *"the symoneural fabric is key"*.
 ## What the fabric is today, stated plainly
 
 `symoneural-adaptive-fabric/` contains **two files: a README and a LICENSE.** No code.
-`docs/architecture/COMPONENT-MAP.tsv:15` records it `PLANNED / NOT_IMPLEMENTED /
-NOT_IN_RELEASE`, and `docs/architecture/ALIASES.tsv:7-13` records its seven subcomponents as
+`ops/architecture/COMPONENT-MAP.tsv:15` records it `PLANNED / NOT_IMPLEMENTED /
+NOT_IN_RELEASE`, and `ops/architecture/ALIASES.tsv:7-13` records its seven subcomponents as
 `PLANNED_SUBCOMPONENT`, each with "0 tracked matches in source".
 
 This module does not change that and does not pretend to. **It reads those two files and
@@ -48,8 +48,8 @@ import pathlib
 from typing import Any
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-COMPONENT_MAP = REPO / "docs" / "architecture" / "COMPONENT-MAP.tsv"
-ALIASES = REPO / "docs" / "architecture" / "ALIASES.tsv"
+COMPONENT_MAP = REPO / "ops" / "architecture" / "COMPONENT-MAP.tsv"
+ALIASES = REPO / "ops" / "architecture" / "ALIASES.tsv"
 FABRIC_DIR = REPO / "symoneural-adaptive-fabric"
 COMPONENT_ID = "symoneural-adaptive-fabric"
 
@@ -79,7 +79,7 @@ def _tsv(path: pathlib.Path) -> tuple[list[str], list[list[str]]]:
 
 def component_status() -> dict[str, Any]:
     """The fabric's own row in `COMPONENT-MAP.tsv`, field by field, or why it is absent."""
-    src = "docs/architecture/COMPONENT-MAP.tsv"
+    src = "ops/architecture/COMPONENT-MAP.tsv"
     header, rows = _tsv(COMPONENT_MAP)
     if not header:
         return {"found": False, "source": f"{src} could not be read", "fields": {}}
@@ -97,7 +97,7 @@ def subcomponents() -> list[dict[str, Any]]:
     If an eighth is added to the registry it appears here without an edit, and if one is
     promoted out of `PLANNED_SUBCOMPONENT` its row changes shape and the page shows that.
     """
-    src = "docs/architecture/ALIASES.tsv"
+    src = "ops/architecture/ALIASES.tsv"
     header, rows = _tsv(ALIASES)
     if not header:
         return []

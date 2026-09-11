@@ -252,10 +252,10 @@ class TestDenylist(Base):
     def test_a_neighbour_of_a_denied_path_is_still_allowed(self):
         """The denylist must not be so broad it eats ordinary work.
 
-        `training/train_lora.py` is publishable source; `docs/symoneural-manual.md` is the
+        `training/train_lora.py` is publishable source; `frontend/site/docs/symoneural-manual.md` is the
         manual and CLAUDE.md says explicitly that it IS publishable.
         """
-        for rel in ("training/train_lora.py", "docs/symoneural-manual.md",
+        for rel in ("training/train_lora.py", "frontend/site/docs/symoneural-manual.md",
                     "training/adapters.md", "site/index.html", "keyboard.py"):
             p = self.ws / rel
             p.parent.mkdir(parents=True, exist_ok=True)

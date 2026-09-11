@@ -1,6 +1,6 @@
 # symoneural_reinforce — documentation
 
-The consolidated manual (`../../../../docs/symoneural-manual.md`, ~8,400 lines) remains the
+The consolidated manual (`../../../../frontend/site/docs/symoneural-manual.md`, ~8,400 lines) remains the
 canonical single file. This directory is a modular view of the same content,
 sliced so each concern can be read on its own.
 

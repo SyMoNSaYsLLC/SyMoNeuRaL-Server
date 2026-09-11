@@ -1,6 +1,6 @@
 # SyMoNeuRaL Voice — what works today, and the two things that are owed
 
-**Built 2026-08-17.** The design is `docs/specs/voice-spec.md`; HANDOVER §5 item 12 is the ask.
+**Built 2026-08-17.** The design is `backend/voice/docs/voice-spec.md`; HANDOVER §5 item 12 is the ask.
 This is the **input half**. Speech out is not built and `tts.py` says so rather than faking it.
 
 ## Works, mounted, and testable right now

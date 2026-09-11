@@ -3,7 +3,7 @@
 Each benchmark reports achieved throughput next to the number the equivalent
 cuda-samples benchmark produced on this GPU, so a regression is visible rather
 than merely plausible. Reference figures come from
-``docs/01-hardware-dossier.md``; they were measured on 2026-08-16.
+``frontend/site/docs/01-hardware-dossier.md``; they were measured on 2026-08-16.
 
 **Sizing.** Everything runs past 100 MB where bandwidth is the subject. With
 48 MB of L2 on this part, a smaller working set measures cache: the same D2D

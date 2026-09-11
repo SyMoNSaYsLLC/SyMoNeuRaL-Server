@@ -1,4 +1,4 @@
-"""`docs/SERVER-READY.md` must cover every row the roster declares.
+"""`SERVER-READY.md` must cover every row the roster declares.
 
 Task #73's title is "every application online", and the document is the evidence for it: a
 measured reading of every row in `apps/ROSTER.md`, asked on the address the roster gives it.
@@ -46,7 +46,7 @@ import urllib.request
 from registry.lib import roster
 
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
-DOC = REPO / "docs" / "SERVER-READY.md"
+DOC = REPO / "SERVER-READY.md"
 
 # The environment variable that turns the live half on, and the base URL it carries.
 BASE_ENV = "SYMONEURAL_SERVER_READY_BASE"
@@ -97,7 +97,7 @@ class RowCoverageTests(unittest.TestCase):
         """Runs on synthetic text, so it runs identically on a machine where the doc is wrong.
 
         The decorated case is the one that matters: the id column has to stay bare. #73 carries
-        `check: grep \\n\\|\\s*gateway\\s*\\| -- docs/SERVER-READY.md`, and `\\s*` does not match
+        `check: grep \\n\\|\\s*gateway\\s*\\| -- SERVER-READY.md`, and `\\s*` does not match
         a backtick -- so formatting the ids as code would read better in prose and would
         silently fail the task's own check.
         """

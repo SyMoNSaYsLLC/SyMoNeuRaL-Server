@@ -1,7 +1,7 @@
 """The record of licences that have actually cleared. This is what earns `ready`.
 
 `gateway.unit_state` may only report `ready` once a licence has cleared end to end at least
-once — condition 5 of the five in `docs/specs/gateway-completion.md` §4. That condition needs
+once — condition 5 of the five in `backend/gateway/docs/gateway-completion.md` §4. That condition needs
 somewhere to be recorded, and the recording has to be *evidence*, not a setting: an operator
 who can turn the light green by editing a config file has a decorative indicator, which
 `.claude/CLAUDE.md` forbids outright.

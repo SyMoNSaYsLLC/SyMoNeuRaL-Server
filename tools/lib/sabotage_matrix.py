@@ -39,11 +39,11 @@ ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "back
 BACKEND = ROOT / "backend"
 SUITE = "apps/test_control_plane_matrix.py"
 
-MATRIX = "docs/specs/symoneural-control-plane-matrix.md"
-BOOTCAMP = "docs/specs/symoneural-bootcamp.md"
-CAPABILITY = "docs/ops/APPLICATION-MODEL-CAPABILITY-MATRIX.md"
-BENCHMARKS = "docs/ops/MODEL-BENCHMARKS.md"
-PARITY = "docs/ops/VLLM-BENCH-PARITY.md"
+MATRIX = "backend/controlboard/docs/symoneural-control-plane-matrix.md"
+BOOTCAMP = "backend/studio/docs/symoneural-bootcamp.md"
+CAPABILITY = "ops/docs/APPLICATION-MODEL-CAPABILITY-MATRIX.md"
+BENCHMARKS = "ops/docs/MODEL-BENCHMARKS.md"
+PARITY = "ops/docs/VLLM-BENCH-PARITY.md"
 
 #: (label, file, find, replace, test id it must turn red)
 CASES: list[tuple[str, str, str, str, str]] = [

@@ -16,7 +16,7 @@ before writing a line of our own code.
 
 Two modes, because indexing and asking are different jobs:
 
-    python3 tools/lib/index_references.py                    # rebuild docs/REFERENCE-INDEX.md
+    python3 tools/lib/index_references.py                    # rebuild REFERENCE-INDEX.md
     python3 tools/lib/index_references.py find <words...>    # ad-hoc, writes nothing
     python3 tools/lib/index_references.py adopt <project>    # external/ -> incoming/
 
@@ -37,7 +37,7 @@ import sys
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 REFS = REPO / "external"
 TASKS = REPO / "PROJECT-TASKS.md"
-OUT = REPO / "docs" / "REFERENCE-INDEX.md"
+OUT = REPO / "REFERENCE-INDEX.md"
 
 # Directories that cannot hold a skill worth indexing and cost minutes to walk. `.git`
 # alone is most of the 109 GB.

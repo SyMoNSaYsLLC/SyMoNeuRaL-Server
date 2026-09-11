@@ -2,7 +2,7 @@
 #
 # Hand-maintained. Four consumers read it and none of them hardcodes a port:
 #
-#   tools/build_ports.py       -> docs/ops/PORTS.md          (generated, do not hand-edit)
+#   tools/build_ports.py       -> ops/docs/PORTS.md          (generated, do not hand-edit)
 #   backend/apps/ports.py      -> the API and every surface process
 #   ops/symoneural-surface@.service (via the per-instance env file it generates)
 #   tools/smoke.py             -> which port to test each surface on

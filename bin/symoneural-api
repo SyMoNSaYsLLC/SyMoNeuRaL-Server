@@ -4,7 +4,7 @@
 # SyMoNeuRaL is a subdivision of SymonSays LLC. Licence: /LICENSE at the repo root.
 """symoneural-api -- the entry point for the API and orchestration runtime.
 
-`docs/architecture/COMPONENT-MAP.tsv` has recorded this as a component since before this
+`ops/architecture/COMPONENT-MAP.tsv` has recorded this as a component since before this
 file existed: `symoneural-api  SERVICE_API  IMPLEMENTED  PRODUCTION  backend/api.py  Python
 ... API/orchestration :8800`. It is real, it is in production, and until 2026-09-08 it was
 the only runtime with no folder of its own -- the unit ran `python3 backend/api.py` directly.

@@ -43,7 +43,7 @@ next rows to land have that slack and no more. Measure with a cloned `.unit`, ne
 **`dispatchos` was a row that was never written here, and that is the more instructive half
 of this file's history.** `build_status()` has been building it since #95; `ROSTER.md`, the
 `EXPECTED` list in `apps/test_status_rack.py`, the hand-typed count in the comment above it
-and `docs/specs/symoneural-live-stack.md` all went on describing a rack without it. Six tests
+and `backend/live/docs/symoneural-live-stack.md` all went on describing a rack without it. Six tests
 were red on that disagreement on 2026-08-29. This is exactly the failure the file's own
 opening paragraph names -- a roster living in several places that can disagree -- arriving
 from the direction nobody guarded: not a row invented in one copy, but a row omitted from
@@ -54,7 +54,7 @@ every copy except the code. The tripwire worked. It just had to be run.
 served by `apps.studio.plugins.reinforce.routes` and `/api/exp/*` by
 `apps.studio.plugins.exp.routes`, both mounted from inside the Studio package -- and a
 top-level row for each presented two plugins of one application as independent runtimes
-sitting beside their own parent. `docs/specs/symoneural-live-stack.md` §4 carried both as
+sitting beside their own parent. `backend/live/docs/symoneural-live-stack.md` §4 carried both as
 *"target architecture; may stay separately addressable during transition"*. They stayed
 separately addressable: `/reinforce.html` and `/exp` both still answer, neither redirects,
 and the `SubUnit` ids are unchanged at `train` and `exp` so `site/reinforce.html`,

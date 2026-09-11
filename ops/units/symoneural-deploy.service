@@ -16,7 +16,7 @@
 # that needs a password is a step that is performed exactly as often as somebody remembers.
 Description=Publish the staged SyMoNeuRaL site to /var/www/symoneural
 Documentation=file://@@ROOT@@/scripts/deploy.sh
-Documentation=file://@@ROOT@@/docs/SERVER-READY.md
+Documentation=file://@@ROOT@@/SERVER-READY.md
 
 # Caddy serves the webroot from disk and picks up changes without a reload, so this is an
 # ordering preference and not a dependency. `Before=` without `Requires=` means a failed

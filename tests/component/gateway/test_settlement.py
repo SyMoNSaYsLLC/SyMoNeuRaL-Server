@@ -1,6 +1,6 @@
 """Tests for on-chain settlement. Run: cd backend && python3 -m pytest apps/gateway -q
 
-The important ones here are not the happy paths. `docs/specs/symon-ml-review.md` finding 1 is
+The important ones here are not the happy paths. `backend/studio/docs/symon-ml-review.md` finding 1 is
 a licence check that returned True when the chain was unreachable, and its second half is a
 positive result cached for the process lifetime. Both are regression-tested below by name,
 because both are the kind of bug a green test suite happily coexists with.

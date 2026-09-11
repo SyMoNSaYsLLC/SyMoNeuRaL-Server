@@ -21,7 +21,7 @@ A config can allocate its weights and its KV cache and still die on the first lo
 generation, because the compute buffers grow with the batch. So a candidate is only accepted
 when it **loads AND answers a real generation**, not when `/health` returns 200.
 
-That distinction is the one `docs/specs/qlora-27b-measured.md` records the hard way: the 27B
+That distinction is the one `backend/studio/docs/qlora-27b-measured.md` records the hard way: the 27B
 "fitting with 1.17 GiB to spare" and `registry.py`'s rule that **a run that fits by 0.9 GiB
 does not fit -- its OOM is inside the noise.**
 

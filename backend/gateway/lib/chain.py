@@ -5,7 +5,7 @@
 **A gateway that cannot verify says `offline`, and says which failure it was.** Unreachable
 node, non-200, rate limit, DNS failure, timeout, truncated body, malformed JSON, empty
 result -- every one of them is a failure, and `probe()` returns it as an `error` string. No
-`except` anywhere in this package may return an affirmative reading. `docs/specs/
+`except` anywhere in this package may return an affirmative reading. `backend/authority/docs/
 symon-ml-review.md` finding 1 is a licence check that fell back to `return True` when the
 TRON lookup did not answer, so blocking the endpoint *granted* the licence. That is the exact
 shape this file must never grow, and this is the file where someone would grow it.

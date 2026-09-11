@@ -2,7 +2,7 @@
 
 Repository layout, the pristine-vs-isolated venv policy, and the per-sample runnability matrix.
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 # Part II — Setup and runnability
 

@@ -223,7 +223,7 @@ mode_stage_gpt_oss() {
     "upstream": "bartowski/Qwen2.5-7B-Instruct-GGUF",
     "note": "measured active default at the time of staging; not deleted, not moved"
   },
-  "runtime_compatibility": "UNRECORDED -- see docs/ops/OPENAI-GPT-OSS-MIGRATION.md",
+  "runtime_compatibility": "UNRECORDED -- see ops/docs/OPENAI-GPT-OSS-MIGRATION.md",
   "license": "UNRECORDED -- upstream licence must be read and stored before activation",
   "notes": "Written by scripts/model-staging/symoneural-model-stage.sh. No weights fetched."
 }
@@ -313,7 +313,7 @@ ISO
     warn "  FAIL  candidate not staged -- no $dir"; fail=1
   elif [[ -z "$model" ]]; then
     warn "  FAIL  no .gguf under $dir -- the candidate is not converted yet"
-    dim  "        upstream ships safetensors; see docs/ops/OPENAI-GPT-OSS-MIGRATION.md §2"
+    dim  "        upstream ships safetensors; see ops/docs/OPENAI-GPT-OSS-MIGRATION.md §2"
     fail=1
   else
     dim "  PASS  candidate model: $model"
@@ -433,7 +433,7 @@ mode_rollback() {
 mode_write_docs() {
   head_ "write-docs"
   if (( DRY_RUN )); then
-    dim "  dry run: would refresh the inventory block in docs/ops/SYMONEURAL-MODEL-BUNDLES.md"
+    dim "  dry run: would refresh the inventory block in ops/docs/SYMONEURAL-MODEL-BUNDLES.md"
     return 0
   fi
   warn "  not implemented as an in-place rewrite on purpose."

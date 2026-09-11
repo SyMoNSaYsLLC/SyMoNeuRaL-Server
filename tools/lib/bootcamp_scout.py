@@ -3,7 +3,7 @@
 
 ## Why this exists
 
-`docs/specs/symoneural-bootcamp.md` declares, for every app instance, which model is
+`backend/studio/docs/symoneural-bootcamp.md` declares, for every app instance, which model is
 the STARTER and which are CANDIDATES. That document is worthless the moment it disagrees with
 the disk -- a depth chart claiming Qwen is the chat starter after somebody edited `CHAT_MODEL` is
 worse than no matrix, because it reads authoritative.

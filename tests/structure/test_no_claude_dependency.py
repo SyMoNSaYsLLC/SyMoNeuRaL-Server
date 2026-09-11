@@ -3,8 +3,8 @@
 """The repository must not depend on `.claude`. Enforced, so it stays true.
 
 The provider-specific authority was retired on 2026-09-08: the rules moved to
-`docs/authority/PROJECT-AUTHORITY.md`, the handoff to `docs/HANDOFF.md`, the deny rules to
-`docs/authority/TOOL-POLICY.json`, and the seven `.claude` paths were untracked. The
+`ops/authority/PROJECT-AUTHORITY.md`, the handoff to `HANDOFF.md`, the deny rules to
+`ops/authority/TOOL-POLICY.json`, and the seven `.claude` paths were untracked. The
 physical directory survives only until the owner's retirement backup is taken.
 
 A claim like "there are no dependencies left" decays the moment somebody adds one, so this
@@ -114,7 +114,7 @@ class NoFirstPartySourceResolvesADotClaudePath(unittest.TestCase):
         self.assertEqual(
             {}, offenders,
             "these resolve a path under .claude at runtime. The authority moved to "
-            "docs/authority/PROJECT-AUTHORITY.md and docs/HANDOFF.md on 2026-09-08, and "
+            "ops/authority/PROJECT-AUTHORITY.md and HANDOFF.md on 2026-09-08, and "
             "the directory is retired -- point at the neutral path instead")
 
     def test_the_detector_would_catch_a_real_dependency(self):
@@ -143,9 +143,9 @@ class TheNeutralAuthorityExistsToPointAt(unittest.TestCase):
     """The dependency can only be zero if there is somewhere else to point."""
 
     def test_the_neutral_paths_are_present_and_tracked(self):
-        for rel in ("docs/authority/PROJECT-AUTHORITY.md",
-                    "docs/authority/TOOL-POLICY.json",
-                    "docs/HANDOFF.md",
+        for rel in ("ops/authority/PROJECT-AUTHORITY.md",
+                    "ops/authority/TOOL-POLICY.json",
+                    "HANDOFF.md",
                     "ProjectStatus.md"):
             with self.subTest(rel=rel):
                 self.assertTrue((ROOT / rel).is_file(), f"{rel} is missing")
@@ -161,7 +161,7 @@ class TheNeutralAuthorityExistsToPointAt(unittest.TestCase):
 
     def test_the_root_pointer_names_the_neutral_authority(self):
         t = (ROOT / "CLAUDE.md").read_text()
-        self.assertIn("docs/authority/PROJECT-AUTHORITY.md", t)
+        self.assertIn("ops/authority/PROJECT-AUTHORITY.md", t)
         self.assertNotIn("@.claude/CLAUDE.md", t,
                          "the root file still imports the retired path")
 

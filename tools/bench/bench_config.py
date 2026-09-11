@@ -26,7 +26,7 @@ Qwen is a dense 7B run in production with a draft model and two slots. Neither w
 
 VRAM peak is sampled rather than computed, and it is sampled **during generation** rather
 than after load, because the KV cache grows with the conversation and the peak is what
-decides whether a second tenant fits. `docs/specs/qlora-27b-measured.md` records the 27B
+decides whether a second tenant fits. `backend/studio/docs/qlora-27b-measured.md` records the 27B
 "fitting" with 1.17 GiB to spare and `registry.py` records that a run fitting by 0.9 GiB does
 not fit -- its OOM is inside the noise.
 

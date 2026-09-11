@@ -58,7 +58,7 @@ def _repo_root() -> Path:
 ROOT = _repo_root()
 
 #: module -> the Debian package that provides it. Every one of these was measured as
-#: dpkg-owned; see docs/ops/SERVING-MANIFEST.md. Keeping the package name here is the point:
+#: dpkg-owned; see ops/docs/SERVING-MANIFEST.md. Keeping the package name here is the point:
 #: "No module named 'starlette'" is not an instruction, "apt install python3-starlette" is.
 START = {
     "annotated_types": "python3-annotated-types",

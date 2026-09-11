@@ -13,7 +13,7 @@ the GGUF key/value header (llama.cpp format) off disk. If the file is not there,
 not there.
 
 **Derive, never look up.** `plan_fit()` computes the memory cost from the architecture
-numbers just read, using the four-term model in §4.2 of `docs/specs/qlora-upgrade.md`. That
+numbers just read, using the four-term model in §4.2 of `backend/studio/docs/qlora-upgrade.md`. That
 means a model nobody anticipated still gets an honest estimate, and it means the estimate
 moves when the preset moves.
 

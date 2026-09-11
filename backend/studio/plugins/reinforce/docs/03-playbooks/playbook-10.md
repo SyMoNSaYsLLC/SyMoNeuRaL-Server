@@ -1,6 +1,6 @@
 # Playbook 10 — Edge Deployment
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 [< Playbook 09 — Agents & Orchestration on Local Models](playbook-09.md)
 

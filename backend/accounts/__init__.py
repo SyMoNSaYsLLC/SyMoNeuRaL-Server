@@ -1,7 +1,7 @@
 """SyMoNeuRaL Accounts -- signup, login, sessions. Standard library only.
 
     python3 backend/accounts/test_accounts.py     # the tests
-    docs/specs/accounts-spec.md                        # routes, page changes, threat model
+    backend/accounts/docs/accounts-spec.md                        # routes, page changes, threat model
 
 This is the backend half of the Account tab. The routes and page exist, but the surface
 remains off unless both configuration switches below are present.
@@ -81,7 +81,7 @@ cannot collide with `run/gpu.lock.d` (a directory the governor creates with `mkd
 It is in its own subdirectory on purpose: `.claude/CLAUDE.md` argues the name `run/` is
 load-bearing *because* someone will eventually clear it out, and a sweep of `run/*.log` or
 `run/*` should not be one command away from deleting every account. See the open questions
-in `docs/specs/accounts-spec.md`; this is a decision for the owner, not an agent.
+in `backend/accounts/docs/accounts-spec.md`; this is a decision for the owner, not an agent.
 """
 from __future__ import annotations
 

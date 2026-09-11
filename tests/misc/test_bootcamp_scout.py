@@ -1,7 +1,7 @@
 """The Bootcamp Scout's measured roster must be measured, and must exclude other people's code.
 
 `tools/lib/bootcamp_scout.py` supplies every FACT in
-`docs/specs/symoneural-bootcamp.md` -- which app owns which routes, which weights are
+`backend/studio/docs/symoneural-bootcamp.md` -- which app owns which routes, which weights are
 on disk, which architecture each one is, which model is the serving default. The document
 supplies the judgements. That split only works if the facts are actually read off the disk.
 

@@ -260,7 +260,7 @@ class StudioLocalBypassTests(unittest.TestCase):
     Garrett could not open his own surface. The naive fix was rejected because `ops/Caddyfile`
     delegates `/studio` AND `/studio/*`, and `/studio/editor/*` proxies ComfyUI's own editor
     over seven methods plus a WebSocket, so dropping the token would have published a ComfyUI
-    admin surface (`docs/ops/SECURITY-AUDIT.md` BLOCKER-1).
+    admin surface (`ops/docs/SECURITY-AUDIT.md` BLOCKER-1).
 
     So the bypass drops **token friction on the local path only**, and the thing these tests
     exist to pin is the sentence it must never violate:

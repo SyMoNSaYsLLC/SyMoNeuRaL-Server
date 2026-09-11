@@ -192,7 +192,7 @@ fi
 #
 # This is NOT the NIM container route. nvcr.io/nim/qwen/qwen3-32b:1.0.0 is refused on three
 # independent grounds -- it does not fit, NGC marks it end-of-support, and NVIDIA AI
-# Enterprise licenses it for use rather than redistribution. See docs/nim-on-one-card.md.
+# Enterprise licenses it for use rather than redistribution. See ops/docs/nim-on-one-card.md.
 # The GGUF here is Apache-2.0 and carries none of those problems.
 if [ "${SYMONEURAL_FETCH_32B:-${SYM_FETCH_32B:-0}}" = "1" ]; then
   echo "chat surface (32B tier, opt-in):"

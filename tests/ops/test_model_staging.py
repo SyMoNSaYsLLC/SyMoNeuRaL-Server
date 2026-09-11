@@ -78,7 +78,7 @@ class ActiveModelParseTests(unittest.TestCase):
 
 class ClassificationTests(unittest.TestCase):
     def test_an_unmanifested_weight_is_unknown_blocked(self):
-        """The honest default. `docs/ops/LICENSE-AUDIT.md`'s vocabulary says an unrecorded
+        """The honest default. `ops/docs/LICENSE-AUDIT.md`'s vocabulary says an unrecorded
         licence is a blocker until provenance exists, so absence of a manifest entry is not
         'probably fine' — whatever the file happens to be."""
         self.assertEqual(inv._classify("vae/mystery.safetensors", None, False),
@@ -338,7 +338,7 @@ class StagingScriptRefusalTests(unittest.TestCase):
         and an empty directory. A wrong command that fails loudly costs a minute; one that
         succeeds silently costs the trust in every exit code around it.
         """
-        for path in (SCRIPT, ROOT / "docs" / "ops" / "OPENAI-GPT-OSS-MIGRATION.md"):
+        for path in (SCRIPT, ROOT / "ops" / "docs" / "OPENAI-GPT-OSS-MIGRATION.md"):
             text = path.read_text(encoding="utf-8")
             with self.subTest(path=path.name):
                 self.assertNotIn("huggingface-cli download", text,

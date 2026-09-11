@@ -273,7 +273,7 @@ def _guard(token: str | None, peer: str | None) -> dict | None:
 DENY_SEGMENTS: tuple[tuple[str, ...], ...] = (
     # --- trade secret. .claude/CLAUDE.md: never copied into site/, never served from an
     # endpoint, never quoted into a page or a commit. This is the recipe for the product,
-    # not documentation. docs/symoneural-manual.md is the manual and is publishable.
+    # not documentation. frontend/site/docs/symoneural-manual.md is the manual and is publishable.
     ("training", "corpus.jsonl"),
     ("training", "build_dataset.py"),
     # Two entries, and the second one is a glob. This was `adapter` alone, matching a path

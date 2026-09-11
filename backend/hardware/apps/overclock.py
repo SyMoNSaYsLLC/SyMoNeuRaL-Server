@@ -126,7 +126,7 @@ def vram_envelope() -> dict[str, Any]:
         "practical_mib": int(total * PRACTICAL_VRAM_FRACTION),
         "source": "nvidia-smi --query-gpu=memory.total",
         "note": ("the practical figure is the nameplate scaled by the 14.2/15.92 ratio that "
-                 "docs/specs/qlora-27b-measured.md and registry.py both record. Budgeting "
+                 "backend/studio/docs/qlora-27b-measured.md and registry.py both record. Budgeting "
                  "against the nameplate is how a run OOMs at step 0 — 100% here means the "
                  "practical budget, and going above it is what 'over' is for."),
     }

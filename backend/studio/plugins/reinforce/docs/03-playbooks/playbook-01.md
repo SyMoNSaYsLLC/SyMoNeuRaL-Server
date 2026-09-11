@@ -1,6 +1,6 @@
 # Playbook 01 — Hardware & the Math of Inference
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 [< The Local AI Engineer's Manual — 2026 Edition](playbook-00-index.md)
 

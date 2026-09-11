@@ -176,7 +176,7 @@ check('licenceCount is 1', BigInt(bytesToHex(cnt.ret)) === 1n);
 
 // --------------------------------------------------------------- the refusals, one per rule
 // Each of these is a way the naive contract silently grants a licence. They are the whole
-// reason this file exists — `docs/specs/symon-ml-review.md` finding 1 is a check that failed
+// reason this file exists — `backend/studio/docs/symon-ml-review.md` finding 1 is a check that failed
 // open, and every case below is that same failure wearing a different hat.
 
 r = await redeem({ nonce: 1n });

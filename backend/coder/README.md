@@ -174,7 +174,7 @@ run/coder-backups/           the rollback store                 (see §8, owner'
 `.claude/CLAUDE.md` is explicit that the first three must never be copied into `site/`,
 served from an endpoint, or quoted into a page or a commit message — and that **an agent
 asked to "publish the manual" could reasonably mistake the corpus for documentation**. That
-is precisely the failure this list exists to prevent. `docs/symoneural-manual.md` is the
+is precisely the failure this list exists to prevent. `frontend/site/docs/symoneural-manual.md` is the
 manual and is publishable; the corpus is not. The line that resolves it against the site's
 transparency argument is CLAUDE.md's own: **publish the numbers, keep the methods.**
 

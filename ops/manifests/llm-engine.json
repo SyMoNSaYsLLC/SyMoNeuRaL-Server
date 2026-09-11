@@ -47,7 +47,7 @@
     "runpath": "/home/google/Symoneural/symoneural-llm/build/bin:",
     "generation": "2026-08-20 -- RETAINED, not promoted",
     "same_build_as_server": false,
-    "skew_note": "bounded accepted skew; see docs/ops/SERVING-PATH.md. No matching CLI could be built."
+    "skew_note": "bounded accepted skew; see ops/docs/SERVING-PATH.md. No matching CLI could be built."
   },
   "custody": {
     "store": "archives/",
@@ -75,7 +75,7 @@
         "The release is PUBLIC and deliberately so. A private one would work, but retrieving",
         "it needs a GitHub credential provisioned onto the rebuilt machine, which moves half",
         "of disaster recovery into a second custody problem. The bundle is compiled runtime",
-        "binaries; the protected artefacts named in docs/ENGINEERING.md -- training/corpus.jsonl,",
+        "binaries; the protected artefacts named in ENGINEERING.md -- training/corpus.jsonl,",
         "training/build_dataset.py and training/adapter/ -- are not in it, checked member by",
         "member and by scanning the binaries for corpus text before publication.",
         "",

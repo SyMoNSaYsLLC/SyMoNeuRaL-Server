@@ -174,7 +174,7 @@ wrong:
   `'chat' TIMED OUT after 10s behind 'miner'`.
 
 The yield protocol that would make it genuinely preemptible is specified in
-`docs/specs/miner-preemption.md` and is deliberately **not** implemented: it changes the hot
+`backend/cryptominer/docs/miner-preemption.md` and is deliberately **not** implemented: it changes the hot
 path of the only arbitrator of the only contended resource in this system.
 
 **So: start it deliberately, stop it deliberately, and do not leave it holding the card on a

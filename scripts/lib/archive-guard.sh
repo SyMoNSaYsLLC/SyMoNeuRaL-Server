@@ -44,7 +44,7 @@
 # Key NAMES appear below; no value is ever read into a variable, printed, or logged.
 
 # `.claude/` is retained in the table below after the 2026-09-08 neutralisation. The
-# authority moved to docs/authority/ and docs/HANDOFF.md and the path was untracked -- but
+# authority moved to ops/authority/ and HANDOFF.md and the path was untracked -- but
 # it is still PHYSICALLY present, holding settings and a pasted transcript, until the
 # owner's retirement purge. A rule protecting a path that still exists is not stale, and
 # deleting it because the tracking changed would let that directory into a tarball.

@@ -2,7 +2,7 @@
 
 Measured specifications and raw captures for the target machine (RTX 5070 Ti, Blackwell sm_120). Every figure the engine's benchmark suite compares against originates here.
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 # Part I — Your machine
 

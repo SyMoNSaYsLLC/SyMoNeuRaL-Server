@@ -84,7 +84,7 @@ WORK="${SYMONEURAL_QEMU_WORK:-${SYM_QEMU_WORK:-$ROOT/run/qemu-antminer}}"
 mkdir -p "$WORK"
 echo "workdir: $WORK"
 
-# ---- unpack. See docs/antminer-firmware-upgrade.md for why each layer is what it is.
+# ---- unpack. See ops/docs/antminer-firmware-upgrade.md for why each layer is what it is.
 if [ ! -f "$WORK/zImage" ]; then
   echo "unpacking $(basename "$PKG") ..."
   rm -rf "$WORK/x"; mkdir -p "$WORK/x"

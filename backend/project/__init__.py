@@ -1,7 +1,7 @@
 """SyMoNeuRaL Project -- a shared workspace for a person and the local models.
 
 Garrett asked for something *"like the claude cowork"*: a place where he and the models on
-this box work on a body of files together, across sessions. `docs/specs/project-spec.md`
+this box work on a body of files together, across sessions. `backend/project/docs/project-spec.md`
 reads that as projects, work items, file references, session history and search, and this
 is that spec built.
 

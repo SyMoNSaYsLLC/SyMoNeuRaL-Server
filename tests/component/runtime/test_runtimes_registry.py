@@ -352,7 +352,7 @@ class NoMeasurementsInAHandMaintainedFile(unittest.TestCase):
                 self.assertIsNone(
                     re.search(r"\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}", ln),
                     "a build timestamp in RUNTIMES.tsv. tools/build/build_runtimes.py measures "
-                    "those fresh into docs/ops/RUNTIMES.md, where they are dated.")
+                    "those fresh into ops/docs/RUNTIMES.md, where they are dated.")
                 self.assertIsNone(
                     re.search(r"\b\d{7,}\s*bytes\b", ln),
                     "a byte count in RUNTIMES.tsv; same reason as the timestamp")

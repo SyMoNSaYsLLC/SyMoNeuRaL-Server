@@ -4,7 +4,7 @@
 keypair, a contract deployment under that key, and two `sudo` commands. An earlier revision
 opened "everything an agent could do is done", and that was wrong twice — once when the
 off-chain verifier did not exist, and again when nothing recorded a settlement. Both are built
-now, so the sentence is finally close to true; treat it as a claim to re-check, not a fact. `docs/specs/gateway-completion.md` §7 marks
+now, so the sentence is finally close to true; treat it as a claim to re-check, not a fact. `backend/gateway/docs/gateway-completion.md` §7 marks
 these **(b)** for that reason, and `.claude/HANDOVER.md` §5 item 0 sets the precedent — the
 contract signing key was Garrett's call too.
 
@@ -30,7 +30,7 @@ so it survives the worktree being removed.
 ### Merging with main — the one conflict that is a decision, already taken
 
 Main independently grew its own `backend/apps/gateway/abi.py`, so git reports **add/add** on it
-(and on `test_gateway.py` and `docs/specs/gateway-completion.md`), plus content conflicts in
+(and on `test_gateway.py` and `backend/gateway/docs/gateway-completion.md`), plus content conflicts in
 `backend/apps/gateway/__init__.py`, `site/gateway.html`, `tests/frontend.mjs` and
 `tools/build/build_pages.py`. Seven in total; everything else auto-merges, confirmed with
 `git merge-tree --write-tree HEAD main`, which trial-merges without touching the tree.
@@ -253,7 +253,7 @@ upgradeable.** Two ways out, and they are not the same decision:
    keyed on `keccak256(abi.encode(payer, workspace))`, written in `redeem` beside the nonce
    burn. Small change, changes the storage layout, needs `build.mjs` and `test_contracts.mjs`
    re-run.
-2. **Delete it.** If `docs/specs/symon-ml-review.md` finding 2 resolves the way that review
+2. **Delete it.** If `backend/studio/docs/symon-ml-review.md` finding 2 resolves the way that review
    itself recommends — the chain is a *payment rail*, not a DRM, and entitlement is minted
    off-chain by `backend/apps/licensing/` on a confirmed payment — then `isLicensed` is not
    the source of truth for anything and should not be on-chain at all.

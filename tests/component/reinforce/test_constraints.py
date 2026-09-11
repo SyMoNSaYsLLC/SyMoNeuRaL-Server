@@ -2,7 +2,7 @@
 
 These are regression tests for facts about *this hardware*, not about the code.
 If one starts failing, the box changed -- different GPU, different toolkit, or
-a driver update -- and the numbers in ``docs/01-hardware-dossier.md`` need
+a driver update -- and the numbers in ``frontend/site/docs/01-hardware-dossier.md`` need
 re-measuring.
 """
 

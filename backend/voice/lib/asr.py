@@ -7,7 +7,7 @@ a preference, it is what the build on this box is:
 2026-09-04 was under `contrib/`, which no longer exists -- a claim whose source cannot be
 opened is the thing this file's own §2.2 warning is about.
 Measured with `base.en` at `-t 8`: peak RSS **284 MiB**, **0**
-VRAM, and a 3-second utterance end to end in **579 ms**. See `docs/specs/voice-spec.md` §2 for
+VRAM, and a 3-second utterance end to end in **579 ms**. See `backend/voice/docs/voice-spec.md` §2 for
 the table those came out of, and read §2.2 before putting any latency figure on a page.
 
 ## The two traps, both of which return a working-looking empty answer

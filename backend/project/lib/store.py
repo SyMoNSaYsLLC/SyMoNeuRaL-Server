@@ -3,12 +3,12 @@
 Everything in this file is a read or a write to a small structured database. There is no
 model here, no `subprocess`, no socket and no import of `scripts/gpu-governor.sh`. That is
 the surface's defining property rather than an implementation detail -- see the README and
-`docs/specs/project-spec.md` §2.2.
+`backend/project/docs/project-spec.md` §2.2.
 
 Nothing raises out of a public function. Every one returns a dict carrying `ok`, and on
 refusal a machine-readable `code` alongside the human `error`. That is the contract
 `backend/coder/__init__.py` uses, extended with `code` because an iPhone app cannot
-read a sentence and branch on it (`docs/specs/project-spec.md` §3.3).
+read a sentence and branch on it (`backend/project/docs/project-spec.md` §3.3).
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ ROOT = HERE.parent.parent.parent
 
 #: Bumped when a response shape changes in a way a shipped client could misparse. It rides
 #: on every response so a binary that cannot be updated on demand can detect the change
-#: rather than silently misread it (`docs/specs/project-spec.md` §3.3).
+#: rather than silently misread it (`backend/project/docs/project-spec.md` §3.3).
 API_VERSION = 1
 
 #: The database schema's own version, in `meta`. Separate from API_VERSION: the wire shape
@@ -75,7 +75,7 @@ _ID_RE = re.compile(r"\A[0-9a-f]{16}\Z")
 def new_id() -> str:
     """An opaque server-generated key. Never a name, never a path.
 
-    `docs/specs/project-spec.md` §3.2: ids must never reach a path join, which removes the
+    `backend/project/docs/project-spec.md` §3.2: ids must never reach a path join, which removes the
     traversal class of bug rather than guarding it. `_ID_RE` is still enforced on the way
     in, because the id arrives in a URL and lands in a SQL parameter -- and because a
     validator that exists is what stops the next person deciding an id may be a filename.
@@ -97,7 +97,7 @@ def valid_id(s: object) -> bool:
 def db_path() -> pathlib.Path:
     """`run/project/store.db`, overridable with `SYMONEURAL_PROJECT_DB`.
 
-    `docs/specs/project-spec.md` §2.5 proposes `backend/project/store.db` and argues `run/`
+    `backend/project/docs/project-spec.md` §2.5 proposes `backend/project/store.db` and argues `run/`
     is wrong because `.claude/CLAUDE.md` describes it as runtime state somebody will
     eventually clear out. That argument is sound and the default here still points at
     `run/`, for one reason that is not a disagreement: `run/` is already in `.gitignore`
@@ -166,7 +166,7 @@ def authorize(token: str | None) -> tuple[bool, str, str]:
 
 # ------------------------------------------------------------------ the file denylist
 #
-# Project references files by path and never holds a copy (`docs/specs/project-spec.md`
+# Project references files by path and never holds a copy (`backend/project/docs/project-spec.md`
 # §1.2). A reference is still a path this process resolves, so the same guard Coder applies
 # to reads applies here to links -- and for the sharper reason: an item body quoting the
 # corpus would be the trade secret in a second, less-guarded location (§7.2).
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 CREATE INDEX IF NOT EXISTS events_project ON events(project_id, id DESC);
 
--- FTS5, which is CPU, exact and built in. `docs/specs/project-spec.md` §2.3: substring and
+-- FTS5, which is CPU, exact and built in. `backend/project/docs/project-spec.md` §2.3: substring and
 -- full-text search over a personal workspace of a few hundred items is not a problem that
 -- needs a neural network, and an embedding model here would make this surface evictable.
 CREATE VIRTUAL TABLE IF NOT EXISTS search USING fts5(
@@ -665,7 +665,7 @@ def update_project(pid: str, *, if_version: int | None = None, name: object = No
     `if_version` is the version the client read. A mismatch is a 409, not a silent
     last-write-wins: two devices open on the same note is exactly the situation a workspace
     invites, and losing a note without an error is the failure that stops people trusting
-    one (`docs/specs/project-spec.md` §3.4, §7.7). Omitting `if_version` is allowed and
+    one (`backend/project/docs/project-spec.md` §3.4, §7.7). Omitting `if_version` is allowed and
     means "I did not read a version" -- it is the escape hatch for a script, and the README
     says so rather than pretending the check is unconditional.
     """
@@ -696,7 +696,7 @@ def update_project(pid: str, *, if_version: int | None = None, name: object = No
 def delete_project(pid: str, *, if_version: int | None = None) -> dict:
     """Archive first, then delete. Never a silent drop.
 
-    A project that is not archived is refused: `docs/specs/project-spec.md` §3.2 asks for
+    A project that is not archived is refused: `backend/project/docs/project-spec.md` §3.2 asks for
     archive-then-delete, and the reason is that DELETE on a workspace is the one action
     with no undo in this package. Two deliberate steps means the destructive one cannot be
     reached by a mis-aimed request.
@@ -1087,7 +1087,7 @@ def readings() -> dict:
 def backup(dest: str | None = None) -> dict:
     """A dated copy, via `sqlite3`'s online backup API. Consistent under WAL.
 
-    `docs/specs/project-spec.md` §7.4: the store is gitignored, there is no git remote, and
+    `backend/project/docs/project-spec.md` §7.4: the store is gitignored, there is no git remote, and
     this project has already lost a private key that lived somewhere nobody backed up.
     **Nothing schedules this.** It is a function and a route; a cron entry or a systemd
     timer is the operator's to add, and until one exists the backup is only as good as

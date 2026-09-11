@@ -18,7 +18,7 @@ vendor specification, or projected arithmetic. Hyperparameters are not figures o
 so they carry a fourth vocabulary describing where the *choice* came from:
 
 * `published` -- somebody else's paper or a library default (QLoRA, peft, TAO)
-* `manual` -- `docs/symoneural-manual.md`, Playbook 04, written on this box
+* `manual` -- `frontend/site/docs/symoneural-manual.md`, Playbook 04, written on this box
 * `as-shipped` -- what the existing trainer already does, unvalidated
 * `hardware` -- forced by one 16 GiB card, not chosen
 * `convention` -- a ratio kept fixed so one knob stays one knob
@@ -42,7 +42,7 @@ with, so the presets exist:
   not. Under peft the reference policy **is** the base model with the adapter switched off:
   `ref_model=None` alongside a `peft_config` makes trl disable the adapter for the reference
   forward pass and re-enable it afterwards. The reference costs **zero extra weight bytes** --
-  it costs one extra forward pass. `docs/specs/qlora-upgrade.md` §5.4 spotted this itself
+  it costs one extra forward pass. `backend/studio/docs/qlora-upgrade.md` §5.4 spotted this itself
   ("on 4-bit that is achievable by disabling the adapter rather than loading twice") and then
   deferred it anyway.
 * *"it needs paired preference data, which does not exist here."* Correct, and it still does not

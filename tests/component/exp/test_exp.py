@@ -1469,10 +1469,10 @@ class DocsTests(unittest.TestCase):
                 cited.add(ref)
         self.assertTrue(cited, "no docs are cited any more; this test has stopped testing")
         # Two `docs/` directories are in play: this package's, and the repository's at
-        # `Symoneural/docs/`. `trace.py` cites `docs/integration-sources.md`, which is the
+        # `Symoneural/docs/`. `trace.py` cites `ops/docs/integration-sources.md`, which is the
         # repo-level one -- it is the file that records the verdict this package argues with --
         # so a citation resolves if it exists in either place.
-        repo_docs = ROOT / "docs"
+        repo_docs = ROOT / "ops" / "docs"
         for ref in sorted(cited):
             with self.subTest(doc=ref):
                 self.assertTrue((APP / "docs" / ref).is_file() or (repo_docs / ref).is_file(),
@@ -1483,7 +1483,7 @@ class DocsTests(unittest.TestCase):
         """Cross-references between the three docs and the README. A dead link in shipped prose
         is the same defect whether the citation is in a docstring or in Markdown."""
         docs = APP / "docs"
-        repo_docs = ROOT / "docs"
+        repo_docs = ROOT / "ops" / "docs"
         for path in sorted(list(docs.glob("*.md")) + [APP / "README.md"]):
             for ref in re.findall(r"docs/([a-z0-9-]+\.md)", path.read_text()):
                 with self.subTest(source=path.name, doc=ref):

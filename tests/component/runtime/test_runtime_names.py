@@ -140,7 +140,7 @@ class TheComponentMapCoversWhatIsOnDisk(unittest.TestCase):
     exactly why it drifted.
     """
 
-    MAP = ROOT / "docs" / "architecture" / "COMPONENT-MAP.tsv"
+    MAP = ROOT / "ops" / "architecture" / "COMPONENT-MAP.tsv"
 
     @classmethod
     def setUpClass(cls):

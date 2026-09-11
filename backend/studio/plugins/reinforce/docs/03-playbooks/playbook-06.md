@@ -1,6 +1,6 @@
 # Playbook 06 — KV Cache, Long Context & Memory Tricks
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 [< Playbook 05 — Distillation & Synthetic Data](playbook-05.md)
 

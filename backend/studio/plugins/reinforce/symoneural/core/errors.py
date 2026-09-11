@@ -1,7 +1,7 @@
 """Engine exception hierarchy.
 
 The error-handling strategy mirrors what the cuda-samples curriculum verified on
-this box (see ``docs/02-setup-environments.md``): a capability that the hardware
+this box (see ``frontend/site/docs/02-setup-environments.md``): a capability that the hardware
 genuinely cannot provide is *waived*, not failed. ``simpleP2P`` exits cleanly on a
 single-GPU machine and that is the sample behaving correctly; the engine follows
 the same convention so that "cannot run here" never masquerades as "broken".

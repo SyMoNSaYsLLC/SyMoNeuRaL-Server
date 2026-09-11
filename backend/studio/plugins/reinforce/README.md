@@ -96,7 +96,7 @@ symoneural_reinforce/
 ├── bench/                   Benchmark suite vs. the measured dossier figures
 ├── tests/                   112 tests: engine, server, agents, 4 hw constraints
 ├── scripts/run_tests.sh     Constraint-aware runner with venv isolation guard
-└── docs/                    Modular manual — see docs/README.md
+└── docs/                    Modular manual — see ops/docs/DOCS-INDEX.md
 ```
 
 ---
@@ -253,7 +253,7 @@ the base stack.
 
 ## Documentation
 
-See [`docs/README.md`](docs/README.md) for the modular manual and, importantly,
+See [`ops/docs/DOCS-INDEX.md`](ops/docs/DOCS-INDEX.md) for the modular manual and, importantly,
 the table mapping each measured figure to the module that consumes it.
 
 ## Known limits
@@ -265,7 +265,7 @@ the table mapping each measured figure to the module that consumes it.
 - **Single GPU only.** P2P and multi-GPU collectives are waived, not implemented.
 - **`MicroAttention` is single-head** and has no causal mask.
 - **Playbooks 03–10 are unverified carry-over** — see
-  [`docs/05-verification.md`](docs/05-verification.md).
+  [`frontend/site/docs/05-verification.md`](frontend/site/docs/05-verification.md).
 
 ---
 

@@ -34,7 +34,7 @@ hyperparameters contradict each other.
 
 ## The two objections that kept preference and RL out of v1, and how each was answered
 
-`presets.NOT_IN_V1` and `docs/specs/qlora-upgrade.md` §5.4 both named DPO/GRPO as omitted, for two
+`presets.NOT_IN_V1` and `backend/studio/docs/qlora-upgrade.md` §5.4 both named DPO/GRPO as omitted, for two
 stated reasons. Neither was wrong; both turned out to be answerable.
 
 1. **"No VRAM for a reference model beside the policy."** True for a second set of weights, and

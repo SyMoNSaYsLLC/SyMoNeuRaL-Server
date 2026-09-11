@@ -1,6 +1,6 @@
 # The Local AI Engineer's Manual — 2026 Edition
 
-> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../docs/symoneural-manual.md`, which remains the canonical single file.
+> Part of the [symoneural_reinforce documentation set](README.md). Sliced from the consolidated manual at `../../../../../frontend/site/docs/symoneural-manual.md`, which remains the canonical single file.
 
 ## The Local AI Engineer's Manual — 2026 Edition
 #### Ten hands-on playbooks that connect into one complete skill set

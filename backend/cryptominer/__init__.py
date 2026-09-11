@@ -71,7 +71,7 @@ box: `gpu-governor.sh acquire chat 10` against a live miner logs
 **That is why the miner never auto-starts, and why nothing here ever starts it in response
 to a page view.** It is started deliberately and stopped deliberately. The yield protocol
 that would make it genuinely preemptible -- the miner watching for a request to hand the
-card back mid-run -- is specified in `docs/specs/miner-preemption.md` and is deliberately
+card back mid-run -- is specified in `backend/cryptominer/docs/miner-preemption.md` and is deliberately
 not implemented: it changes the hot path of the only arbitrator of the only contended
 resource in this system, and getting it wrong is how chat and image OOM at step 0.
 """
@@ -649,7 +649,7 @@ async def start() -> dict:
     The lock is held for the miner's lifetime. That is a deliberate exception to
     "hold the lock for a job, never a process lifetime" and it is why this never
     auto-starts: a resident miner makes every other surface wait out the acquire
-    timeout. See the module docstring and docs/specs/miner-preemption.md.
+    timeout. See the module docstring and backend/cryptominer/docs/miner-preemption.md.
 
     **`subprocess.Popen`, not `asyncio.create_subprocess_exec`, and that is a bug fix
     rather than a preference.** asyncio owns the processes it spawns: when the event loop

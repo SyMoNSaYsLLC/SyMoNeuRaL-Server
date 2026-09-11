@@ -3,7 +3,7 @@
 Wraps ``cuda.core.Device`` with the capability facts the engine needs to make
 launch decisions, and caches them so hot paths never re-query the driver.
 
-Hardware notes for the target box (measured, see ``docs/01-hardware-dossier.md``):
+Hardware notes for the target box (measured, see ``frontend/site/docs/01-hardware-dossier.md``):
 
 * RTX 5070 Ti, Blackwell, ``sm_120``, 70 SMs x 128 cores, 15.9 GiB.
 * 48 MB L2 -- large enough that any working set under ~100 MB is measuring cache,
@@ -60,7 +60,7 @@ class DeviceCapabilities:
 
         On the target box this yields 896.1 GB/s. Measured throughput is ~752
         GB/s (84%), which is the number benchmarks should be judged against --
-        see ``docs/01-hardware-dossier.md``.
+        see ``frontend/site/docs/01-hardware-dossier.md``.
         """
         return self.memory_clock_khz * 1e3 * 2 * (self.memory_bus_width / 8) / 1e9
 

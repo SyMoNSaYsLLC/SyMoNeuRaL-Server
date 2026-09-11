@@ -663,7 +663,7 @@ class TestRackUnit(Base):
 class TestNeverTakesTheCard(Base):
     """The design argument, asserted rather than documented.
 
-    `docs/specs/project-spec.md` §6.1: this is the measurement worth making, because it is
+    `backend/project/docs/project-spec.md` §6.1: this is the measurement worth making, because it is
     the actual claim. A future change adding an embedding model fails these rather than
     quietly making the surface evictable.
     """

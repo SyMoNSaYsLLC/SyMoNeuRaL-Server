@@ -10,7 +10,7 @@ Nothing in this file computes a number from a specification sheet, a config defa
 previous measurement. If a source cannot be read right now, the field is `None` and the
 `source` says why -- it is never filled in with the value it "should" be.
 
-That rule is not decorative. `docs/specs/qlora-27b-measured.md` records that budgeting against
+That rule is not decorative. `backend/studio/docs/qlora-27b-measured.md` records that budgeting against
 this card's **nameplate** 15.92 GiB instead of the ~14.2 GiB actually free is how a run OOMs at
 step 0, and `registry.py` carries three more constants that each cost a real run to learn. A
 page that prints a plausible number with no source attached is how that happens again.

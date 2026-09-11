@@ -24,7 +24,7 @@ cat's white chest fur, its ear and a front leg, because light fur and a light ba
 the same colour to a distance threshold. The numbers all said success. The sticker was
 ruined.
 
-`docs/specs/sigils-spec.md` §3.6 anticipated exactly this and made the call in advance:
+`backend/sigils/docs/sigils-spec.md` §3.6 anticipated exactly this and made the call in advance:
 ship the colour key, keep rembg specified as the fallback, and choose between them **by
 measurement rather than by taste**. This is that measurement arriving, so this is that
 fallback.

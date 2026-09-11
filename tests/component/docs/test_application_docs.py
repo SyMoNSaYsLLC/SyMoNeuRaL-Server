@@ -309,7 +309,7 @@ class TheApiReferencePageIsWellFormed(unittest.TestCase):
     paragraph of the page and none of those rules applied.
 
     Nothing in the source looks wrong: it reads as an ordinary stylesheet, and the `.ar-wrap`
-    block below it is wrapped correctly. `docs/HANDOFF.md` already carries the bite this
+    block below it is wrapped correctly. `HANDOFF.md` already carries the bite this
     repeats -- a `console.js` fix was "verified" by reading the file and had not been applied.
     So this asks the page.
     """

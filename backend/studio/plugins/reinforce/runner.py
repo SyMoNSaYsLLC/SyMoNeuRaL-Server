@@ -70,7 +70,7 @@ Both new methods want a frozen reference to measure against. Neither loads one. 
 left as `None` while a `peft_config`/adapter is attached, which makes trl **disable the adapter**
 for the reference forward pass and re-enable it after -- so the reference is the base model that
 is already resident. It costs a forward pass, not a second 4-bit 7B. This is the objection that
-kept preference tuning out of v1, and `docs/specs/qlora-upgrade.md` §5.4 had already spotted the
+kept preference tuning out of v1, and `backend/studio/docs/qlora-upgrade.md` §5.4 had already spotted the
 answer.
 
 ### Metric names are normalised here, not in the parser

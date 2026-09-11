@@ -14,7 +14,7 @@ none of them depends on egress, on TronGrid's rate limit, or on a testnet being 
 asserts that across every environment and every reading -- including a perfectly successful
 one showing a deployed contract -- the state is `offline`. It is phrased against behaviour
 rather than today's signature, so the commit that would break it is the one it exists to
-catch. `docs/specs/symon-ml-review.md` finding 1 is the bug it is watching for.
+catch. `backend/studio/docs/symon-ml-review.md` finding 1 is the bug it is watching for.
 """
 from __future__ import annotations
 
@@ -591,7 +591,7 @@ class TestUnitState(unittest.TestCase):
         showing a deployed contract on mainnet -- the state is `offline`. `ready` here means
         a visitor can obtain a licence, which needs the off-chain daemon, a payment path a
         real person can complete, an unlock, and one round trip actually completed. Until a
-        human deletes this test on purpose, having read `docs/specs/symon-ml-review.md`
+        human deletes this test on purpose, having read `backend/studio/docs/symon-ml-review.md`
         findings 1 and 2, the answer is `offline`.
 
         Phrased against behaviour, not against today's signature: if `unit_state` grows a

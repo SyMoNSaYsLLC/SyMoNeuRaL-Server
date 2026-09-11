@@ -4,7 +4,7 @@ An entitlement is a short, signed statement that a specific payer settled a spec
 for a specific workspace, and that it is good until a specific time. It is the artefact the
 rest of the system checks, so that checking does not require a chain read on every request —
 while still not being the "set `is_licensed = True` forever" bug from
-`docs/specs/symon-ml-review.md` finding 1, because it **expires** and is re-verified on use.
+`backend/studio/docs/symon-ml-review.md` finding 1, because it **expires** and is re-verified on use.
 
 ## The key asymmetry, which is the whole security argument
 

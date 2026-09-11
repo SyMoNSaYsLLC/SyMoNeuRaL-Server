@@ -415,7 +415,7 @@ class TestThrottle(Base):
     Rate limiting is OFF across the whole API today at the operator's instruction
     (`backend/server.py`, `_rate_for`). Nothing here re-enables it: this is a per-account
     lockout, it counts failures rather than requests, and a correct password never
-    touches it. See `docs/specs/accounts-spec.md` for why those are different things.
+    touches it. See `backend/accounts/docs/accounts-spec.md` for why those are different things.
     """
 
     def setUp(self):

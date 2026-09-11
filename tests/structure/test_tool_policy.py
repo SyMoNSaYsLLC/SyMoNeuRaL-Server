@@ -22,7 +22,7 @@ def _find_root(start: pathlib.Path) -> pathlib.Path:
 
 
 ROOT = _find_root(pathlib.Path(__file__).resolve())
-POLICY = ROOT / "docs" / "authority" / "TOOL-POLICY.json"
+POLICY = ROOT / "ops" / "authority" / "TOOL-POLICY.json"
 
 #: The protected classes that must remain denied whatever else changes. Derived from the
 #: repository's own standing rules: the mode-600 ledgers, the trade-secret training
@@ -100,7 +100,7 @@ class TheProtectedClassesRemainDenied(unittest.TestCase):
         missing = [n for n in MUST_STAY_DENIED if n not in self.blob]
         self.assertEqual([], missing,
                          f"these are no longer denied after the migration: {missing}. "
-                         "docs/ops/EXPORTS.md rules 2 and 3 name them as protected")
+                         "ops/docs/EXPORTS.md rules 2 and 3 name them as protected")
 
 
 class ThePolicyCarriesNoSecrets(unittest.TestCase):
