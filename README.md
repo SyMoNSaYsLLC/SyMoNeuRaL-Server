@@ -5,7 +5,7 @@ everything measured.
 
 ## Layout
 
-Nine directories. Each one is a thing you can name out loud, and each has a `README.md`
+Ten directories. Each one is a thing you can name out loud, and each has a `README.md`
 saying what belongs in it and what does not.
 
 | Directory | What it is |
@@ -26,11 +26,62 @@ in `backend/<component>/docs/`, the current operational record in `ops/registry/
 finding in `ops/audits/`. A document that lives away from what it describes goes stale
 without anybody noticing.
 
+```bash
+python3 tools/audit/readme_map.py            # which directories have one, and is it in git
+python3 tools/audit/readme_map.py --missing
+```
+
+## The files at the root, and why each is here
+
+Nothing is at the root that could live in a directory. These eight could not.
+
+| File | What it is |
+|---|---|
+| `README.md` | this. The map, and the two rules a new arrival needs first |
+| `conftest.py` | **the one arrangement every import in this tree depends on** — see below |
+| `LICENSE` | the SyMoNeuRaL proprietary licence. `LicenseRef-SyMoNeuRaL-Proprietary` |
+| `LICENSES.md` | every third-party component, its licence, and what that licence obliges |
+| `ENGINEERING.md` | the build, the card, the environments, the honesty rules |
+| `HANDOFF.md` | what is left, and what will bite you |
+| `SERVER-READY.md` | what must answer before this box is considered serving |
+| `REFERENCE-INDEX.md` | where each external reference lives and what it is for |
+
+### `conftest.py` is load-bearing, not a test convenience
+
+It puts `backend/` on `sys.path`, and **that is the one arrangement under which the imports
+in this tree mean what they say.** `backend/**` imports its siblings as top-level packages —
+`from hardware.lib import gpu`, not `from backend.hardware.lib import gpu` — which works
+because the service runs as
+
+```
+ExecStart=/usr/bin/python3 .../backend/server.py
+```
+
+and Python puts a script's own directory at `sys.path[0]`. The tests reproduce that, rather
+than inventing a different one.
+
+**It is at the repository root, not in `tests/`**, because the tests moved out of `backend/`
+on 2026-09-11 and pytest walks up from each test file collecting `conftest.py` — so one here
+covers `tests/` and anything added later. There is exactly one place that knows about
+`sys.path`, and this is it. Do not add a second.
+
+Two things follow directly from it, and both caught files after that move:
+
+- **`from . import X` in a test has no package to be relative to.** Import the component by
+  name: `from chat import chat`.
+- **`HERE` and `ROOT` in a test are the repository root**, not the test's directory. Several
+  files carried `sys.path.insert(0, str(HERE.parent))`, which pointed one level *above* the
+  repository and silently found nothing.
+
 ## What is NOT here, and why
 
-**Weights.** `models/llm` is a symlink to the machine's weight store. They are ~190 GB,
-licensed separately from this code, and git is the wrong tool for both. A clone gets the
-symlink and points it wherever that machine keeps its weights.
+**Weights.** Real files under `models/llm/`, ~50 GB, and **not symlinks** — the links were
+killed on 2026-09-11 because a link is a claim about a path rather than about bytes. They are
+licensed separately from this code and git is the wrong tool for them.
+
+What a clone *does* get is the record: `models/PROVENANCE.json` says which upstream artefact
+each house name came from, `models/licenses/` carries the text that obligation requires to
+travel, and `scripts/fetch-models.sh` fetches the rest and verifies it before promoting it.
 
 **Vendored SDKs.** The tree this replaces carried 15,298 tracked third-party SDK files in
 nine languages -- **91% of every tracked file in the repository** -- that nothing imported.

@@ -52,11 +52,25 @@ def _subjects(line: str) -> list[str]:
     return re.findall(r"`([A-Za-z0-9._-]+)/`", first)
 
 
+def _file_subjects(line: str) -> list[str]:
+    """The root FILES a row is about -- backticked, no trailing slash.
+
+    Separate from `_subjects` rather than one looser pattern, because a description mentions
+    filenames constantly: the conftest row names `sys.path`, the models row names
+    `PROVENANCE.json`. Only the first cell is a subject, and a directory row ends in `/`
+    while a file row does not -- which is the whole distinction.
+    """
+    if not line.startswith("| "):
+        return []
+    first = line.split("|")[1]
+    return [m for m in re.findall(r"`([A-Za-z0-9._-]+)`", first) if not m.endswith("/")]
+
+
 def rows() -> set[str]:
-    """Every directory README.md has a row about."""
+    """Every directory AND root file README.md has a row about."""
     out: set[str] = set()
     for line in README.read_text().splitlines():
-        out |= set(_subjects(line))
+        out |= set(_subjects(line)) | set(_file_subjects(line))
     return out
 
 
@@ -64,6 +78,36 @@ def tracked_top_level() -> set[str]:
     files = subprocess.run(["git", "ls-files"], cwd=ROOT,
                            capture_output=True, text=True).stdout.split()
     return {f.split("/")[0] for f in files if "/" in f}
+
+
+class TheRootFilesAreDocumented(unittest.TestCase):
+    """Every tracked file AT THE ROOT has a row too.
+
+    The map checked directories only, so seven of the eight root files -- including
+    `conftest.py`, which is the one arrangement every import in this tree depends on --
+    were undocumented and nothing said so. The owner found it by reading the README and
+    noticing what was absent, which is the slowest way for this to be caught.
+
+    Root files are rarer than directories and each one is at the root precisely because it
+    could not live in a directory. That makes an undocumented one more surprising, not less.
+    """
+
+    def test_every_tracked_root_file_has_a_row(self):
+        tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files"],
+                                 capture_output=True, text=True, check=True).stdout.split()
+        at_root = sorted(f for f in tracked if "/" not in f and not f.startswith("."))
+        described = rows()
+        missing = [f for f in at_root if f not in described]
+        self.assertEqual(missing, [],
+                         "tracked file(s) at the root with no row in README.md -- a reader "
+                         "cannot tell what they are for:\n  " + "\n  ".join(missing))
+
+    def test_the_walk_found_root_files(self):
+        """Non-vacuous: an empty file list would make the check above pass over nothing."""
+        tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files"],
+                                 capture_output=True, text=True, check=True).stdout.split()
+        at_root = [f for f in tracked if "/" not in f and not f.startswith(".")]
+        self.assertGreater(len(at_root), 3, "almost no root files found; the walk is broken")
 
 
 class TheRepositoryMapIsComplete(unittest.TestCase):
@@ -76,11 +120,14 @@ class TheRepositoryMapIsComplete(unittest.TestCase):
             "Someone arriving cannot find out what they are without opening them")
 
     def test_every_row_names_something_that_exists(self):
-        on_disk = {p.name for p in ROOT.iterdir() if p.is_dir()}
+        # Directories AND root files, since the map documents both. A row naming neither is
+        # a ghost -- either the thing was removed and the row was not, or the row was typed
+        # for something that never landed.
+        on_disk = {p.name for p in ROOT.iterdir()}
         ghosts = sorted(r for r in rows() if r not in on_disk and r not in CREATED_ON_DEMAND)
         self.assertEqual(
             ghosts, [],
-            f"README.md has rows for directories that are not here: {ghosts}. Either they "
+            f"README.md has rows for things that are not here: {ghosts}. Either they "
             "were removed and the row was not, or they are created on demand and belong in "
             "CREATED_ON_DEMAND with a note in the row saying so")
 
