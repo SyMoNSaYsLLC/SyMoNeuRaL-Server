@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934427627-8841.png",
+  "seconds": 11.2,
+  "seed": 8841,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 1009043,
+  "prompt": "a single graphics card resting on a workbench beside a coffee cup, macro shot, dark background, green circuit traces catching the light",
+  "slug": "cost"
+}

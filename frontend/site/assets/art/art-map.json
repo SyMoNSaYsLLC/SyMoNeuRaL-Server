@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941025725-8408.png",
+  "seconds": 11.04,
+  "seed": 8408,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 769309,
+  "prompt": "an abstract network graph of glowing nodes and thin lines, dark background",
+  "slug": "map"
+}

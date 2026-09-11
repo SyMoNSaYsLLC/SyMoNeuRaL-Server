@@ -1,0 +1,113 @@
+/* SyMoNeuRaL Dashboard — the operator's one screen.
+   Built on /symoneural.css's tokens (--bg --panel --line --fg --dim --accent --amber).
+   Nothing here redefines the palette; it adds the layout this page needs. */
+
+.dash { max-width: 1600px; margin: 0 auto; padding: 20px 24px 80px; }
+
+.dash-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+             margin-bottom: 6px; }
+.dash-head h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+.dash-sub { color: var(--dim); font-size: .9rem; max-width: 70ch; margin: 0 0 18px; }
+
+/* The contract line. Deliberately prominent: it is what makes every dash below readable. */
+.contract { border-left: 3px solid var(--accent); background: rgba(46,224,138,.06);
+            padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: .85rem;
+            color: var(--dim); margin-bottom: 22px; }
+
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+.grid.wide { grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+        padding: 16px 18px; }
+.card h2 { font-size: .82rem; text-transform: uppercase; letter-spacing: .08em;
+           color: var(--faint); margin: 0 0 14px; font-weight: 600;
+           display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card h2 .badge { text-transform: none; letter-spacing: 0; }
+
+/* ---- a figure: big number, unit, and the source it was read from -------------------- */
+.figs { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
+.fig { min-width: 0; }
+.fig .v { font-size: 1.5rem; font-weight: 650; line-height: 1.1;
+          font-variant-numeric: tabular-nums; word-break: break-word; }
+.fig .v.na { color: var(--faint); font-weight: 400; }
+.fig .u { font-size: .75rem; color: var(--faint); margin-left: 3px; font-weight: 400; }
+.fig .k { font-size: .72rem; color: var(--dim); margin-top: 3px; }
+/* The source is always present, always reachable, never shouting. */
+.fig .src { font-size: .66rem; color: var(--faint); margin-top: 4px; opacity: .75;
+            overflow-wrap: anywhere; }
+
+/* ---- bars ------------------------------------------------------------------------- */
+.bar { height: 8px; background: #0b0d0c; border-radius: 999px; overflow: hidden;
+       margin-top: 8px; border: 1px solid var(--line); }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px;
+           transition: width .3s ease; }
+.bar > i.warn { background: var(--amber); }
+.bar > i.hot  { background: #ff6b5e; }
+
+.cores { display: grid; grid-template-columns: repeat(auto-fill, minmax(26px, 1fr));
+         gap: 3px; margin-top: 10px; }
+.core { height: 34px; background: #0b0d0c; border: 1px solid var(--line); border-radius: 3px;
+        position: relative; overflow: hidden; }
+.core > i { position: absolute; bottom: 0; left: 0; right: 0; background: var(--accent);
+            transition: height .3s ease; }
+
+/* ---- sparkline -------------------------------------------------------------------- */
+.spark { width: 100%; height: 54px; display: block; margin-top: 10px; }
+.spark path { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.spark .fillp { fill: rgba(46,224,138,.10); stroke: none; }
+
+/* ---- tables ----------------------------------------------------------------------- */
+table.t { width: 100%; border-collapse: collapse; font-size: .8rem; }
+table.t th { text-align: left; color: var(--faint); font-weight: 600; padding: 5px 8px 5px 0;
+             border-bottom: 1px solid var(--line); font-size: .72rem;
+             text-transform: uppercase; letter-spacing: .05em; }
+table.t td { padding: 6px 8px 6px 0; border-bottom: 1px solid rgba(40,48,43,.5);
+             vertical-align: top; }
+table.t td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scroll { overflow-x: auto; }
+.tall { max-height: 300px; overflow-y: auto; }
+
+/* ---- status pills ----------------------------------------------------------------- */
+.pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: .68rem;
+        font-weight: 600; letter-spacing: .03em; white-space: nowrap; }
+.pill.ok      { background: rgba(46,224,138,.15); color: var(--accent); }
+.pill.planned { background: rgba(255,171,61,.15); color: var(--amber); }
+.pill.no      { background: rgba(255,107,94,.15); color: #ff8c81; }
+.pill.info    { background: rgba(242,246,243,.08); color: var(--dim); }
+
+/* The "adjacent but not this" line. Visually distinct from a status ON PURPOSE — the
+   fabric README warns that mistaking one for the other is how a planned thing gets
+   reported as done. */
+.adjacent { font-size: .7rem; color: var(--faint); font-style: italic;
+            border-left: 2px solid var(--line); padding-left: 8px; margin-top: 4px; }
+
+/* ---- overclocking ------------------------------------------------------------------ */
+.ocgrid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.slider { margin-bottom: 4px; }
+.slider label { display: flex; justify-content: space-between; align-items: baseline;
+                font-size: .8rem; margin-bottom: 6px; }
+.slider label b { font-variant-numeric: tabular-nums; font-size: 1.05rem; }
+.slider input[type=range] { width: 100%; accent-color: var(--accent); }
+.slider input[type=range].over { accent-color: var(--amber); }
+.slider .real { font-size: .74rem; color: var(--dim); margin-top: 5px;
+                font-variant-numeric: tabular-nums; }
+.slider .real b { color: var(--fg); }
+
+.presets { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 18px; }
+.presets button { background: #0b0d0c; border: 1px solid var(--line); color: var(--fg);
+                  padding: 6px 12px; border-radius: 999px; font-size: .76rem; cursor: pointer;
+                  font-family: inherit; }
+.presets button:hover { border-color: var(--accent); color: var(--accent); }
+.presets button.over { border-color: var(--amber); color: var(--amber); }
+
+pre.cmd { background: #0b0d0c; border: 1px solid var(--line); border-radius: 8px;
+          padding: 10px 12px; font-size: .76rem; overflow-x: auto; margin: 6px 0;
+          color: var(--fg); }
+pre.cmd .c { color: var(--faint); }
+
+.warnbox { border-left: 3px solid var(--amber); background: rgba(255,171,61,.07);
+           padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: .8rem;
+           color: var(--dim); margin: 14px 0; }
+
+.foot { color: var(--faint); font-size: .74rem; margin-top: 10px; line-height: 1.5; }
+.stale { color: var(--amber); }

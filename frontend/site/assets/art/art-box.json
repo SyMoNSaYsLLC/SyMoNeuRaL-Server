@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941037527-4153.png",
+  "seconds": 11.18,
+  "seed": 4153,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 575760,
+  "prompt": "a plain cardboard shipping box on a dark floor, single overhead light",
+  "slug": "box"
+}

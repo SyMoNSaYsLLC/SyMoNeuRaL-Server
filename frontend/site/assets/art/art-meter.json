@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941000811-6635.png",
+  "seconds": 11.51,
+  "seed": 6635,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 748227,
+  "prompt": "an analogue power meter needle at mid scale, dark instrument panel, amber",
+  "slug": "meter"
+}

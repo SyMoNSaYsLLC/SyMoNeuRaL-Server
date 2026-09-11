@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en" data-family="workbench">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Image — make it draw</title>
+<meta name="description" content="FLUX.1-schnell in four steps, rendered locally on a consumer GPU.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="stylesheet" href="/css/image.css?v=2e7314121b">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/icons/image-64.png?v=96c9791030" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Live surface</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Make it draw something.</h1>
+    <p class="lede" style="font-size:16.5px">FLUX.1-schnell, quantized to q4_k and rendered on the card in this machine. Every image below prints the wall-clock it actually took.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div class="pgwrap">
+      <div class="stage">
+        <div class="head" id="ihead"><s></s>SyMoNeuRaL Image
+          <span class="grow">idle</span></div>
+        <div class="body">
+          <div class="shots" id="shots">
+            <div class="shot im-empty">
+              <div class="cap im-empty-cap">
+                Describe something and press Generate. FLUX.1-schnell, four steps, rendered on
+                the card in this machine.
+              </div>
+            </div>
+          </div>
+        </div>
+        <form class="composer" id="form">
+          <textarea id="prompt" rows="3" maxlength="100000"
+                    placeholder="a raven perched on a server rack, volumetric light, cinematic"></textarea>
+          <button class="cta" id="send" type="submit">Generate</button>
+        </form>
+      </div>
+
+      <aside class="panel">
+        <div class="gpu-panel">
+          <p class="gpu-head"><s></s>RTX 5070 Ti<span class="gpu-link" id="con-link">socket: connecting</span></p>
+          <div class="gpu-row">
+            <label>VRAM free <b id="m-vram">&mdash;</b></label>
+            <div class="gbar" id="m-vrambar"><i style="width:0%"></i></div>
+          </div>
+          <div class="gpu-row">
+            <label>Power <b id="m-pwr">&mdash;</b></label>
+            <div class="gbar" id="m-pwrbar"><i style="width:0%"></i></div>
+          </div>
+          <dl class="gpu-facts">
+            <dt>Temperature</dt><dd id="m-temp">&mdash;</dd>
+            <dt>Holding</dt><dd id="m-holder">&mdash;</dd>
+            <dt>Queued</dt><dd id="m-queue">&mdash;</dd>
+          </dl>
+          <!-- The whole stack, not just the holder. console.js already renders the rack
+               into #units, so carrying that id here shows every surface and which one is
+               actually busy -- "something else is running" answered by looking, rather
+               than inferred from one field. Styled compact for a sidebar. -->
+          <div class="units gpu-stack" id="units"></div>
+          <p class="gpu-why">While a prompt runs, <b>Image</b> holds the card and every other GPU surface waits. If <i>holding</i> names something else, you are queued behind it &mdash; that is the honest reason a request is slow.</p>
+        </div>
+        
+        <h2>Parameters</h2>
+        <div class="ctl">
+          <label for="steps">Steps <b id="stepsv">4</b></label>
+          <input type="range" id="steps" min="4" max="8" step="1" value="4">
+        </div>
+        <div class="ctl">
+          <label>Size</label>
+          <div class="seg" id="size">
+            <button type="button" data-v="512">512</button>
+            <button type="button" data-v="768" aria-pressed="true">768</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <label for="seed">Seed <b id="seedlock">random</b></label>
+          <input type="number" id="seed" min="0" max="2147483647" placeholder="leave blank for random">
+        </div>
+        <p class="hint">
+          schnell is a distilled model: four steps is what it was trained for, and guidance is
+          pinned to 1.0 because raising it degrades this model rather than sharpening it. More
+          steps costs time without buying much.
+        </p>
+        <p class="hint" id="stat">&nbsp;</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/image.js?v=91f28314b0" defer></script>
+</body>
+</html>

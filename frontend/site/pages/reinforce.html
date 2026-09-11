@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Reinforce — fine-tune the model that answers here</title>
+<meta name="description" content="A training bay on one RTX 5070 Ti: four predetermined tuning methods, each costed before it runs. Every figure says whether it was measured here or is arithmetic.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/brand/mark-64.png?v=ded4e8a102" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Live surface · GPU · operator token required</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Fine-tune the model that answers here.</h1>
+    <p class="lede" style="font-size:16.5px">Four named methods, each with the reasoning behind every value and the arithmetic for what it will cost in VRAM before a single weight is read. A run takes the whole card and is never evicted to serve a page, so this surface accepts work only when the operator switches it on.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div id="reinforce">
+    <style>
+    /* ---- SyMoNeuRaL Reinforce training bay -----------------------------------
+       EVERY selector below is scoped under #reinforce and every class carries an
+       `rf-` prefix. That is not style, it is a scar: three separate bugs in this
+       repo came from generic class names colliding across components -- `.bar`
+       collapsed the site header to 7px sitewide, `.live` restyled the control
+       board legend from a nav badge, and `#console .sub` outranked `.mod .sub`
+       and rendered a footnote larger than the sentence above it. Grep any new
+       class name against site/symoneural.css and site/rack-detail.css before
+       adding it here.
+
+       THERE IS NO `text-overflow:ellipsis` IN THIS BLOCK AND THERE MUST NEVER BE
+       ONE. The model rows carry `built on Qwen2.5-7B-Instruct` style attribution,
+       which is an Apache-2.0 licence condition, and the VRAM rows carry the
+       arithmetic that is the entire argument for the numbers. Clipping either is
+       data loss with extra steps. The rack has already been caught doing it.
+       Long content wraps, or folds into <details>. It never truncates.
+
+       Wide tables scroll inside their own container (.rf-scroll) so the page body
+       never scrolls horizontally at 390px. */
+
+    #reinforce .rf-grid { display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
+    #reinforce .rf-card { border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:16px 18px; background:rgba(255,255,255,.02); }
+    #reinforce .rf-card h3 { margin:0 0 6px; font-size:16px; letter-spacing:.01em; }
+    #reinforce .rf-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    #reinforce table.rf-tab { width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
+    #reinforce table.rf-tab th,
+    #reinforce table.rf-tab td { text-align:left; padding:7px 10px; border-bottom:1px solid rgba(255,255,255,.08);
+                                 vertical-align:top; white-space:normal; overflow-wrap:anywhere; }
+    #reinforce table.rf-tab th { font-weight:600; opacity:.75; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+    #reinforce .rf-num { font-variant-numeric:tabular-nums; }
+
+    /* The three labels. They are the product, not decoration -- every figure on
+       this panel carries one, and the legend below the table says what each means. */
+    #reinforce .rf-lab { display:inline-block; font-size:var(--t7); letter-spacing:.07em; text-transform:uppercase;
+                         padding:1px 6px; border-radius:999px; border:1px solid currentColor; margin-left:6px;
+                         white-space:nowrap; }
+    #reinforce .rf-lab-measured  { color:#7fd7a4; }
+    #reinforce .rf-lab-vendor    { color:#8fb6e8; }
+    #reinforce .rf-lab-projected { color:#e0c06a; }
+
+    /* Verdicts. `fits` / `tight` / `refused` are readings from the arithmetic, not
+       decorative lights: `refused` means the projected headroom is inside the error
+       bar of the projection itself. */
+    #reinforce .rf-verdict { font-weight:600; }
+    #reinforce .rf-fits    { color:#7fd7a4; }
+    #reinforce .rf-tight   { color:#e0c06a; }
+    #reinforce .rf-refused { color:#e08a7a; }
+
+    #reinforce .rf-state { display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+    #reinforce .rf-dot { width:9px; height:9px; border-radius:50%; background:#6b6b6b; flex:0 0 auto; }
+    #reinforce .rf-dot[data-state="running"]  { background:#7fd7a4; }
+    #reinforce .rf-dot[data-state="queued"]   { background:#e0c06a; }
+    #reinforce .rf-dot[data-state="failed"]   { background:#e08a7a; }
+    #reinforce .rf-dot[data-state="finished"] { background:#8fb6e8; }
+    /* `none` and `offline` keep the grey default. There is deliberately no
+       animation and no pulse: a moving indicator over a surface with no run is
+       exactly the dishonest pixel the no-decorative-indicators rule exists for. */
+
+    #reinforce details.rf-why { margin:6px 0 0; }
+    #reinforce details.rf-why > summary { cursor:pointer; font-size:12.5px; opacity:.8; }
+    #reinforce details.rf-why dl { margin:8px 0 0; font-size:13px; }
+    #reinforce details.rf-why dt { font-weight:600; margin-top:8px; }
+    #reinforce details.rf-why dd { margin:2px 0 0; opacity:.85; }
+
+    #reinforce .rf-note { font-size:12.5px; opacity:.75; margin-top:8px; }
+    #reinforce .rf-warn { border-left:3px solid #e0c06a; padding:10px 14px; margin:14px 0; font-size:13.5px; }
+    #reinforce .rf-field { display:block; margin:10px 0 0; font-size:13px; }
+    #reinforce .rf-field select,
+    #reinforce .rf-field input { width:100%; margin-top:4px; padding:8px 10px; font:inherit; font-size:13.5px;
+                                 background:rgba(0,0,0,.25); color:inherit;
+                                 border:1px solid rgba(255,255,255,.18); border-radius:6px; }
+    #reinforce button.rf-go { margin-top:14px; padding:9px 18px; font:inherit; font-weight:600; cursor:pointer;
+                              border-radius:6px; border:1px solid rgba(255,255,255,.25);
+                              background:rgba(255,255,255,.06); color:inherit; }
+    #reinforce button.rf-go[disabled] { opacity:.45; cursor:not-allowed; }
+    #reinforce ul.rf-limits { font-size:13.5px; margin:8px 0 0; padding-left:20px; }
+    #reinforce ul.rf-limits li { margin:6px 0; }
+
+    /* Objective badges. The method is a PROPERTY OF THE PRESET and is rendered as a badge on
+       its row -- deliberately not as a second dropdown. `routes.py`'s StartBody has no `method`
+       field for the same reason: a control that let a body pair `preset="voice"` with
+       `method="reinforcement"` would produce a configuration whose dataset schema and
+       hyperparameters contradict each other. Reading, not choosing. */
+    #reinforce .rf-obj { display:inline-block; font-size:var(--t7); letter-spacing:.06em; text-transform:uppercase;
+                         padding:1px 6px; border-radius:4px; border:1px solid currentColor; white-space:nowrap; }
+    #reinforce .rf-obj-sft          { color:#8fb6e8; }
+    #reinforce .rf-obj-preference   { color:#c3a6e0; }
+    #reinforce .rf-obj-reinforcement{ color:#7fd7a4; }
+    /* The one badge that is a claim rather than a name: only the reinforcement method is
+       reinforcement learning. DPO optimises a preference objective in closed form and never
+       samples, so calling it RL would be the sort of category error this repo does not make. */
+    #reinforce .rf-isrl { font-size:11px; opacity:.8; display:block; margin-top:3px; }
+
+    /* Reward-function rows. `available:false` is dimmed and kept -- a reward that needs a
+       dataset column the file does not have is stated by name, because `rewards.resolve()`
+       refuses rather than silently training against fewer functions than were configured. */
+    #reinforce tr.rf-unavailable td { opacity:.55; }
+
+    /* The metric sparkline. No axis, no gridlines, no smoothing -- and a caption that names the
+       window it is drawn from, because `/status` returns a TAIL of the log rather than the run's
+       whole history. A series drawn from the last forty log lines while looking like the whole
+       run is the dishonest-pixel rule with a chart instead of an LED. Below three points there
+       is no line at all: two readings are not a trend. */
+    #reinforce .rf-spark { display:block; width:100%; max-width:420px; height:34px; margin:2px 0 0;
+                           overflow:visible; }
+    #reinforce .rf-spark path { fill:none; stroke:currentColor; stroke-width:1.5; vector-effect:non-scaling-stroke; }
+    #reinforce .rf-metric { color:#8fb6e8; }
+    #reinforce .rf-metric-reward { color:#7fd7a4; }
+    </style>
+
+    <h2>SyMoNeuRaL Reinforce</h2>
+    <p class="sub">
+      A training bay, not a status panel. Pick a base model that is genuinely on this box, pick
+      a predetermined tuning method, and see what the run will cost before it starts. The
+      technique is <strong>4-bit low-rank adaptation</strong>: the base weights are quantised
+      to four bits and frozen, and only a small adapter is trained. That is what makes a 7B
+      model trainable on one 15.92 GiB card at all — full fine-tuning of the same model would
+      need roughly eight times this card.
+    </p>
+    <p class="sub">
+      Three things can be optimised here, and they are genuinely different: <strong>imitation</strong>
+      of examples you provide, <strong>preference</strong> between two answers to the same prompt,
+      and <strong>reinforcement</strong>, where the model writes its own answers and is scored on
+      them. Only the last of those is reinforcement learning. All three run as low-rank adapters
+      on the one card, all three are serialised against everything else on this box, and the same
+      rule covers all three: every number below is labelled measured, vendor or projected, and the
+      reinforcement figures are projected because no reinforcement run has finished here yet.
+    </p>
+
+    <div class="rf-warn" id="rf-gate" hidden>
+      This surface is <strong>off</strong>. It accepts work only when the operator switches it
+      on, because a training run takes the whole GPU and is never evicted to serve a page — an
+      open one would take chat, image and remix offline for a single request.
+    </div>
+
+    <!-- ---------------------------------------------------------------- 1. the model -->
+    <h3 style="margin-top:26px">1 · Load a model</h3>
+    <p class="rf-note">
+      Everything below was read off this machine just now: file sizes from the filesystem,
+      quantisation from the tensor table inside each file rather than from its name, and the
+      parameter split derived from the architecture metadata. Models that cannot be fine-tuned
+      are listed with the reason rather than hidden — three of the four largest model files
+      here are serving-format weights, and an operator who has just watched the chat surface
+      run one is owed an explanation of why the training bay will not take it.
+    </p>
+    <div class="rf-scroll">
+      <table class="rf-tab" id="rf-models">
+        <thead><tr>
+          <th>Base model</th><th>Format</th><th>On disk</th><th>Quantisation</th>
+          <th>Parameters</th><th>Trainable here</th>
+        </tr></thead>
+        <tbody><tr><td colspan="6">Loading what is on this box…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="rf-note" id="rf-vram"></p>
+
+    <!-- ---------------------------------------------------------------- 2. the objective -->
+    <h3 style="margin-top:30px">2 · What are you optimising?</h3>
+    <p class="sub">
+      Three different questions, and they need three different kinds of data. Only the third is
+      reinforcement learning; the second is often called that and is not. Which one a run uses is
+      a property of the method you pick below, not a separate switch — pairing a rank-16 chat
+      profile with a preference objective would produce a configuration whose dataset and
+      hyperparameters contradict each other, so the panel reads the objective off the profile
+      rather than offering it as a choice.
+    </p>
+    <div class="rf-scroll">
+      <table class="rf-tab" id="rf-methods">
+        <thead><tr>
+          <th>Objective</th><th>What it optimises</th><th>Data it needs</th>
+          <th>Reference model</th><th>Generates?</th><th>What you can read</th>
+        </tr></thead>
+        <tbody><tr><td colspan="6">Loading the objectives…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="rf-note" id="rf-rlnote"></p>
+
+    <!-- ---------------------------------------------------------------- 3. the method -->
+    <h3 style="margin-top:30px">3 · Choose a tuning method</h3>
+    <p class="sub">
+      Predetermined profiles, named for the job they do rather than for their rank. Every value in
+      them carries a stated reason and a stated source — open <em>why these values</em> on any
+      row. A settings page that exposes every knob is not a tuning method; it is a form.
+    </p>
+    <div class="rf-scroll">
+      <table class="rf-tab" id="rf-presets" style="min-width:760px">
+        <thead><tr>
+          <th>Method</th><th>Objective</th><th>When it is right</th><th>Rank / alpha</th>
+          <th>Epochs · LR</th><th>Seq · batch</th><th>Peak VRAM</th><th>Verdict</th>
+        </tr></thead>
+        <tbody><tr><td colspan="8">Loading the preset table…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="rf-note">
+      <span class="rf-lab rf-lab-measured">measured</span> read off this machine ·
+      <span class="rf-lab rf-lab-vendor">vendor</span> a published specification from somebody
+      else · <span class="rf-lab rf-lab-projected">projected</span> arithmetic, not a result.
+      <br>
+      Every VRAM figure here is <strong>projected</strong> until a run of that exact model and
+      method records a real peak, at which point that one cell — and only that one — becomes
+      measured. Nothing about training quality or throughput has been measured on this box, so
+      no method on this page carries a quality claim.
+    </p>
+    <details class="rf-why" id="rf-shared">
+      <summary>Settings every method shares, and why the hardware rather than the operator decides them</summary>
+      <dl></dl>
+    </details>
+    <details class="rf-why" id="rf-notoffered">
+      <summary>What is deliberately not offered</summary>
+      <dl></dl>
+    </details>
+
+    <!-- --------------------------------------------------------------- 4. rewards -->
+    <h3 style="margin-top:30px">4 · What a reinforcement run is scored against</h3>
+    <p class="sub">
+      The reinforcement method needs something to score its own output with. There is
+      <strong>no learned reward model here</strong> — training one needs a second network beside
+      the policy and this card does not have room for it. What runs instead is a small set of
+      rules, and this is the honest description of what that buys and what it costs:
+      <strong>a rising reward is evidence that a program's score went up.</strong> It is not by
+      itself evidence that the model got better, and every one of these functions can in principle
+      be satisfied by output that is worse. That is why completions are logged for a human to
+      read, why no run here carries a quality claim, and why the reward table below states each
+      function's weight.
+    </p>
+    <div class="rf-scroll">
+      <table class="rf-tab" id="rf-rewards">
+        <thead><tr>
+          <th>Reward</th><th>Weight</th><th>Range</th><th>What it is for</th>
+          <th>Needs</th><th>Source</th>
+        </tr></thead>
+        <tbody><tr><td colspan="6">Loading the reward table…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="rf-note">
+      The <em>rules</em> are described here; the <em>patterns</em> are not, and will not be. What a
+      behaviour is detected by is method rather than number, and publishing the exact expression a
+      policy is scored against publishes the loophole — the site's promise is measurement, not the
+      recipe. There is one function whose failure mode is worth naming out loud: rewarding a model
+      for labelling its figures can be earned by labelling everything <em>measured</em>, which is
+      the precise dishonesty the labelling rule exists to prevent. It is weighted below the
+      pricing rule for that reason, and it is a trade rather than a solved problem.
+    </p>
+
+    <details class="rf-why" id="rf-rollout">
+      <summary>Where the completions come from — and the two backends that are refused</summary>
+      <div class="rf-scroll">
+        <table class="rf-tab" style="min-width:560px">
+          <thead><tr><th>Backend</th><th>On-policy?</th><th>Usable here</th><th>Why</th><th>What it costs</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="rf-note" id="rf-rollout-note"></p>
+    </details>
+
+    <!-- ---------------------------------------------------------------- 5. the run -->
+    <h3 style="margin-top:30px">5 · Start a run</h3>
+    <div class="rf-grid">
+      <div class="rf-card">
+        <h3>Configure</h3>
+        <label class="rf-field">Base model
+          <select id="rf-pick-model"></select>
+        </label>
+        <label class="rf-field">Tuning method
+          <select id="rf-pick-preset"></select>
+        </label>
+        <p class="rf-note" id="rf-method-out"></p>
+        <!-- The dataset label is written from the selected profile's schema rather than fixed in
+             this markup. It used to read "a JSONL file of chat examples", which is now true for
+             one objective out of three: a preference run needs chosen/rejected pairs and a
+             reinforcement run needs prompts with no answers at all. A field that names the wrong
+             shape sends the operator to build the wrong file. -->
+        <label class="rf-field"><span id="rf-dataset-label">Dataset — path to a JSONL file</span>
+          <input id="rf-pick-dataset" type="text" placeholder="run/reinforce/datasets/your-file.jsonl" autocomplete="off">
+        </label>
+        <p class="rf-note" id="rf-schema-out"></p>
+        <!-- Starting adapter. The reason this control exists at all: the standard pipeline is
+             supervised first and reinforcement on top, so an RL run that starts from a freshly
+             initialised adapter throws away the persona and optimises a reward function against
+             the raw base model. Naming the shipped adapter here continues from it. It is opened
+             READ-ONLY and nothing is ever written back -- output goes to this run's own
+             directory, and promoting a result to the serving adapter stays a manual act. -->
+        <label class="rf-field">Starting adapter — optional, and usually <em>not</em> optional for a reinforcement run
+          <input id="rf-pick-init" type="text" placeholder="training/adapter — leave empty to start fresh" autocomplete="off">
+        </label>
+        <p class="rf-note" id="rf-init-out"></p>
+        <label class="rf-field">Operator token
+          <input id="rf-token" type="password" autocomplete="off">
+        </label>
+        <button class="rf-go" id="rf-preflight-btn" type="button">Check the fit</button>
+        <button class="rf-go" id="rf-start-btn" type="button" disabled>Start the run</button>
+        <p class="rf-note">
+          There is <strong>no default dataset and no fallback.</strong> SyMoNeuRaL's own training
+          corpus is a protected artefact: it is never listed, previewed, counted or read by this
+          surface, and naming its path here is refused rather than accepted. Nothing this page
+          returns — including an error message — contains a line of dataset content.
+        </p>
+      </div>
+      <div class="rf-card">
+        <h3>This run takes the whole rack</h3>
+        <p class="rf-note" style="opacity:.95">
+          A fine-tune holds the GPU until it finishes or is stopped deliberately. Chat, image
+          and remix queue behind it for its entire duration, and the governor will not evict a
+          training run to serve a page view. That is architectural, not a limitation waiting to
+          be engineered away — one card, and the weight sets do not co-fit.
+        </p>
+        <p class="rf-note" id="rf-preflight-out"></p>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------------- 6. the job -->
+    <h3 style="margin-top:30px">6 · Job state</h3>
+    <div class="rf-card">
+      <p class="rf-state"><span class="rf-dot" id="rf-dot" data-state="none"></span>
+         <span id="rf-state-text">no run has been started from this surface</span></p>
+      <div class="rf-scroll">
+        <table class="rf-tab" id="rf-job" style="min-width:520px">
+          <tbody><tr><td>There is no run. Nothing on this panel is a placeholder — when a run
+              exists, every figure below is a reading taken from it.</td></tr></tbody>
+        </table>
+      </div>
+      <!-- The objective's own readings. Which rows appear is decided by what the run actually
+           reported, not by this markup: a supervised run has a loss and no reward, a
+           reinforcement run has a reward and no validation loss, and a metric the process never
+           printed is ABSENT rather than shown as zero. An axis with no data behind it is the
+           dishonest pixel with a chart instead of an LED. -->
+      <div id="rf-metrics" hidden>
+        <h3 style="font-size:15px; margin:16px 0 4px">What this objective reports</h3>
+        <div class="rf-scroll">
+          <table class="rf-tab" id="rf-metrics-tab" style="min-width:520px"><tbody></tbody></table>
+        </div>
+        <p class="rf-note" id="rf-metrics-note"></p>
+      </div>
+      <button class="rf-go" id="rf-stop-btn" type="button" hidden>Stop this run</button>
+      <p class="rf-note">
+        Progress, loss, reward and VRAM are read from the training process itself. The panel shows
+        only output it recognises: anything else the process prints is discarded rather than
+        displayed, because a training process's stdout can carry a line of the dataset in a
+        traceback — and for the same reason a failure here reports an exception's <em>class</em>
+        and the stage it happened in, never its message. The raw log stays on the box and has no
+        URL, which is also why any series drawn above says how many steps it was drawn from: the
+        panel is given a tail of that log, not the whole run.
+      </p>
+    </div>
+
+    <!-- ---------------------------------------------------------------- 5. the limits -->
+    <h3 style="margin-top:30px">What one 16 GiB card cannot do</h3>
+    <p class="sub">
+      Published for the same reason the PCIe Gen 3 ×8 ceiling and the failed multi-stream
+      overlap are published: a negative result measured here is worth more than a positive one
+      taken from somebody's marketing.
+    </p>
+    <ul class="rf-limits">
+      <li><strong>No full fine-tuning, of anything.</strong> Weights, gradients and two
+          optimiser moments for a 7.6B model come to roughly 113 GiB — about eight times the
+          budget. <span class="rf-lab rf-lab-projected">projected</span></li>
+      <li><strong>No 14B at all — and this reverses an earlier estimate.</strong> A 14B was
+          projected here as feasible at rank 16 and sequence 1024. Then a real run on the 7B
+          measured its peak and found the projection 2.03 GiB light, because the parameters that
+          are <em>not</em> quantised — the embeddings and the output head — are converted to
+          full precision before training, at four bytes each rather than two. On a model with a
+          152,064-token vocabulary and an untied output head that is 1.56 billion parameters, or
+          5.8 GiB of the budget before a single activation exists. The corrected arithmetic puts
+          every 14B configuration over the limit, so the preset table refuses all of them and
+          shows the sum. <span class="rf-lab rf-lab-measured">measured</span> on the 7B,
+          <span class="rf-lab rf-lab-projected">projected</span> onto the 14B.</li>
+      <li><strong>Lowering the rank does not rescue a model that is too large.</strong> Rank
+          governs the adapter, and the adapter is a fraction of a gibibyte of an eleven
+          gibibyte problem. The only rungs that help are a shorter sequence and a smaller base,
+          and the panel says which one it is offering.
+          <span class="rf-lab rf-lab-projected">projected</span></li>
+      <li><strong>No training while serving.</strong> One card, serialised. A run locks chat,
+          image and remix out for its whole duration.</li>
+      <li><strong>No multi-GPU anything, and CPU offload is not a rescue.</strong> One card, no
+          NVLink, and this host is capped at PCIe Gen 3 ×8 — offloading optimiser state across
+          that link every step converts a memory problem into a wall-clock one.
+          <span class="rf-lab rf-lab-measured">measured</span></li>
+      <li><strong>No learned reward model, and therefore no RLHF in the usual sense.</strong>
+          Training a reward model means a second network of comparable size beside the policy,
+          and then the policy optimisation needs both resident at once. On a card that is already
+          near 12 GiB of a 14.2 GiB practical budget for the policy alone, there is no arrangement
+          of the two that fits. What is offered instead is <em>rules-based</em> reinforcement:
+          the scoring functions are written down, which makes them auditable and also makes them
+          gameable in ways a learned model would not be.
+          <span class="rf-lab rf-lab-projected">projected</span></li>
+      <li><strong>No vLLM rollouts on this box, and llama.cpp is refused for them on
+          correctness.</strong> vLLM's co-located mode wants a second copy of the weights plus a
+          pre-allocated KV pool; there is no fraction of the card that leaves both alive, and
+          vLLM is not installed here. Its server mode <em>is</em> supported and needs a machine
+          that is not this one. llama.cpp is the interesting refusal: it is already built here and
+          already fast, and it still cannot be a rollout engine, because it serves a
+          quantised GGUF of the <em>base</em> model and cannot carry the adapter that is changing
+          every step. Its completions and their log-probabilities would belong to a different
+          model than the one taking the gradient — off-policy from step one, and silently. A fast
+          generator that is not the policy is not a rollout engine; it is a different model's
+          opinion.</li>
+      <li><strong>Short completions, few of them.</strong> A reinforcement run generates
+          <em>n</em> completions per prompt before it can take a single step, and every one of
+          them costs a KV cache and a set of activations. That term multiplies, so the group size
+          and the completion length — not the rank — are what decide whether a reinforcement
+          configuration fits at all, and the profile that ships here is capped well below what a
+          multi-card setup would use. <span class="rf-lab rf-lab-projected">projected</span></li>
+      <li><strong>None of the reinforcement arithmetic has been measured yet.</strong> The
+          supervised path has exactly one real peak behind it, and that measurement is what
+          corrected the 14B projection by 2.03 GiB. The rollout and reference terms have no such
+          run behind them: they are derived from the trainer's source with the lines cited, and
+          they are labelled projected everywhere they appear. The first reinforcement run to
+          finish will retire that projection for its own cell and no other.
+          <span class="rf-lab rf-lab-projected">projected</span></li>
+      <li><strong>A reward is not a quality measurement.</strong> The panel reports the reward a
+          run's own scoring functions produced. That is a real reading of that score and nothing
+          more — no claim is made here that a higher number is a better model, because
+          establishing that needs a human reading the completions, and no such evaluation has
+          been run on this box.</li>
+      <li><strong>Nothing trained here is served automatically.</strong> A finished run produces
+          adapter weights in the training format; the chat surface loads a different one. A page
+          that said "trained" while chat still ran the previous adapter would be a dishonest
+          status, so promotion stays a deliberate, manual step. A run started from an existing
+          adapter does not write back to it either — the one it was given is opened read-only.</li>
+    </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/reinforce.js?v=c66ab14def" defer></script>
+</body>
+</html>

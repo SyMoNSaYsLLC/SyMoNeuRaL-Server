@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en" data-family="dashboard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Gateway — stablecoin licensing, honestly labelled</title>
+<meta name="description" content="A TRON/USDT licensing and validation gateway. Its status is read from the chain.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/icons/terminal-64.png?v=439ec988d7" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Surface · network · TRON</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Licensing that settles on-chain, and says whose number that is.</h1>
+    <p class="lede" style="font-size:16.5px">A licensing gateway on the TRON Virtual Machine, settling in USDT, with a local daemon that makes a human approve the configuration before anything is broadcast. The status line below is read live from this box: it names the network it is pointed at, what it last read from the chain, and how old that reading is.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div class="pgwrap">
+      <div class="stage">
+        <div class="head" id="gwhead"><s></s>SyMoNeuRaL Gateway
+          <span class="grow" id="gwstate">reading&hellip;</span></div>
+        <div class="body" id="gwbody">
+          <p class="gw-note" id="gwdetail">Reading the surface state from
+            <code>/api/status</code>&hellip;</p>
+          <h2>How a licence would clear</h2>
+          <ol class="gw-steps">
+            <li><b>Contract (on-chain).</b> A licensing contract on the TRON Virtual
+              Machine, denominated in USDT (TRC-20) rather than a native token.</li>
+            <li><b>Daemon (off-chain).</b> Runs on the operator&rsquo;s own machine. It
+              hashes the build logs into a reviewable tree and <b>pauses for a human to
+              approve the configuration</b> before anything is broadcast. No blind script
+              touches a rig.</li>
+            <li><b>Energy.</b> TRON meters execution as Bandwidth and Energy rather than a
+              gas auction. Renting Energy moves the execution cost off the end user.</li>
+            <li><b>Settlement.</b> The daemon broadcasts the validation state and the
+              payment. Once DPoS confirms it, the settlement is read back off the chain and
+              checked field by field &mdash; payer, token, amount, workspace &mdash; and a
+              short-lived entitlement is issued for the workspace it covers.</li>
+          </ol>
+          <p class="gw-note">One thing this is not: <b>a copy-protection scheme.</b> A
+            blockchain is public, so a key published to it is published to everyone, and any
+            arrangement that actually withholds one puts a server we run in the loop &mdash;
+            which makes that server the authority and the chain a payment rail. So we call it
+            a payment rail. Settlement is final, auditable and needs no card processor; that
+            is the whole of the claim, and it is worth having. The encryption at rest is
+            real and is not load-bearing against a determined licensee.</p>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="gpu-panel">
+          <p class="gpu-head"><s></s>RTX 5070 Ti<span class="gpu-link" id="con-link">socket: connecting</span></p>
+          <div class="gpu-row">
+            <label>VRAM free <b id="m-vram">&mdash;</b></label>
+            <div class="gbar" id="m-vrambar"><i style="width:0%"></i></div>
+          </div>
+          <div class="gpu-row">
+            <label>Power <b id="m-pwr">&mdash;</b></label>
+            <div class="gbar" id="m-pwrbar"><i style="width:0%"></i></div>
+          </div>
+          <dl class="gpu-facts">
+            <dt>Temperature</dt><dd id="m-temp">&mdash;</dd>
+            <dt>Holding</dt><dd id="m-holder">&mdash;</dd>
+            <dt>Queued</dt><dd id="m-queue">&mdash;</dd>
+          </dl>
+          <!-- The whole stack, not just the holder. console.js already renders the rack
+               into #units, so carrying that id here shows every surface and which one is
+               actually busy -- "something else is running" answered by looking, rather
+               than inferred from one field. Styled compact for a sidebar. -->
+          <div class="units gpu-stack" id="units"></div>
+          <p class="gpu-why"><b>Gateway does not use the GPU.</b> This is the card the rest of the stack shares, shown here so you can see what it is doing; nothing on this page waits for it.</p>
+        </div>
+        
+        <div class="callout">
+          <h3>Every figure here is someone else&rsquo;s</h3>
+          <p><b>~3 second confirmation</b> and <b>27 Super Representatives</b> are
+            <b>vendor</b> figures &mdash; published parameters of the TRON network, not
+            timings taken on this machine. Block times are a target, not a guarantee.</p>
+          <p>&ldquo;Effectively zero fee&rdquo; is <b>projected</b>. Energy rental does not
+            make execution free; it moves the cost from the end user to whoever rents the
+            Energy. Calling that zero would describe an accounting choice as a physical
+            property.</p>
+          <p><b>What is measured here comes from the chain reader</b> &mdash; head block,
+            whether a contract exists at the configured address, and how long the node took
+            to answer. It runs off the request path and its age is printed with it, because
+            &ldquo;real, and 40 seconds old&rdquo; is a different claim from &ldquo;real
+            right now&rdquo;. When the surface is switched off there is no reading to show,
+            and the status line says that rather than showing a stale one.</p>
+        </div>
+        <div class="callout">
+          <h3>Pricing</h3>
+          <p>Licence fees are quoted, not published &mdash; the same answer this site gives
+            for hardware, and for the same reason. Ask
+            <a href="mailto:symonsayadmin@symoneural.com">symonsayadmin@symoneural.com</a>.</p>
+        </div>
+        <div class="callout">
+          <h3>What is, and is not, on this box</h3>
+          <p>There is <b>no wallet, no private key and no signing code</b> in the process
+            serving this page. Reading a public chain needs none of them: the calls this box
+            makes are unauthenticated, and it cannot build, sign or broadcast a transaction
+            &mdash; its own test suite asserts that.</p>
+          <p>The licensing logic is split along the same line. <b>Checking</b> a licence needs
+            only public information, so it runs here: reading the settlement off the chain,
+            confirming the payer, the token, the amount and the workspace all match, and
+            verifying an entitlement against a public key. <b>Issuing</b> one needs a private
+            key, so it does not run here and cannot. A break-in on this box could read
+            licences and could not mint one.</p>
+          <p>Signing lives on the operator&rsquo;s own machine. Whether a contract is deployed,
+            and what is at that address, is <b>not claimed on this page</b> &mdash; it is read
+            from the chain and reported in the status line above, so this page cannot come to
+            disagree with the machine.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script>
+(function () {
+  'use strict';
+  var st = document.getElementById('gwstate'), d = document.getElementById('gwdetail');
+  fetch('/api/status', {headers: {'Accept': 'application/json'}})
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (s) {
+      // Searched in `sub` as well as in `units`, and the order matters less than the fact
+      // that BOTH are searched. Gateway was a top-level rack unit until 2026-08-22, when it
+      // was folded into the Miner row as a third `sub` -- *"gateway is a miner app so it
+      // can merge into miner"*. A lookup that reads only `units` would have gone on working
+      // in every test that stubs the payload and reported 'not present' to every real
+      // visitor, which is the failure this page exists to not have: it renders the API's
+      // own words about a licensing surface, so being wrong here is worse than being blank.
+      var rows = (s && s.units) || [];
+      var all = rows.concat.apply(rows, rows.map(function (x) { return x.sub || []; }));
+      var u = all.filter(function (x) { return x.id === 'gateway'; })[0];
+      if (!u) { st.textContent = 'not present'; d.textContent =
+        'The gateway surface is not present in this API build.'; return; }
+      st.textContent = u.state;
+      d.textContent = u.detail;   // the API's own words, not a rewrite of them
+    })
+    .catch(function () { st.textContent = 'unreachable';
+      d.textContent = 'Could not reach /api/status.'; });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934476553-3364.png",
+  "seconds": 11.23,
+  "seed": 3364,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 957728,
+  "prompt": "an engineer's desk covered in cables, a multimeter and an open server chassis, top down, dark tones, green accents",
+  "slug": "build"
+}

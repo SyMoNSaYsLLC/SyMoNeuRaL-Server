@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941074475-9540.png",
+  "seconds": 11.06,
+  "seed": 9540,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 863737,
+  "prompt": "a wall clock in a dark server room, motion blurred second hand, green cast",
+  "slug": "clock"
+}

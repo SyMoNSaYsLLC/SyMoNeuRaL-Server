@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Live — the stream, while it runs and after it ends</title>
+<meta name="description" content="The OBS stream from this box, served as HLS straight off the machine that encodes it. Live while it runs; the same files are the recording afterwards.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/live.css?v=69901400fd">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section style="border-top:0;padding-top:22px">
+  <div class="wrap">
+    <div class="pgwrap">
+      <div class="stage">
+
+        <div class="head" id="lv-head">
+          <s></s>SyMoNeuRaL Live
+          <span class="grow" id="lv-headstate">checking&hellip;</span>
+        </div>
+
+        <div class="body">
+
+          <p class="lv-state">
+            <b class="lv-lamp" id="lv-lamp"></b>
+            <span id="lv-say">Asking the box whether anything is being recorded&hellip;</span>
+          </p>
+
+          <!-- Hidden until there is a playlist to hand the player. An empty <video> is a black
+               rectangle that reads as a broken stream, and a status indicator that reflects
+               nothing is the one thing this site does not put on a page. -->
+          <div class="lv-player" id="lv-player" hidden>
+            <video id="lv-video" controls playsinline></video>
+            <p class="lv-now" id="lv-now"></p>
+          </div>
+
+          <div class="lv-fail" id="lv-fail" hidden>
+            <h4 id="lv-failh"></h4>
+            <p id="lv-failp"></p>
+            <details id="lv-faild" hidden>
+              <summary>What the player reported</summary>
+              <code id="lv-failc"></code>
+            </details>
+          </div>
+
+          <!-- Readings, and every one of them is a real one. Anything not measured renders as
+               an em dash in dim type, never as a zero: an unmeasured value and a measured zero
+               are different facts. The whole telemetry half depends on the obs-websocket
+               bridge, which needs a password that need not be set for the video to play -- so
+               "not configured" is a normal state here and says so in words. -->
+          <div class="lv-grid" id="lv-grid">
+            <div class="lv-cell"><b>State</b><span id="lv-r-state" class="lv-none">&mdash;</span></div>
+            <div class="lv-cell"><b>Running for</b><span id="lv-r-dur" class="lv-none">&mdash;</span></div>
+            <div class="lv-cell"><b>Segments written</b><span id="lv-r-segs" class="lv-none">&mdash;</span></div>
+            <div class="lv-cell"><b>Output FPS</b><span id="lv-r-fps" class="lv-none">&mdash;</span></div>
+            <div class="lv-cell"><b>Frames dropped</b><span id="lv-r-drop" class="lv-none">&mdash;</span></div>
+            <div class="lv-cell"><b>OBS bridge</b><span id="lv-r-bridge" class="lv-none">&mdash;</span></div>
+          </div>
+
+          <h2 style="margin:26px 0 4px;font-size:var(--t3)">Recordings</h2>
+          <p style="margin:0 0 10px;font-size:var(--t5);color:var(--dim)" id="lv-vodsay">Looking&hellip;</p>
+          <ul class="lv-vods" id="lv-vods"></ul>
+
+          <details style="margin:22px 0 0">
+            <summary style="cursor:pointer;font-size:var(--t5);color:var(--dim)">How this works, and what it is not</summary>
+            <div style="margin:10px 0 0;font-size:var(--t5);color:var(--dim);line-height:1.65">
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">One output, two surfaces.</b> OBS&rsquo;s recording output is
+                configured as HLS: a playlist plus a run of two-second segments, written into this box&rsquo;s
+                <code>backend/output/live/</code>. While OBS is writing, that playlist is the live stream. When
+                OBS stops cleanly, ffmpeg appends an <code>#EXT-X-ENDLIST</code> tag and the identical files become
+                the recording. Nothing is copied, converted or re-encoded to produce the second one.</p>
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">Three states, not two.</b> A playlist with that end tag is
+                finished. A playlist without it that was written to seconds ago is live. A playlist without it that
+                has not been touched in a long time is neither &mdash; it is what OBS leaves behind when it crashes,
+                and it is listed as <i>ended without a trailer</i> rather than being shown as a stream that is still
+                running. Treating &ldquo;no end tag&rdquo; as &ldquo;live&rdquo; would light the lamp above permanently
+                after any crash, which would make it decoration.</p>
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">The readings and the video are independent.</b> Scene,
+                dropped frames and encoder output come from a websocket connection this server makes to OBS on
+                loopback &mdash; it holds the password, the browser never sees it, and no router port is open for it.
+                The video comes from reading a directory and needs no credential at all. So a closed OBS or a wrong
+                password costs this page its readings and not its picture, and the two halves are separate modules
+                that do not import each other so that stays true.</p>
+              <p style="margin:0"><b style="color:var(--fg)">What it is not.</b> There is no transcode ladder. You get the
+                one bitrate the encoder is producing, so a slow connection buffers rather than dropping to a lower
+                quality &mdash; that is the honest cost of having no media server in the path, and it is the trade
+                this page is making on purpose.</p>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The player leads the page, and the pitch follows it.
+
+     It was the other way round until 2026-08-21, when the page was read on a phone: the
+     eyebrow, a two-line h1 and a five-line lede came first, so the <video> started BELOW
+     the fold on a 390px viewport and a visitor arriving at a live stream had to scroll to
+     find out it was live. Garrett, on that screenshot: "you see how the video is down? I
+     want the video to be in 100% on loading".
+
+     Moved, not trimmed. `.claude/CLAUDE.md` bars closing a layout problem by dropping
+     content, and the same words are still on the page in the same markup -- they read
+     better after the thing they describe than before it. The one thing that must NOT be
+     done here is hiding the lede behind a <details>: it carries the honesty claim (no
+     media server, no re-encode, the file the encoder is still writing) and that argument
+     is the point of the surface, not decoration around it. -->
+
+<div class="apphead apphead-after">
+  <div class="wrap">
+    <p class="eyebrow">Live surface</p>
+    <h1>The stream, off the box that makes it.</h1>
+    <p class="lede">OBS encodes on the RTX 5070 Ti described on the home page and writes HLS straight to this machine&rsquo;s disk. There is no media server in between and no re-encode: what you are watching is the file the encoder is still writing. When the stream ends, that same file is the recording.</p>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/hls.js?v=f12ee0acc4"></script>
+<script src="/js/live.js?v=45cc18ab26" defer></script>
+</body>
+</html>

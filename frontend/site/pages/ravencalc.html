@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL RavenCalc — exact mathematics</title>
+<meta name="description" content="Exact symbolic computation that checks its own work.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/icons/calc-64.png?v=c0834bc551" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Live surface · CPU</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Mathematics, computed rather than predicted.</h1>
+    <p class="lede" style="font-size:16.5px">RavenCalc is an exact symbolic engine, not a language model guessing at algebra. It runs on the CPU, so it is the one surface here that never waits for the GPU.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <style>
+    /* ---- RavenCalc keypad. All names rc-, all rules scoped under .rc-calc. ---- */
+    .rc-calc .rc-strip{
+      display:flex; flex-wrap:wrap; align-items:center; gap:7px;
+      padding:12px 16px; border-top:1px solid var(--line); background:var(--panel2);
+    }
+    .rc-calc .rc-lab{
+      font:650 var(--t7)/1.5 ui-sans-serif,system-ui,sans-serif; letter-spacing:.13em;
+      text-transform:uppercase; color:var(--faint); margin-right:4px;
+    }
+    .rc-calc .rc-op{
+      background:var(--bg); color:var(--dim); border:1px solid var(--line);
+      border-radius:8px; padding:7px 11px; cursor:pointer;
+      font:600 11.9px/1.3 ui-sans-serif,system-ui,sans-serif;
+    }
+    .rc-calc .rc-op:hover{color:var(--fg); border-color:var(--faint)}
+    .rc-calc .rc-op[aria-pressed=true]{
+      background:var(--accent); color:var(--accent-ink); border-color:transparent;
+    }
+    .rc-calc .rc-op:focus-visible,
+    .rc-calc .rc-key:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+    .rc-calc .rc-pad{
+      padding:12px 16px 14px; border-top:1px solid var(--line); background:var(--panel2);
+    }
+    .rc-calc .rc-group{margin-top:11px}
+    .rc-calc .rc-group:first-child{margin-top:0}
+    .rc-calc .rc-glab{
+      margin:0 0 6px; font:650 var(--t7)/1.5 ui-sans-serif,system-ui,sans-serif;
+      letter-spacing:.13em; text-transform:uppercase; color:var(--faint);
+    }
+    /* minmax(0,1fr), never a fixed width: a fixed key width is how a six-column pad runs
+       past the right edge of a 390px viewport. Long labels wrap and the row grows. */
+    .rc-calc .rc-keys{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:6px}
+    .rc-calc .rc-key{
+      background:var(--bg); color:var(--fg); border:1px solid var(--line);
+      border-radius:8px; padding:9px 3px; cursor:pointer; min-height:36px;
+      font:600 11.9px/1.25 ui-monospace,Menlo,Consolas,monospace;
+      overflow-wrap:anywhere;
+    }
+    .rc-calc .rc-key:hover{border-color:var(--accent)}
+    .rc-calc .rc-key:active{background:var(--panel)}
+    .rc-calc .rc-fn{color:var(--dim)}
+    .rc-calc .rc-var{color:var(--accent)}
+    .rc-calc .rc-act{color:var(--amber)}
+    /* `del` and `AC` are both words on purpose: the U+232B backspace glyph rendered as an
+       unreadable smudge at this size in the monospace stack, measured on this machine. */
+
+    .rc-calc .rc-line{margin-bottom:5px}
+    .rc-calc .rc-line:last-child{margin-bottom:0}
+    /* The answer is the readout. Nothing here truncates -- it wraps, per the repo rule. */
+    .rc-calc .rc-ans{
+      font-size:19px; line-height:1.45; color:var(--accent); overflow-wrap:anywhere;
+    }
+    @media (max-width:560px){
+      .rc-calc .rc-keys{gap:5px}
+      .rc-calc .rc-key{font-size:11px; padding:9px 2px}
+      .rc-calc .rc-ans{font-size:17px}
+    }
+    </style>
+    <div class="pgwrap rc-calc">
+      <div class="stage">
+        <div class="head" id="rhead"><s class="on"></s>SyMoNeuRaL RavenCalc
+          <span class="grow">cpu &middot; never queues</span></div>
+        <div class="body">
+          <div class="readout" id="out" style="color:var(--faint)">
+            Exact symbolic mathematics. Not a language model guessing at algebra &mdash; an exact symbolic engine
+            computing it, and checking its own answer where checking is cheap.
+          </div>
+        </div>
+
+        <!-- The operation is a row of real buttons rather than a <select>: it is the single
+             most important choice on the page and a collapsed menu hides six of the seven
+             answers. `#op` is a hidden input and is the ONE source of truth -- the buttons
+             write it and read their pressed state back from it, so the field that is posted
+             and the button that looks chosen cannot disagree. -->
+        <div class="rc-strip" role="group" aria-label="Operation">
+          <span class="rc-lab">Operation</span>
+          <input type="hidden" id="op" value="integrate">
+          <button type="button" class="rc-op" data-op="differentiate" aria-pressed="false">differentiate</button>
+          <button type="button" class="rc-op" data-op="integrate" aria-pressed="true">integrate</button>
+          <button type="button" class="rc-op" data-op="limit" aria-pressed="false">limit</button>
+          <button type="button" class="rc-op" data-op="series" aria-pressed="false">series</button>
+          <button type="button" class="rc-op" data-op="solve" aria-pressed="false">solve</button>
+          <button type="button" class="rc-op" data-op="simplify" aria-pressed="false">simplify</button>
+          <button type="button" class="rc-op" data-op="evaluate" aria-pressed="false">evaluate</button>
+        </div>
+
+        <form class="composer" id="form">
+          <textarea id="expr" rows="3" maxlength="100000" placeholder="x**2*sin(x)"></textarea>
+          <button class="cta" id="send" type="submit">Compute</button>
+        </form>
+
+        <!-- The keypad sits OUTSIDE #form deliberately. A <button> inside a form with no
+             type is a submit button, and the shared Enter handler calls requestSubmit(),
+             which activates the form's default submit button -- so a key in here without
+             type="button" would make Enter type a digit instead of computing. They all
+             carry type="button" as well; both halves, because either alone is one edit
+             away from being wrong.
+             Every label is the engine name that is actually inserted. `title` carries the
+             human meaning; the button does not lie about what it types. -->
+        <div class="rc-pad" id="rcpad">
+          <div class="rc-group">
+            <p class="rc-glab">Functions</p>
+            <div class="rc-keys">
+              <button type="button" class="rc-key rc-fn" data-fn="sin">sin</button>
+              <button type="button" class="rc-key rc-fn" data-fn="cos">cos</button>
+              <button type="button" class="rc-key rc-fn" data-fn="tan">tan</button>
+              <button type="button" class="rc-key rc-fn" data-fn="asin" title="inverse sine">asin</button>
+              <button type="button" class="rc-key rc-fn" data-fn="acos" title="inverse cosine">acos</button>
+              <button type="button" class="rc-key rc-fn" data-fn="atan" title="inverse tangent">atan</button>
+              <button type="button" class="rc-key rc-fn" data-fn="sinh" title="hyperbolic sine">sinh</button>
+              <button type="button" class="rc-key rc-fn" data-fn="cosh" title="hyperbolic cosine">cosh</button>
+              <button type="button" class="rc-key rc-fn" data-fn="tanh" title="hyperbolic tangent">tanh</button>
+              <button type="button" class="rc-key rc-fn" data-fn="log" title="natural logarithm (log and ln are the same function here)">log</button>
+              <button type="button" class="rc-key rc-fn" data-fn="ln" title="natural logarithm">ln</button>
+              <button type="button" class="rc-key rc-fn" data-fn="exp" title="e raised to the power">exp</button>
+              <button type="button" class="rc-key rc-fn" data-fn="sqrt" title="square root">sqrt</button>
+              <button type="button" class="rc-key rc-fn" data-fn="Abs" title="absolute value &mdash; capital A, this is the engine's name for it">Abs</button>
+              <button type="button" class="rc-key rc-fn" data-fn="factorial" title="factorial, n!">factorial</button>
+              <button type="button" class="rc-key rc-fn" data-ins="pi" title="pi, exactly &mdash; not 3.14159">pi</button>
+              <button type="button" class="rc-key rc-fn" data-ins="E" title="Euler's number e, exactly">E</button>
+              <button type="button" class="rc-key rc-fn" data-ins="oo" title="infinity &mdash; two lowercase letter o">oo</button>
+            </div>
+          </div>
+          <div class="rc-group">
+            <p class="rc-glab">Numbers, operators, variables</p>
+            <div class="rc-keys">
+              <button type="button" class="rc-key" data-ins="7">7</button>
+              <button type="button" class="rc-key" data-ins="8">8</button>
+              <button type="button" class="rc-key" data-ins="9">9</button>
+              <button type="button" class="rc-key" data-ins="(" aria-label="Open bracket">(</button>
+              <button type="button" class="rc-key" data-ins=")" aria-label="Close bracket">)</button>
+              <button type="button" class="rc-key rc-act rc-back" data-act="back" aria-label="Backspace" title="Backspace &mdash; deletes at the caret">del</button>
+              <button type="button" class="rc-key" data-ins="4">4</button>
+              <button type="button" class="rc-key" data-ins="5">5</button>
+              <button type="button" class="rc-key" data-ins="6">6</button>
+              <button type="button" class="rc-key" data-ins="+" aria-label="Plus">+</button>
+              <button type="button" class="rc-key" data-ins="-" aria-label="Minus">-</button>
+              <button type="button" class="rc-key rc-act" data-act="clear" aria-label="Clear the expression" title="Clear the expression">AC</button>
+              <button type="button" class="rc-key" data-ins="1">1</button>
+              <button type="button" class="rc-key" data-ins="2">2</button>
+              <button type="button" class="rc-key" data-ins="3">3</button>
+              <button type="button" class="rc-key" data-ins="*" aria-label="Multiply">*</button>
+              <button type="button" class="rc-key" data-ins="/" aria-label="Divide">/</button>
+              <button type="button" class="rc-key" data-ins="," aria-label="Comma">,</button>
+              <button type="button" class="rc-key" data-ins="0">0</button>
+              <button type="button" class="rc-key" data-ins="." aria-label="Decimal point">.</button>
+              <button type="button" class="rc-key" data-ins="**" aria-label="Power, two asterisks" title="power &mdash; x**2 is x squared">**</button>
+              <button type="button" class="rc-key rc-var" data-ins="x">x</button>
+              <button type="button" class="rc-key rc-var" data-ins="y">y</button>
+              <button type="button" class="rc-key rc-var" data-ins="z">z</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="gpu-panel">
+          <p class="gpu-head"><s></s>RTX 5070 Ti<span class="gpu-link" id="con-link">socket: connecting</span></p>
+          <div class="gpu-row">
+            <label>VRAM free <b id="m-vram">&mdash;</b></label>
+            <div class="gbar" id="m-vrambar"><i style="width:0%"></i></div>
+          </div>
+          <div class="gpu-row">
+            <label>Power <b id="m-pwr">&mdash;</b></label>
+            <div class="gbar" id="m-pwrbar"><i style="width:0%"></i></div>
+          </div>
+          <dl class="gpu-facts">
+            <dt>Temperature</dt><dd id="m-temp">&mdash;</dd>
+            <dt>Holding</dt><dd id="m-holder">&mdash;</dd>
+            <dt>Queued</dt><dd id="m-queue">&mdash;</dd>
+          </dl>
+          <!-- The whole stack, not just the holder. console.js already renders the rack
+               into #units, so carrying that id here shows every surface and which one is
+               actually busy -- "something else is running" answered by looking, rather
+               than inferred from one field. Styled compact for a sidebar. -->
+          <div class="units gpu-stack" id="units"></div>
+          <p class="gpu-why"><b>RavenCalc does not use the GPU.</b> This is the card the rest of the stack shares, shown here so you can see what it is doing; nothing on this page waits for it.</p>
+        </div>
+        
+        <h2>Applied to</h2>
+        <div class="ctl">
+          <label for="var">Variable</label>
+          <input type="text" id="var" value="x" maxlength="16">
+        </div>
+        <div class="ctl" id="ptwrap" hidden>
+          <label for="pt">Point</label>
+          <input type="text" id="pt" value="0" maxlength="32">
+        </div>
+        <p class="hint">
+          The keys type the engine&#39;s own notation, which is the language it actually reads:
+          <code>**</code> for a power, <code>sqrt(x)</code>, <code>Abs(x)</code>,
+          <code>pi</code> and <code>E</code> as exact constants, <code>oo</code> for
+          infinity. You can type it yourself as well &mdash; the box is a plain text field.
+        </p>
+        <p class="hint">
+          Symbolic in, symbolic out &mdash; you get an exact answer rather than a float that
+          already lost the argument. An antiderivative is differentiated back and simplified
+          against zero before you see it, and if that check cannot confirm the result it says
+          so rather than rounding up to &ldquo;verified&rdquo;.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script>
+(function () {
+  'use strict';
+  var form = document.getElementById('form');
+  var out = document.getElementById('out');
+  var expr = document.getElementById('expr');
+  var opField = document.getElementById('op');
+  var ptwrap = document.getElementById('ptwrap');
+  var head = document.getElementById('rhead');
+  var send = document.getElementById('send');
+  var pad = document.getElementById('rcpad');
+  var ops = Array.prototype.slice.call(document.querySelectorAll('.rc-op'));
+
+  // ---- the operation ------------------------------------------------------
+  // `point` reaches the engine for BOTH limit and series -- ravencalc.py parses it and
+  // passes it to the engine's series expansion as the expansion point, even though CalcRequest documents
+  // the field as limit-only. Offered for both, hidden for the five that ignore it.
+  function setOp(name) {
+    opField.value = name;
+    ops.forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-op') === name ? 'true' : 'false');
+    });
+    ptwrap.hidden = !(name === 'limit' || name === 'series');
+  }
+  ops.forEach(function (b) {
+    b.addEventListener('click', function () { setOp(b.getAttribute('data-op')); });
+  });
+  setOp(opField.value);
+
+  // ---- the keypad ---------------------------------------------------------
+  // Everything is written at the caret, not appended: a calculator that can only add to the
+  // end of the line is not one you can correct a mistake in.
+  function place(a, b) { expr.focus(); expr.setSelectionRange(a, b); }
+
+  function insert(text) {
+    var s = expr.selectionStart, e = expr.selectionEnd, v = expr.value;
+    expr.value = v.slice(0, s) + text + v.slice(e);
+    place(s + text.length, s + text.length);
+  }
+
+  // A function key wraps the selection if there is one -- select `x+1`, press sin, and you
+  // get sin(x+1) rather than losing what you had. With no selection the caret lands between
+  // the brackets, which is where you are about to type.
+  function wrap(name) {
+    var s = expr.selectionStart, e = expr.selectionEnd, v = expr.value;
+    var inner = v.slice(s, e);
+    expr.value = v.slice(0, s) + name + '(' + inner + ')' + v.slice(e);
+    var caret = s + name.length + 1 + inner.length;
+    place(caret, caret);
+  }
+
+  function backspace() {
+    var s = expr.selectionStart, e = expr.selectionEnd, v = expr.value;
+    if (s !== e) { expr.value = v.slice(0, s) + v.slice(e); place(s, s); return; }
+    if (s === 0) return;
+    expr.value = v.slice(0, s - 1) + v.slice(s);
+    place(s - 1, s - 1);
+  }
+
+  // Pressing a button moves focus off the textarea and the browser forgets the selection,
+  // so every key would type at position 0. Cancelling mousedown keeps the caret where the
+  // user put it.
+  pad.addEventListener('mousedown', function (ev) {
+    if (ev.target.closest('.rc-key')) ev.preventDefault();
+  });
+  pad.addEventListener('click', function (ev) {
+    var key = ev.target.closest('.rc-key');
+    if (!key) return;
+    var act = key.getAttribute('data-act');
+    if (act === 'clear') { expr.value = ''; place(0, 0); }
+    else if (act === 'back') backspace();
+    else if (key.getAttribute('data-fn')) wrap(key.getAttribute('data-fn'));
+    else insert(key.getAttribute('data-ins') || '');
+  });
+
+  // ---- compute ------------------------------------------------------------
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var expression = expr.value.trim();
+    if (!expression) return;
+    var operation = opField.value;
+    out.style.color = 'var(--fg)';
+    out.textContent = 'computing\u2026';
+    send.disabled = true;
+    status(head, 'computing\u2026', true);
+
+    var payload = {expression: expression, operation: operation,
+                   variable: document.getElementById('var').value.trim()};
+    if (operation === 'limit' || operation === 'series') {
+      payload.point = document.getElementById('pt').value.trim();
+    }
+
+    api('/api/ravencalc', payload).then(function (r) {
+      var c = r.check || {};
+      var verdict = c.performed
+        ? (c.passed === true ? '<span class="v">verified</span>'
+           : c.passed === false ? '<span class="bad">CHECK FAILED</span>'
+           : '<span class="bad">unconfirmed</span>')
+        : '<span class="k">not checked</span>';
+      // `in` is what the engine PARSED, which is not always what you typed -- the engine
+      // evaluates as it parses, so integrate(x**2, x) is already x**3/3 by the time the
+      // operation runs. Printing it is how you can see that, rather than being surprised
+      // by the answer. It is not decoration and it is asserted on by the test suite.
+      out.innerHTML =
+        '<div class="rc-line"><span class="k" title="the expression as the engine parsed it">in</span> ' +
+          esc(r.input.text) + '</div>' +
+        '<div class="rc-line"><span class="k">out</span> <span class="rc-ans">' +
+          esc(r.result.text) + '</span></div>' +
+        '<div class="rc-line"><span class="k">chk</span> ' + verdict +
+          (c.how ? ' <span class="k">&mdash; ' + esc(c.how) + '</span>' : '') + '</div>' +
+        (r.note ? '<div class="rc-line"><span class="k">note</span> <span class="k">' +
+          esc(r.note) + '</span></div>' : '') +
+        '<div class="rc-line"><span class="k">eng</span> <span class="k">' + esc(r.engine) +
+          ' \u00b7 ' + r.seconds + 's \u00b7 ' + (r.exact ? 'exact' : 'symbolic') +
+          '</span></div>';
+    }).catch(function (err) {
+      out.innerHTML = '<span class="bad">' + esc(err.message) + '</span>';
+    }).then(function () {
+      send.disabled = false;
+      status(head, 'cpu \u00b7 never queues', false);
+    });
+  });
+}());
+</script>
+</body>
+</html>

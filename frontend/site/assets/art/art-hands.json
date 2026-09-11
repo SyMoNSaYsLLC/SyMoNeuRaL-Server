@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941062222-2735.png",
+  "seconds": 11.07,
+  "seed": 2735,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 774751,
+  "prompt": "two hands shaking over a desk with a server rack behind, warm dim light",
+  "slug": "hands"
+}

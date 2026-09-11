@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941013351-3971.png",
+  "seconds": 11.11,
+  "seed": 3971,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 481563,
+  "prompt": "a heavy safe door slightly ajar, dark room, thin green light spilling out",
+  "slug": "vault"
+}

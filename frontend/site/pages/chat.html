@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Chat — talk to the box</title>
+<meta name="description" content="A 7B running locally on an RTX 5070 Ti. Nothing leaves the machine.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/icons/chat-64.png?v=776135876a" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Live surface</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Talk to the box.</h1>
+    <p class="lede" style="font-size:16.5px">This is a 7B at Q4 on the RTX 5070 Ti described on the home page, streaming tokens as the card produces them. The tokens-per-second under each answer is measured, not claimed.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div class="cu">
+
+      <!-- Left rail. A <div role=navigation>, NOT a <nav>: the sitewide rule
+           `nav a:not(.cta){display:none}` hides nav links below 820px, which would delete
+           every link in here on a phone. -->
+      <div class="cu-rail" id="cu-rail" role="navigation" aria-label="Conversations">
+        <div class="cu-railtop">
+          <button type="button" class="cu-new" id="cu-new">+ New chat</button>
+          <button type="button" class="cu-collapse" id="cu-collapse"
+                  aria-label="Hide conversations">&#8942;</button>
+        </div>
+        <p class="cu-railhead">Conversations</p>
+        <ul class="cu-hist" id="cu-hist"></ul>
+        <p class="cu-railfoot">Kept in this browser only.<br>Nothing is stored on the box.</p>
+      </div>
+
+      <div class="cu-main">
+        <!-- Empty state: centred, and it goes away once there is a transcript. -->
+        <div class="cu-empty" id="cu-empty">
+          <h2 class="cu-greet">Ask the box.</h2>
+          <p class="cu-sub">A 7B at Q4 on the RTX 5070 Ti in this room. Nothing you type
+            leaves the machine.</p>
+        </div>
+
+        <div class="cu-log" id="log"></div>
+
+        <form class="cu-composer" id="form">
+          <textarea id="prompt" rows="1" maxlength="100000"
+                    placeholder="How can I help?"></textarea>
+          <div class="cu-tools">
+            <label class="cu-attach" title="Attach a text file">
+              <input type="file" id="cu-file" accept=".txt,.md,.csv,.json,.log,.py,.js,.html,.css,.yaml,.yml,.toml,.ini,.sh">
+              <span>&#43;</span>
+            </label>
+            <span class="cu-file-name" id="cu-filename"></span>
+            <span class="cu-spacer"></span>
+            <span class="cu-model" id="cu-model">SymonChat S1-7B</span>
+            <button class="cu-send" id="send" type="submit" aria-label="Send">&#8593;</button>
+          </div>
+        </form>
+        <p class="cu-hint" id="stat">&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/visualizer.js?v=c6f9fddb2e" defer></script>
+<script>
+(function () {
+  'use strict';
+  var log = document.getElementById('log'), form = document.getElementById('form');
+  var box = document.getElementById('prompt'), send = document.getElementById('send');
+  var empty = document.getElementById('cu-empty'), stat = document.getElementById('stat');
+  var histEl = document.getElementById('cu-hist'), fileEl = document.getElementById('cu-file');
+  var fileName = document.getElementById('cu-filename');
+  var K = 'symoneural.chat.v1';
+  var chats = [], cur = null, attached = null, busy = false;
+
+  // ---------------------------------------------------------------- storage
+  // Conversations live in THIS BROWSER and nowhere else. There is no history endpoint and
+  // no conversation id on the server, which is not a gap -- it is the same promise the rest
+  // of the site makes about your data. The transcript is replayed to /api/chat on each turn
+  // so the model can follow along, and the server keeps none of it.
+  function load() {
+    try { chats = JSON.parse(localStorage.getItem(K) || '[]'); }
+    catch (e) { chats = []; }
+    if (!Array.isArray(chats)) chats = [];
+  }
+  function save() {
+    try { localStorage.setItem(K, JSON.stringify(chats.slice(0, 50))); }
+    catch (e) { /* private mode, or full -- the chat still works, it just will not persist */ }
+  }
+  function title(t) { return (t || 'New chat').replace(/\s+/g, ' ').trim().slice(0, 42); }
+
+  function renderHist() {
+    histEl.innerHTML = '';
+    chats.forEach(function (c, i) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cu-histbtn' + (cur === i ? ' on' : '');
+      b.textContent = c.title;
+      b.addEventListener('click', function () { open(i); });
+      var d = document.createElement('button');
+      d.type = 'button'; d.className = 'cu-del'; d.textContent = '×';
+      d.setAttribute('aria-label', 'Delete this conversation');
+      d.addEventListener('click', function (e) {
+        e.stopPropagation();
+        chats.splice(i, 1);
+        if (cur === i) { cur = null; log.innerHTML = ''; empty.hidden = false; }
+        else if (cur !== null && cur > i) cur--;
+        save(); renderHist();
+      });
+      li.appendChild(b); li.appendChild(d); histEl.appendChild(li);
+    });
+    if (!chats.length) {
+      var p = document.createElement('li');
+      p.className = 'cu-histnone'; p.textContent = 'No conversations yet.';
+      histEl.appendChild(p);
+    }
+  }
+
+  function open(i) {
+    cur = i; log.innerHTML = '';
+    chats[i].turns.forEach(function (t) { paint(t.role, t.content); });
+    empty.hidden = chats[i].turns.length > 0;
+    renderHist();
+    log.scrollTop = log.scrollHeight;
+  }
+
+  document.getElementById('cu-new').addEventListener('click', function () {
+    cur = null; log.innerHTML = ''; empty.hidden = false; box.value = ''; clearFile();
+    renderHist(); box.focus();
+  });
+  document.getElementById('cu-collapse').addEventListener('click', function () {
+    document.getElementById('cu-rail').classList.toggle('shut');
+  });
+
+  // ---------------------------------------------------------------- transcript
+  function paint(role, text) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cu-turn ' + (role === 'user' ? 'you' : 'bot');
+    var who = document.createElement('div');
+    who.className = 'cu-who';
+    who.textContent = role === 'user' ? 'You' : 'SyMoNeuRaL';
+    var msg = document.createElement('div');
+    msg.className = 'cu-msg';
+    msg.textContent = text;
+    wrap.appendChild(who); wrap.appendChild(msg);
+    log.appendChild(wrap);
+    return msg;
+  }
+
+  // ---------------------------------------------------------------- attachments
+  // TEXT ONLY, and the accept list says so. The chat model is Qwen2.5-7B-Instruct with no
+  // vision projector -- it cannot see an image, so an image picker here would be a control
+  // that can never work. The file is read in the browser and its text is prepended to the
+  // prompt; it is never uploaded, because there is no upload endpoint and none is needed.
+  fileEl.addEventListener('change', function () {
+    var f = fileEl.files && fileEl.files[0];
+    if (!f) return clearFile();
+    if (f.size > 200000) {
+      fileName.textContent = f.name + ' is too large (200 KB max)';
+      fileEl.value = ''; attached = null; return;
+    }
+    var r = new FileReader();
+    r.onload = function () {
+      attached = {name: f.name, text: String(r.result).slice(0, 24000)};
+      fileName.textContent = f.name + '  ×';
+    };
+    r.readAsText(f);
+  });
+  fileName.addEventListener('click', clearFile);
+  function clearFile() { attached = null; fileEl.value = ''; fileName.textContent = ''; }
+
+  // ---------------------------------------------------------------- send
+  box.addEventListener('input', function () {
+    box.style.height = 'auto';
+    box.style.height = Math.min(260, box.scrollHeight) + 'px';
+  });
+  box.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy) return;
+    var q = box.value.trim();
+    if (!q) return;
+    var sent = q;
+    if (attached) sent = 'File: ' + attached.name + '\n\n' + attached.text + '\n\n' + q;
+
+    if (cur === null) {
+      chats.unshift({title: title(q), turns: []});
+      cur = 0;
+    }
+    empty.hidden = true;
+    paint('user', attached ? (attached.name + '  —  ' + q) : q);
+    chats[cur].turns.push({role: 'user', content: sent});
+    box.value = ''; box.style.height = 'auto'; clearFile();
+    log.scrollTop = log.scrollHeight;
+
+    var out = paint('assistant', '');
+    busy = true; send.disabled = true; stat.textContent = 'thinking…';
+
+    // Everything before this turn, replayed. The cap matches the server's, so a long chat
+    // is trimmed here rather than refused there.
+    var prior = chats[cur].turns.slice(0, -1).slice(-1000);
+
+    fetch('/api/chat', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt: sent, history: prior,
+                            temperature: 0.7, max_tokens: 4096})
+    }).then(function (r) {
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) {
+        throw new Error(j.detail || j.error || ('HTTP ' + r.status));
+      });
+      var reader = r.body.getReader(), dec = new TextDecoder(), buf = '', text = '';
+      return (function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return text;
+          buf += dec.decode(res.value, {stream: true});
+          var parts = buf.split('\n\n'); buf = parts.pop();
+          parts.forEach(function (block) {
+            block.split('\n').forEach(function (line) {
+              if (line.indexOf('data:') !== 0) return;
+              var j; try { j = JSON.parse(line.slice(5)); } catch (e) { return; }
+              if (j.delta) {
+                text += j.delta; out.textContent = text; log.scrollTop = log.scrollHeight;
+                // One token landed, right now. `tick` rather than a guessed velocity: the
+                // rate is not measured until the server sends `done`, and inventing a
+                // number here to make the picture livelier is exactly the dishonest pixel
+                // the visualizer's header comment refuses.
+                window.SymonVisualizer.tick();
+              }
+              if (j.done) {
+                // Measured, not claimed -- the server times the card and sends the rate.
+                stat.textContent = j.tokens + ' tokens in ' + j.seconds + 's  ·  '
+                                 + j.tok_per_s + ' tok/s measured on the card'
+                                 + (j.adapter ? '  ·  persona adapter loaded' : '');
+                // Generation is over, so the emitter stops. The particles already in flight
+                // finish their arcs and expire; nothing new is produced, because nothing new
+                // is being computed.
+                window.SymonVisualizer.setVelocity(0);
+              }
+              if (j.error) throw new Error(j.error);
+            });
+          });
+          return pump();
+        });
+      })();
+    }).then(function (text) {
+      chats[cur].turns.push({role: 'assistant', content: text});
+      if (chats[cur].turns.length === 2) chats[cur].title = title(q);
+      save(); renderHist();
+    }).catch(function (err) {
+      out.textContent = String(err.message || err);
+      out.parentElement.classList.add('failed');
+      stat.textContent = '';
+    }).then(function () {
+      busy = false; send.disabled = false; box.focus();
+      // The one place that runs on every exit path. A stream that fails mid-answer never
+      // sends `done`, so without this the emitter would keep running after an error and the
+      // page would be showing activity that had stopped -- the failure mode this whole file
+      // is written to avoid.
+      window.SymonVisualizer.setVelocity(0);
+    });
+  });
+
+  load(); renderHist();
+})();
+</script>
+</body>
+</html>

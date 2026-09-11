@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934452173-1195.png",
+  "seconds": 11.32,
+  "seed": 1195,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 1026747,
+  "prompt": "long exposure light trails flowing through a dark data centre aisle, emerald and teal streaks, abstract, minimal",
+  "slug": "fast"
+}

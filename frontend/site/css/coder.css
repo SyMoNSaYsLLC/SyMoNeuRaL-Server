@@ -1,0 +1,301 @@
+/* SyMoNeuRaL Coder — the browser surface at /livestack/coder.
+ *
+ * Also answers at /live-stack/coder, which is the spelling R-160 asked for and led until
+ * 2026-08-22. Both still serve and neither redirects; the unhyphenated one is now the only
+ * form this site publishes. The old one is kept because this repo's own documents still
+ * name it, not because anyone outside this machine has it -- the surface is local-only.
+ *
+ * EVERY selector in here is prefixed `cd-`, and that is not a style preference. Three separate
+ * bugs in this repo came from generic class names colliding across components: `.bar` collapsed
+ * the site header to 7px sitewide, `.live` styled the control board legend from the nav badge,
+ * and `#console .sub` outranked `.mod .sub` and rendered a footnote larger than the sentence
+ * above it. `.tree`, `.file`, `.gate` and `.entry` are all names this page would otherwise
+ * want, and every one of them is the shape of that bug.
+ *
+ * No `text-overflow:ellipsis` anywhere in this file, ever. Every such rule was removed from
+ * this site deliberately: the control board was showing `~84% of 896.1 p…` and the rack was
+ * cutting `built on Qwen2.5-7B-Instruct` down to `…7B-Ins…`, and that attribution is an
+ * Apache-2.0 licence condition. It matters more here than anywhere else on the site, because
+ * the content this page renders IS paths and refusal reasons: a trimmed
+ * `training/corpus.js…` is a file the operator cannot identify, and a trimmed
+ * `denied: the corpus is a trade secret…` is a refusal they cannot act on. Long content wraps
+ * or folds into <details>. It does not get trimmed.
+ *
+ * Every font-size references one of the seven tokens in symoneural.css. There is no raw px
+ * size below.
+ */
+
+/* ---- the instrument block ------------------------------------------------------------
+ *
+ * This is the part that must be inside the first viewport, and #99 is the reason it is a
+ * compact grid rather than a tall stack. Studio shipped its editor under
+ * `height:min(78vh,760px)`, which put the frame's top at y=962 on a 1440x1000 screen -- 4% of
+ * it visible -- while every height-based assertion passed, because 78vh of 1000px really is
+ * 760px. tests/frontend.mjs measures this block's AREA INSIDE THE FIRST VIEWPORT for that
+ * reason, so nothing in here may grow tall enough to push the readings off the fold.
+ */
+
+.cd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  overflow: hidden;
+  margin: 12px 0 0;
+}
+
+.cd-cell {
+  background: var(--panel);
+  padding: 9px 11px;
+  min-width: 0;          /* lets the value wrap instead of forcing the grid track wider */
+}
+.cd-cell b {
+  display: block;
+  font: 600 var(--t7) / 1.3 inherit;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.cd-cell span {
+  display: block;
+  font-size: var(--t4);
+  color: var(--fg);
+  margin-top: 3px;
+  overflow-wrap: anywhere;   /* a workspace path wraps; it is never cut */
+}
+
+/* A reading nobody has taken renders as an em dash in --dim, never as `false` and never as a
+ * zero. An unmeasured value and a measured negative are different facts, and this site does
+ * not conflate them -- the same reason a task with no checks reads `—` on the progress page
+ * and never `0%`. Before /local/coder/status answers, every cell here is an em dash. */
+.cd-cell span.cd-none { color: var(--dim) }
+
+/* A gate reading that is TRUE in the permissive direction. Green means "this gate is open",
+ * which for `enabled` and `token_set` is the working state and for `allow_remote` is not --
+ * so allow_remote gets .cd-warn instead when it is on, and that asymmetry is deliberate.
+ * Colour here is a reading, never decoration. */
+.cd-cell span.cd-yes { color: var(--accent) }
+.cd-cell span.cd-no  { color: var(--amber) }
+.cd-cell span.cd-warn { color: var(--amber) }
+
+/* ---- the state line ---------------------------------------------------------------- */
+
+.cd-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: var(--t5);
+  color: var(--dim);
+  margin: 0;
+}
+
+/* The lamp. Three states because the surface has three, and the middle one is why it is not
+ * a boolean: `off` (a gate refused, which is a correct and expected configuration), `on` (the
+ * surface answered), and the default grey (nothing has been asked yet). A lamp that went
+ * green before the first fetch resolved would be reporting a reading it does not have. */
+.cd-lamp {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--line);
+  flex: none;
+  display: block;
+}
+.cd-lamp.is-on {
+  background: var(--accent);
+  box-shadow: 0 0 7px rgba(46, 224, 138, .9);
+}
+.cd-lamp.is-off { background: var(--amber) }
+
+/* ---- the read-only banner -----------------------------------------------------------
+ *
+ * Not decoration and not a disclaimer. `backend/apps/coder/__init__.py` really does implement
+ * write_file, patch_file, delete_file, restore and run; this mount does not expose them. An
+ * operator who cannot see that difference will either assume the capability is absent (and be
+ * wrong about what the module can do) or go looking for a button that is deliberately not
+ * there. Saying which it is costs one line. */
+.cd-ro {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0 0;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--sf3);
+  font-size: var(--t6);
+  color: var(--dim);
+}
+.cd-ro b {
+  font: 600 var(--t7) / 1.3 inherit;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  flex: none;
+}
+.cd-ro span { overflow-wrap: anywhere }
+
+/* ---- refusal ------------------------------------------------------------------------
+ *
+ * A refusal is a READING on this page, not an error state. Every gate below can legitimately
+ * be closed -- the surface ships off -- so this renders as an instrument panel telling the
+ * operator which predicate said no and what to set, rather than as a red failure box. */
+.cd-refuse {
+  border: 1px solid rgba(255, 171, 61, .5);
+  border-radius: var(--r-panel);
+  padding: 12px 14px;
+  margin: 12px 0 0;
+  background: var(--sf3);
+}
+.cd-refuse[hidden] { display: none }
+.cd-refuse h4 { margin: 0 0 5px; font-size: var(--t4); color: var(--amber) }
+.cd-refuse p { margin: 0 0 8px; font-size: var(--t5); color: var(--dim); line-height: 1.6 }
+.cd-refuse p:last-child { margin-bottom: 0 }
+.cd-refuse code {
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* ---- the tree ------------------------------------------------------------------------ */
+
+.cd-crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 8px;
+  font-size: var(--t5);
+  color: var(--dim);
+}
+.cd-crumb code { color: var(--fg); overflow-wrap: anywhere }
+
+.cd-btn {
+  background: var(--panel2); color: var(--fg);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 4px 10px; font: 600 var(--t6) / 1 inherit; cursor: pointer;
+  transition: border-color var(--dur1) var(--ease);
+  flex: none;
+}
+.cd-btn:hover { border-color: var(--accent) }
+.cd-btn:disabled { opacity: .45; cursor: default; border-color: var(--line) }
+
+.cd-list { margin: 0; list-style: none; padding: 0 }
+
+.cd-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  margin: 0 0 5px;
+  background: var(--sf3);
+  font-size: var(--t5);
+}
+.cd-row .cd-name {
+  color: var(--fg);
+  overflow-wrap: anywhere;
+  min-width: 0;
+  flex: 1 1 12ch;
+  text-align: left;
+}
+.cd-row button.cd-name {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; color: var(--accent);
+}
+.cd-row button.cd-name:hover { text-decoration: underline }
+.cd-row .cd-kind {
+  font-size: var(--t7); color: var(--dim);
+  text-transform: uppercase; letter-spacing: .06em; flex: none;
+}
+.cd-row .cd-size { font-size: var(--t6); color: var(--dim); flex: none }
+
+/* A DENIED entry. It is listed, not omitted -- `coder.list_dir`'s own docstring argues for
+ * that and this rule is the visual half of the same decision: *"the operator should be able
+ * to see that training/corpus.jsonl exists and is refused, not be told it is not there."*
+ *
+ * Silently dropping it would be worse than cosmetic in two directions at once. It would be
+ * the decorative dishonesty this site exists to argue against, showing a tree that is not the
+ * tree on disk. And it would teach an operator that the denylist is not there, so the first
+ * time they wonder where the corpus went they would go looking for a bug.
+ *
+ * The reason travels with the row and wraps. tests/frontend.mjs asserts this flag is really
+ * visible -- a non-zero bounding box, not merely present in the markup. */
+.cd-row.is-denied { border-color: rgba(255, 171, 61, .45) }
+.cd-row.is-denied .cd-name { color: var(--dim) }
+.cd-row .cd-deny {
+  font-size: var(--t6); color: var(--amber);
+  overflow-wrap: anywhere;
+  flex: 1 1 100%;
+}
+
+.cd-trunc {
+  margin: 8px 0 0;
+  font-size: var(--t6);
+  color: var(--amber);
+}
+
+/* ---- the reader ---------------------------------------------------------------------- */
+
+.cd-file[hidden] { display: none }
+.cd-file pre {
+  margin: 8px 0 0;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--sf3);
+  font-size: var(--t6);
+  color: var(--fg);
+  /* Source code is the one thing on this site that must NOT be reflowed: a wrapped line
+     changes what the reader believes the file says. So it scrolls in its own box -- which
+     `.claude/CLAUDE.md` permits explicitly ("fold long content into <details>; do not trim
+     it") and which is not an ellipsis: nothing is removed and every byte stays reachable. */
+  overflow: auto;
+  max-height: 46vh;
+  line-height: 1.55;
+  tab-size: 4;
+}
+
+.cd-meta {
+  margin: 0;
+  font-size: var(--t6);
+  color: var(--dim);
+  overflow-wrap: anywhere;
+}
+.cd-meta b { color: var(--fg) }
+
+/* ---- history and journal -------------------------------------------------------------- */
+
+.cd-log { margin: 8px 0 0; list-style: none; padding: 0 }
+.cd-log li {
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  margin: 0 0 5px;
+  background: var(--sf3);
+  font-size: var(--t6);
+  color: var(--dim);
+  overflow-wrap: anywhere;
+}
+.cd-log li b { color: var(--fg) }
+.cd-log li .cd-act {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: var(--t7);
+}
+
+.cd-say { margin: 0; font-size: var(--t5); color: var(--dim) }
+
+/* ---- narrow -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .cd-grid { grid-template-columns: repeat(2, 1fr) }
+  .cd-row { gap: 7px }
+  /* The reader gets more of a short screen, because on a phone the tree above it has already
+     been scrolled past by the time anyone is reading a file. */
+  .cd-file pre { max-height: 60vh }
+}

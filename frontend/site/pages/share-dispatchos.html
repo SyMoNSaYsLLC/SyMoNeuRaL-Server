@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DispatchOS — Solo Operator transport preview</title>
+
+<!-- Protected customer preview. Front-end demo only. No secrets, network calls,
+     analytics, or external assets. -->
+
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Restricted customer preview.">
+
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+
+
+<style>
+  /* Page-local styles. */
+  .dx-warnbar{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:rgba(255,171,61,.09); color:var(--amber);
+    font:650 var(--t6)/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,sans-serif;
+    text-align:center; padding:12px 18px; margin:0;
+  }
+  .dx-warnbar b{color:var(--fg)}
+
+  .dx-st{
+    display:inline-block; vertical-align:middle;
+    font:650 var(--t7)/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.14em; text-transform:uppercase;
+    padding:5px 8px; border-radius:6px; border:1px solid var(--line);
+    background:var(--panel); white-space:nowrap;
+  }
+  .dx-st-now{color:var(--accent)}
+  .dx-st-later{color:var(--amber)}
+  .dx-st-terms{color:var(--dim)}
+  .dx-st-found{color:#7fb8d8}
+  .dx-legend{display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 0; padding:0; list-style:none}
+  .dx-legend li{display:flex; align-items:center; gap:9px; font-size:var(--t6); color:var(--dim)}
+  .dx-sec-h{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 6px}
+  .dx-sec-h h2{margin:0}
+
+  /* ---- preview badge ---- */
+  .dx-pv{
+    display:inline-block; font:650 var(--t7)/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--amber);
+    border:1px solid rgba(255,171,61,.4); background:rgba(255,171,61,.08);
+    padding:4px 7px; border-radius:5px; white-space:nowrap;
+  }
+
+  /* ---- stepper ---- */
+  .dx-stage{
+    border:1px solid var(--line); border-radius:16px; margin-top:20px; overflow:hidden;
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+  }
+  .dx-stage-top{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    padding:14px 18px; border-bottom:1px solid var(--line);
+  }
+  .dx-stage-top b{font-size:var(--t5); color:var(--fg)}
+  .dx-steps{display:flex; flex-wrap:wrap; gap:6px; padding:14px 18px; border-bottom:1px solid var(--line)}
+  .dx-steps button{
+    appearance:none; cursor:pointer; font:650 var(--t6)/1.2 inherit;
+    border:1px solid var(--line); border-radius:999px; padding:8px 14px;
+    background:var(--panel); color:var(--dim); transition:all .18s ease;
+  }
+  .dx-steps button:hover{border-color:var(--accent); color:var(--fg)}
+  .dx-steps button[aria-selected="true"]{
+    background:rgba(46,224,138,.12); border-color:var(--accent); color:var(--accent);
+  }
+  .dx-steps button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .dx-panel{padding:20px 18px}
+  .dx-panel[hidden]{display:none}
+  .dx-panel h4{margin:0 0 4px; font-size:var(--t3); color:var(--fg)}
+  .dx-panel > p{font-size:var(--t5); color:var(--dim); margin:6px 0 0; max-width:70ch}
+
+  /* ---- mock cards ---- */
+  .dx-mock{
+    border:1px solid var(--line); border-radius:12px; background:var(--bg);
+    padding:15px 16px; margin-top:14px;
+  }
+  .dx-mock-h{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding-bottom:10px; margin-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  .dx-mock-h span{font:650 var(--t6)/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--faint)}
+  .dx-kv{display:grid; grid-template-columns:auto 1fr; gap:7px 16px; font-size:var(--t5)}
+  .dx-kv dt{color:var(--faint)}
+  .dx-kv dd{margin:0; color:var(--fg)}
+  .dx-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-top:12px; padding-top:11px; border-top:1px solid var(--line);
+    font-size:var(--t5); color:var(--faint);
+  }
+  .dx-total b{font-size:var(--t3); color:var(--accent)}
+
+  /* ---- dispatch timeline ---- */
+  .dx-tl{margin:14px 0 0; padding:0; list-style:none}
+  .dx-tl li{position:relative; padding:0 0 16px 26px; font-size:var(--t5); color:var(--dim)}
+  .dx-tl li:last-child{padding-bottom:0}
+  .dx-tl li::before{
+    content:""; position:absolute; left:0; top:5px; width:11px; height:11px;
+    border-radius:50%; border:2px solid var(--line); background:var(--bg);
+  }
+  .dx-tl li::after{
+    content:""; position:absolute; left:5px; top:16px; bottom:0; width:1px; background:var(--line);
+  }
+  .dx-tl li:last-child::after{display:none}
+  .dx-tl li.dx-on::before{border-color:var(--accent); background:var(--accent)}
+  .dx-tl li.dx-on{color:var(--fg)}
+  .dx-tl b{display:block; color:var(--fg); font-weight:650}
+  .dx-tl small{color:var(--faint); font-size:var(--t6)}
+
+  /* ---- message bubbles ---- */
+  .dx-msg{
+    border:1px solid var(--line); border-radius:12px 12px 12px 4px;
+    background:var(--panel); padding:12px 14px; margin-top:10px;
+    font-size:var(--t5); color:var(--fg); max-width:46ch;
+  }
+  .dx-msg em{display:block; font-style:normal; color:var(--faint); font-size:var(--t6); margin-bottom:5px}
+
+  /* ---- assist callout ---- */
+  .dx-assist{
+    border:1px solid rgba(46,224,138,.3); border-left:3px solid var(--accent);
+    border-radius:12px; background:rgba(46,224,138,.05);
+    padding:15px 16px; margin-top:16px; font-size:var(--t5); color:var(--dim);
+  }
+  .dx-assist b{color:var(--accent)}
+
+  /* ---- before/after ---- */
+  .dx-ba{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px}
+  .dx-ba > div{border:1px solid var(--line); border-radius:14px; padding:18px 17px}
+  .dx-ba .dx-before{background:var(--panel)}
+  .dx-ba .dx-after{background:linear-gradient(180deg,rgba(46,224,138,.07),var(--panel))}
+  .dx-ba h3{margin:0 0 10px; font-size:var(--t4)}
+  .dx-ba .dx-before h3{color:var(--faint)}
+  .dx-ba .dx-after h3{color:var(--accent)}
+  .dx-ba ul{margin:0; padding-left:18px; font-size:var(--t5); color:var(--dim)}
+  .dx-ba li{margin:6px 0}
+
+  /* ---- generic blocks ---- */
+  .dx-split{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px}
+  .dx-trio{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:18px}
+  .dx-trio .dx-box h3{font-size:var(--t4); margin-bottom:8px}
+  .dx-trio .dx-box p{margin:0; font-size:var(--t5); color:var(--dim)}
+  .dx-ident{
+    display:flex; flex-wrap:wrap; gap:0 28px; margin:0; padding:14px 0 0;
+    border-top:1px solid var(--line); list-style:none;
+  }
+  .dx-ident div{padding:6px 0}
+  .dx-ident dt{
+    font:650 var(--t7)/1.4 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--faint);
+  }
+  .dx-ident dd{margin:2px 0 0; font-size:var(--t5); color:var(--fg)}
+  .dx-bnd{width:100%; border-collapse:collapse; margin-top:18px; font-size:var(--t5)}
+  .dx-bnd th,.dx-bnd td{border-top:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top}
+  .dx-bnd thead th{border-top:0; color:var(--faint); font-weight:650; font-size:var(--t6);
+    text-transform:uppercase; letter-spacing:.1em}
+  .dx-bnd td:first-child{color:var(--fg); width:20%}
+  .dx-bnd td:nth-child(2){color:var(--dim); width:40%}
+  .dx-bnd td:last-child{color:var(--faint); width:40%}
+  .dx-own{width:100%; border-collapse:collapse; margin-top:18px; font-size:var(--t5)}
+  .dx-own th,.dx-own td{border-top:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top}
+  .dx-own thead th{border-top:0; color:var(--faint); font-weight:650; font-size:var(--t6);
+    text-transform:uppercase; letter-spacing:.1em}
+  .dx-own td:first-child{color:var(--fg); width:20%}
+  .dx-own td:nth-child(2){color:var(--dim); width:40%}
+  .dx-own td:last-child{color:var(--dim); width:40%}
+
+  /* ---- acknowledgment gate ---- */
+  .dx-gate{max-width:760px; margin:0 auto; padding:34px 0 46px}
+  .dx-gate-card{
+    border:1px solid var(--line); border-radius:18px; padding:28px 26px;
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+  }
+  .dx-gate-card h2{margin:0 0 10px; font-size:var(--t2)}
+  .dx-gate-card > p{font-size:var(--t5); color:var(--dim); margin:0 0 4px}
+  .dx-acks{margin:18px 0 0; padding:0; list-style:none}
+  .dx-acks li{border-top:1px solid var(--line); padding:0}
+  .dx-acks label{
+    display:flex; gap:11px; align-items:flex-start; cursor:pointer;
+    padding:11px 2px; font-size:var(--t5); color:var(--dim);
+  }
+  .dx-acks input{margin:2px 0 0; width:16px; height:16px; accent-color:var(--accent); flex:0 0 auto}
+  .dx-acks label:hover{color:var(--fg)}
+  .dx-gate-go{
+    appearance:none; cursor:pointer; margin-top:20px; width:100%;
+    border:1px solid var(--accent); border-radius:999px; padding:13px 20px;
+    background:rgba(46,224,138,.12); color:var(--accent);
+    font:650 var(--t4)/1 inherit; transition:background .18s ease;
+  }
+  .dx-gate-go:hover:not(:disabled){background:rgba(46,224,138,.22)}
+  .dx-gate-go:disabled{
+    cursor:not-allowed; opacity:.45; border-color:var(--line); color:var(--faint);
+    background:var(--panel);
+  }
+  .dx-gate-note{
+    margin-top:16px; font-size:var(--t6); color:var(--faint); line-height:1.6;
+  }
+  /* The gate hides the preview until it is dismissed. Declared here rather than added by
+     script so the body is never briefly readable before the script runs. */
+  body.dx-locked .dx-body{display:none}
+  body:not(.dx-locked) .dx-gate{display:none}
+  .dx-box{
+    border:1px solid var(--line); border-radius:14px; padding:18px 17px;
+    background:linear-gradient(180deg, var(--panel2), var(--panel));
+  }
+  .dx-box h3{margin:0 0 4px; font-size:var(--t3)}
+  .dx-box ul{margin:10px 0 0; padding-left:18px; font-size:var(--t5); color:var(--dim)}
+  .dx-box li{margin:5px 0}
+  .dx-cov{width:100%; border-collapse:collapse; margin-top:18px; font-size:var(--t5)}
+  .dx-cov th,.dx-cov td{border-top:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top}
+  .dx-cov thead th{border-top:0; color:var(--faint); font-weight:650; font-size:var(--t6);
+    text-transform:uppercase; letter-spacing:.1em}
+  .dx-cov td:first-child{color:var(--fg); width:26%}
+  .dx-cov td:nth-child(2){width:20%; white-space:nowrap}
+  .dx-cov td:last-child{color:var(--dim)}
+  .dx-spec{width:100%; border-collapse:collapse; margin-top:16px; font-size:var(--t5)}
+  .dx-spec th,.dx-spec td{border-top:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
+  .dx-spec th{color:var(--faint); font-weight:650; white-space:nowrap; width:42%}
+  .dx-spec td{color:var(--fg)}
+  .dx-adds{margin:16px 0 0; padding:0; list-style:none}
+  .dx-adds li{
+    position:relative; padding:9px 0 9px 26px; border-top:1px solid var(--line);
+    font-size:var(--t5); color:var(--dim);
+  }
+  .dx-adds li::before{content:"+"; position:absolute; left:4px; top:9px; color:var(--accent); font-weight:650}
+  .dx-path{margin:16px 0 0; padding:0; list-style:none; counter-reset:pstep}
+  .dx-path li{
+    counter-increment:pstep; position:relative; padding:10px 0 10px 42px;
+    border-top:1px solid var(--line); font-size:var(--t5); color:var(--dim);
+  }
+  .dx-path li::before{
+    content:counter(pstep); position:absolute; left:0; top:10px;
+    width:26px; height:26px; border-radius:50%; border:1px solid var(--line);
+    background:var(--panel2); color:var(--accent);
+    font:650 var(--t7)/26px ui-monospace,Menlo,Consolas,monospace; text-align:center;
+  }
+  .dx-path li b{color:var(--fg); font-weight:650}
+  .dx-note{
+    border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:10px;
+    padding:14px 16px; margin-top:18px; background:var(--panel);
+    font-size:var(--t5); color:var(--dim);
+  }
+  .dx-note b{color:var(--fg)}
+  .dx-cta{
+    border:1px solid rgba(46,224,138,.35); border-radius:16px; margin-top:22px;
+    background:linear-gradient(180deg,rgba(46,224,138,.08),var(--panel));
+    padding:24px 22px; text-align:center;
+  }
+  .dx-cta h3{margin:0 0 8px; font-size:var(--t2); color:var(--fg)}
+  .dx-cta p{margin:0 auto; max-width:62ch; font-size:var(--t5); color:var(--dim)}
+  .dx-cta a{
+    display:inline-block; margin-top:16px; text-decoration:none;
+    border:1px solid var(--accent); border-radius:999px; padding:11px 24px;
+    background:rgba(46,224,138,.12); color:var(--accent);
+    font:650 var(--t5)/1 inherit;
+  }
+  .dx-cta a:hover{background:rgba(46,224,138,.2)}
+
+  @media (max-width:820px){
+    .dx-split,.dx-ba,.dx-trio{grid-template-columns:1fr}
+    .dx-bnd,.dx-bnd tbody,.dx-bnd tr,.dx-bnd td{display:block; width:auto}
+    .dx-bnd thead{display:none}
+    .dx-bnd tr{border-top:1px solid var(--line); padding:13px 0}
+    .dx-bnd td{border:0; padding:0}
+    .dx-bnd td:first-child{font-size:var(--t4); font-weight:650; color:var(--fg)}
+    .dx-bnd td:nth-child(2){margin:7px 0 0}
+    .dx-bnd td:nth-child(2)::before{content:"Covers — "; color:var(--accent)}
+    .dx-bnd td:last-child::before{content:"Not covered — "; color:var(--amber)}
+    .dx-own,.dx-own tbody,.dx-own tr,.dx-own td{display:block; width:auto}
+    .dx-own thead{display:none}
+    .dx-own tr{border-top:1px solid var(--line); padding:13px 0}
+    .dx-own td{border:0; padding:0}
+    .dx-own td:first-child{font-size:var(--t4); font-weight:650; color:var(--fg)}
+    .dx-own td:nth-child(2){margin:7px 0 0}
+    .dx-own td:nth-child(2)::before{content:"Customer — "; color:var(--accent)}
+    .dx-own td:last-child::before{content:"SyMoNeuRaL — "; color:#7fb8d8}
+    .dx-steps button{flex:1 1 auto; text-align:center}
+
+    /* The coverage table is three columns wide and its status chips do not wrap, which
+       measured 519px against a 390px viewport and scrolled the whole page sideways. Each
+       row becomes a stacked block instead of being scrolled or truncated -- every cell
+       still renders, which is the constraint that rules out narrowing them. */
+    .dx-cov,.dx-cov tbody,.dx-cov tr,.dx-cov td{display:block; width:auto}
+    .dx-cov thead{display:none}
+    .dx-cov tr{border-top:1px solid var(--line); padding:13px 0}
+    .dx-cov td{border:0; padding:0}
+    .dx-cov td:first-child{font-size:var(--t4); font-weight:650; color:var(--fg)}
+    .dx-cov td:nth-child(2){margin:7px 0; white-space:normal}
+    .dx-cov td:last-child{color:var(--dim)}
+    .dx-st{white-space:normal}
+  }
+</style>
+</head>
+<body class="dx-locked">
+
+<!-- ===================== HEADER ===================== -->
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="mailto:saysupport@symoneural.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<p class="dx-warnbar">
+  <b>Access is restricted. Do not forward or redistribute.</b><br>
+  This preview does not include source code, deployment details, or final commercial terms.
+</p>
+
+<!-- ===================== PREVIEW ACCESS ACKNOWLEDGMENT ===================== -->
+<div class="dx-gate">
+  <div class="wrap">
+    <div class="dx-gate-card">
+      <h2>Preview Access Acknowledgment</h2>
+      <p>
+        Before reviewing this protected preview, the viewer acknowledges that this page is a
+        private customer preview, not a quote, contract, production system, source-code
+        handoff, model handoff, or deployment-rights grant.
+      </p>
+      <ul class="dx-acks">
+        <li><label><input type="checkbox" data-ack> I understand this preview is private and access-restricted.</label></li>
+        <li><label><input type="checkbox" data-ack> I will not forward, publish, copy, scrape, or redistribute this preview.</label></li>
+        <li><label><input type="checkbox" data-ack> I understand the preview contains product positioning and demo states, not a live production system.</label></li>
+        <li><label><input type="checkbox" data-ack> I understand production use requires written scope and commercial terms.</label></li>
+        <li><label><input type="checkbox" data-ack> I understand source code, prompts, model files, infrastructure details, deployment rights, and commercial terms are not included in this preview.</label></li>
+        <li><label><input type="checkbox" data-ack> I understand SyMon AI / DispatchOS production access requires approved SyMoNeuRaL-managed infrastructure.</label></li>
+        <li><label><input type="checkbox" data-ack> I understand chat, email and customer-folder retention shown on this page is a production requirement unless separately marked live.</label></li>
+      </ul>
+      <button type="button" class="dx-gate-go" id="dx-go" disabled>I acknowledge and continue</button>
+      <p class="dx-gate-note">
+        This preview acknowledgment is for access control and review discipline. Formal
+        production authorization, licensing, payment, hosting, support, repository access,
+        source access, and model rights require separate written terms.
+      </p>
+      <p class="dx-gate-note">
+        The selection above stays in this browser and is not transmitted anywhere. It is not a
+        signature, is not recorded on a server, and does not identify the viewer.
+      </p>
+      <noscript>
+        <p class="dx-gate-note">
+          This acknowledgment needs JavaScript. The terms above apply to the preview whether or
+          not the panel can be dismissed in this browser.
+        </p>
+      </noscript>
+    </div>
+  </div>
+</div>
+
+<div class="dx-body">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero" style="padding:26px 0 0">
+  <div class="wrap">
+    <p class="eyebrow">Managed preview</p>
+    <h1>DispatchOS — Solo Operator transport preview.</h1>
+    <p style="font-size:var(--t4); color:var(--dim); max-width:70ch">
+      DispatchOS is the transportation configuration of <b style="color:var(--fg)">Solo
+      Operator</b>, a managed operations platform for a single operator running a real
+      business. This is not a website. It is the working loop of the business — taking the
+      booking, quoting it, confirming it, getting a driver on it, reminding the rider, and
+      asking for the review afterwards.
+    </p>
+    <p style="font-size:var(--t5); color:var(--faint); max-width:70ch">
+      Customer preview of a proposed first version. Not a quote, not a contract, not source
+      documentation. Implementation details are withheld until written agreement.
+    </p>
+    <dl class="dx-ident">
+      <div><dt>Customer scope</dt><dd>DispatchOS transportation preview</dd></div>
+      <div><dt>System family</dt><dd>SyMoNeuRaL / Solo Operator</dd></div>
+      <div><dt>AI layer</dt><dd>SyMon AI managed runtime</dd></div>
+      <div><dt>Status</dt><dd>Protected preview, not production</dd></div>
+    </dl>
+  </div>
+</div>
+
+<!-- ===================== WHAT THIS IS FOR ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>What this is for</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      A single operator running transport work spends most of the admin day on the same handful
+      of things: taking the booking, working out what to charge, remembering to remind the
+      rider, telling a driver where to be, and chasing a review that never gets asked for. Each
+      one is small. Together they are the job that stops the operator doing the job.
+    </p>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      DispatchOS is aimed squarely at that loop and nothing else in the first version. The
+      measure of whether it worked is not a feature count: does a booking get from request to
+      completed trip to review request without the operator holding the whole thing in
+      their head.
+    </p>
+    <div class="dx-ba">
+      <div class="dx-before">
+        <h3>How the day runs now</h3>
+        <ul>
+          <li>Booking arrives by call or text and lives in someone's memory</li>
+          <li>Price worked out fresh each time, so two similar trips quote differently</li>
+          <li>Reminders happen when somebody remembers</li>
+          <li>Driver gets told by phone; status lives in the conversation</li>
+          <li>Reviews get asked for occasionally, or not at all</li>
+          <li>No-shows are found out about on arrival</li>
+        </ul>
+      </div>
+      <div class="dx-after">
+        <h3>How the day runs with DispatchOS</h3>
+        <ul>
+          <li>Booking is captured once and stays captured</li>
+          <li>Quote follows the operator's own rules, consistently</li>
+          <li>Confirmation and reminder go out on their own</li>
+          <li>Driver assignment and status are in one place</li>
+          <li>Review request fires when a trip is actually completed</li>
+          <li>Fewer missed pickups, standardised follow-up</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BOOKING PREVIEW ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>The booking loop, previewed</h2><span class="dx-st dx-st-now">First version</span></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Step through the flow the operator and the rider actually experience. Every panel below
+      is a fixed illustration built into this page — it is not connected to anything, and no
+      message, booking or payment is real.
+    </p>
+
+    <div class="dx-stage">
+      <div class="dx-stage-top">
+        <b>DispatchOS — booking lifecycle</b>
+        <span class="dx-pv">Preview · sample data · nothing live</span>
+      </div>
+
+      <div class="dx-steps" role="tablist" aria-label="Booking lifecycle stages">
+        <button role="tab" aria-selected="true"  aria-controls="p1" id="t1">1 · Request</button>
+        <button role="tab" aria-selected="false" aria-controls="p2" id="t2">2 · Quote</button>
+        <button role="tab" aria-selected="false" aria-controls="p3" id="t3">3 · Confirm</button>
+        <button role="tab" aria-selected="false" aria-controls="p4" id="t4">4 · Dispatch</button>
+        <button role="tab" aria-selected="false" aria-controls="p5" id="t5">5 · Reminder</button>
+        <button role="tab" aria-selected="false" aria-controls="p6" id="t6">6 · Review</button>
+      </div>
+
+      <!-- 1. REQUEST -->
+      <div class="dx-panel" id="p1" role="tabpanel" aria-labelledby="t1">
+        <h4>A trip is requested</h4>
+        <p>The details are captured once, in one place, whether the request came in by phone or
+           through the intake page.</p>
+        <div class="dx-mock">
+          <div class="dx-mock-h"><span>Booking request</span><span class="dx-pv">Sample</span></div>
+          <dl class="dx-kv">
+            <dt>Pickup</dt><dd>Riverside Ave &middot; Tuesday, 9:40&nbsp;am</dd>
+            <dt>Drop-off</dt><dd>Regional airport, departures</dd>
+            <dt>Passengers</dt><dd>2</dd>
+            <dt>Luggage</dt><dd>2 cases</dd>
+            <dt>Contact</dt><dd>Sample rider &middot; mobile on file</dd>
+          </dl>
+        </div>
+      </div>
+
+      <!-- 2. QUOTE -->
+      <div class="dx-panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+        <h4>The job is quoted</h4>
+        <p>Quoting applies the operator's own rules to the operator's own jobs, so the same trip
+           does not get two different answers on two different days. The operator keeps the
+           final say on every job.</p>
+        <div class="dx-mock">
+          <div class="dx-mock-h"><span>Quote preview</span><span class="dx-pv">Illustrative only</span></div>
+          <dl class="dx-kv">
+            <dt>Route</dt><dd>Riverside Ave &rarr; Regional airport</dd>
+            <dt>Basis</dt><dd>Operator's configured rate rules</dd>
+            <dt>Vehicle</dt><dd>Standard saloon</dd>
+            <dt>Adjustments</dt><dd>None applied</dd>
+          </dl>
+          <div class="dx-total">
+            <span>Estimate shown to rider</span>
+            <b>&mdash;&mdash;</b>
+          </div>
+          <p style="font-size:var(--t6); color:var(--faint); margin:10px 0 0">
+            No figure is shown here. Rate rules are configured after written scope, and this
+            preview carries no pricing of any kind.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. CONFIRM -->
+      <div class="dx-panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+        <h4>The booking is confirmed</h4>
+        <p>The rider gets the details in writing, so nobody is working from memory of a phone
+           call.</p>
+        <div class="dx-msg">
+          <em>Sample confirmation &mdash; illustration, not a sent message</em>
+          You're booked for Tue 9:40&nbsp;am, Riverside Ave to the regional airport. We'll text
+          you a reminder before pickup. Reply to this message if anything changes.
+        </div>
+        <div class="dx-mock">
+          <div class="dx-mock-h"><span>Booking summary</span><span class="dx-pv">Sample</span></div>
+          <dl class="dx-kv">
+            <dt>Status</dt><dd>Confirmed</dd>
+            <dt>Trip</dt><dd>Tue 9:40&nbsp;am &middot; airport run</dd>
+            <dt>Driver</dt><dd>Not yet assigned</dd>
+          </dl>
+        </div>
+      </div>
+
+      <!-- 4. DISPATCH -->
+      <div class="dx-panel" id="p4" role="tabpanel" aria-labelledby="t4" hidden>
+        <h4>A driver takes the job</h4>
+        <p>Dispatch answers three questions and stops there: what is booked, who is taking it,
+           and is it done.</p>
+        <ul class="dx-tl">
+          <li class="dx-on"><b>Booked</b><small>Trip confirmed and in the list</small></li>
+          <li class="dx-on"><b>Assigned</b><small>Driver put on the job</small></li>
+          <li class="dx-on"><b>En route</b><small>Driver on the way to pickup</small></li>
+          <li><b>Arrived</b><small>Waiting at pickup</small></li>
+          <li><b>Completed</b><small>Trip finished — this is what triggers the review request</small></li>
+        </ul>
+        <p style="font-size:var(--t6); color:var(--faint); margin-top:14px">
+          Preview states. Live tracking, route optimisation, payroll and fleet telematics are
+          deferred and are not part of the first version.
+        </p>
+      </div>
+
+      <!-- 5. REMINDER -->
+      <div class="dx-panel" id="p5" role="tabpanel" aria-labelledby="t5" hidden>
+        <h4>The rider is reminded</h4>
+        <p>Reminders exist to stop no-shows, and that is the whole of their job in the first
+           version — messages tied to real events, not a marketing sequence.</p>
+        <div class="dx-msg">
+          <em>Sample reminder &mdash; illustration, not a sent message</em>
+          Reminder: your pickup is tomorrow at 9:40&nbsp;am from Riverside Ave. Reply here if
+          you need to change anything.
+        </div>
+        <div class="dx-msg">
+          <em>Sample driver update &mdash; illustration, not a sent message</em>
+          Your driver is on the way and should be with you shortly.
+        </div>
+        <p style="font-size:var(--t6); color:var(--faint); margin-top:14px">
+          Messaging is not connected in this preview. Nothing here sends.
+        </p>
+      </div>
+
+      <!-- 6. REVIEW -->
+      <div class="dx-panel" id="p6" role="tabpanel" aria-labelledby="t6" hidden>
+        <h4>A review is requested</h4>
+        <p>One request, sent once, after a trip that actually happened. Triggered by completion
+           rather than by a schedule, which is what keeps it off cancelled and no-show jobs.</p>
+        <div class="dx-msg">
+          <em>Sample review request &mdash; illustration, not a sent message</em>
+          Thanks for riding with us this morning. If you have a moment, a short review really
+          helps a small operation like ours.
+        </div>
+        <p style="font-size:var(--t6); color:var(--faint); margin-top:14px">
+          One ask per trip. Repeat chasing is not in the first version.
+        </p>
+      </div>
+    </div>
+
+    <div class="dx-assist">
+      <b>Where SyMon AI fits.</b> The same loop is what a managed assistant layer would sit on
+      — helping capture a request accurately, apply the operator's quote rules consistently, and
+      keep the follow-up standard rather than ad hoc. Positioned as proposed for the first
+      version and described in more detail below; nothing about it is running in this preview.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LEAN FIRST VERSION ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Lean first version</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      The scope is deliberately narrow and cost-sensitive. The aim is to prove the workflow is
+      genuinely useful before anything expensive is built on top of it. Nothing below is
+      described as finished, and every line carries a label saying which side of the line it is
+      on.
+    </p>
+    <ul class="dx-legend">
+      <li><span class="dx-st dx-st-found">Foundation</span> structural, needed for production</li>
+      <li><span class="dx-st dx-st-now">First version</span> in the initial build</li>
+      <li><span class="dx-st dx-st-later">Deferred</span> intentionally out of the first version</li>
+      <li><span class="dx-st dx-st-terms">Later / premium</span> requires written scope and terms</li>
+    </ul>
+    <div class="dx-split">
+      <div class="dx-box">
+        <h3>Included <span class="dx-st dx-st-now">First version</span></h3>
+        <ul>
+          <li>Booking workflow</li>
+          <li>Quote and pricing logic for the operator's own jobs</li>
+          <li>Reminders and messaging</li>
+          <li>Driver and dispatch workflow</li>
+          <li>Review request path</li>
+          <li>Basic intake page</li>
+          <li>Minimal contact fields, only as far as a booking and a text message need them</li>
+          <li>SyMon AI for DispatchOS, as a proposed managed assistant layer</li>
+        </ul>
+      </div>
+      <div class="dx-box">
+        <h3>Deferred <span class="dx-st dx-st-later">Deferred</span></h3>
+        <ul>
+          <li>Full customer dashboard</li>
+          <li>Full customer database dashboard</li>
+          <li>Revenue tracker</li>
+          <li>Repeat-rider memory</li>
+          <li>Call and text summaries with action items</li>
+          <li>AI dashboard metrics</li>
+          <li>Full inbound AI call workflow</li>
+          <li>Formal billing and payment terms</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dx-note">
+      The right-hand column is the more important one. Everything on it is a deliberate
+      omission with a reason, not a gap to be quietly filled in later. These are sequenced, not
+      refused — they become worth building once the core loop is running and there is real usage
+      to reason about. Building them first would mean guessing.
+      <br><br>
+      Also outside this preview: private pricing and deal terms, a formal quote, signed contract
+      language, any production availability commitment, and any handover of source, prompts or
+      model files.
+    </div>
+    <div class="dx-note">
+      <b>On contact records.</b> The first version keeps the minimum a trip needs in order to
+      happen and to be confirmed by message. That is a booking record. It is deliberately
+      <b>not</b> a customer dashboard, a customer database product, or a memory feature, and it
+      is not presented as one — calling it any of those would overstate what it does.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONCEPT COVERAGE ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Built from the DispatchOS Enterprise Concept</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      The original concept was a full enterprise suite. Nothing in it has been thrown away —
+      it has been <i>staged</i>, so the first version pays for the part that proves the value
+      and the rest stays on the map with a clear label. This is the coverage, area by area.
+    </p>
+    <table class="dx-cov">
+      <thead>
+        <tr><th>Original capability area</th><th>Preview status</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Company / tenant setup</td><td><span class="dx-st dx-st-found">Foundation</span></td>
+            <td>Used to separate one operator or business from another in production</td></tr>
+        <tr><td>Business knowledge base</td><td><span class="dx-st dx-st-now">First-version target</span></td>
+            <td>FAQs, service areas, policies, vehicle information and quote rules can drive SyMon AI</td></tr>
+        <tr><td>Booking workflow</td><td><span class="dx-st dx-st-now">First version</span></td>
+            <td>Request, quote, confirm, dispatch, remind, review</td></tr>
+        <tr><td>Quote / pricing logic</td><td><span class="dx-st dx-st-now">First version</span></td>
+            <td>Business rules can be configured after written scope</td></tr>
+        <tr><td>Automated reminders</td><td><span class="dx-st dx-st-now">First version</span></td>
+            <td>Confirmation and reminder flow are part of the preview direction</td></tr>
+        <tr><td>Driver / dispatch flow</td><td><span class="dx-st dx-st-now">First version</span></td>
+            <td>Dispatch status and driver assignment preview are included</td></tr>
+        <tr><td>Review request path</td><td><span class="dx-st dx-st-now">First version</span></td>
+            <td>Follow-up and review request flow is included</td></tr>
+        <tr><td>Customer / contact records</td><td><span class="dx-st dx-st-now">Minimal first version</span></td>
+            <td>Only the contact fields needed for booking and messaging; not a full customer dashboard</td></tr>
+        <tr><td>Customer dashboard</td><td><span class="dx-st dx-st-later">Deferred</span></td>
+            <td>Left out of the first version based on the latest direction</td></tr>
+        <tr><td>Revenue tracker</td><td><span class="dx-st dx-st-later">Deferred</span></td>
+            <td>Left out of the first version based on the latest direction</td></tr>
+        <tr><td>Repeat-rider memory</td><td><span class="dx-st dx-st-later">Deferred</span></td>
+            <td>Later option; not part of the lean first version</td></tr>
+        <tr><td>Call / text summaries with action items</td><td><span class="dx-st dx-st-later">Deferred</span></td>
+            <td>Later option; not part of the lean first version</td></tr>
+        <tr><td>AI dashboard metrics</td><td><span class="dx-st dx-st-later">Deferred</span></td>
+            <td>Later option, once real usage justifies it</td></tr>
+        <tr><td>Full inbound AI call workflow</td><td><span class="dx-st dx-st-terms">Later / premium</span></td>
+            <td>Requires written scope, integrations and production terms</td></tr>
+      </tbody>
+    </table>
+    <div class="dx-note">
+      This table describes <b>what each area is for</b>, not how any of it is built. Structure,
+      data handling and integration design are part of the production scope and are not
+      published in a preview.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SYMON AI ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>SyMon AI for DispatchOS</h2><span class="dx-st dx-st-now">Proposed for first version</span></div>
+    <p style="font-size:var(--t4); color:var(--dim); max-width:74ch">
+      SyMon AI is not a generic chatbot pasted onto a website. For DispatchOS, it is positioned
+      as a managed SyMoNeuRaL assistant tied to the transportation workflow: bookings, quote
+      logic, dispatch steps, reminders, and review requests.
+    </p>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      That distinction is the whole of the difference. A general assistant knows nothing about
+      this operation and can only answer in generalities. A managed assistant works against the
+      operator's own service areas, policies, vehicle information and quote rules, inside a
+      workflow that has actual states — booked, assigned, completed — rather than a chat window
+      with no memory of what the business does.
+    </p>
+    <div class="dx-note">
+      The preview does not include source code, prompts, model files, deployment details, or
+      final commercial terms. Production use requires written scope and approved
+      SyMoNeuRaL-managed infrastructure.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONVERSATION RECORD TRAIL ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Conversation record trail</h2><span class="dx-st dx-st-terms">Planned production behaviour</span></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Production DispatchOS chat conversations are designed to create a managed record trail.
+      Customer-facing conversations can be routed to SyMoNeuRaL admin review and saved into the
+      customer's project folder or customer record area, depending on the written production
+      scope.
+    </p>
+    <div class="dx-trio">
+      <div class="dx-box">
+        <h3>Admin review copy</h3>
+        <p>Chat conversations can send a copy or summary to SyMoNeuRaL admin review, routed
+           to an internal review mailbox rather than to a customer-facing address.</p>
+      </div>
+      <div class="dx-box">
+        <h3>Customer folder record</h3>
+        <p>Conversation records can be saved with the customer and project materials so
+           decisions, requests and approvals do not disappear inside a chat window.</p>
+      </div>
+      <div class="dx-box">
+        <h3>Scope-controlled retention</h3>
+        <p>Production retention, folder structure and access rules are finalised in written
+           terms before live use.</p>
+      </div>
+    </div>
+    <div class="dx-note">
+      <b>Preview/demo only — no live email or storage is claimed from this page.</b>
+      Production email routing and record retention require written scope and approved
+      configuration.
+    </div>
+    <div class="dx-note">
+      <b>Development requirement:</b> production chat should support admin email copy and
+      customer-folder retention. Live routing is only enabled after approved email
+      configuration, access rules, and written production terms.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHAT SYMONEURAL ADDED ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>What SyMoNeuRaL added to make this production-shaped</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      The concept described what the product should do. Turning that into something that can
+      actually be delivered, staged and paid for in the right order is separate work, and this
+      is what it consisted of.
+    </p>
+    <ul class="dx-adds">
+      <li>A protected customer preview instead of a public proposal page</li>
+      <li>A cloud-first, local-box-later deployment strategy</li>
+      <li>SyMon AI positioned as a managed DispatchOS assistant rather than a generic embed</li>
+      <li>A lean first-version scope, so there is no paying for dashboards that are not wanted yet</li>
+      <li>A premium booking-flow preview covering quote, dispatch, reminders and the review path</li>
+      <li>A clear deferred roadmap for dashboards, revenue tracking, customer memory, call summaries and AI metrics</li>
+      <li>No source, model or prompt handoff without written production terms</li>
+      <li>Private preview metadata and an access-controlled link</li>
+      <li>A configuration-first production path, rather than a one-off static website</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== ENGINEERING POSTURE ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Engineering posture</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Described at the level of posture rather than parts. Specific components, structure and
+      configuration are part of the production scope.
+    </p>
+    <table class="dx-spec">
+      <tr><th>Web preview layer</th><td>Modern responsive HTML, CSS and JavaScript</td></tr>
+      <tr><th>Backend-ready architecture</th><td>Designed to connect to booking, dispatch, messaging and AI services after written scope</td></tr>
+      <tr><th>AI layer</th><td>SyMon AI managed runtime, not a generic chatbot embed</td></tr>
+      <tr><th>Deployment posture</th><td>Protected preview first, production packaging later</td></tr>
+      <tr><th>Source-control posture</th><td>Production work can be organised into a private repository after terms are approved</td></tr>
+      <tr><th>Integration posture</th><td>Messaging, review links, quote rules, dispatch status and future call workflows can be staged by milestone</td></tr>
+    </table>
+    <div class="dx-note">
+      GitHub-ready production packaging can be offered after login, written scope, and
+      commercial terms.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CLOUD VS LOCAL ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Cloud-hosted first, local box later if needed</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      There are two ways to run this. Both are described so the choice is visible rather than
+      made quietly on somebody's behalf.
+    </p>
+    <div class="dx-split">
+      <div class="dx-box">
+        <h3>Cloud-hosted <span class="dx-st dx-st-now">Recommended first</span></h3>
+        <ul>
+          <li>SyMoNeuRaL runs the server.</li>
+          <li>The operator uses a protected web link.</li>
+          <li>Updates, backups and maintenance stay on SyMoNeuRaL's side.</li>
+          <li>Nothing to buy and nothing to maintain in order to try it.</li>
+        </ul>
+      </div>
+      <div class="dx-box">
+        <h3>Local box <span class="dx-st dx-st-later">Later</span></h3>
+        <ul>
+          <li>The operator owns dedicated hardware.</li>
+          <li>SyMoNeuRaL can size, build and tune it.</li>
+          <li>Worth considering later for full control, heavier fleet usage, or less dependence on recurring hosting.</li>
+          <li>More up-front hardware and setup responsibility.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dx-note">
+      <b>Why cloud first is the lighter path.</b> It removes the largest up-front cost and the
+      whole of the maintenance burden at exactly the moment when the thing being tested is
+      whether the workflow is worth having at all. Buying hardware to find that out is spending
+      money in the wrong order. Prove the loop first; a local box is an upgrade path
+      afterwards, never a prerequisite for trying it.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PREVIEW ENVIRONMENT ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Preview environment</h2><span class="dx-st dx-st-terms">Configuration options</span></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Described at class level only. Specific configuration, capacity and deployment details
+      are withheld until written agreement.
+    </p>
+    <table class="dx-spec">
+      <tr><th>Managed by</th><td>SyMoNeuRaL / SymonSays LLC</td></tr>
+      <tr><th>Deployment type</th><td>Managed protected preview</td></tr>
+      <tr><th>Compute class</th><td>GPU-capable Linux workstation / server class</td></tr>
+      <tr><th>Operating system class</th><td>Debian Linux</td></tr>
+      <tr><th>Hardware needed now</th><td>None for the preview</td></tr>
+      <tr><th>Local upgrade path</th><td>Optional dedicated box later</td></tr>
+    </table>
+    <div class="dx-note">
+      This is a preview environment. It is not an offer of production hosting, and nothing here
+      states or implies an availability commitment, a service level, or guaranteed uptime.
+      Production arrangements would be scoped and agreed separately in writing.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRODUCTION PATH ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>After preview login: production path</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      After preview access, the next step is a written production scope. Once scope and terms
+      are approved, SyMoNeuRaL can package the build path into a private production repository
+      or managed deployment plan. That repository or package is not part of this preview and
+      does not include source, prompts, model files, or deployment rights unless written terms
+      say so.
+    </p>
+    <ol class="dx-path">
+      <li><b>Preview login.</b> Access to this page, under a credential issued to one reviewer.</li>
+      <li><b>Scope confirmation.</b> Agreeing what the first version does and, just as importantly, what it does not.</li>
+      <li><b>Production terms.</b> Written commercial terms, agreed before production work begins.</li>
+      <li><b>Private production repository or managed deployment plan.</b> Rights and access depend on written terms.</li>
+      <li><b>Cloud-hosted launch, or a SyMoNeuRaL-managed local box.</b> Whichever the agreed scope calls for.</li>
+      <li><b>Ongoing support and update path.</b> Arranged as part of the same terms.</li>
+    </ol>
+    <div class="dx-note">
+      Rights and access depend on written terms. Nothing in this path transfers ownership of a
+      repository, of source, or of model files by default.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONFIDENTIAL PREVIEW HANDLING ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Confidential preview handling</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      SyMoNeuRaL treats customer preview discussions, workflow ideas, and business-specific
+      details as confidential scoping material. This protected preview is not a public proposal
+      page and should not be forwarded or redistributed.
+    </p>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Before deeper production discovery, source discussion, integrations, or sensitive
+      operational details are exchanged, SyMoNeuRaL can sign a mutual NDA or include
+      confidentiality terms in the written production agreement.
+    </p>
+    <div class="dx-note">
+      This preview is not a quote, contract, signed NDA, or production authorization. It is a
+      controlled review step before written scope and terms.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SCOPE OF THIS PREVIEW ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Scope of this preview</h2></div>
+    <p style="font-size:var(--t4); color:var(--dim); max-width:74ch">
+      This protected preview is scoped to the DispatchOS transportation workflow. It shows how
+      SyMoNeuRaL and SyMon AI can be configured around one customer or business use case
+      without exposing the underlying source code, model files, prompts, deployment details, or
+      final commercial terms.
+    </p>
+    <table class="dx-bnd">
+      <thead>
+        <tr><th>Scope variable</th><th>This preview covers</th><th>This preview does not cover</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Customer / business</td>
+            <td>DispatchOS transportation operator preview</td>
+            <td>Other SyMoNeuRaL customers or unrelated industries</td></tr>
+        <tr><td>Product family</td>
+            <td>DispatchOS as a transportation vertical of Solo Operator / SyMoNeuRaL</td>
+            <td>Full SyMoNeuRaL platform ownership or source access</td></tr>
+        <tr><td>AI layer</td>
+            <td>SyMon AI positioning for booking, quote, dispatch, reminder and review workflow</td>
+            <td>Model files, prompts, training data, runtime internals, or model ownership</td></tr>
+        <tr><td>Booking flow</td>
+            <td>Preview of the request, quote, confirm, dispatch, reminder and review stages</td>
+            <td>A live production booking system, unless written scope and terms are approved</td></tr>
+        <tr><td>Messaging</td>
+            <td>Planned reminder behaviour and the admin record trail</td>
+            <td>Any claim of live SMS or email delivery without approved configuration</td></tr>
+        <tr><td>Customer records</td>
+            <td>The minimal contact and project record needed for booking and retention</td>
+            <td>A full customer dashboard, repeat-rider memory, or a broad customer database</td></tr>
+        <tr><td>Hosting path</td>
+            <td>SyMoNeuRaL-hosted cloud first, SyMoNeuRaL-managed local box later if justified</td>
+            <td>A generic unmanaged third-party cloud handoff</td></tr>
+        <tr><td>Production path</td>
+            <td>Written scope and terms, then a private production repository or managed deployment plan</td>
+            <td>Automatic source export, model or prompt handoff, or deployment rights</td></tr>
+        <tr><td>Commercial terms</td>
+            <td>A written agreement, required before production use</td>
+            <td>Pricing, backend percentages, caps, floors, setup fees, or any signed-contract claim</td></tr>
+        <tr><td>Preview access</td>
+            <td>A protected preview opened with issued credentials</td>
+            <td>A public page, an open URL, or permission to redistribute</td></tr>
+      </tbody>
+    </table>
+    <div class="dx-note">
+      <b>These boundaries define what this webpage is showing. They do not grant production
+      rights, source rights, model rights, deployment rights, or commercial terms.</b>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SCOPE BOUNDARIES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Scope boundaries</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Where the customer side ends and the SyMoNeuRaL side begins, area by area. The section
+      above says what this page shows; this one says who holds what.
+    </p>
+    <table class="dx-own">
+      <thead>
+        <tr><th>Boundary area</th><th>Customer side</th><th>SyMoNeuRaL side</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Business workflow</td>
+            <td>Provides service rules, routes, policies and operational preferences</td>
+            <td>Converts approved workflow into preview and production configuration</td></tr>
+        <tr><td>Preview access</td>
+            <td>Reviews the protected preview and gives feedback</td>
+            <td>Hosts and protects the preview path</td></tr>
+        <tr><td>First-version scope</td>
+            <td>Confirms what matters for the first version</td>
+            <td>Keeps it limited to the approved booking, quote, dispatch, reminder and review flow</td></tr>
+        <tr><td>Deferred features</td>
+            <td>Confirms what can wait</td>
+            <td>Keeps dashboards, revenue tracking, memory, summaries and the full AI workflow out unless later approved</td></tr>
+        <tr><td>AI assistant</td>
+            <td>Provides business context and approved knowledge</td>
+            <td>Maintains SyMon AI as a managed SyMoNeuRaL runtime</td></tr>
+        <tr><td>Source, model and prompts</td>
+            <td>Not included in the preview</td>
+            <td>Retained unless written terms grant specific rights</td></tr>
+        <tr><td>Hosting</td>
+            <td>Chooses the approved cloud-first or local-box-later path</td>
+            <td>Manages the approved infrastructure path</td></tr>
+        <tr><td>Production launch</td>
+            <td>Requires written approval, scope and terms</td>
+            <td>Does not launch production until cleared</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch; margin-top:18px">
+      Scope boundaries protect both sides. The customer controls the business requirements and
+      the approval decisions. SyMoNeuRaL controls the protected runtime, implementation method,
+      preview staging and production-readiness process until written terms say otherwise.
+    </p>
+    <div class="dx-note">
+      <b>The preview shows the workflow direction.</b> It does not transfer source code,
+      prompts, model files, deployment rights, credentials, or production operating authority.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESPONSIBILITIES ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Customer and provider responsibilities</h2></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      Review responsibilities for this preview stage — what each side does to keep the review
+      useful and the boundaries intact.
+    </p>
+    <div class="dx-split">
+      <div class="dx-box">
+        <h3>Customer</h3>
+        <ul>
+          <li>Provide accurate business rules and service expectations</li>
+          <li>Identify the must-have first-version workflow needs</li>
+          <li>Review preview behaviour before production</li>
+          <li>Avoid forwarding protected preview access</li>
+          <li>Approve written scope before production use</li>
+        </ul>
+      </div>
+      <div class="dx-box">
+        <h3>SyMoNeuRaL</h3>
+        <ul>
+          <li>Protect preview access</li>
+          <li>Avoid publishing customer-sensitive details</li>
+          <li>Keep implementation details out of customer-facing pages</li>
+          <li>Maintain clear first-version and deferred-scope boundaries</li>
+          <li>Require written terms before production launch</li>
+          <li>Maintain the managed runtime and infrastructure path</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WRITTEN TERMS + CTA ===================== -->
+<section>
+  <div class="wrap">
+    <div class="dx-sec-h"><h2>Written scope and terms</h2><span class="dx-st dx-st-terms">Requires written terms before production</span></div>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      This page describes a proposed preview and nothing more. It carries no pricing, no
+      subscription tiers, no fee structure and no commercial terms, and it is not a quote, an
+      offer, an invoice or a contract. Nothing here records an agreement, and nothing here
+      should be read as one having been reached.
+    </p>
+    <p style="font-size:var(--t5); color:var(--dim); max-width:74ch">
+      A production build requires written scope and terms. That is a precondition, not a
+      formality to be handled afterwards — it is what turns a preview into work with an agreed
+      shape, an agreed boundary and an agreed basis.
+    </p>
+
+    <div class="dx-cta">
+      <h3>Next step: approve written scope before production</h3>
+      <p>
+        The preview shows the loop. The next conversation is a short written scope covering what
+        the first version includes, what stays deferred, and the terms production runs under.
+      </p>
+      <a href="mailto:saysupport@symoneural.com?subject=DispatchOS%20preview%20%E2%80%94%20written%20scope">Start the written scope</a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /dx-body -->
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none; display:flex; align-items:center; gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px; color:var(--fg)">SyMoNeu<i style="font-style:normal; color:var(--accent)">RaL</i></b>
+    </a>
+    <span>© SymonSays LLC · <a href="mailto:saysupport@symoneural.com" style="color:var(--dim); text-decoration:none">saysupport@symoneural.com</a></span>
+  </div>
+  <div class="wrap" style="padding-bottom:26px">
+    <p style="font-size:var(--t6); color:var(--faint); margin:0; max-width:74ch">
+      Private preview. Not listed publicly. Not a quote or contract. Access requires the
+      credentials issued with this link. Customer preview, not source documentation — do not
+      forward or redistribute.
+    </p>
+  </div>
+</footer>
+
+<script>
+/* Acknowledgment panel. Front-end only: the choice stays in this browser's sessionStorage,
+   nothing is transmitted, nothing is recorded anywhere else, and no identity is captured.
+   `dx-locked` ships on the body in the markup rather than being added here, so the preview is
+   never briefly visible before this runs and a browser with scripting off stays on the panel
+   rather than falling open. */
+(function () {
+  var KEY = 'dx-ack';
+  var body = document.body;
+  var go = document.getElementById('dx-go');
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('[data-ack]'));
+
+  function unlock() {
+    body.classList.remove('dx-locked');
+    window.scrollTo(0, 0);
+  }
+
+  try { if (sessionStorage.getItem(KEY) === '1') unlock(); } catch (e) { /* storage blocked */ }
+
+  if (!go || !boxes.length) return;
+
+  function sync() { go.disabled = !boxes.every(function (b) { return b.checked; }); }
+  boxes.forEach(function (b) { b.addEventListener('change', sync); });
+  sync();
+
+  go.addEventListener('click', function () {
+    if (go.disabled) return;
+    try { sessionStorage.setItem(KEY, '1'); } catch (e) { /* unlock anyway */ }
+    unlock();
+  });
+})();
+
+/* Stepper. */
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.dx-steps [role="tab"]'));
+  if (!tabs.length) return;
+
+  function show(i) {
+    tabs.forEach(function (tab, n) {
+      var panel = document.getElementById(tab.getAttribute('aria-controls'));
+      var on = n === i;
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (panel) panel.hidden = !on;
+    });
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { show(i); });
+    tab.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = (i + d + tabs.length) % tabs.length;
+      tabs[next].focus();
+      show(next);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786940951564-9182.png",
+  "seconds": 10.95,
+  "seed": 9182,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 585126,
+  "prompt": "three server units stacked, front panel LEDs, very dark room, green glow",
+  "slug": "rack2"
+}

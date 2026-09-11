@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934464451-6730.png",
+  "seconds": 11.17,
+  "seed": 6730,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 940233,
+  "prompt": "a hand holding a small labelled hard drive over a dark desk, shallow depth of field, green rim light, documentary photography",
+  "slug": "yours"
+}

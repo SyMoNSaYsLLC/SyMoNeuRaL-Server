@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Coder — the workspace, read off the box that serves it</title>
+<meta name="description" content="The local workspace agent's browser surface. It reads the tree, the files and the audit journal off this machine over a loopback-only mount, and shows which gate refused when one does.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/coder.css?v=030f885313">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- The instrument leads the page and the pitch follows it, which is #91 applied and #99's
+     lesson taken from the other side.
+
+     Studio put its editor fourth down the page under `height:min(78vh,760px)`. At 1440x1000
+     that placed the frame's top at y=962: thirty-eight pixels of a thousand, 4% of it, and
+     every check on the task read green while the person who asked for it had never seen the
+     thing. A height assertion would have passed too -- 78vh of 1000px really is 760px. So the
+     readings go first here, and tests/frontend.mjs measures this block's AREA INSIDE THE
+     FIRST VIEWPORT rather than its height.
+
+     Moved, not trimmed: `.claude/CLAUDE.md` bars closing a layout problem by dropping
+     content, so the whole argument for the surface is still on the page, below, in the same
+     words it would have had at the top. -->
+<section style="border-top:0;padding-top:22px">
+  <div class="wrap">
+    <div class="pgwrap">
+      <div class="stage">
+
+        <div class="head" id="cd-head">
+          <s></s>SyMoNeuRaL Coder
+          <span class="grow" id="cd-headstate">asking the box&hellip;</span>
+        </div>
+
+        <div class="body">
+
+          <p class="cd-state">
+            <b class="cd-lamp" id="cd-lamp"></b>
+            <span id="cd-say">Asking this machine whether the workspace surface is switched on&hellip;</span>
+          </p>
+
+          <!-- Readings, and every one of them is a real one.
+
+               `authorize()` returns the FIRST refusal and stops, which is the right answer for
+               a caller and useless for an instrument: an operator reading "surface disabled"
+               cannot tell whether the token is also missing, so turning the flag on would just
+               move them to the next refusal. /local/coder/status reads the four predicates
+               individually so all four can be shown at once. They are booleans ABOUT
+               configuration -- no token value is disclosed by any of them, and the token never
+               crosses to this page at all.
+
+               Anything not yet measured is an em dash in dim type, never `false`. Before the
+               first fetch resolves, "not asked yet" and "asked, and the answer is no" are
+               different facts. -->
+          <div class="cd-grid" id="cd-grid">
+            <div class="cd-cell"><b>Surface</b><span id="cd-r-surface" class="cd-none">&mdash;</span></div>
+            <div class="cd-cell"><b>Switched on</b><span id="cd-r-enabled" class="cd-none">&mdash;</span></div>
+            <div class="cd-cell"><b>Token set</b><span id="cd-r-token" class="cd-none">&mdash;</span></div>
+            <div class="cd-cell"><b>Peer</b><span id="cd-r-peer" class="cd-none">&mdash;</span></div>
+            <div class="cd-cell"><b>Remote allowed</b><span id="cd-r-remote" class="cd-none">&mdash;</span></div>
+            <div class="cd-cell"><b>Workspace</b><span id="cd-r-ws" class="cd-none">&mdash;</span></div>
+          </div>
+
+          <!-- What this mount is, stated rather than implied by the absence of buttons. The
+               module underneath really does implement write, patch, delete, restore and run;
+               they are not mounted here. An operator who cannot see that difference will
+               either believe the capability does not exist or go hunting for a control that
+               is deliberately absent. -->
+          <p class="cd-ro" id="cd-ro">
+            <b>Read only</b>
+            <span id="cd-rosay">This surface serves reads. <code>write</code>, <code>patch</code>,
+              <code>delete</code>, <code>restore</code> and <code>run</code> exist in the module
+              and are deliberately not mounted &mdash; where the gate for the write half lands is
+              task&nbsp;#88&rsquo;s decision, not this page&rsquo;s.</span>
+          </p>
+
+          <!-- A refusal is a reading, not a failure. The surface ships switched off, so a
+               closed gate is a normal and correct state; it renders as an instrument panel
+               naming the predicate that said no and what to set, and never as a red error. -->
+          <div class="cd-refuse" id="cd-refuse" hidden>
+            <h4 id="cd-refuse-h">&nbsp;</h4>
+            <p id="cd-refuse-p"></p>
+            <p id="cd-refuse-fix" hidden></p>
+          </div>
+
+          <h2 style="margin:26px 0 4px;font-size:var(--t3)">Workspace</h2>
+          <p class="cd-crumb">
+            <button class="cd-btn" id="cd-up" type="button" disabled>Up</button>
+            <button class="cd-btn" id="cd-reload" type="button">Reload</button>
+            <code id="cd-path">&mdash;</code>
+          </p>
+          <ul class="cd-list" id="cd-list"></ul>
+          <p class="cd-say" id="cd-listsay">Waiting for the first reading&hellip;</p>
+          <p class="cd-trunc" id="cd-trunc" hidden></p>
+
+          <div class="cd-file" id="cd-file" hidden>
+            <h2 style="margin:26px 0 4px;font-size:var(--t3)">File</h2>
+            <p class="cd-meta" id="cd-filemeta"></p>
+            <pre id="cd-filetext"></pre>
+            <p class="cd-meta" id="cd-histsay" style="margin-top:10px"></p>
+            <ul class="cd-log" id="cd-hist"></ul>
+          </div>
+
+          <details style="margin:26px 0 0" id="cd-jrnwrap">
+            <summary style="cursor:pointer;font-size:var(--t5);color:var(--dim)">Audit journal &mdash; what this module has been asked to do</summary>
+            <p class="cd-say" id="cd-jrnsay" style="margin:10px 0 0">Not read yet.</p>
+            <ul class="cd-log" id="cd-jrn"></ul>
+          </details>
+
+          <details style="margin:14px 0 0">
+            <summary style="cursor:pointer;font-size:var(--t5);color:var(--dim)">How this reaches the box, and why it is not on <code>/api</code></summary>
+            <div style="margin:10px 0 0;font-size:var(--t5);color:var(--dim);line-height:1.65">
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">The prefix is the whole safety case.</b>
+                <code>ops/Caddyfile</code> hands the entire <code>/api/*</code> subtree to the public
+                internet, and the module behind this page reads arbitrary workspace files and executes
+                subprocesses. An <code>/api/coder/&hellip;</code> endpoint would be remote file read on a
+                public host the instant it existed, so there is not one and there must never be one. The
+                reads here are at <code>/local/coder/*</code>, which matches no <code>handle</code> block
+                in that config: it falls through to the static file server, is looked up in
+                <code>/var/www/symoneural</code>, and 404s off disk without this process ever being
+                asked.</p>
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">Two locks, not one.</b> The API does not
+                trust that config file either. Every route here goes through a guard that reads the socket
+                peer and refuses the request outright if any <code>X-Forwarded-*</code> header is present
+                &mdash; which is exactly what a future <code>handle /local*</code> block would produce. Add
+                one a year from now and these routes go dead rather than public.</p>
+              <p style="margin:0 0 9px"><b style="color:var(--fg)">The token never comes here.</b> The
+                module&rsquo;s token exists to stop a caller who reached it over a network, and these routes
+                are already past a stricter test than that. The alternative is a browser page that holds the
+                credential, which means the token in a URL, in <code>localStorage</code>, or committed into
+                this repository&rsquo;s own HTML &mdash; and a credential that has been displayed is spent. It
+                is read inside the server process, used there, and never sent to this page.</p>
+              <p style="margin:0"><b style="color:var(--fg)">A refused file is shown, not hidden.</b> The
+                listing flags entries the denylist covers instead of omitting them. A tree that quietly
+                dropped <code>training/corpus.jsonl</code> would be showing you something that is not what is
+                on the disk &mdash; the decorative dishonesty this site exists to argue against &mdash; and it
+                would also teach an operator that there is no denylist, so the first time they wondered where
+                a file went they would go looking for a bug instead of a rule.</p>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="apphead apphead-after">
+  <div class="wrap">
+    <p class="eyebrow">Developer surface</p>
+    <h1>The workspace, read off the box that serves it.</h1>
+    <p class="lede">This is the same machine the rest of the site is measured on, reading its own working tree. Nothing here is a mock-up of a filesystem: the entries, the byte counts, the refusals and the journal are what this box answers when it is asked, and when a gate is closed the page says which one rather than showing you an empty tree.</p>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/coder.js?v=89060bfad6" defer></script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en" data-family="workspace">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Exp — a plugin runtime you can watch reload</title>
+<meta name="description" content="A service container with reversible registrations: mount a plugin into the running API, watch its fiber resolve, unmount it and watch every effect it registered come undone in reverse order.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/brand/mark-64.png?v=ded4e8a102" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Live surface · in-process · operator token required for writes</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Composition, taken apart while it runs.</h1>
+    <p class="lede" style="font-size:16.5px">Plugins declare what they need, the container hands it to them, and every registration a plugin makes — services, effects, listeners — is undone in reverse when it unmounts. Two plugins can see different objects under the same service name; a module can be re-imported and its fiber restarted against the new code without restarting the API. It runs inside this process, with this process's privileges, which is why writes are off unless the operator switches them on.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div id="exp">
+
+<style>
+/* Every selector here is prefixed `#exp`, the same defence the Studio panel uses: four bugs on
+   this site have come from generic class names colliding across components -- `.bar` collapsed
+   the site header to 7px, `.live` restyled the control-board legend, `#console .sub` outranked
+   `.mod .sub`. The prefix makes a collision impossible rather than unlikely.
+
+   THERE IS NO `text-overflow: ellipsis` IN THIS FILE AND THERE MUST NEVER BE ONE. Every
+   ellipsis rule on this site has been removed because two were caught truncating real data --
+   an Apache-2.0 attribution line and a control-board reading mid-number. This panel carries
+   dotted plugin paths, service method lists and runtime error messages, all of which are
+   exactly long enough to get cut, and a truncated error message is worse than none. Let them
+   wrap. */
+
+#exp .ex-strip{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));
+  margin:0 0 18px}
+#exp .ex-cell{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px}
+#exp .ex-cell h4{margin:0 0 5px;font:600 var(--t7)/1.2 inherit;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--faint)}
+#exp .ex-cell p{margin:0;font:600 var(--t4)/1.35 inherit;color:var(--fg);word-break:break-word}
+#exp .ex-cell p.sub{margin-top:4px;font:400 var(--t6)/1.45 inherit;color:var(--dim)}
+#exp .ex-on{color:var(--accent)}
+#exp .ex-off{color:var(--faint)}
+#exp .ex-warn{color:var(--amber)}
+
+#exp .ex-gate{background:var(--panel2);border:1px solid var(--line);border-left:2px solid
+  var(--amber);border-radius:10px;padding:14px 16px;margin:0 0 18px}
+#exp .ex-gate h3{margin:0 0 6px;font:600 var(--t4)/1.3 inherit}
+#exp .ex-gate p{margin:0 0 10px;font:400 var(--t5)/1.55 inherit;color:var(--dim);max-width:74ch}
+#exp .ex-gate code{background:var(--bg);border:1px solid var(--line);border-radius:4px;
+  padding:1px 5px;font:500 var(--t6)/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+#exp .ex-gate form{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#exp input[type=password],#exp input[type=text],#exp textarea,#exp select{
+  background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;
+  padding:8px 10px;font:400 var(--t5)/1.4 inherit;max-width:100%}
+#exp input[type=password]{min-width:230px}
+#exp textarea{width:100%;resize:vertical;
+  font:400 var(--t6)/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+#exp button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;
+  padding:8px 15px;font:600 var(--t5)/1 inherit;cursor:pointer}
+#exp button.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
+#exp button.tiny{padding:3px 9px;font:600 var(--t7)/1.3 inherit}
+#exp button[disabled]{opacity:.5;cursor:default}
+
+#exp .ex-cols{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:900px){#exp .ex-cols{grid-template-columns:minmax(0,1fr)}}
+#exp .ex-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:15px 16px;min-width:0;margin:0 0 16px}
+#exp .ex-panel > h3{margin:0 0 4px;font:600 var(--t3)/1.2 inherit}
+#exp .ex-panel > p.lede{margin:0 0 12px;font:400 var(--t5)/1.55 inherit;color:var(--dim)}
+
+#exp table.ex-tbl{width:100%;border-collapse:collapse;font:400 var(--t6)/1.5 inherit}
+#exp table.ex-tbl th{text-align:left;font:600 var(--t7)/1.2 inherit;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint);padding:5px 9px 5px 0;
+  border-bottom:1px solid var(--line)}
+#exp table.ex-tbl td{padding:6px 9px 6px 0;border-bottom:1px solid var(--line);
+  color:var(--dim);vertical-align:top;word-break:break-word}
+#exp table.ex-tbl td b{color:var(--fg);font-weight:600}
+#exp table.ex-tbl td.acts{white-space:normal}
+#exp table.ex-tbl td.acts button{margin:0 5px 4px 0}
+#exp code.ex-mono{font:400 var(--t7)/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--dim);word-break:break-all}
+
+/* The state vocabulary is the runtime's own -- six fiber states and four entry pseudo-states.
+   Each gets a colour and none gets an animation: a pulsing `loading` dot would keep pulsing
+   after the process died. */
+#exp .ex-st{font:600 var(--t7)/1.3 inherit;letter-spacing:.06em;text-transform:uppercase}
+#exp .ex-st-active{color:var(--accent)}
+#exp .ex-st-pending,#exp .ex-st-loading,#exp .ex-st-disposing{color:var(--amber)}
+#exp .ex-st-failed{color:var(--amber)}
+#exp .ex-st-disabled,#exp .ex-st-disposed,#exp .ex-st-unmounted,#exp .ex-st-group{
+  color:var(--faint)}
+#exp .ex-err{margin:3px 0 0;color:var(--amber);white-space:pre-wrap;word-break:break-word;
+  font:400 var(--t7)/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+
+#exp .ex-feed{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px;
+  min-height:180px;max-height:440px;overflow:auto;margin:0 0 11px}
+#exp .ex-feed:empty{display:none}
+#exp .ex-ev{border-left:2px solid var(--line);padding:2px 0 2px 10px;margin:0 0 8px}
+#exp .ex-ev h5{margin:0 0 2px;font:600 var(--t7)/1.2 inherit;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint)}
+#exp .ex-ev p{margin:0;font:400 var(--t6)/1.6 inherit;color:var(--fg);white-space:pre-wrap;
+  word-break:break-word}
+#exp .ex-ev.ex-e-provide{border-left-color:var(--accent)}
+#exp .ex-ev.ex-e-provide h5{color:var(--accent)}
+#exp .ex-ev.ex-e-dispose{border-left-color:var(--faint)}
+#exp .ex-ev.ex-e-error{border-left-color:var(--amber)}
+#exp .ex-ev.ex-e-error h5{color:var(--amber)}
+#exp .ex-ev .ex-seq{color:var(--faint)}
+
+#exp .ex-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+#exp .ex-row label{font:400 var(--t6)/1.4 inherit;color:var(--dim)}
+#exp details{margin:0 0 16px;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:13px 16px}
+#exp details > summary{cursor:pointer;font:600 var(--t4)/1.3 inherit;color:var(--fg)}
+#exp details > summary::marker{color:var(--faint)}
+#exp details > div{margin-top:12px}
+#exp .ex-note{margin:11px 0 0;font:400 var(--t6)/1.6 inherit;color:var(--faint);max-width:80ch}
+#exp .ex-said{margin:8px 0 0;font:400 var(--t6)/1.55 inherit;color:var(--amber);
+  white-space:pre-wrap;word-break:break-word}
+</style>
+
+<!-- The gate. Rendered by page.js only when the API has said the mutation surface is off (503)
+     or refused a token (401), and those two are drawn differently on purpose: "off" sends the
+     operator to two environment variables, "refused" sends them to the token box, and showing
+     the wrong one costs an afternoon. There is no idle placeholder here, because a permanent
+     "connect" box is a decorative indicator of a condition nobody measured. -->
+<div class="ex-gate" id="ex-gate" hidden></div>
+
+<!-- Status. Every cell is filled from /api/exp/state or says in words that it has no reading.
+     Nothing animates: this rack has no fake activity lights. -->
+<div class="ex-strip" id="ex-strip"></div>
+
+<div class="ex-panel">
+  <h2>Mounted</h2>
+  <p class="lede">
+    The entry table, exactly as the runtime holds it &mdash; what is mounted, what it asked to be
+    injected with, what is missing, and which fiber is carrying it. Reads need no token, so this
+    table is visible to anyone; one thing is withheld from a tokenless reader and it is named
+    precisely, an entry's <code class="ex-mono">config</code>, because that is where a plugin's
+    credentials would live.
+  </p>
+  <div class="ex-row" id="ex-mount-row"></div>
+  <table class="ex-tbl"><thead><tr>
+    <th>Entry</th><th>State</th><th>Wants</th><th>Provides</th><th id="ex-acts-h"></th>
+  </tr></thead><tbody id="ex-entries"></tbody></table>
+  <p class="ex-note" id="ex-entries-note"></p>
+  <p class="ex-said" id="ex-said"></p>
+</div>
+
+<div class="ex-cols">
+
+  <div class="ex-panel">
+    <h3>Services</h3>
+    <p class="lede">
+      The container, keyed by realm rather than by name. Two isolated sessions that each provide
+      <code class="ex-mono">llm</code> are two rows here and not one &mdash; collapsing them
+      would hide the exact thing <code class="ex-mono">isolate()</code> exists to make visible.
+      <code class="ex-mono">epoch</code> counts how many times a name has been re-provided
+      <em>without leaving the container in between</em>, so anything holding a stale value can
+      compare and re-resolve. A plugin that unloads takes its service out with it, and the
+      replacement starts at one again &mdash; an epoch of one next to a fresh object means a
+      reload, not a missed count.
+    </p>
+    <table class="ex-tbl"><thead><tr>
+      <th>Service</th><th>Owner</th><th>Type</th><th>Methods</th>
+    </tr></thead><tbody id="ex-services"></tbody></table>
+    <p class="ex-note" id="ex-services-note"></p>
+  </div>
+
+  <div class="ex-panel">
+    <h3>Trace</h3>
+    <p class="lede">
+      Append-only, polled from the last sequence number this page saw &mdash; a sequence and not
+      a timestamp, because two events can share a millisecond and a timestamp cursor either
+      re-delivers one or drops it. Neither is acceptable in the feed you debug a reload from.
+    </p>
+    <div class="ex-feed" id="ex-feed" aria-live="polite"></div>
+    <p class="ex-note" id="ex-feed-note"></p>
+  </div>
+
+</div>
+
+<details id="ex-call-wrap">
+  <summary>Call a method on a live service</summary>
+  <div>
+    <p class="ex-note" style="margin:0 0 10px">
+      Any method on any mounted service, with whatever arguments are posted. There is no
+      allow-list: a plugin runtime whose services can only be poked through endpoints written
+      in advance is a runtime you cannot experiment with, and experimenting is what this app is
+      called. The token is the line.
+    </p>
+    <form id="ex-call">
+      <div class="ex-row">
+        <select id="ex-call-service"></select>
+        <select id="ex-call-method"></select>
+        <button type="submit" id="ex-call-go">Call</button>
+      </div>
+      <label class="ex-note" for="ex-call-args" style="display:block;margin:0 0 5px">
+        Positional arguments, as a JSON array. Leave it empty for none.
+      </label>
+      <textarea id="ex-call-args" rows="2" spellcheck="false" placeholder="[]"></textarea>
+    </form>
+    <p class="ex-note" id="ex-call-out"></p>
+  </div>
+</details>
+
+<details id="ex-add-wrap">
+  <summary>Mount one plugin</summary>
+  <div>
+    <p class="ex-note" style="margin:0 0 10px">
+      The catalogue below is described by importing each module and reading its signature, not
+      by a hand-kept list, so this control cannot offer a plugin the runtime cannot resolve.
+      Adding one entry touches nothing else that is mounted. <b>Patch</b> ignores the plugin
+      box and replaces the config of the entry whose id is in the id box, restarting just that
+      fiber &mdash; the <b>config</b> button on a row fills both fields for you.
+    </p>
+    <form id="ex-add">
+      <div class="ex-row">
+        <select id="ex-add-use"></select>
+        <input type="text" id="ex-add-id" placeholder="entry id" autocomplete="off">
+        <button type="submit" id="ex-add-go">Mount</button>
+        <button type="button" class="ghost" id="ex-patch-go">Patch</button>
+      </div>
+      <label class="ex-note" for="ex-add-config" style="display:block;margin:0 0 5px">
+        Config, as a JSON object. The schema each plugin declares is in the catalogue table.
+      </label>
+      <textarea id="ex-add-config" rows="3" spellcheck="false" placeholder="{}"></textarea>
+    </form>
+    <p class="ex-note" id="ex-add-out"></p>
+  </div>
+</details>
+
+<details id="ex-cat-wrap">
+  <summary>The example plugins</summary>
+  <div>
+    <p class="ex-note" style="margin:0 0 10px">
+      Seven of them, each demonstrating one idea rather than doing anything useful.
+      <b>Kind</b> is not a label typed into this page -- it is what the registry decided by
+      looking at the object it resolved, which is why six of these read
+      <code class="ex-mono">module</code> and one reads <code class="ex-mono">class</code>: a
+      manifest's <code class="ex-mono">use:</code> line names a module. The runtime accepts two
+      more shapes, a plain function and an object with an
+      <code class="ex-mono">apply</code> attribute, and no example here uses them.
+    </p>
+    <table class="ex-tbl"><thead><tr>
+      <th>Plugin</th><th>Kind</th><th>Wants</th><th>What it demonstrates</th>
+    </tr></thead><tbody id="ex-catalogue"></tbody></table>
+  </div>
+</details>
+
+<p class="ex-note">
+  Nothing on this page is a sandbox and the runtime does not claim to be one. A plugin runs in
+  this process with this process's privileges; <code class="ex-mono">isolate()</code> decides
+  which object a plugin sees under a service name, which is a composition boundary and not a
+  security one. In-process isolation of Python from Python is not achievable &mdash; the seam
+  for real isolation is out-of-process, and it is documented rather than pretended.
+</p>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script src="/js/exp.js?v=3989b4beab" defer></script>
+</body>
+</html>

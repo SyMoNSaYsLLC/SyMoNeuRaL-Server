@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786940976404-5527.png",
+  "seconds": 11.04,
+  "seed": 5527,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 1042066,
+  "prompt": "a silicon die under magnification, iridescent, dark field, abstract",
+  "slug": "chip"
+}

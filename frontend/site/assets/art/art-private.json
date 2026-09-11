@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934439599-4402.png",
+  "seconds": 11.19,
+  "seed": 4402,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 844554,
+  "prompt": "a locked steel door inside a server room, dim corridor, green indicator lights, cinematic, moody, high contrast",
+  "slug": "private"
+}

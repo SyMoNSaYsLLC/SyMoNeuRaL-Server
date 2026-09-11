@@ -1,0 +1,214 @@
+/* SyMoNeuRaL Live — the stream page.
+ *
+ * EVERY selector in here is prefixed `lv-`, and that is not a style preference. Three separate
+ * bugs in this repo came from generic class names colliding across components: `.bar` collapsed
+ * the site header to 7px sitewide, `.live` styled the control board legend from the nav badge,
+ * and `#console .sub` outranked `.mod .sub` and rendered a footnote larger than the sentence
+ * above it. `.live` is on that list, which is exactly the name this page would otherwise want,
+ * so it is the one name barred here.
+ *
+ * No `text-overflow:ellipsis` anywhere in this file, ever. Every such rule was removed from this
+ * site deliberately: the control board was showing `~84% of 896.1 p…` and the rack was cutting
+ * `built on Qwen2.5-7B-Instruct` down to `…7B-Ins…`, and that attribution is an Apache-2.0
+ * licence condition. Long content wraps or folds into <details>. It does not get trimmed.
+ */
+
+/* ---- the player -------------------------------------------------------------------- */
+
+/* Hidden until there is something to play. An empty <video> is a black rectangle that reads
+ * as a broken stream, which is the same lie a decorative status light would be. */
+.lv-player[hidden] { display: none }
+
+.lv-player video {
+  width: 100%;
+  /* Not `height:auto` alone: before the manifest is parsed the element has no intrinsic
+     ratio, so the page would reflow by several hundred pixels the moment playback starts.
+     16/9 is what OBS is configured to send (1920x1080), and a stream of another shape still
+     letterboxes inside it rather than pushing the readings off screen. */
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: var(--r-media);
+  display: block;
+}
+
+.lv-now {
+  margin: 8px 0 0;
+  font-size: var(--t5);
+  color: var(--dim);
+}
+.lv-now b { color: var(--fg) }
+
+/* ---- the state line ---------------------------------------------------------------- */
+
+.lv-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: var(--t5);
+  color: var(--dim);
+}
+
+/* The lamp. It has three states because the disk has three, and the third one is the whole
+ * reason it is not a boolean: a crashed OBS leaves a playlist with no #EXT-X-ENDLIST on it
+ * forever, so "no endlist" alone would light this green permanently after any crash. That is
+ * precisely the decorative status indicator this site does not allow. `stale` is what the
+ * abandoned case looks like, and it is deliberately not green. */
+.lv-lamp {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--line);
+  flex: none;
+  display: block;
+}
+.lv-lamp.is-on {
+  background: var(--accent);
+  box-shadow: 0 0 7px rgba(46, 224, 138, .9);
+  animation: lv-pulse 1.6s ease-in-out infinite;
+}
+.lv-lamp.is-stale { background: var(--amber) }
+
+@keyframes lv-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .45 } }
+/* Someone who has asked the OS for less motion is asking this page too. The lamp still says
+   what it says; it just stops breathing. */
+@media (prefers-reduced-motion: reduce) { .lv-lamp.is-on { animation: none } }
+
+/* ---- readings ---------------------------------------------------------------------- */
+
+.lv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  overflow: hidden;
+  margin: 14px 0 0;
+}
+
+.lv-cell {
+  background: var(--panel);
+  padding: 9px 11px;
+  min-width: 0;          /* lets the value wrap instead of forcing the grid track wider */
+}
+.lv-cell b {
+  display: block;
+  font: 600 var(--t7) / 1.3 inherit;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.lv-cell span {
+  display: block;
+  font-size: var(--t4);
+  color: var(--fg);
+  margin-top: 3px;
+  /* The one rule that matters here. A reading like `built on ...` or a long scene name wraps
+     onto a second line and makes the cell taller. It does not get an ellipsis. */
+  overflow-wrap: anywhere;
+}
+
+/* A reading nobody has taken renders as an em dash in --dim, never as `0`. An unmeasured
+ * value and a measured zero are different facts, and this site does not conflate them --
+ * the same reason a task with no checks reads `—` on the progress page and never `0%`. */
+.lv-cell span.lv-none { color: var(--dim) }
+
+/* ---- the recordings list ------------------------------------------------------------ */
+
+.lv-vods { margin: 18px 0 0; list-style: none; padding: 0 }
+
+.lv-vod {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  margin: 0 0 6px;
+  background: var(--sf3);
+}
+.lv-vod button {
+  background: var(--panel2); color: var(--fg);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 4px 10px; font: 600 var(--t6) / 1 inherit; cursor: pointer;
+  transition: border-color var(--dur1) var(--ease);
+}
+.lv-vod button:hover { border-color: var(--accent) }
+.lv-vod time { font-size: var(--t5); color: var(--fg) }
+.lv-vod .lv-len { font-size: var(--t5); color: var(--dim) }
+
+/* An abandoned session -- segments on disk, no trailer, nothing written for a long time --
+ * is listed rather than hidden, and marked rather than dressed up as complete. It is usually
+ * watchable; what is not knowable is whether it is all there. */
+.lv-vod.is-stale { border-color: rgba(255, 171, 61, .45) }
+.lv-vod .lv-warn { font-size: var(--t6); color: var(--amber) }
+
+/* A recording OBS wrote under a name this API will not serve -- a space in it, almost always.
+ * Shown, with the reason, because a file that exists and cannot be played is a fact the
+ * operator needs; silently skipping it is how it stays broken for a month. */
+.lv-bad {
+  border: 1px solid rgba(255, 171, 61, .45);
+  border-radius: var(--r-sm);
+  padding: 9px 11px; margin: 0 0 6px;
+  font-size: var(--t5); color: var(--dim);
+}
+.lv-bad code { color: var(--amber) }
+
+/* ---- failure ------------------------------------------------------------------------ */
+
+/* Playback failure gets a sentence, not library jargon. The technical string is kept, but
+ * folded, for the same reason streamer.html folds it: the visitor cannot act on
+ * `hls.js: networkError / manifestLoadError` and the operator cannot act without it. */
+.lv-fail {
+  border: 1px solid rgba(255, 171, 61, .5);
+  border-radius: var(--r-panel);
+  padding: 12px 14px;
+  margin: 12px 0 0;
+  background: var(--sf3);
+}
+.lv-fail[hidden] { display: none }
+.lv-fail h4 { margin: 0 0 5px; font-size: var(--t4); color: var(--amber) }
+.lv-fail p { margin: 0; font-size: var(--t5); color: var(--dim) }
+.lv-fail details { margin: 8px 0 0 }
+.lv-fail summary { font-size: var(--t6); color: var(--dim); cursor: pointer }
+.lv-fail code {
+  display: block; margin: 6px 0 0; font-size: var(--t6); color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+/* ---- narrow ------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .lv-grid { grid-template-columns: repeat(2, 1fr) }
+  .lv-vod { gap: 7px }
+}
+
+/* ---- full-bleed player on a phone --------------------------------------------------- */
+
+/* On a 390px viewport the wrap padding, the stage border and the mod body inset together
+ * take the video down to 292px wide -- a 164px-tall picture of a 1920x1080 desktop, which
+ * is legible only as "something is moving". Letting it reach both edges buys back 34% of
+ * its area at no cost to anything else on the page.
+ *
+ * `width:100vw` with `margin-left:calc(50% - 50vw)` rather than negative padding-sized
+ * margins: the padding it has to escape is set in three different rules (.wrap, .stage,
+ * .mod .body) and hard-coding their sum here would be a fourth copy of a number that moves.
+ * This form needs to know none of them.
+ *
+ * Gated at 640px BECAUSE 100vw includes the scrollbar gutter on a desktop and a phone has
+ * no persistent scrollbar. Above this width the same rule would push the page 8-17px wider
+ * than its own viewport, which is the horizontal overflow that tests/live.mjs asserts
+ * against at three viewports -- so it is deliberately not applied there.
+ *
+ * The border and radius go with it: a rounded corner against the screen edge reads as a
+ * rendering fault, not as a frame. */
+@media (max-width: 640px) {
+  .lv-player video {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+}

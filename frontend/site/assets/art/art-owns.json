@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786934415368-2517.png",
+  "seconds": 11.08,
+  "seed": 2517,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 667049,
+  "prompt": "a lone server rack glowing green in a small dark office at night, warm desk lamp, clean product photography, deep blacks, emerald accent light",
+  "slug": "owns"
+}

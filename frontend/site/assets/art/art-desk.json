@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786940988145-1840.png",
+  "seconds": 11.18,
+  "seed": 1840,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 725732,
+  "prompt": "a laptop closed on a desk beside a small server tower, night, one lamp",
+  "slug": "desk"
+}

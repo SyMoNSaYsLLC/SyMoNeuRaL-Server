@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Dashboard — the box, measured</title>
+<meta name="description" content="Live GPU, CPU, RAM and model metrics read from this machine. Every figure carries the command it was read from.">
+<link rel="stylesheet" href="/css/symoneural.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="icon" href="/assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png" sizes="16x16" type="image/png">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+  </div>
+</header>
+
+<main class="dash">
+
+  <div class="dash-head">
+    <h1>Dashboard</h1>
+    <span id="clock" class="foot"></span>
+  </div>
+  <p class="dash-sub">Everything this machine will tell you about itself, read live — the
+     model, the card, the processor, the memory, the fabric, the suites and the benchmarks.</p>
+
+  <!-- The contract sits first because it is what makes every dash below mean something
+       specific rather than "probably zero". -->
+  <div class="contract" id="contract">
+    Every figure on this page is a reading with its source attached. A dash means it could
+    not be read — never that it is zero.
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>GPU <span class="badge" id="gpu-name"></span></h2>
+      <div class="figs" id="gpu-figs"></div>
+      <div id="gpu-bars"></div>
+    </section>
+
+    <section class="card">
+      <h2>CPU <span class="badge" id="cpu-name"></span></h2>
+      <div class="figs" id="cpu-figs"></div>
+      <div class="cores" id="cpu-cores"></div>
+    </section>
+
+    <section class="card">
+      <h2>Memory</h2>
+      <div class="figs" id="ram-figs"></div>
+      <div id="ram-bars"></div>
+    </section>
+
+    <section class="card">
+      <h2>Disk <span class="badge" id="disk-path"></span></h2>
+      <div class="figs" id="disk-figs"></div>
+      <div id="disk-bars"></div>
+    </section>
+  </div>
+
+  <div class="grid wide" style="margin-top:16px">
+    <section class="card">
+      <h2>Model — last request <span class="badge" id="work-when"></span></h2>
+      <div class="figs" id="work-figs"></div>
+      <svg class="spark" id="work-spark" viewBox="0 0 600 54" preserveAspectRatio="none"
+           role="img" aria-label="recent generation speed"></svg>
+      <div class="foot" id="work-foot"></div>
+    </section>
+
+    <section class="card">
+      <h2>Context window</h2>
+      <div class="figs" id="ctx-figs"></div>
+      <div class="foot" id="ctx-foot"></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>SyMoNeuRaL Local Model Overclocking</h2>
+    <p class="dash-sub" style="margin-bottom:12px">
+      Budgets for the card, the processor and memory. <b>These are ceilings, not load</b> —
+      setting GPU to 100% removes the limit that would stop it getting busy; it does not make
+      it busy. Reaching a target needs a real workload.
+    </p>
+    <div class="presets" id="oc-presets"></div>
+    <div class="ocgrid">
+      <div class="slider">
+        <label for="oc-gpu">GPU power envelope <b><span id="oc-gpu-v">100</span>%</b></label>
+        <input type="range" id="oc-gpu" min="0" max="110" step="1" value="100">
+        <div class="real" id="oc-gpu-real"></div>
+      </div>
+      <div class="slider">
+        <label for="oc-cpu">CPU quota <b><span id="oc-cpu-v">100</span>%</b></label>
+        <input type="range" id="oc-cpu" min="0" max="100" step="1" value="100">
+        <div class="real" id="oc-cpu-real"></div>
+      </div>
+      <div class="slider">
+        <label for="oc-ram">RAM cap <b><span id="oc-ram-v">100</span>%</b></label>
+        <input type="range" id="oc-ram" min="0" max="100" step="1" value="100">
+        <div class="real" id="oc-ram-real"></div>
+      </div>
+    </div>
+    <div id="oc-clamps"></div>
+    <h2 style="margin-top:18px">Commands — computed, never run</h2>
+    <div id="oc-commands"></div>
+    <div class="foot" id="oc-foot"></div>
+  </section>
+
+  <div class="grid wide" style="margin-top:16px">
+    <section class="card">
+      <h2>Generation parameters <span class="badge pill ok">reaches the engine</span></h2>
+      <div id="params-settable"></div>
+      <div class="foot" id="params-why"></div>
+    </section>
+
+    <section class="card">
+      <h2>Engine defaults <span class="badge pill info" id="params-ro-n"></span></h2>
+      <div class="scroll tall"><table class="t" id="params-ro"></table></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>SyMoNeuRaL Adaptive Fabric <span class="badge" id="fabric-status"></span></h2>
+    <p class="dash-sub" id="fabric-head" style="margin-bottom:12px"></p>
+    <div class="scroll"><table class="t" id="fabric-subs"></table></div>
+    <div id="fabric-profiler"></div>
+  </section>
+
+  <div class="grid wide" style="margin-top:16px">
+    <section class="card">
+      <h2>Tests — inventory <span class="badge pill info">not a result</span></h2>
+      <div class="figs" id="tests-figs"></div>
+      <div class="scroll tall" style="margin-top:12px"><table class="t" id="tests-areas"></table></div>
+      <div id="tests-blockers"></div>
+    </section>
+
+    <section class="card">
+      <h2>How to get a result</h2>
+      <div class="scroll tall" id="tests-commands"></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Benchmarks — finished results</h2>
+    <div id="bench-body"></div>
+  </section>
+
+  <p class="foot" id="page-foot"></p>
+</main>
+
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

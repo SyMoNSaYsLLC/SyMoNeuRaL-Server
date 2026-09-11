@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en" data-family="dashboard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL Miner — the GPU in this box, and ASIC rigs on your network</title>
+<meta name="description" content="The GPU + ASIC operator surface for mining experiments and hardware control. Measured readings only, and a benchmark says it is a benchmark.">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta name="theme-color" content="#0e100f">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <!-- Outside the `.logo` anchor on purpose: it is a statement of who owns the company, not
+         a second thing to click, and inside the link it would join the accessible name. -->
+    <span class="llc">a <b>SymonSays LLC</b> company</span>
+    <nav>
+      <a class="navlink" href="/livestack">Live stack</a>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="apphead">
+  <div class="wrap">
+    <p class="eyebrow"><img src="/assets/icons/terminal-64.png?v=439ec988d7" alt="" width="20" height="20"
+       style="display:inline-block;vertical-align:-4px;margin-right:8px">Operator surface · GPU + ASIC</p>
+    <h1 style="font-size:clamp(28px,3.6vw,40px);max-width:24ch">Mining hardware, read the same way as the card.</h1>
+    <p class="lede" style="font-size:16.5px">SyMoNeuRaL Miner is the GPU + ASIC operator surface for mining experiments and hardware control. Two units answer here. The GPU half is the intended KawPow path for the RTX 5070 Ti in this room, through the same governor every other surface queues on; it is offline unless configured, and the engine work is incomplete, so it reports offline rather than a hashrate. SyMoNeuRaL ASIC below is the operator panel for Antminer and MicroBT rigs on your own network — plus a firmware emulator and a network scanner, which work with no rig attached. No rigs are attached to this machine, so it reports offline, which is the reading rather than a placeholder.</p>
+  </div>
+</div>
+
+<section style="border-top:0;padding-top:0">
+  <div class="wrap">
+    <div class="pgwrap">
+      <!-- TWO units answer on this page and they are different hardware: `gpuminer` is the
+           RTX 5070 Ti in this box, `asicminer` is a panel for rigs on the operator's
+           network. They share no code, no token and no route prefix, so they get one card
+           each rather than one merged "miner" that would have to lie about one of them.
+           `.mg-col` exists because .pgwrap is a two-column grid -- a second .stage as a
+           direct child would land in the aside column. -->
+      <div class="mg-col">
+
+      <div class="stage" id="mg-stage">
+        <div class="head" id="mghead"><s id="mgdot"></s>SyMoNeuRaL Miner &mdash; GPU, Ravencoin
+          <span class="grow" id="mgstate">reading&hellip;</span></div>
+        <div class="body" id="mgbody">
+          <p class="mg-lede">The <b>intended</b> KawPow path for the RTX 5070 Ti described on
+            the home page, through the same GPU governor every other surface queues on. It is
+            <b>offline unless configured</b>: <code>SYMONEURAL_MINING_ENABLED=1</code>,
+            <code>SYMONEURAL_MINER_CMD</code> and <code>SYMONEURAL_MINER_TOKEN</code> all have
+            to be set, and the engine work is <b>incomplete</b> &mdash; there is no
+            <code>symoneural-miner</code> in this tree and the build script that produced the
+            binary behind the benchmark is not tracked here. So this half reports <i>offline /
+            engine missing</i> rather than a hashrate. When a miner <i>is</i> running, every
+            figure below is read from it or from <code>nvidia-smi</code>; when it is not, there
+            is no figure, and the row says so rather than showing a last-known value.</p>
+
+          <!-- Public rows first. Both come from GET /api/status, which every visitor can
+               read, and both are produced by cryptominer.unit_state() -- so this card and
+               the rack on the home page cannot disagree about what the miner is doing. -->
+          <dl class="mg-facts">
+            <dt>Rack unit</dt><dd id="mg-unit">&mdash;</dd>
+            <dt>Reading</dt><dd id="mg-detail">reading <code>/api/status</code>&hellip;</dd>
+          </dl>
+
+          <!-- The numeric feed is behind the operator token and stays there: it describes
+               the machine's own configuration, which is the operator's business and not a
+               visitor's. Until a token is presented these rows say what is missing rather
+               than showing a plausible number. -->
+          <p class="mg-telhead">Operator telemetry</p>
+          <dl class="mg-facts mg-tel">
+            <dt>Hashrate</dt><dd id="mg-hr">token required</dd>
+            <dt>Submitting to a pool</dt><dd id="mg-pool">token required</dd>
+            <dt>Holds the card</dt><dd id="mg-lock">token required</dd>
+            <dt>Running for</dt><dd id="mg-up">token required</dd>
+          </dl>
+
+          <p class="mg-warn"><b>Starting this takes the card from everything else.</b> The
+            miner holds the GPU lock for its whole process lifetime, not for a job, and it
+            is not preemptible: an arriving chat or image request spins in the governor&rsquo;s
+            acquire loop for up to its 300&nbsp;s timeout and then gives up. <b>Measured</b>
+            on this box, with the timeout cut to ten seconds to show it rather than wait it
+            out: <code>gpu-governor.sh acquire chat 10</code> against a live miner logs
+            <code>'chat' TIMED OUT after 10s behind 'miner'</code>. That is why nothing here
+            starts by itself, and why it should be stopped deliberately rather than left
+            holding the card on a box that also serves chat and image.</p>
+
+          <form class="mg-ops" id="mg-ops" autocomplete="off">
+            <label for="mg-token">Operator token</label>
+            <input type="password" id="mg-token" name="mg-token"
+                   placeholder="SYMONEURAL_MINER_TOKEN" autocomplete="off" spellcheck="false">
+            <button type="button" class="mg-btn" id="mg-start">Start mining</button>
+            <button type="button" class="mg-btn" id="mg-stop">Stop</button>
+            <button type="button" class="mg-btn ghost" id="mg-read">Read telemetry</button>
+          </form>
+          <p class="mn-note" id="mgnote"></p>
+        </div>
+      </div>
+
+      <div class="stage" id="mn-stage">
+        <div class="head" id="mnhead"><s></s>SyMoNeuRaL ASIC &mdash; stack controller
+          <span class="grow" id="mnstate">reading&hellip;</span></div>
+        <div class="body" id="mnbody">
+
+          <ol class="mn-steps" id="mn-steps">
+            <li class="on" data-step="1"><b>1</b> Source</li>
+            <li data-step="2"><b>2</b> Vendor</li>
+            <li data-step="3"><b>3</b> Model</li>
+          </ol>
+
+          <section class="mn-pane on" id="mn-p1">
+            <p class="mn-q">Where should the controller look for rigs?</p>
+            <div class="mn-choices">
+              <button type="button" class="mn-choice" data-src="scan">
+                <b>IP scanner</b>
+                <span>Sweep a private range for anything answering on the miner API port,
+                  then identify it. Real hardware only.</span>
+              </button>
+              <button type="button" class="mn-choice" data-src="emu">
+                <b>Emulator</b>
+                <span>Boot real vendor firmware under QEMU and drive that instead. For
+                  working on the flash path without risking a rig.</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="mn-pane" id="mn-p2">
+            <p class="mn-q">Which vendor?</p>
+            <div class="mn-choices">
+              <button type="button" class="mn-choice" data-vendor="antminer">
+                <b>Antminer</b><span>Bitmain &middot; Xilinx Zynq control board</span>
+              </button>
+              <button type="button" class="mn-choice" data-vendor="microbt">
+                <b>MicroBT</b><span>Whatsminer</span>
+              </button>
+            </div>
+            <button type="button" class="mn-back" data-to="1">&larr; back</button>
+          </section>
+
+          <section class="mn-pane" id="mn-p3">
+            <p class="mn-q">Which model?</p>
+            <div class="mn-models" id="mn-models"></div>
+            <p class="mn-legend">
+              <i class="mn-dot ok"></i> boots, verified
+              <i class="mn-dot part"></i> firmware present, does not boot yet
+              <i class="mn-dot no"></i> no firmware on this machine
+            </p>
+            <button type="button" class="mn-back" data-to="2">&larr; back</button>
+          </section>
+
+          <p class="mn-note" id="mnnote"></p>
+
+          <!-- These two were callouts in the aside. They are folds here for two reasons:
+               the aside ran a full screen longer than this column, which is the "we went a
+               little too small, fill the window" complaint in its other form; and an
+               explanation of what the emulator cannot do belongs beside the button that
+               starts it rather than in a sidebar. Folded, not trimmed -- the text is
+               unchanged and in the DOM either way. `details.fold` is the existing styled
+               component from build_console.py, reused rather than reinvented. -->
+          <details class="fold">
+            <summary>What the emulator is and is not<span>QEMU, no hashboards</span></summary>
+            <div class="foldbody">
+              <p>QEMU runs the control board&rsquo;s ARM cores. It does <b>not</b> emulate the
+                FPGA fabric or the links to the hashboards &mdash; those are the part that is
+                not there. So the firmware&rsquo;s web UI and its upgrade path run, and
+                <b>bmminer does not</b>: with the miner&rsquo;s own init the firmware finds no
+                hashboards and reboot-loops, which is correct behaviour and useless as a
+                target.</p>
+              <p>It is a good way to work on <b>flashing</b> without risking a rig. It is
+                <b>not</b> a substitute for hardware when testing telemetry.</p>
+            </div>
+          </details>
+          <details class="fold">
+            <summary>Why models are greyed out<span>read off this disk</span></summary>
+            <div class="foldbody">
+              <p>A model is listed as available only if its firmware is actually on this
+                machine and has been booted. Nothing is listed on the strength of the
+                hardware existing &mdash; the same rule the rack follows.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      </div>
+
+      <aside class="side">
+        <div class="gpu-panel">
+          <p class="gpu-head"><s></s>RTX 5070 Ti<span class="gpu-link" id="con-link">socket: connecting</span></p>
+          <div class="gpu-row">
+            <label>VRAM free <b id="m-vram">&mdash;</b></label>
+            <div class="gbar" id="m-vrambar"><i style="width:0%"></i></div>
+          </div>
+          <div class="gpu-row">
+            <label>Power <b id="m-pwr">&mdash;</b></label>
+            <div class="gbar" id="m-pwrbar"><i style="width:0%"></i></div>
+          </div>
+          <dl class="gpu-facts">
+            <dt>Temperature</dt><dd id="m-temp">&mdash;</dd>
+            <dt>Holding</dt><dd id="m-holder">&mdash;</dd>
+            <dt>Queued</dt><dd id="m-queue">&mdash;</dd>
+          </dl>
+          <!-- The whole stack, not just the holder. console.js already renders the rack
+               into #units, so carrying that id here shows every surface and which one is
+               actually busy -- "something else is running" answered by looking, rather
+               than inferred from one field. Styled compact for a sidebar. -->
+          <div class="units gpu-stack" id="units"></div>
+          <p class="gpu-why"><b>SyMoNeuRaL Miner</b> is the one surface here that holds the card for its whole process lifetime rather than for a single job, and it cannot be preempted. While <i>holding</i> reads <b>miner</b>, chat, image and remix will queue and then fail &mdash; which is why it is started by hand and stopped by hand.</p>
+        </div>
+        
+        <div class="callout">
+          <h2>A benchmark from August, not current telemetry</h2>
+          <p><b>52.3 &ndash; 53.2 MH/s</b> on KawPow &mdash; <b>measured</b> on this machine
+            across four runs, RTX 5070 Ti at a 300&nbsp;W limit, driver 610.57.04,
+            <code>kawpowminer 1.2.4</code>, <b>2026-08-17</b>. The miner&rsquo;s own summary for
+            the longest run reads <code>Max 53.209880 Mh Mean 53.026032 Mh</code>. A short run
+            reads lower because its mean includes spin-up, not because the card slowed down.
+            The spread across runs is quoted rather than the best figure and <b>no cause has
+            been established for it</b>.</p>
+          <p><b>This tree cannot reproduce it.</b> The figures came from somebody
+            else&rsquo;s binary, and the script that built it &mdash;
+            <code>contrib/build-kawpowminer.sh</code> &mdash; <b>is not tracked in this
+            repository</b>, so a clone has no path from source to a running miner. Read the
+            numbers as <b>provenance</b>: evidence of what this card did once, on a dated run,
+            with a named binary. They are not a claim about what the surface does now, and
+            nothing on this page reports them as live telemetry.</p>
+          <p>All four were <b>benchmarks against no pool</b>. A miner with nowhere to submit
+            a share earns nothing whatever its hashrate says, so the surface reports
+            hashrate and income as two separate claims &mdash; and publishes no income
+            figure at all, because that depends on network difficulty, pool fees and the RVN
+            price, none of which this box measures. Pricing questions go to
+            <a href="mailto:symonsayadmin@symoneural.com">symonsayadmin@symoneural.com</a>.</p>
+        </div>
+        <div class="callout">
+          <h3>One miner, two kinds of hardware</h3>
+          <p>The rack lists <b>one</b> SyMoNeuRaL Miner. Under it are two halves that fail
+            independently, so this page gives each its own card and its own status chip
+            rather than averaging them into a single light.</p>
+          <p><b>GPU &middot; Ravencoin</b> is the card in this box &mdash; the intended
+            KawPow path for the RTX 5070 Ti, and the only half of this surface that has ever
+            hashed, on the dated 2026-08-17 benchmark above. It is also the only half that
+            takes the GPU, which is why the merged row reports <i>busy</i> whenever it is
+            running: that is a fact every other surface on this machine feels. The engine work
+            is <b>incomplete</b>, so it is <i>offline</i> here rather than hashing.</p>
+          <p><b>ASIC &middot; Antminer + MicroBT</b> reads rigs on your own network, and
+            carries a firmware emulator and a network scanner &mdash; the two parts that do
+            real work with <i>no rig attached</i>. It reports offline here because none is
+            attached and the surface is switched off, and that is the reading rather than a
+            placeholder.</p>
+          <p>They keep separate tokens and separate routes. They were two rack rows until
+            2026-08-17 &mdash; <i>SyMoNeuRaL Miner</i>, offline with no rig attached, beside
+            <i>SyMoNeuRaL Miner GPU</i>, which was the one actually hashing. The plain
+            product name was on the dead row and the working one wore a qualifier, so the
+            pair read as a single half-broken surface.</p>
+        </div>
+        <div class="callout">
+          <h3>What the switches actually switch</h3>
+          <p><code>SYMONEURAL_ASIC_ENABLED</code> does not enable a rig and does not enable mining.
+            It enables <b>these operator controls on this server</b> &mdash; scan, firmware
+            listing, emulator &mdash; and with <code>SYMONEURAL_ASIC_TOKEN</code> unset they stay
+            off, so a misconfigured box serves nothing here rather than serving an
+            unauthenticated scanner. The scanner also refuses any range that is not private,
+            so it cannot be aimed at the internet from this host.</p>
+          <p><b>You do not need either variable to run the QEMU emulator.</b>
+            <code>SYMONEURAL_ASIC_ENABLED=1</code> and <code>SYMONEURAL_ASIC_TOKEN</code> gate the HTTP API
+            only; <code>scripts/qemu-antminer.sh</code> runs without them. Setting them will
+            not make an emulator report a hashrate either, because QEMU emulates the Zynq CPU
+            and <b>not</b> the hashboards &mdash; so nothing answers on port 4028, and that is
+            the emulator working correctly rather than a misconfiguration. The value is
+            compared as the literal string <code>1</code>: <code>true</code>, <code>yes</code>
+            and <code>on</code> all leave the surface off.</p>
+          <p>The GPU miner above has its own pair, <code>SYMONEURAL_MINING_ENABLED</code> and
+            <code>SYMONEURAL_MINER_TOKEN</code>, and the two tokens must not be the same string:
+            this one authorises reading rigs, that one authorises taking the card away from
+            every other surface.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none;display:flex;align-items:center;gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px;color:var(--fg)">SyMoNeu<i style="font-style:normal;color:var(--accent)">RaL</i></b>
+    </a>
+    <span>&copy; SymonSays LLC &middot; <a href="mailto:symonsayadmin@symoneural.com"
+      style="color:var(--dim);text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/training.html">Training</a>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/credits.html">Credits</a>
+    </nav>
+  </div>
+</footer>
+
+<details class="appinfo">
+  <summary>System information &mdash; one card, one surface at a time</summary>
+  <div class="wrap">
+    <div class="callout" style="margin-top:34px">
+      <!-- h2, not h3. `appify` relocates this block out of the page body and into a
+           top-level <details class="appinfo"> below the footer, where it is a section
+           of the page in its own right and has no h2 parent to sit under. As an h3 it
+           was the entire outline defect on /project.html, whose only other visible
+           heading is the page h1. -->
+      <h2>This is a 16 GB consumer card, and it is a test bench</h2>
+      <p>
+        Chat and image never run at the same time here. A lock hands the GPU to exactly one
+        surface and the other waits, because both weight sets do not fit in 15.92&nbsp;GiB at
+        once &mdash; and when they swap, we wait for the driver to actually hand the memory
+        back before the next one starts. If you are queued behind someone, that is not a bug;
+        it is one card doing one thing at a time.
+      </p>
+      <p>
+        <strong>RavenCalc is the exception</strong> &mdash; it is symbolic algebra on the CPU, so it never
+        touches the GPU and never queues. Everything here is a demonstration of the stack on
+        the smallest machine we would ever ship, not a statement of capacity. A server we spec
+        for you would not be sharing one GPU with itself.
+      </p>
+    </div>
+  </div>
+</details>
+
+
+<script src="/js/app.js?v=632745179b"></script>
+<script src="/js/console.js?v=91351f0d91" defer></script>
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+<script>
+(function () {
+  'use strict';
+  var state = {src: null, vendor: null, pkg: null, packages: null};
+  var note = document.getElementById('mnnote');
+  var stEl = document.getElementById('mnstate');
+
+  // The operator token. sessionStorage, not localStorage: this authorises scanning and
+  // starting processes, so it should not outlive the tab. It is never sent anywhere but
+  // this origin's own /api/asicminer routes.
+  function token() {
+    var t = sessionStorage.getItem('sym.asic.token');
+    if (!t) {
+      t = window.prompt('Operator token (SYMONEURAL_ASIC_TOKEN)');
+      if (t) sessionStorage.setItem('sym.asic.token', t);
+    }
+    return t || '';
+  }
+  function api(path, body) {
+    return fetch(path, {
+      method: body ? 'POST' : 'GET',
+      headers: {'Content-Type': 'application/json', 'X-Symoneural-Token': token(),
+                /* And the name it replaced. site/ and the API deploy separately, so this
+                   file can be newer than the server reading it; the server reads both too,
+                   for the reverse. Remove once the deployed API reads the new name. */
+                'X-Sym-Token': token()},
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 401) sessionStorage.removeItem('sym.asic.token');
+        return {ok: r.ok, status: r.status, j: j};
+      });
+    });
+  }
+  function say(t) { note.textContent = t; }
+  function fail(res, what) {
+    say(what + ' failed (' + res.status + '): '
+        + (res.j.detail || res.j.error || 'no reason given'));
+  }
+
+  function show(n) {
+    for (var i = 1; i <= 3; i++) {
+      var pane = document.getElementById('mn-p' + i);
+      if (pane) pane.classList.toggle('on', i === n);
+    }
+    document.querySelectorAll('.mn-steps li').forEach(function (li) {
+      li.classList.toggle('on', Number(li.dataset.step) <= n);
+    });
+  }
+
+  document.querySelectorAll('[data-src]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.src = b.dataset.src;
+      if (state.src === 'scan') { runScan(); return; }
+      say(''); show(2);
+    });
+  });
+
+  function runScan() {
+    var cidr = window.prompt('Private range to sweep', '192.168.1.0/24');
+    if (!cidr) return;
+    say('scanning ' + cidr + ' …');
+    api('/api/asicminer/scan', {cidr: cidr}).then(function (res) {
+      if (!res.ok) return fail(res, 'scan');
+      var d = res.j;
+      if (d.error) { say('scan refused: ' + d.error); return; }
+      var found = (d.rigs || []).filter(function (r) { return r.identified; });
+      say('swept ' + d.swept + ' addresses, ' + d.responded + ' answered on port '
+          + d.port + ', ' + found.length + ' identified'
+          + (found.length ? ': ' + found.map(function (r) {
+               return r.host + ' ' + (r.vendor || '?') + ' ' + (r.model || ''); }).join(', ')
+             : '. Nothing on this network is a rig.'));
+    });
+  }
+
+  document.querySelectorAll('[data-vendor]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.vendor = b.dataset.vendor;
+      loadPackages();
+      show(3);
+    });
+  });
+  document.querySelectorAll('.mn-back').forEach(function (b) {
+    b.addEventListener('click', function () { show(Number(b.dataset.to)); });
+  });
+
+  // The model list is READ OFF DISK, not hardcoded. A list written into this page goes
+  // stale the moment firmware is added or removed, and would claim images that are not
+  // there -- the same failure as a status light that is not wired to anything.
+  function loadPackages() {
+    var host = document.getElementById('mn-models');
+    host.textContent = 'reading firmware on this machine…';
+    api('/api/asicminer/firmware').then(function (res) {
+      if (!res.ok) { host.textContent = ''; return fail(res, 'firmware listing'); }
+      state.packages = res.j.packages || [];
+      renderModels();
+    });
+  }
+
+  function renderModels() {
+    var host = document.getElementById('mn-models');
+    var list = (state.packages || []).filter(function (p) {
+      return p.vendor === state.vendor;
+    });
+    host.innerHTML = '';
+    if (!list.length) {
+      host.textContent = 'No ' + state.vendor + ' firmware is present on this machine.';
+      return;
+    }
+    list.forEach(function (m) {
+      var bootable = (m.kind === 'browser');
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'mn-model ' + (bootable ? 'ok' : 'part');
+      var d = document.createElement('i'); d.className = 'mn-dot ' + (bootable ? 'ok' : 'part');
+      var b = document.createElement('b'); b.textContent = m.name;
+      var sp = document.createElement('span');
+      sp.textContent = (m.bytes / 1048576).toFixed(1) + ' MB · '
+        + (bootable ? 'browser-upgrade package — bootable'
+                    : 'SD recovery package — not bootable this way');
+      el.appendChild(d); el.appendChild(b); el.appendChild(sp);
+      el.addEventListener('click', function () {
+        state.pkg = m;
+        host.querySelectorAll('.mn-model').forEach(function (x) { x.classList.remove('sel'); });
+        el.classList.add('sel');
+        if (!bootable) { say(m.name + ' is an SD recovery package; the emulator takes a '
+                             + 'browser-upgrade .tar.gz.'); return; }
+        startEmulator(m);
+      });
+      host.appendChild(el);
+    });
+  }
+
+  function startEmulator(m) {
+    say('starting ' + m.name + ' …');
+    api('/api/asicminer/emulator', {action: 'start', package: m.id}).then(function (res) {
+      if (!res.ok) return fail(res, 'emulator');
+      if (!res.j.ok) { say('emulator: ' + res.j.error); return; }
+      say('booted ' + res.j.package + ' (pid ' + res.j.pid + '). ' + res.j.note
+          + '  Guest web UI: ' + res.j.web);
+      refreshEmu();
+    });
+  }
+
+  function refreshEmu() {
+    api('/api/asicminer/emulator', {action: 'status'}).then(function (res) {
+      if (res.ok && res.j.running) {
+        stEl.textContent = 'emulating ' + (res.j.package || '');
+      }
+    });
+  }
+
+  fetch('/api/status', {headers: {'Accept': 'application/json'}})
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (s) {
+      // The ASIC half is a sub-unit of the merged `miner` row, so look in both places --
+      // top level first, because the site goes live before the API restarts and until then
+      // this id is still a rack unit of its own. Same helper shape as the GPU card below;
+      // deliberately duplicated rather than shared, because these two IIFEs share no state
+      // and one of them holds a token that must never reach the other's routes.
+      var us = (s && s.units) || [], u = null, i, j, sub;
+      for (i = 0; i < us.length && !u; i++) { if (us[i].id === 'asicminer') u = us[i]; }
+      for (i = 0; i < us.length && !u; i++) {
+        sub = us[i].sub || [];
+        for (j = 0; j < sub.length && !u; j++) { if (sub[j].id === 'asicminer') u = sub[j]; }
+      }
+      // `offline` rather than a fifth state literal like "not present": the four states are
+      // what every other surface reports, and a word only this card uses reads as a broken
+      // probe.
+      stEl.textContent = u ? u.state : 'offline';
+      if (u && u.state === 'offline') say(u.detail);
+      if (!u) say('this server did not report an ASIC unit at all — the surface is built '
+                + 'but not registered, which is a server-side fault rather than a missing rig');
+    })
+    .catch(function () { stEl.textContent = 'unreachable'; });
+})();
+
+// ---------------------------------------------------------------- Miner GPU (Ravencoin)
+// A SEPARATE surface from the ASIC panel above: its own token, its own route prefix, its
+// own rack unit. Deliberately a second IIFE sharing nothing with the first -- one `token()`
+// serving both would send the ASIC token to a route that takes the GPU away from chat.
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var stEl = $('mgstate'), dot = $('mgdot'), note = $('mgnote'), tokEl = $('mg-token');
+  var startB = $('mg-start'), stopB = $('mg-stop'), readB = $('mg-read');
+  if (!stEl) return;
+  var TK = 'sym.miner.token';        // NOT sym.asic.token. See the comment above.
+  var armed = 0;                     // start is two-step; see arm() below.
+
+  try { if (sessionStorage.getItem(TK)) tokEl.value = sessionStorage.getItem(TK); }
+  catch (e) { /* private mode: the field still works, it just will not persist */ }
+
+  function token() { return (tokEl.value || '').trim(); }
+  function say(t) { note.textContent = t; }
+
+  function api(path, body) {
+    return fetch(path, {
+      method: body ? 'POST' : 'GET',
+      headers: {'Content-Type': 'application/json', 'X-Symoneural-Token': token(),
+                /* And the name it replaced. site/ and the API deploy separately, so this
+                   file can be newer than the server reading it; the server reads both too,
+                   for the reverse. Remove once the deployed API reads the new name. */
+                'X-Sym-Token': token()},
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.status === 401) { try { sessionStorage.removeItem(TK); } catch (e) {} }
+        return {ok: r.ok, status: r.status, j: j};
+      });
+    });
+  }
+
+  // The two mining halves are ONE rack row with a `sub` array under it, so a lookup by id
+  // has to try both places. Top level FIRST and on purpose: the static site deploys before
+  // the API restarts, so for a while the browser will be talking to an API that still
+  // publishes `gpuminer` as its own unit. Both shapes read correctly, and neither invents
+  // a state when the id is genuinely absent.
+  function unitById(s, id) {
+    var us = (s && s.units) || [], i, j, sub;
+    for (i = 0; i < us.length; i++) { if (us[i].id === id) return us[i]; }
+    for (i = 0; i < us.length; i++) {
+      sub = us[i].sub || [];
+      for (j = 0; j < sub.length; j++) { if (sub[j].id === id) return sub[j]; }
+    }
+    return null;
+  }
+
+  // The public half. GET /api/status needs no token and carries the same (state, detail)
+  // pair the rack renders, so this card and the home page read from one source.
+  function paint(s) {
+    var u = unitById(s, 'gpuminer');
+    if (!u) { stEl.textContent = 'not present'; return; }
+    stEl.textContent = u.state;
+    // A sub-unit carries no slot of its own -- the slot belongs to the merged row.
+    $('mg-unit').textContent = u.id + ' \u2014 ' + u.state + (u.slot ? ' \u00b7 ' + u.slot : '');
+    $('mg-detail').textContent = u.detail || '';
+    // Not decorative: green only when the surface is actually usable, amber while it holds
+    // or waits for the card, grey when it is offline. Straight off unit_state().
+    dot.className = (u.state === 'busy' || u.state === 'queued') ? 'busy'
+                  : (u.state === 'ready' ? 'on' : '');
+  }
+
+  // console.js already holds a websocket to /api/ws and falls back to polling, and it stops
+  // both while the tab is hidden -- on purpose, because this hits a real GPU on somebody's
+  // desk. So this card listens to what that file already received instead of opening a
+  // second poller that would quietly break that promise.
+  document.addEventListener('sym:status', function (e) { paint(e.detail); });
+
+  // One bootstrap read, so the card is populated before the socket's first frame arrives --
+  // and so it still fills in if console.js is not on the page at all.
+  function poll() {
+    fetch('/api/status', {headers: {'Accept': 'application/json'}})
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(paint)
+      .catch(function () { stEl.textContent = 'unreachable'; });
+  }
+
+  function human(s) {
+    if (s === null || s === undefined) return null;
+    if (s < 60) return s + 's';
+    if (s < 3600) return Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+    return Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'm';
+  }
+
+  // The gated half. Values only -- never the miner command and never the pool URL, which
+  // carries the operator's wallet address. `pool` is reported as a yes/no, not a string.
+  function paintTelemetry(d) {
+    var hr = d.hashrate_mh_s;
+    $('mg-hr').textContent = (hr === null || hr === undefined)
+      ? (d.running ? 'running, nothing reported yet' : 'not running \u2014 no reading')
+      : hr + ' MH/s \u00b7 measured, ' + (d.hashrate_source || 'reported by the miner')
+        + (d.hashrate_age_s !== null && d.hashrate_age_s !== undefined
+           ? ' (' + d.hashrate_age_s + 's ago)' : '');
+    $('mg-pool').textContent = d.benchmark
+      ? 'no \u2014 benchmark configuration, so it measures the card and earns nothing'
+      : (d.pool ? 'yes \u2014 a pool is configured' : 'unknown');
+    $('mg-lock').textContent = d.holds_gpu_lock ? 'yes \u2014 other GPU surfaces are queued'
+      : ('no' + (d.lock_holder ? ' \u2014 held by \u2018' + d.lock_holder + '\u2019' : ''));
+    $('mg-up').textContent = d.running ? (human(d.uptime_s) || 'just started')
+                                       : 'not running';
+  }
+
+  function read(quiet) {
+    if (!token()) { if (!quiet) say('An operator token is required to read telemetry or '
+                                    + 'to start and stop the miner.'); return; }
+    api('/api/gpuminer/status').then(function (res) {
+      if (!res.ok) {
+        if (!quiet) say('telemetry refused (' + res.status + '): '
+                        + (res.j.detail || 'no reason given'));
+        return;
+      }
+      try { sessionStorage.setItem(TK, token()); } catch (e) {}
+      paintTelemetry(res.j);
+      poll();
+    });
+  }
+
+  // Start is two clicks, and the second one is labelled with what it does. An inline
+  // re-label rather than window.confirm(): a modal dialog blocks every subsequent event in
+  // the page until it is dismissed, which breaks automation and keyboard users both.
+  function arm() {
+    armed = Date.now();
+    startB.textContent = 'Confirm \u2014 take the card';
+    startB.classList.add('warn');
+    say('Starting the miner will hold the RTX 5070 Ti until it is stopped, and chat, image '
+        + 'and remix will fail while it does. Click again to confirm.');
+    window.setTimeout(function () {
+      if (!armed) return;
+      armed = 0;
+      startB.textContent = 'Start mining';
+      startB.classList.remove('warn');
+    }, 8000);
+  }
+
+  startB.addEventListener('click', function () {
+    if (!token()) { say('An operator token is required to start the miner.'); return; }
+    if (!armed) { arm(); return; }
+    armed = 0;
+    startB.textContent = 'Start mining';
+    startB.classList.remove('warn');
+    say('starting the miner \u2026');
+    api('/api/gpuminer/control', {action: 'start'}).then(function (res) {
+      if (!res.ok) { say('start refused (' + res.status + '): '
+                         + (res.j.detail || 'no reason given')); return; }
+      if (!res.j.ok) { say('the miner did not start: ' + (res.j.error || 'no reason given'));
+                       poll(); return; }
+      try { sessionStorage.setItem(TK, token()); } catch (e) {}
+      say('started, pid ' + res.j.pid + ' \u2014 ' + res.j.note);
+      read(true);
+    });
+  });
+
+  stopB.addEventListener('click', function () {
+    if (!token()) { say('An operator token is required to stop the miner.'); return; }
+    say('stopping \u2026');
+    api('/api/gpuminer/control', {action: 'stop'}).then(function (res) {
+      if (!res.ok) { say('stop refused (' + res.status + '): '
+                         + (res.j.detail || 'no reason given')); return; }
+      say(res.j.stopped ? ('stopped pid ' + res.j.stopped + '; the governor releases the '
+                           + 'card as the process group exits')
+                        : ('nothing to stop \u2014 ' + (res.j.note || 'it was not running')));
+      read(true);
+    });
+  });
+
+  readB.addEventListener('click', function () { read(false); });
+
+  poll();
+  read(true);                        // silent: no token is the normal case for a visitor
+})();
+</script>
+</body>
+</html>

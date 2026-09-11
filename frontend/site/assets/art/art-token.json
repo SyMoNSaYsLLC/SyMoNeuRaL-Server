@@ -1,0 +1,11 @@
+{
+  "url": "/api/gen/gen-1786941050156-7062.png",
+  "seconds": 11.33,
+  "seed": 7062,
+  "steps": 4,
+  "size": 768,
+  "model": "FLUX.1-schnell q4_k",
+  "bytes": 776531,
+  "prompt": "abstract streams of small glowing particles flowing left to right, dark",
+  "slug": "token"
+}

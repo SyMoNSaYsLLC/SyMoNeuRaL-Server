@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SyMoNeuRaL — Credits and licences</title>
+<meta name="description" content="Every upstream component behind the SyMoNeuRaL surfaces, the licence it is used under, and a statement of what we modified.">
+<link rel="icon" href="/assets/brand/favicon-32.png?v=fc9400dc9f" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-16.png?v=cd5b7e7360" sizes="16x16" type="image/png">
+<link rel="icon" href="/assets/brand/favicon-128.png?v=413cdc430b" sizes="128x128" type="image/png">
+<link rel="icon" href="/assets/brand/mark.svg?v=f7ec78156e" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=0823a86bfe">
+<meta property="og:title" content="SyMoNeuRaL — Credits and licences">
+<meta property="og:description" content="Every upstream component behind the SyMoNeuRaL surfaces, the licence it is used under, and a statement of what we modified.">
+<meta property="og:image" content="/mark.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0e100f">
+<link rel="stylesheet" href="/css/symoneural.css?v=77a47035a3">
+<link rel="stylesheet" href="/css/rack-detail.css?v=c2349ecce9">
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="/">
+      <img src="/assets/brand/mark-64.png?v=ded4e8a102" srcset="/mark-32.png 1x, /mark-64.png 2x" alt="SyMoNeuRaL" width="30" height="30">
+      <b>SyMoNeu<i>RaL</i></b>
+    </a>
+    <nav>
+      <a class="navlink" href="/documentation.html">Documentation</a>
+      <a class="navlink" href="/training.html">Manuals</a>
+      <a class="navlink" href="/docs">API</a>
+      <a class="navlink" href="/account.html">Account</a>
+      <a class="navlink" href="mailto:symonsayadmin@symoneural.com">Contact</a>
+      <a class="cta" href="/build.html">Have one built</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ===================== PAGE HEAD ===================== -->
+<div class="hero" style="padding:24px 0 0">
+  <div class="wrap">
+    <p class="eyebrow">Credits</p>
+    <h1>What our surfaces are built on.</h1>
+    <p class="lede">
+      The surfaces on this site carry SyMoNeuRaL names &mdash; SymonChat, SymonImage,
+      SymonServe, SymonRender, RavenCalc. Underneath them is a stack of permissively
+      licensed open-source work by other people. This page is where that work is credited,
+      in full, in one place, with the licence each component is used under and a plain
+      statement of what we changed.
+    </p>
+    <p class="sub">
+      It is deliberately one page rather than a line under every heading. The obligation
+      these licences create is that the notice travels with what we distribute, not that it
+      is repeated on every screen. So it is here, it is complete, and it is linked from the
+      footer of every page and from the rack itself.
+    </p>
+  </div>
+</div>
+
+<!-- ===================== SURFACES ===================== -->
+<section id="surfaces" style="padding-top:26px">
+  <div class="wrap">
+    <p class="shead">The mapping</p>
+    <h2>Each SyMoNeuRaL name, and what is actually underneath it</h2>
+    <p class="sub">
+      An attribution nobody can trace is not an attribution. So this table does not simply
+      list upstream projects &mdash; it says which of our surfaces each one powers, which is
+      the thing a reader would otherwise have to guess.
+    </p>
+
+    <div class="tw">
+      <table>
+        <caption>SyMoNeuRaL surfaces and their upstream components</caption>
+        <thead>
+          <tr><th>Our name</th><th>Built on</th><th>Licence</th><th>What we changed</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="k">SymonChat S1-7B</td>
+            <td>Qwen2.5-7B-Instruct &mdash; Copyright 2024 Alibaba Cloud</td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Quantised to GGUF Q4_K_M, and adapted with a LoRA fine-tune we authored.
+                Both are modifications; see the statement below.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonChat, heavy tier</td>
+            <td>Qwen2.5-14B-Instruct &mdash; Copyright 2024 Alibaba Cloud</td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Quantised to GGUF Q4_K_M.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonChat, speculative draft</td>
+            <td>Qwen2.5-0.5B-Instruct &mdash; Copyright 2024 Alibaba Cloud.
+                Used as the speculative-decoding draft.</td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Quantised to GGUF Q4_K_M.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonImage F1</td>
+            <td>FLUX.1-<b>schnell</b> and its VAE, released by Black Forest Labs</td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Quantised to q4_k. The <code>q4_k</code> printed in every render's watermark
+                is that modification, stated on the artwork itself.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonImage F1 &mdash; text encoders</td>
+            <td>T5-XXL and CLIP-L, in the GGUF form we fetched</td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Used as redistributed by the repositories we fetched them from, which are
+                Apache-2.0 tagged. Quantised.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonServe</td>
+            <td>llama.cpp / ggml &mdash; Copyright (c) 2023-2026 The ggml authors</td>
+            <td class="num"><span class="badge ok">MIT</span></td>
+            <td>Built on this machine for Blackwell sm_120.</td>
+          </tr>
+          <tr>
+            <td class="k">SymonRender</td>
+            <td>stable-diffusion.cpp &mdash; Copyright (c) 2023 leejet</td>
+            <td class="num"><span class="badge ok">MIT</span></td>
+            <td>Built on this machine for Blackwell sm_120.</td>
+          </tr>
+          <tr>
+            <td class="k">RavenCalc</td>
+            <td>SymPy</td>
+            <td class="num"><span class="badge ok">BSD-3-Clause</span></td>
+            <td>Used as published. RavenCalc is the one surface that never touches the GPU.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="tnote">
+      The MIT copyright lines these components require, verbatim:
+      <b>llama.cpp</b> &mdash; Copyright (c) 2023-2026 The ggml authors.
+      <b>stable-diffusion.cpp</b> &mdash; Copyright (c) 2023 leejet.
+      Both are used under the MIT licence, whose entire obligation is that this notice and
+      the permission notice travel with the code; the full texts ship beside the binaries in
+      any machine we hand over.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== MODIFICATIONS ===================== -->
+<section id="modifications">
+  <div class="wrap">
+    <p class="shead">Modifications</p>
+    <h2>What we changed, stated plainly</h2>
+    <p class="sub">
+      Apache-2.0 asks anyone redistributing modified files to say that they modified them.
+      We did modify them, in two ways, and here is the statement.
+    </p>
+
+    <div class="callout">
+      <h3>Statement of modification</h3>
+      <p>
+        <strong>The model weights on this machine are not the weights their authors
+        published.</strong> Every model we serve has been <strong>quantised</strong> from
+        its released precision to a smaller on-disk format &mdash; GGUF Q4_K_M for the
+        Qwen2.5 chat models, q4_k for FLUX.1-schnell and its text encoders. That is a
+        modification of the licensed files, and it is why the models fit on one consumer
+        card at all.
+      </p>
+      <p>
+        <strong>The chat model is additionally fine-tuned.</strong> SymonChat runs
+        Qwen2.5-7B-Instruct with a LoRA adapter that SymonSays LLC authored and owns. The
+        adapter changes how the model writes and what it will and will not claim. A LoRA
+        adapter is a derived work of its base model, and it is stated here for that reason.
+      </p>
+      <p>
+        Neither change is upstream's doing. If SymonChat says something wrong, that is ours,
+        not the Qwen team's; if a render disappoints, that is our four steps and our
+        quantisation, not Black Forest Labs'.
+      </p>
+    </div>
+
+    <p class="tnote">
+      A note on why our names are on the surfaces at all: Apache-2.0 grants copyright and
+      patent rights, and explicitly grants <em>no</em> trademark rights. Building on Qwen
+      and FLUX is permitted; branding a product <em>as</em> them is not. Naming our surfaces
+      SymonChat and SymonImage and crediting the upstream work here is the posture the
+      licence actually points at, not a way around it.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== BROWSER ===================== -->
+<section id="browser">
+  <div class="wrap">
+    <p class="shead">In your browser</p>
+    <h2>Code we send to every visitor</h2>
+    <p class="sub">
+      One third-party file is served from this site as-is. Its licence text is served
+      alongside it, at the link below, rather than only being described here.
+    </p>
+
+    <div class="tw">
+      <table>
+        <caption>Third-party assets shipped in the pages themselves</caption>
+        <thead>
+          <tr><th>Component</th><th>Where</th><th>Licence</th><th>Notice</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="k">hls.js (light build)</td>
+            <td>the stream player on <a href="/streamer.html">/streamer.html</a></td>
+            <td class="num"><span class="badge ok">Apache-2.0</span></td>
+            <td>Copyright 2017 Dailymotion.
+                <a href="/hls-LICENSE.txt">LICENSE</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="tnote">
+      hls.js is here because Chrome and Firefox will not play an HLS stream natively; Safari
+      will, and the page uses the browser's own path there. It was chosen over a WebAssembly
+      build of VLC specifically on licensing: VLC is GPLv2, and shipping a GPL blob inside
+      these pages would place the whole site under that licence. That is the kind of decision
+      this page exists to be honest about.
+    </p>
+
+    <p class="tnote">
+      <b>There used to be a second row here.</b> The API reference at <a href="/docs">/docs</a>
+      was rendered by a third-party documentation UI &mdash; 1.6&nbsp;MB of Apache-2.0 bundle
+      served from this webroot, with its <code>LICENSE</code> and <code>NOTICE</code> beside
+      it. It is now rendered by our own code, reading the same
+      <a href="/openapi.json">openapi.json</a> the service already publishes, so that bundle
+      and its notice files are no longer distributed and the obligation no longer applies.
+      The row is described here instead of deleted, because an attribution that quietly
+      disappears looks exactly like one that was stripped, and this page is worth more if it
+      also records what it stopped shipping.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== SERVER ===================== -->
+<section id="server">
+  <div class="wrap">
+    <p class="shead">On the server</p>
+    <h2>The software running behind the pages</h2>
+    <p class="sub">
+      These are the operator's dependencies rather than things we hand out, so no licence
+      here obliges us to credit them. They are listed because they do the work, and because
+      a credits page that only lists what is legally compulsory is a compliance document,
+      not a credit.
+    </p>
+
+    <div class="tw">
+      <table>
+        <caption>Serving stack and web server</caption>
+        <thead><tr><th>Component</th><th>Role</th><th>Licence</th></tr></thead>
+        <tbody>
+          <tr><td class="k">FastAPI</td><td>every route on this site, including this page</td>
+              <td class="num"><span class="badge ok">MIT</span></td></tr>
+          <tr><td class="k">Pydantic</td><td>request and response models</td>
+              <td class="num"><span class="badge ok">MIT</span></td></tr>
+          <tr><td class="k">uvicorn</td><td>the ASGI server the API runs under</td>
+              <td class="num"><span class="badge ok">BSD-3-Clause</span></td></tr>
+          <tr><td class="k">SymPy</td><td>the algebra behind RavenCalc</td>
+              <td class="num"><span class="badge ok">BSD-3-Clause</span></td></tr>
+          <tr><td class="k">Pillow</td><td>composes the watermark bar onto every render</td>
+              <td class="num"><span class="badge ok">MIT-CMU</span></td></tr>
+          <tr><td class="k">Caddy 2.6.2</td><td>terminates TLS and serves the static files</td>
+              <td class="num"><span class="badge ok">Apache-2.0</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="tnote">
+      uvicorn and SymPy are BSD-3-Clause, whose third clause forbids using the authors' names
+      to endorse a product. Nothing on this site does, and this listing is a credit rather
+      than an endorsement claim.
+    </p>
+
+    <p class="tnote">
+      NVIDIA's CUDA toolkit, cuDNN and the display driver sit under NVIDIA's own end-user
+      licence agreement, not an open-source licence. They are installed on the machine rather
+      than distributed by us.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== OURS ===================== -->
+<section id="ours">
+  <div class="wrap">
+    <p class="shead">Ours</p>
+    <h2>What on this site is not covered by anything above</h2>
+    <p class="sub">
+      The site's stylesheets and scripts, the generated pages, the artwork, the API, the CUDA
+      work and the fine-tuned adapter are &copy; SymonSays LLC, all rights reserved. None of
+      the licences on this page apply to them.
+    </p>
+    <p class="tnote">
+      Two things that are worth being explicit about, because the site argues so hard for
+      publishing its numbers: publishing measurements is not the same as open-sourcing the
+      method, and we have never claimed it was. Every figure on this site is real and
+      checkable. How the adapter was trained is not published, and the licences above impose
+      no obligation to publish a fine-tune.
+      Output produced by these models &mdash; text you get from SymonChat, images from
+      SymonImage &mdash; is not restricted by the model licences.
+    </p>
+    <p class="tnote">
+      If a component is used here and is missing from this page, that is a mistake worth
+      telling us about:
+      <a href="mailto:symonsayadmin@symoneural.com">symonsayadmin@symoneural.com</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="logo" href="/" style="text-decoration:none; display:flex; align-items:center; gap:10px">
+      <img src="/assets/brand/mark-32.png?v=fc9400dc9f" alt="" width="22" height="22">
+      <b style="font-size:14.5px; color:var(--fg)">SyMoNeu<i style="font-style:normal; color:var(--accent)">RaL</i></b>
+    </a>
+    <span>© SymonSays LLC · <a href="mailto:symonsayadmin@symoneural.com" style="color:var(--dim); text-decoration:none">symonsayadmin@symoneural.com</a></span>
+    <nav>
+      <a href="/documentation.html#hardware">Hardware</a>
+      <a href="/documentation.html#inference">Inference</a>
+      <a href="/documentation.html#environment">Environment</a>
+      <a href="/training.html">Manuals</a>
+      <a href="/docs">API</a>
+      <a href="/credits.html">Credits</a>
+      <a href="mailto:symonsayadmin@symoneural.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="/js/ui.js?v=c334a9f106" defer></script>
+<script src="/js/shell.js?v=bdc75b3527" defer></script>
+</body>
+</html>

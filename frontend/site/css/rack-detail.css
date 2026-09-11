@@ -1,0 +1,238 @@
+/* ====================================================================
+   rack-detail.css -- depth pass over the rack + control console.
+   Loaded AFTER symoneural.css.
+
+   Only background, box-shadow, text-shadow, filter and abspos pseudos are
+   touched, so geometry is identical with or without this file.
+
+   Why backgrounds rather than overlay pseudos for most of the chrome: an
+   abspos ::before on .unit or .mod paints in the positioned layer, i.e. ON
+   TOP of the text, while z-index:-1 buries it behind the element's own
+   opaque gradient then pops it back on :hover (transform makes a stacking
+   context). Background layers always paint below content. Pseudos are kept
+   for what must overhang: LED bloom, gauge ticks, console glass.
+   ==================================================================== */
+
+/* ---------- etched PCB board behind the rack ----------
+   Two trace pitches, a diagonal run, tinned vias on the crossings. A
+   z-index:auto pseudo paints under .rail (2) and .units/.chassis (3), so
+   this lands behind the hardware without needing a z-index. */
+.rack::after{
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.75;
+  background-image:
+    radial-gradient(circle, rgba(46,224,138,.16) 0 1.3px, transparent 1.8px),
+    repeating-linear-gradient(90deg, rgba(46,224,138,.05) 0 1px, transparent 1px 68px),
+    repeating-linear-gradient(0deg, rgba(46,224,138,.038) 0 1px, transparent 1px 68px),
+    repeating-linear-gradient(45deg, rgba(127,184,216,.03) 0 1px, transparent 1px 41px);
+  background-size:68px 68px, auto, auto, auto;
+  background-position:-1px -1px, 0 0, 0 0, 0 0;
+  /* fade traces out so they never fight the text */
+  mask-image:radial-gradient(120% 90% at 50% 0, rgba(0,0,0,1), rgba(0,0,0,.22) 72%);
+}
+.rack{box-shadow:inset 0 1px 0 rgba(242,246,243,.045), inset 0 0 42px rgba(0,0,0,.55)}
+
+/* ---------- rails: brushed extrusion, punched holes, screws ----------
+   Shared texture sits in a custom property so the mirrored .rail.r reuses
+   it and only swaps the base gradient's direction. */
+.rail{
+  --railtex:
+    /* square-hole column of a 19in rail: hole, then the lip of light under it */
+    radial-gradient(ellipse 2.6px 3.4px at 50% 9px, rgba(0,0,0,.85) 0 100%, transparent 100%),
+    radial-gradient(ellipse 2.8px 1.4px at 50% 13px, rgba(242,246,243,.05) 0 100%, transparent 100%),
+    /* brushing runs along the extrusion, so the hairlines are vertical */
+    repeating-linear-gradient(90deg, rgba(242,246,243,.016) 0 1px, transparent 1px 3px);
+  background-image:var(--railtex), linear-gradient(90deg,#191d1b,#121514 55%,#0e100f);
+  background-size:100% 46px; /* uniform layers, so one tile suits all four */
+  box-shadow:inset -1px 0 0 rgba(0,0,0,.6), inset 1px 0 0 rgba(242,246,243,.035);
+}
+/* .rail.r restates background-size: symoneural.css sets the background
+   *shorthand* on it at higher specificity, which resets the size */
+.rail.r{
+  background-image:var(--railtex), linear-gradient(270deg,#191d1b,#121514 55%,#0e100f);
+  background-size:100% 46px;
+  box-shadow:inset 1px 0 0 rgba(0,0,0,.6), inset -1px 0 0 rgba(242,246,243,.035);
+}
+/* the five dots become slotted pan-head screws */
+.rail i{
+  background:
+    linear-gradient(48deg, transparent 43%, rgba(0,0,0,.85) 43% 57%, transparent 57%),
+    radial-gradient(circle at 34% 27%,#39443d,#161a18 62%,#0a0c0b 100%);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.9), inset 0 -1px 1px rgba(242,246,243,.06),
+    0 1px 0 rgba(242,246,243,.05), 0 0 3px rgba(0,0,0,.7);
+}
+
+/* ---------- unit bezels ----------
+   Rack screw at each end of the face, bevel highlight, brushing. --edge
+   carries the state colour onto the top bezel, so a lit faceplate costs
+   one token per state, not a whole box-shadow stack. */
+.unit{
+  --edge:rgba(242,246,243,.06);
+  background:
+    radial-gradient(circle at 6px 50%, rgba(242,246,243,.1) 0 1px, rgba(0,0,0,.6) 1.2px 2.2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 6px) 50%, rgba(242,246,243,.1) 0 1px, rgba(0,0,0,.6) 1.2px 2.2px, transparent 2.5px),
+    linear-gradient(180deg, rgba(242,246,243,.05), transparent 32%),
+    repeating-linear-gradient(90deg, rgba(242,246,243,.012) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg,#181d1a,#121614 60%,#0f1211);
+  box-shadow:inset 0 1px 0 var(--edge), inset 0 -1px 0 rgba(0,0,0,.65),
+    inset 1px 0 0 rgba(242,246,243,.02), 0 2px 5px rgba(0,0,0,.45);
+}
+.unit[data-state="ready"]{--edge:rgba(46,224,138,.26)}
+.unit[data-state="busy"]{--edge:rgba(255,171,61,.3)}
+.unit[data-state="queued"]{--edge:rgba(127,184,216,.26)}
+.unit:hover{box-shadow:inset 0 1px 0 var(--edge), inset 0 -1px 0 rgba(0,0,0,.65), 0 3px 9px rgba(0,0,0,.5)}
+
+/* power button: machined dome; --ring lights only when up */
+.pwr{
+  --ring:rgba(0,0,0,0);
+  background:
+    radial-gradient(circle at 50% 120%, rgba(242,246,243,.06), transparent 60%),
+    linear-gradient(180deg,#2b332d,#151917 70%,#121614);
+  box-shadow:inset 0 1px 0 rgba(242,246,243,.12), inset 0 -2px 3px rgba(0,0,0,.7), 0 0 6px var(--ring), 0 2px 3px rgba(0,0,0,.6);
+}
+.unit[data-state="ready"] .pwr{--ring:rgba(46,224,138,.24)}
+.unit[data-state="busy"] .pwr{--ring:rgba(255,171,61,.26)}
+.pwr svg{filter:drop-shadow(0 0 3px currentColor)}
+
+/* bus plate: stamped, not printed -- a lit top bevel and a shadowed floor, matching
+   the engraved slot plate beside it. The slat grille that used to sit here was the
+   only element on the rack that carried no reading. */
+.ubus{
+  background:linear-gradient(180deg,#141916,#0b0d0c);
+  box-shadow:inset 0 1px 0 rgba(242,246,243,.07), inset 0 -2px 3px rgba(0,0,0,.75),
+             0 1px 0 rgba(0,0,0,.5);
+}
+.unit[data-state="ready"] .ubus{color:#6f8478}
+.unit[data-state="busy"]  .ubus{color:var(--amber); border-color:#5c4a2a}
+
+/* ---------- LED bloom ----------
+   A real indicator has a bright lens core, a tight halo and a wide weak
+   falloff; one flat box-shadow cannot do that. Gradient lens for the core,
+   stacked shadows for the near falloff, oversized ::after for the far bloom
+   (it must overhang the 8px dot). --c is the hue, so the three colours
+   share one rule set. */
+.led{--c:0,0,0; background:radial-gradient(circle at 34% 28%,#2b322d,#0b0d0c 78%)}
+.led::after{
+  content:""; position:absolute; inset:-6px; border-radius:50%; opacity:0;
+  pointer-events:none;
+  background:radial-gradient(circle, rgba(var(--c),.28), rgba(var(--c),.08) 46%, transparent 70%);
+}
+.led.on{--c:46,224,138}
+.led.amber{--c:255,171,61}
+.led.blue{--c:127,184,216}
+.led.on,.led.amber,.led.blue{
+  background:radial-gradient(circle at 33% 27%, rgba(242,246,243,.9) 0 14%, rgba(var(--c),1) 46%, rgba(var(--c),.4) 100%);
+  box-shadow:0 0 2px rgba(var(--c),.95), 0 0 5px rgba(var(--c),.5), 0 0 11px rgba(var(--c),.22), inset 0 0 2px rgba(242,246,243,.5);
+}
+.led.on::after,.led.amber::after,.led.blue::after{opacity:1}
+/* the bloom has to blink with its LED, not hang over a dark dot */
+.led.blink::after{animation:led 1.05s steps(2,end) infinite}
+
+/* scanner: hot centre, soft shoulders */
+.scan{background:linear-gradient(180deg, rgba(0,0,0,.65),#151a17)}
+.scan i{background:linear-gradient(90deg,transparent, rgba(255,171,61,.35) 34%, var(--amber) 50%, rgba(255,171,61,.35) 66%, transparent)}
+.unit[data-state="queued"] .scan i{background:linear-gradient(90deg,transparent, rgba(127,184,216,.35) 34%,#7fb8d8 50%, rgba(127,184,216,.35) 66%, transparent)}
+
+/* ---------- engraved slot plate ----------
+   The value is real, from /api/status ("1U", "--" when down); this only
+   makes it read as a stamped plate, it invents no number. */
+.ustate .slot{
+  background:linear-gradient(180deg, rgba(0,0,0,.5), rgba(242,246,243,.025));
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.75), 0 1px 0 rgba(242,246,243,.045);
+  text-shadow:0 1px 0 rgba(0,0,0,.85); font-variant-numeric:tabular-nums;
+}
+.ustate .txt{text-shadow:0 0 8px currentColor}
+.uname b,.gauge label,.mod .tag{text-shadow:0 1px 0 rgba(0,0,0,.6)}
+
+/* chassis strip: bolted-down edge */
+.chassis{
+  background:
+    radial-gradient(circle at 9px 15px, rgba(242,246,243,.08) 0 1px, rgba(0,0,0,.55) 1.2px 2.2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 9px) 15px, rgba(242,246,243,.08) 0 1px, rgba(0,0,0,.55) 1.2px 2.2px, transparent 2.5px),
+    linear-gradient(180deg, rgba(242,246,243,.03), transparent 38%);
+  box-shadow:inset 0 1px 0 rgba(242,246,243,.05);
+}
+
+/* ---------- gauges: a ruled instrument track ----------
+   Ticks sit in ::after so they stay visible ON TOP of the fill, the way a
+   bar-graph meter is silkscreened. Percentage stops resolve against the
+   gradient line, so 10%/25% spacing follows the bar's width. */
+/* The gauge is `.meterbar` now. It used to be `.bar`, which the site header also carries
+   (`<div class="wrap bar">` on all 24 pages), and the workaround that stood here --
+   `header .bar::after{content:none}` -- kept the silkscreen off the nav but left every
+   other leaked property in place. symoneural.css says why the rename was the fix. */
+.meterbar{position:relative}
+.meterbar::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(242,246,243,.13) 0 1px, transparent 1px 25%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.5) 0 1px, transparent 1px 10%);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.75), inset 0 0 0 1px rgba(0,0,0,.3);
+}
+.meterbar i{box-shadow:0 0 8px rgba(46,224,138,.55), inset 0 1px 0 rgba(242,246,243,.25)}
+.meterbar.warn i{box-shadow:0 0 8px rgba(255,171,61,.55), inset 0 1px 0 rgba(242,246,243,.25)}
+
+/* ---------- instrument modules ----------
+   Both pseudos are already spent on the corner brackets, so the etched
+   board must be background layers -- hence the base gradient restated as
+   the bottom layer. */
+.mod{
+  --edge:rgba(242,246,243,.05);
+  background:
+    radial-gradient(circle at 13px 13px, rgba(46,224,138,.1) 0 1px, transparent 1.6px),
+    radial-gradient(circle at calc(100% - 13px) calc(100% - 13px), rgba(46,224,138,.1) 0 1px, transparent 1.6px),
+    repeating-linear-gradient(90deg, rgba(46,224,138,.032) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(0deg, rgba(46,224,138,.026) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(45deg, rgba(127,184,216,.022) 0 1px, transparent 1px 15px),
+    linear-gradient(180deg, rgba(242,246,243,.035), transparent 28%),
+    linear-gradient(180deg,#141816,#101312);
+  box-shadow:inset 0 1px 0 var(--edge), inset 0 -1px 0 rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.35);
+}
+/* provenance is colour-coded on the tag; carrying it to the bezel edge lets
+   a glance across the console read live / measured / projected */
+.mod[data-src="live"]{--edge:rgba(46,224,138,.3)}
+.mod[data-src="measured"]{--edge:rgba(255,171,61,.26)}
+.mod[data-src="projected"]{--edge:rgba(127,184,216,.22)}
+.mod[data-src="live"] .val{text-shadow:0 0 14px rgba(46,224,138,.35)}
+
+/* ---------- console glass ----------
+   Scanlines and a slow phosphor roll, above the modules but pointer-inert.
+   Weak by default so numbers stay crisp; add class "crt" to .console for
+   the full control-room look. */
+.console{position:relative}
+.console::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:2; border-radius:10px;
+  background:repeating-linear-gradient(180deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
+}
+.console::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
+  background:linear-gradient(180deg, transparent 0 42%, rgba(46,224,138,.045) 50%, transparent 58%);
+  background-size:100% 240%; animation:crtroll 11s linear infinite;
+}
+@keyframes crtroll{from{background-position:0 -140%}to{background-position:0 240%}}
+.console.crt::after{background:repeating-linear-gradient(180deg, rgba(0,0,0,.3) 0 1px, transparent 1px 3px)}
+
+/* console header: brushed strip with a hairline top light */
+.conhead{
+  background:
+    repeating-linear-gradient(90deg, rgba(242,246,243,.014) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, rgba(242,246,243,.035), transparent 45%),
+    var(--panel2);
+  box-shadow:inset 0 1px 0 rgba(242,246,243,.05), 0 1px 2px rgba(0,0,0,.35);
+}
+.conhead .key s{box-shadow:0 0 5px currentColor}
+.mod .sub,.conhead .sp{font-variant-numeric:tabular-nums}
+
+/* ---------- motion ----------
+   Everything decorative stops. The static .scan fallback from
+   symoneural.css is re-asserted here because this file restyles .scan i. */
+@media (prefers-reduced-motion:reduce){
+  .console::before{animation:none; background:none}
+  .led.blink::after{animation:none}
+  .scan i{animation:none; left:0; width:100%; opacity:.5}
+}
+
+/* narrow screens: fine texture costs more than it gives; no geometry moves */
+@media (max-width:620px){
+  .rack::after{opacity:.4}
+  .console::after{background:none}
+}
