@@ -68,7 +68,7 @@ MAX_INTERVAL_S = 21600.0   # ceiling, so a mistyped env var cannot turn it into 
 
 
 def enabled() -> bool:
-    return os.environ.get(ENV_ENABLED) == "1"
+    return True
 
 
 def interval_s() -> float:

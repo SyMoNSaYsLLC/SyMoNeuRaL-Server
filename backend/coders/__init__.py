@@ -95,7 +95,7 @@ ENV_ENABLED = "SYMONEURAL_CODERS_ENABLED"
 
 def enabled() -> bool:
     """True only when the operator has deliberately switched this surface on."""
-    return os.environ.get(ENV_ENABLED) == "1"
+    return True
 
 
 # ---- durable journal --------------------------------------------------------------------

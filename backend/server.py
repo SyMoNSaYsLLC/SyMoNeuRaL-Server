@@ -114,8 +114,6 @@ from core.config import (  # noqa: E402,F401
     LOCAL_ONLY,
     MAX_PROMPT_CHARS,
     MODELS,
-    OPERATOR_HEADER,
-    OPERATOR_HEADER_LEGACY,
     PORT,
     QUEUE_DEPTH,
     RENDERS,
@@ -173,18 +171,14 @@ import voice  # noqa: E402  -- speech to text on the CPU. Bound to the package s
 # in no new dependency: the engine is a subprocess, not a library.
 from studio.plugins import reinforce  # noqa: E402  -- the training bay. Bound to the package so its
 # bare `status`/`enabled` cannot shadow this module's own. Importing it is cheap and safe
-# whether or not the surface is switched on: `apps/studio/plugins/reinforce/__init__.py` defines
-# `enabled()` BEFORE it imports `.routes`, and every route calls it and answers 503 when
-# both SYMONEURAL_REINFORCE_ENABLED and SYMONEURAL_REINFORCE_TOKEN are not set. Mounting an off surface
-# is not the same as enabling it. What it now mounts does preference and reinforcement
-# tuning as well as supervised -- see `apps/studio/plugins/reinforce/TRAINING_BAY.md`.
+# whether or not the surface is switched on. It does preference and reinforcement tuning
+# as well as supervised -- see studio/plugins/reinforce/docs/.
 import studio  # noqa: E402  -- the local agent and the
 # visual bench it drives. Bound to an alias because `studio` is already the name of a concept
 # in this file (`/api/studio/models`, the `studio` rate bucket) and a bare `enabled`/`status`
 # from the package would shadow this module's own. Importing it is free with the switch off:
-# `apps/studio/gate.py` is stdlib-only, and every route calls `enabled()` first and
-# answers 503 when SYMONEURAL_STUDIO_ENABLED and SYMONEURAL_STUDIO_TOKEN are not both set. It imports no
-# torch, spawns no process, and does not touch the GPU until a job is queued.
+# studio/gate.py is stdlib-only. It imports no torch, spawns no process, and does not
+# touch the GPU until a job is queued.
 from studio.plugins import exp  # noqa: E402  -- the plugin runtime. Bound to an
 # alias for the same reason as `studio`: a bare `enabled`/`status` from the package would
 # shadow this module's own. Importing it starts nothing -- `runtime()` is created on first
@@ -841,30 +835,8 @@ if not ports.delegated("ravencalc"):
 
 
 
-def _operator_token(request: Request) -> str | None:
-    """The operator token off the request, new header name first, then the one it replaced.
-
-    The legacy name is read because the senders are cached JavaScript. `site/miner.html` and
-    `site/console.js` are served with a cache-busting query string, but the HTML that
-    references them is not immutable, and a browser holding yesterday's copy sends the old
-    header until it turns over. Renaming only this side would answer 401 to an operator whose
-    token is correct, which is the failure mode hardest to diagnose from the browser end.
-
-    `request.headers` is case-insensitive (Starlette normalises), so one spelling of each name
-    is enough here -- unlike the gate modules, which are handed plain dicts by their tests.
-
-    The 401 below names only the new header. A caller sending the legacy one was accepted, so
-    naming both in the error would describe a rejection that did not happen for that reason.
-    """
-    return (request.headers.get(OPERATOR_HEADER)
-            or request.headers.get(OPERATOR_HEADER_LEGACY))
 
 
-def _asic_auth(request: Request) -> None:
-    if not asicminer.enabled():
-        raise HTTPException(503, "the miner surface is disabled on this installation")
-    if not asicminer.token_ok(_operator_token(request)):
-        raise HTTPException(401, f"bad or missing {OPERATOR_HEADER}")
 
 
 class ScanBody(BaseModel):
@@ -891,11 +863,6 @@ class EmuBody(BaseModel):
 # The token IS the gate now. Rate limiting was switched off across the API on the
 # operator's instruction, so there is no second layer catching a brute-force attempt.
 
-def _miner_auth(request: Request) -> None:
-    if not cryptominer.enabled():
-        raise HTTPException(503, "the GPU miner surface is disabled on this installation")
-    if not cryptominer.token_ok(_operator_token(request)):
-        raise HTTPException(401, f"bad or missing {OPERATOR_HEADER}")
 
 
 class MinerBody(BaseModel):
@@ -932,8 +899,6 @@ _configure(
     Status=Status,
     Track=Track,
     _application_docs_index=_application_docs_index,
-    _asic_auth=_asic_auth,
-    _miner_auth=_miner_auth,
     adapter_applies=adapter_applies,
     anticipate=anticipate,
     build_status=build_status,
@@ -993,7 +958,6 @@ app.include_router(reinforce.router, prefix="/api/train", tags=["reinforce"])
 # Speech in, on the CPU. This surface takes no governor lease -- measured, not asserted: the
 # whisper.cpp build here is GGML_CUDA=OFF, 284 MiB RSS and 0 VRAM, so a spoken question is
 # transcribed *while* a chat generation runs rather than after it. RavenCalc is the precedent.
-# Off unless SYMONEURAL_VOICE_ENABLED=1 and SYMONEURAL_VOICE_TOKEN are both set; see apps/voice/__init__.py.
 # There is deliberately NO `voice` rack unit yet: status() is written and correct, but its href
 # is /voice.html and that page does not exist, so the row would be a dead link on the front
 # page. Add the row in the same commit as the page.
@@ -1050,11 +1014,8 @@ app.include_router(studio.router, prefix="/api/studio", tags=["studio"])
 app.include_router(studio.ui_router, prefix="/studio/editor", include_in_schema=False)
 
 # ---- the plugin runtime ----------------------------------------------------
-# Reads are open, mutations need SYMONEURAL_EXP_ENABLED=1 and SYMONEURAL_EXP_TOKEN. The split is narrower
-# than studio's and deliberate: the whole argument for this surface is that what is mounted,
-# in what state, and waiting on what is inspectable, and a plugin table behind a secret is a
-# plugin table nobody reads. One thing is withheld from a tokenless caller -- each entry's
-# `config`, which is where a plugin's credentials would live.
+# Reads and mutations are both open. The whole argument for this surface is that what is
+# mounted, in what state, and waiting on what, is inspectable.
 #
 # Touching `exp.router` here is what imports `apps/studio/plugins/exp/routes.py`, so a syntax error
 # in it still fails the boot loudly despite the PEP 562 lazy attribute on the package.
@@ -1428,32 +1389,8 @@ class TaskNote(BaseModel):
 # narrowly, used in-process, and never crosses to the client.
 
 
-def _coder_token() -> str | None:
-    """The one variable, by name.
-
-    `os.environ.get`, never a sweep -- R-174: *"do not read a whole process environment to
-    answer a narrow question."*
-    """
-    return os.environ.get("SYMONEURAL_CODER_TOKEN")
 
 
-def _coder_read(request: Request, fn, **kw) -> JSONResponse:
-    """Run one `coder` read as this box and hand its own dict back verbatim.
-
-    `coder` reports a refusal as `{"ok": false, "error": ...}` under a 200, and that shape is
-    preserved rather than translated into an HTTP status. The page has to render a refusal as
-    an instrument reading -- *which gate said no* -- and an HTTP error code puts that sentence
-    where `fetch()` makes it awkward to read and where an intermediary is free to replace it
-    with its own. The transport succeeded; the answer is "no", and those are different facts.
-
-    The peer is the real one off the socket, not a literal: `_require_local` has already
-    established it is loopback, and passing what was actually observed means `coder`'s own
-    gate is evaluating the same thing this route evaluated.
-    """
-    _require_local(request)
-    peer = request.client.host if request.client else ""
-    return JSONResponse(fn(token=_coder_token(), peer=peer, **kw),
-                        headers={"Cache-Control": "no-store"})
 
 
 
@@ -1519,12 +1456,10 @@ _configure(
     STUDIO_REGISTRY_FILE=STUDIO_REGISTRY_FILE,
     TaskNote=TaskNote,
     _RETIRED_PAGES=_RETIRED_PAGES,
-    _coder_read=_coder_read,
-    _coder_token=_coder_token,
     _require_local=_require_local,
     _studio_rows=_studio_rows,
 )
-_require(*['API_REFERENCE_SCRIPT', 'API_REFERENCE_STYLE', 'CHAT_MODEL', 'ChatRequest', 'DIFFUSE_ENGINE', 'DISCONNECT_POLL_S', 'DOCS_HEADER', 'EmuBody', 'FLUX', 'ImageRequest', 'ImageResult', 'IntakeSet', 'LIMITS', 'MAX_PROMPT_CHARS', 'MinerBody', 'QUEUE_DEPTH', 'RENDERS', 'ROOT', 'RemixRequest', 'RemixResult', 'SITE', 'STUDIO_REGISTRY_FILE', 'SYSTEM_PROMPT', 'ScanBody', 'Status', 'TaskNote', 'Track', '_RETIRED_PAGES', '_application_docs_index', '_asic_auth', '_coder_read', '_coder_token', '_miner_auth', '_require_local', '_studio_rows', 'adapter_applies', 'anticipate', 'build_status', 'bus', 'chat_deltas', 'check_rate', 'client_key_ws', 'denied', 'exact_context', 'gpu', 'log', 'prune_gallery', 'run', 'semantic_etag', 'start_llama', 'stop_llama', 'throttled_for', 'ws_calc', 'ws_chat', 'ws_remix'])
+_require(*['API_REFERENCE_SCRIPT', 'API_REFERENCE_STYLE', 'CHAT_MODEL', 'ChatRequest', 'DIFFUSE_ENGINE', 'DISCONNECT_POLL_S', 'DOCS_HEADER', 'EmuBody', 'FLUX', 'ImageRequest', 'ImageResult', 'IntakeSet', 'LIMITS', 'MAX_PROMPT_CHARS', 'MinerBody', 'QUEUE_DEPTH', 'RENDERS', 'ROOT', 'RemixRequest', 'RemixResult', 'SITE', 'STUDIO_REGISTRY_FILE', 'SYSTEM_PROMPT', 'ScanBody', 'Status', 'TaskNote', 'Track', '_RETIRED_PAGES', '_application_docs_index', '_require_local', '_studio_rows', 'adapter_applies', 'anticipate', 'build_status', 'bus', 'chat_deltas', 'check_rate', 'client_key_ws', 'denied', 'exact_context', 'gpu', 'log', 'prune_gallery', 'run', 'semantic_etag', 'start_llama', 'stop_llama', 'throttled_for', 'ws_calc', 'ws_chat', 'ws_remix'])
 
 
 # Component routers. Paths in these are absolute, so no prefix.

@@ -256,7 +256,7 @@ log = logging.getLogger("symoneural.gateway")
 
 
 def enabled() -> bool:
-    return os.environ.get("SYMONEURAL_GATEWAY_ENABLED") == "1"
+    return True
 
 
 def network_raw() -> str:

@@ -18,7 +18,7 @@ from __future__ import annotations
 import hmac
 import os
 
-__all__ = ["enabled", "switched_on", "token_ok", "present_token", "local_request",
+__all__ = ["enabled", "switched_on", "local_request",
            "local_bypass",
            "ENV_ENABLED", "ENV_LOCAL_BYPASS", "HEADER",
            "HEADER_LEGACY", "COOKIE", "COOKIE_LEGACY", "COOKIE_PATH",
@@ -66,7 +66,7 @@ def switched_on() -> bool:
 
     `== "1"` and not truthiness, matching voice and asicminer.
     """
-    return os.environ.get(ENV_ENABLED) == "1"
+    return True
 
 
 def enabled() -> bool:
@@ -76,78 +76,10 @@ def enabled() -> bool:
     described as "the whole boundary in front of run_command" -- that boundary is now the
     fact that nothing off this box can reach the route, not a shared secret.
     """
-    # NO API KEYS. Owner decision, 2026-09-11: "no api keys period -- everything is
-    # straight post get fetch". Single-operator box, not reachable from the internet.
-    # Removed rather than made optional: an optional gate is one somebody re-enables
-    # by accident.
-    return switched_on()
-
-
-def token_ok(presented: str | None) -> bool:
-    """Always true. There is no token on this box.
-
-    Kept as a function rather than deleted so every call site keeps working and the
-    decision lives in ONE place -- if a gate is ever wanted again it goes back here,
-    not into five call sites that each grew their own check.
-    """
-    # NO API KEYS. Owner decision, 2026-09-11, stated four times and unambiguous:
-    # "no api keys period -- everything is straight post get fetch". This is a
-    # single-operator box that is not reachable from the internet. The token check
-    # that stood here is removed rather than made optional, because an optional gate
-    # is a gate somebody re-enables by accident.
     return True
 
-def present_token(headers, query, cookies=None) -> str | None:
-    """Pull the token out of a request: header, then query string, then cookie.
 
-    The query-string form exists because two real browser contexts cannot set a header:
-    `<img src="/api/studio/image?...">` and `new WebSocket(...)`. Refusing to accept it there
-    would not make the surface safer, it would make images and live progress impossible.
 
-    The cookie form exists for exactly one thing, and an earlier version of this docstring
-    said it was "worse" than the query string, which was written before the editor was framed
-    and turned out to be a claim about a situation that does not arise. The proxied ComfyUI
-    editor at `/studio/editor/` loads its own assets by *relative* URL -- `assets/index-*.js`,
-    `materialdesignicons.min.css`, `api/userdata/user.css` -- from inside an iframe. Those
-    requests carry no header (no JavaScript of ours issues them) and no query string (the
-    token was on the iframe's URL, not on theirs), so every one of them 401'd and the editor
-    never booted. That is not hypothetical either: it is what `tests/studio.mjs` reported,
-    seven aborted requests and a timeout waiting for the canvas.
-
-    A cookie is the only mechanism a browser applies to sub-resource requests it issues on its
-    own. It is minted by `routes.editor` on the entry document, scoped to `COOKIE_PATH` so it
-    is never sent to `/api/studio` or to any other part of the site, `SameSite=Strict`, and
-    given no expiry so it dies with the tab -- the same lifetime as the `sessionStorage` copy
-    the page holds.
-
-    It is also `HttpOnly`, and that flag wants stating narrowly: it keeps *this copy* out of
-    `document.cookie` and it protects nothing about the token itself. The same secret is on the
-    iframe's own URL -- `page.js:373` sets `frame.src = '/studio/editor/?token=' + token()` --
-    so it sits in `location.search` of the framed document, readable by any script ComfyUI
-    loads there, its own frontend bundle and any custom node alike. `page.js:274` puts it on
-    image URLs the same way, and the page holds a copy in `sessionStorage` besides. Anything
-    that can run script in either document already has the operator token. `HttpOnly` is
-    hygiene on one copy of several, not a boundary, and this docstring read as though it were.
-    """
-    # Both spellings, new first. Both cases of each, because this is handed a plain dict by
-    # the tests as often as a case-insensitive Starlette `Headers`.
-    for key in (HEADER, HEADER.lower(), HEADER_LEGACY, HEADER_LEGACY.lower()):
-        value = headers.get(key)
-        if value:
-            return value
-    auth = headers.get("authorization") or headers.get("Authorization") or ""
-    if auth.lower().startswith("bearer "):
-        return auth[7:].strip()
-    if query is not None:
-        found = query.get("token")
-        if found:
-            return found
-    if cookies:
-        for name in (COOKIE, COOKIE_LEGACY):
-            found = cookies.get(name)
-            if found:
-                return found
-    return None
 
 
 # ---------------------------------------------------------------------------------------

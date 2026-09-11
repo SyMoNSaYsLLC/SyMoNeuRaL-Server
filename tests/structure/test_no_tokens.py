@@ -69,7 +69,9 @@ ENV_NAME = re.compile(r"[A-Z][A-Z0-9_]*")
 # the scan then found no gates and the suite went green over an unexamined codebase.
 REPO = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 BACKEND = REPO / "backend"
-APPS = BACKEND / "apps"
+# backend/apps/ was flattened into per-component directories on 2026-09-11. This pointed
+# at the vanished path and walked an empty tree, so every check below passed over nothing
+# while cryptominer and asicminer were still refusing callers. Walk backend/ itself.
 
 # Credentials that are NOT gates, each with the reason it is not one. A gate is something a
 # caller presents to this box to be let in; the decision was about those. Everything here is a
@@ -109,7 +111,7 @@ VENDORED = (".venv/", "site-packages/", "node_modules/", "/vendor/")
 
 def _source_files() -> list[pathlib.Path]:
     """Every non-test, non-vendored Python file under `backend/`. Walked, not listed."""
-    return [p for p in sorted(APPS.rglob("*.py"))
+    return [p for p in sorted(BACKEND.rglob("*.py"))
             if "test" not in p.name and not any(v in p.as_posix() for v in VENDORED)]
 
 
@@ -142,15 +144,26 @@ class TokenOkAcceptsEverything(unittest.TestCase):
         "x" * 8192,                 # longer than any real token
     )
 
-    def test_at_least_one_gate_exists_to_check(self):
-        """A baseline, and it is here because the scan silently finding zero would be green.
+    def test_no_gate_function_survives_anywhere(self):
+        """The gates are gone, not opened. `token_ok` and `present_token` define nothing.
 
-        If `token_ok` is ever renamed wholesale, the two tests below would pass over an empty
-        list and report success about a tree they had not looked at.
+        The earlier version of this asserted the opposite -- at least nine gates must exist,
+        so the two behavioural checks below had something to check. That was right while the
+        gates were being opened one at a time; it is wrong now that they are removed, and it
+        went red for the right reason on 2026-09-11 when the last one went.
+
+        Kept non-vacuous by the walk assertion: if `_source_files()` ever returns nothing --
+        which is exactly what happened when `backend/apps/` was flattened and this file kept
+        pointing at it -- an empty gate list is not evidence of anything.
         """
-        self.assertGreaterEqual(len(_modules_defining("token_ok")), 9,
-                                "the scan found fewer gates than the nine known to exist -- "
-                                "either they were renamed or the walk is broken")
+        self.assertGreater(len(_source_files()), 100,
+                           "the walk found almost no source files; it is broken, and an "
+                           "empty result below would mean nothing")
+        self.assertEqual(_modules_defining("token_ok"), [],
+                         "a token gate is back. The decision was stated five times and "
+                         "ends with 'i will never reverse the decision'")
+        self.assertEqual(_modules_defining("present_token"), [],
+                         "something is still reading a token off a request")
 
     def test_every_token_ok_accepts_everything(self):
         import importlib

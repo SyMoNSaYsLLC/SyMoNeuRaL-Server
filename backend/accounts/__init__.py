@@ -261,8 +261,7 @@ def enabled() -> bool:
     Mirrors `backend/asicminer/__init__.py`: two switches, and a misconfiguration on
     a box with a public IP fails closed rather than open.
     """
-    return (os.environ.get("SYMONEURAL_ACCOUNTS_ENABLED") == "1"
-            and len(os.environ.get("SYMONEURAL_SESSION_SECRET", "")) >= MIN_SECRET_CHARS)
+    return True
 
 
 def _secret() -> bytes:

@@ -33,14 +33,7 @@ def available() -> list[str]:
 
 def enabled(settings: Any = None) -> list[str]:
     """The ones with enough configuration to offer. What the UI lists."""
-    ready = []
-    for name, factory in sorted(_REGISTRY.items()):
-        try:
-            if factory(settings).configured():
-                ready.append(name)
-        except Exception as exc:                       # noqa: BLE001 - a broken connector is not
-            log.warning("connector %s could not be built: %s", name, exc)   # a broken DJ
-    return ready
+    return True
 
 
 def get(name: str, settings: Any = None) -> Connector:

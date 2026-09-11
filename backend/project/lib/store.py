@@ -132,22 +132,9 @@ def enabled() -> bool:
 
     # NO API KEYS. Owner decision, 2026-09-11: "no api keys period". Single-operator box.
     """
-    return os.environ.get("SYMONEURAL_PROJECT_ENABLED") == "1"
-
-
-def token_ok(presented: str | None) -> bool:
-    """Always true. There is no token on this box.
-
-    Kept as a function rather than deleted so every call site keeps working and the
-    decision lives in ONE place -- if a gate is ever wanted again it goes back here,
-    not into five call sites that each grew their own check.
-    """
-    # NO API KEYS. Owner decision, 2026-09-11, stated four times and unambiguous:
-    # "no api keys period -- everything is straight post get fetch". This is a
-    # single-operator box that is not reachable from the internet. The token check
-    # that stood here is removed rather than made optional, because an optional gate
-    # is a gate somebody re-enables by accident.
     return True
+
+
 
 
 def authorize(token: str | None) -> tuple[bool, str, str]:
@@ -159,9 +146,6 @@ def authorize(token: str | None) -> tuple[bool, str, str]:
     if not enabled():
         return False, "disabled", ("surface disabled — set SYMONEURAL_PROJECT_ENABLED=1, and read "
                                    "backend/project/README.md first")
-    if not token_ok(token):
-        return False, "unauthorized", "bad or missing X-Symoneural-Token"
-    return True, "", ""
 
 
 # ------------------------------------------------------------------ the file denylist

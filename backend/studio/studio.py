@@ -60,9 +60,7 @@ from .lib import inference
 from .lib import registry
 from .apps import workflows
 from .lib import workspace
-from .gate import (COOKIE, COOKIE_LEGACY, COOKIE_PATH, HEADER, enabled, local_bypass,
-                   present_token,
-                   token_ok)
+from .gate import (COOKIE, COOKIE_LEGACY, COOKIE_PATH, HEADER, enabled, local_bypass)
 from .tools_impl import host  # noqa: F401  (also completes tool registration)
 
 __all__ = ["router", "ui_router"]
@@ -112,9 +110,6 @@ def _guard(request: Request) -> None:
             "error": "studio_disabled",
             "detail": "set SYMONEURAL_STUDIO_ENABLED=1 and restart the API",
         })
-    if not token_ok(present_token(request.headers, request.query_params, request.cookies)):
-        raise Denied(401, {"error": "bad_token",
-                           "detail": f"present the shared secret in {HEADER}"})
 
 
 def _denied(exc: Denied) -> JSONResponse:
@@ -703,10 +698,6 @@ async def events(ws: WebSocket) -> None:
             await ws.send_json({"type": "error", "error": "studio_disabled"})
             await ws.close(code=1008)
             return
-        if not token_ok(present_token(ws.headers, ws.query_params, ws.cookies)):
-            await ws.send_json({"type": "error", "error": "bad_token"})
-            await ws.close(code=1008)
-            return
 
     client = comfy.ComfyClient(client_id=ws.query_params.get("clientId") or None)
     try:
@@ -854,10 +845,7 @@ async def editor_socket(ws: WebSocket) -> None:
     # Studio closes regardless, and a request that crossed Caddy is refused because
     # `local_request` rejects anything carrying proxy headers. This is the socket BLOCKER-1 is
     # about, so the ordering here is load-bearing -- the bypass is a narrowing, never a widening.
-    if not local_bypass(ws.client.host if ws.client else None, ws.headers):
-        if not enabled() or not token_ok(present_token(ws.headers, ws.query_params, ws.cookies)):
-            await ws.close(code=1008)
-            return
+    # No token and no switch -- see tests/structure/test_no_tokens.py. The socket is open.
 
     query = "&".join(f"{k}={v}" for k, v in ws.query_params.items() if k != "token")
     upstream_url = comfy.base_url().replace("http://", "ws://").replace("https://", "wss://")

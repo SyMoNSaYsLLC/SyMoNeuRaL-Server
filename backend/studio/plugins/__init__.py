@@ -98,7 +98,7 @@ REQUIRED = ("enabled", "status")
 
 #: Recognised, not required -- see the table in the module docstring for who has what and why
 #: the gaps are deliberate.
-RECOGNISED = ("router", "token_ok", "LABEL")
+RECOGNISED = ("router", "LABEL")
 
 #: Which plugins carry each recognised-optional export, as read off the disk on 2026-08-20.
 #: Pinned rather than computed: if `discovery` gains a router, this goes red and whoever added
@@ -106,7 +106,6 @@ RECOGNISED = ("router", "token_ok", "LABEL")
 #: become universal enough to move into `REQUIRED`.
 OPTIONAL_PRESENT = {
     "router": frozenset({"exp", "reinforce"}),
-    "token_ok": frozenset({"discovery", "exp"}),
     "LABEL": frozenset({"exp"}),
 }
 

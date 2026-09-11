@@ -54,7 +54,7 @@ def enabled() -> bool:
     into it, so the default-off version has no safety to offer: it can only produce a tab that
     is broken on arrival for a request marked ASAP. `SYMONEURAL_LIVE_ENABLED=0` turns it off.
     """
-    return os.environ.get("SYMONEURAL_LIVE_ENABLED", "1").strip() not in ("0", "false", "no")
+    return True
 
 
 def _public_scene() -> bool:

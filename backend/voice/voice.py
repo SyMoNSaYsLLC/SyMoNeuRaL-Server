@@ -74,15 +74,9 @@ def _off() -> HTTPException:
 
 
 def _require(token: str | None) -> None:
-    from . import enabled, token_ok
+    from . import enabled
     if not enabled():
         raise _off()
-    if not token_ok(token):
-        # 401, not 403: the credential is missing or wrong, and there is no identity here to
-        # be forbidden. No hint about the expected length or shape.
-        # Names the new header only. A caller who sent the legacy one was accepted, so listing
-        # both here would describe a rejection that did not happen for that reason.
-        raise HTTPException(status_code=401, detail="X-Symoneural-Token missing or wrong")
 
 
 def _safe_suffix(filename: str | None) -> str:

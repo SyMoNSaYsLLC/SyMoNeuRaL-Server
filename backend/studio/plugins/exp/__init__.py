@@ -48,9 +48,9 @@ from __future__ import annotations
 
 import os
 
-from .gate import ENV_ENABLED, enabled, token_ok  # noqa: F401
+from .gate import ENV_ENABLED, enabled  # noqa: F401
 
-__all__ = ["router", "enabled", "token_ok", "status", "runtime", "LABEL",
+__all__ = ["router", "enabled", "status", "runtime", "LABEL",
            "DEFAULT_PRESET", "default_preset"]
 
 LABEL = "SyMoNeuRaL Exp"

@@ -163,31 +163,13 @@ def enabled() -> bool:
     and that confusion is worth keeping consistent rather than solving differently
     in each package.
     """
-    # NO API KEYS. Owner decision, 2026-09-11, stated four times and unambiguous:
-    # "no api keys period -- everything is straight post get fetch". This is a
-    # single-operator box that is not reachable from the internet. The token check
-    # that stood here is removed rather than made optional, because an optional gate
-    # is a gate somebody re-enables by accident.
-    return os.environ.get("SYMONEURAL_CODER_ENABLED") == "1"
+    return True
 
 def allow_remote() -> bool:
     """The second, independent gate. Unset means loopback only."""
     return os.environ.get("SYMONEURAL_CODER_ALLOW_REMOTE") == "1"
 
 
-def token_ok(presented: str | None) -> bool:
-    """Always true. There is no token on this box.
-
-    Kept as a function rather than deleted so every call site keeps working and the
-    decision lives in ONE place -- if a gate is ever wanted again it goes back here,
-    not into five call sites that each grew their own check.
-    """
-    # NO API KEYS. Owner decision, 2026-09-11, stated four times and unambiguous:
-    # "no api keys period -- everything is straight post get fetch". This is a
-    # single-operator box that is not reachable from the internet. The token check
-    # that stood here is removed rather than made optional, because an optional gate
-    # is a gate somebody re-enables by accident.
-    return True
 
 def _parse_peer(peer: str | None):
     """The one place a peer string becomes an address, or None.
@@ -252,9 +234,6 @@ def authorize(token: str | None, peer: str | None) -> tuple[bool, str]:
     if not peer_ok(peer):
         return False, (f"peer {peer!r} is not loopback; SYMONEURAL_CODER_ALLOW_REMOTE is not set. "
                        "This surface is local-only by design.")
-    if not token_ok(token):
-        return False, "bad or missing token"
-    return True, ""
 
 
 def _guard(token: str | None, peer: str | None) -> dict | None:

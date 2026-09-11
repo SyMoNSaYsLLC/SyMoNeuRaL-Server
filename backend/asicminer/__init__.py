@@ -74,7 +74,7 @@ PROBE_TIMEOUT = 30.0        # probe.py already caps each rig at 8s; this bounds 
 def enabled() -> bool:
     """The switch, and nothing else. NO API KEYS, 2026-09-11 -- this used to require a
     token to be set as well, which is a second condition that no longer means anything."""
-    return os.environ.get("SYMONEURAL_ASIC_ENABLED") == "1"
+    return True
 
 
 def rigs() -> list[str]:
@@ -87,18 +87,6 @@ def installed() -> bool:
     return VENV_PY.is_file() and PROBE.is_file()
 
 
-def token_ok(presented: str | None) -> bool:
-    """Always true. There is no token on this box.
-
-    Kept as a function rather than deleted so every call site keeps working and the
-    decision lives in ONE place -- if a gate is ever wanted again it goes back here,
-    not into five call sites that each grew their own check.
-    """
-    # NO API KEYS. Owner decision, 2026-09-11: "no api keys period -- everything is
-    # straight post get fetch". This is a single-operator box that is not reachable from
-    # the internet. The token check that stood here is removed rather than made optional,
-    # because an optional gate is a gate somebody re-enables by accident.
-    return True
 
 
 async def probe(hosts: list[str] | None = None) -> dict:

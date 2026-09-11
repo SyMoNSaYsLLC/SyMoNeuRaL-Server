@@ -79,20 +79,6 @@ def _require_surface() -> None:
                     "offline for one request."))
 
 
-def _require_token(token: str | None) -> None:
-    """Checks the surface switch and nothing else. There is no token on this box.
-
-    NO API KEYS. Owner decision, 2026-09-11: "no api keys period -- everything is straight
-    post get fetch". The name is kept so the four call sites below are untouched, and so the
-    one thing this function still does is stated where it is done.
-
-    What used to guard this route was a constant-time token compare, and the reason given for
-    it was real: this route authorises taking the whole card. **That protection has not been
-    deleted, it has moved to the switch and the network.** `SYMONEURAL_REINFORCE_ENABLED` is
-    off by default, and the box is not reachable from the internet. A token in front of a
-    surface that only loopback can reach was protecting the owner from the owner.
-    """
-    _require_surface()
 
 
 class StartBody(BaseModel):
@@ -240,15 +226,14 @@ def run_preflight(body: StartBody) -> dict:
 
 
 @router.post("/start")
-def start_run(body: StartBody, x_reinforce_token: str | None = Header(default=None)) -> dict:
-    """Start a fine-tune. Token required.
+def start_run(body: StartBody) -> dict:
+    """Start a fine-tune.
 
     **Starting a run takes the whole rack offline for its duration.** The governor never evicts
     `train`, so chat, image and remix queue behind it until it finishes or is stopped
     deliberately. That is architectural, not a limitation to engineer away, and the page says
     it next to the button.
     """
-    _require_token(x_reinforce_token)
     try:
         job = jobs.start(body.model, body.preset, body.dataset, body.init_adapter)
     except dataset_guard.Refused as exc:
@@ -266,14 +251,13 @@ def start_run(body: StartBody, x_reinforce_token: str | None = Header(default=No
 
 
 @router.post("/stop")
-def stop_run(x_reinforce_token: str | None = Header(default=None)) -> dict:
-    """Stop a run deliberately. Token required.
+def stop_run() -> dict:
+    """Stop a run deliberately.
 
     SIGTERM to the process group, so the governor's release trap runs and waits for VRAM to
     drain below the floor. A SIGKILL would return the lock before the CUDA context finished
     tearing down, and the next surface would allocate into memory that is still held.
     """
-    _require_token(x_reinforce_token)
     return jobs.stop()
 
 

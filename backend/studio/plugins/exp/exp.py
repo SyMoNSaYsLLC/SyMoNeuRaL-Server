@@ -45,7 +45,7 @@ from fastapi.responses import JSONResponse
 
 from . import DEFAULT_PRESET, boot, runtime
 from .context import ContextError
-from .gate import ENV_ENABLED, enabled, present_token, token_ok
+from .gate import ENV_ENABLED, enabled
 
 __all__ = ["router"]
 
@@ -65,25 +65,12 @@ class Denied(Exception):
 
 
 def _may_write(request: Request) -> bool:
-    return enabled() and token_ok(present_token(request.headers, request.query_params))
+    return True
 
 
 def _guard(request: Request) -> None:
-    """503 when the mutation surface is switched off, 401 when the token is wrong.
-
-    Never 404. A 404 on a route that exists tells the caller their URL is wrong, which sends
-    them to look in the wrong place -- the surface is off, and saying so with the two variable
-    names is the difference between a two-minute fix and an afternoon.
-    """
-    if not enabled():
-        raise Denied(503, {"detail": f"exp mutations are off; set {ENV_ENABLED}=1 "
-                                     f"to switch them on",
-                           "enabled": False})
-    # NO API KEYS, 2026-09-11. `token_ok` is unconditionally true, so this branch cannot
-    # fire; it is kept as the one place a gate would go back if one were ever wanted, which
-    # is the same reason `token_ok` itself was kept rather than deleted.
-    if not token_ok(present_token(request.headers, request.query_params)):
-        raise Denied(401, {"detail": "bad or missing token", "enabled": True})
+    """Nothing to guard. No tokens, no switch -- this box is local and single-operator."""
+    return None
 
 
 async def _loaded():

@@ -22,21 +22,18 @@ router = APIRouter()
 @router.get("/api/asicminer/firmware", tags=["asicminer"],
          summary="Firmware packages actually present on this machine")
 async def asic_firmware(request: Request) -> dict:
-    ctx._asic_auth(request)
     # Read off disk rather than from a list in the page, so the model picker cannot claim
     # firmware that is not there, or miss firmware that is.
     return {"packages": asicminer.packages()}
 @router.post("/api/asicminer/scan", tags=["asicminer"],
           summary="Discover rigs on a private network")
 async def asic_scan(request: Request, body: ctx.ScanBody) -> dict:
-    ctx._asic_auth(request)
     if not body.cidr.strip():
         raise HTTPException(400, "give a CIDR, e.g. 10.0.0.0/24")
     return await asicminer.discover(body.cidr.strip())
 @router.post("/api/asicminer/emulator", tags=["asicminer"],
           summary="Start, stop or query the QEMU emulator")
 async def asic_emulator(request: Request, body: ctx.EmuBody) -> dict:
-    ctx._asic_auth(request)
     if body.action == "status":
         return asicminer.emulator_status()
     if body.action == "stop":

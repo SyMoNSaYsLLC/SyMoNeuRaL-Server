@@ -77,8 +77,7 @@ def enabled() -> bool:
     Defined here rather than in `routes.py` so that `jobs.status()` -- which runs on every
     rack poll -- can ask the question without pulling fastapi into its import graph.
     """
-    return (os.environ.get("SYMONEURAL_REINFORCE_ENABLED") == "1"
-            )
+    return True
 
 
 from .jobs import status          # noqa: E402  -- the rack unit

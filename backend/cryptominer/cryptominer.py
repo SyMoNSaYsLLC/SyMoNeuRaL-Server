@@ -22,7 +22,6 @@ router = APIRouter()
 @router.get("/api/gpuminer/status", tags=["gpuminer"],
          summary="What the GPU miner is doing, and what it is reporting")
 async def gpuminer_status(request: Request) -> dict:
-    ctx._miner_auth(request)
     st = cryptominer.status()
     state, detail = cryptominer.unit_state(st)
     # `hashrate_mh_s` is whatever the miner binary itself printed, or null. It is never
@@ -32,7 +31,6 @@ async def gpuminer_status(request: Request) -> dict:
 @router.post("/api/gpuminer/control", tags=["gpuminer"],
           summary="Start or stop the miner. Starting takes the GPU from every other surface.")
 async def gpuminer_control(request: Request, body: ctx.MinerBody) -> dict:
-    ctx._miner_auth(request)
     if body.action == "status":
         return cryptominer.status()
     if body.action == "stop":

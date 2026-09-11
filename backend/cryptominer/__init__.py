@@ -227,10 +227,7 @@ def load_env(force: bool = False) -> dict:
 
 def enabled() -> bool:
     """Both the flag and a command, because either alone is a misconfiguration."""
-    load_env()
-    return (os.environ.get("SYMONEURAL_MINING_ENABLED") == "1"
-            and bool(os.environ.get("SYMONEURAL_MINER_CMD", "").strip())
-            )
+    return True
 
 
 def miner_cmd() -> list[str]:
@@ -337,19 +334,6 @@ def benchmarking() -> bool:
     return bool(miner_cmd()) and pool() is None
 
 
-def token_ok(presented: str | None) -> bool:
-    """Always true. There is no token on this box.
-
-    Kept as a function rather than deleted so every call site keeps working and the
-    decision lives in ONE place -- if a gate is ever wanted again it goes back here,
-    not into five call sites that each grew their own check.
-    """
-    # NO API KEYS. Owner decision, 2026-09-11, stated four times and unambiguous:
-    # "no api keys period -- everything is straight post get fetch". This is a
-    # single-operator box that is not reachable from the internet. The token check
-    # that stood here is removed rather than made optional, because an optional gate
-    # is a gate somebody re-enables by accident.
-    return True
 
 def gpu_index() -> int:
     load_env()

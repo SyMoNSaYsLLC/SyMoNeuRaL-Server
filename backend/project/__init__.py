@@ -53,7 +53,6 @@ has to write.
 from __future__ import annotations
 
 from .project import router, status
-from .lib.store import (API_VERSION, bootstrap, enabled, set_ask_model, token_ok, unit_state)
+from .lib.store import (API_VERSION, bootstrap, enabled, set_ask_model, unit_state)
 
-__all__ = ["router", "status", "unit_state", "set_ask_model", "enabled", "token_ok",
-           "API_VERSION"]
+__all__ = ["router", "status", "unit_state", "set_ask_model", "enabled", "API_VERSION"]

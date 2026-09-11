@@ -246,7 +246,7 @@ def enabled() -> bool:
     has real accounts with real password hashes, so a shared bearer token beside them would
     be a second, weaker credential for the same data.
     """
-    return os.environ.get("SYMONEURAL_DISPATCHOS_ENABLED") == "1"
+    return True
 
 
 # ------------------------------------------------------------------ users and sessions

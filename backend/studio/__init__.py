@@ -55,9 +55,9 @@ import os
 import socket
 import urllib.parse
 
-from .gate import enabled, token_ok  # noqa: F401
+from .gate import enabled  # noqa: F401
 
-__all__ = ["router", "ui_router", "enabled", "token_ok", "status", "LABEL"]
+__all__ = ["router", "ui_router", "enabled", "status", "LABEL"]
 
 
 def __getattr__(name: str):
