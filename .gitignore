@@ -11,14 +11,27 @@
 !/models/licenses/**
 !/models/docs/
 !/models/docs/**
+# The weight directory itself must be re-included before a file inside it can be: git cannot
+# re-include a file whose parent DIRECTORY is excluded, so `!/models/llm/README.md` alone did
+# nothing. Re-include the directory, exclude its contents, keep the one document.
+!/models/llm/
+/models/llm/*
+!/models/llm/README.md
 *.gguf
 *.safetensors
 *.bin
 *.pt
 *.onnx
 
-# Runtime state. Regenerated; never a source of truth.
-/run/
+# Runtime state. Regenerated; never a source of truth -- the LOCK, the logs, the pid, the
+# generated page, and api.env which is mode 600 and must never be committed or printed.
+#
+# `/run/` alone excluded the directory, and git cannot re-include a file whose parent
+# DIRECTORY is excluded -- so run/README.md, the only thing in there that explains any of
+# it, could not be tracked no matter what came after. A clone got an absent directory and
+# no answer to "what is run/". Exclude the CONTENTS instead, and keep the one document.
+/run/*
+!/run/README.md
 *.log
 
 # Dependency trees, in every language this repo touches.
