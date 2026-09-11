@@ -46,7 +46,7 @@ ROOT = next(p for p in Path(__file__).resolve().parents
 OUT = ROOT / "ops" / "LICENSES.tsv"
 
 COLUMNS = ("component", "version", "ecosystem", "party", "licence", "klass",
-           "carried", "where", "obligation")
+           "carried", "where", "obligation", "enforced_by")
 
 # Party, by provenance -- the three buckets the naming doctrine already uses.
 FIRST = "first"          # we wrote it
@@ -110,6 +110,7 @@ class Row:
     carried: str      # shipped | build-only | host-only -- does it leave this box
     where: str
     obligation: str
+    enforced_by: str = "upstream authors, on distribution"
 
     def tsv(self) -> str:
         return "\t".join(str(getattr(self, c)).replace("\t", " ") for c in COLUMNS)
@@ -255,6 +256,49 @@ def _label(python: Path) -> str:
 # Rust, npm, models
 # --------------------------------------------------------------------------
 
+def packaged() -> set[str]:
+    """Every repository path that `scripts/build-deb.sh` puts in the .deb.
+
+    `carried` decides whether a licence is an obligation at all, so declaring it
+    by hand makes the safety argument unfalsifiable: the row would keep saying
+    host-only until somebody edited the constant, which is exactly how
+    deploy.sh published zero files for weeks while printing "deployed".
+
+    The packager builds its payload from `git ls-files` minus two exclusion
+    regexes, so the same computation run here is the real answer. The regexes
+    are read out of the script rather than copied, because a copy is a second
+    authority that drifts.
+    """
+    script = ROOT / "scripts" / "build-deb.sh"
+    if not script.is_file():
+        return set()
+
+    # The two regexes are assembled across continuation lines
+    # (`NONPROD_RE="$NONPROD_RE"'...'`), so pulling one line out yields a
+    # fragment with unbalanced parentheses that will not compile. Rather than
+    # re-implement shell string building, the assignment lines are handed back
+    # to bash and the finished values read out. That keeps the packager the only
+    # authority on what it excludes; a copy here would be a second one, and it
+    # would drift.
+    assignments = [l for l in script.read_text().splitlines()
+                   if l.startswith(("EXCLUDE_RE=", "NONPROD_RE="))]
+    if not assignments:
+        return set()
+    program = "\n".join(assignments) + '\nprintf "%s|%s" "$EXCLUDE_RE" "$NONPROD_RE"'
+    try:
+        shell = subprocess.run(["bash", "-c", program], capture_output=True,
+                               text=True, timeout=30)
+        out = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True,
+                             text=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired):
+        return set()
+    if shell.returncode != 0 or not shell.stdout.strip():
+        return set()
+    excluded = re.compile(shell.stdout.strip())
+    return {path for path in out.stdout.splitlines()
+            if path and not excluded.search(path)}
+
+
 def crate_licences() -> dict[str, str]:
     """crate -> licence, read from the vendored sources under ~/.cargo.
 
@@ -379,6 +423,18 @@ def _obligation(klass: str) -> str:
 # is not their absence from the liability. They are what a customer build would
 # actually redistribute, which makes leaving them out the one omission that
 # would make this whole file useless.
+def _carried(path: str, payload: set[str]) -> str:
+    """shipped when the packager puts this tree in the .deb, host-only otherwise.
+
+    A path outside the repository can never be in `git ls-files`, so an engine
+    that lives in another tree is host-only by construction rather than by
+    assertion -- and that is the fact the whole GPL safety argument rests on.
+    """
+    if not payload:
+        return "host-only"      # no packager on this box; nothing can ship
+    return "shipped" if any(p.startswith(path) for p in payload) else "host-only"
+
+
 FORKS = [
     Row(component="symoneural-llm", version="fork of llama.cpp", ecosystem="engine",
         party=SECOND, licence="MIT", klass=PERMISSIVE, carried="shipped",
@@ -412,7 +468,16 @@ OURS = [
 
 
 def inventory() -> list[Row]:
-    rows = OURS + FORKS + rust_rows() + npm_rows() + model_rows() + python_rows()
+    payload = packaged()
+    ours = [
+        # `carried` is measured against the packager's own manifest, so these
+        # rows cannot claim something the .deb contradicts.
+        Row(**{**asdict(r),
+               "carried": _carried(r.where.rstrip("/"), payload)})
+        if r.where.startswith(("backend/", "frontend/")) else r
+        for r in OURS
+    ]
+    rows = ours + FORKS + rust_rows() + npm_rows() + model_rows() + python_rows()
     if len(rows) < 100:
         # A collector that silently returned nothing would publish a short,
         # confident, wrong inventory. Better to refuse than to under-report.

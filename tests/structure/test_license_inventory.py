@@ -146,3 +146,43 @@ class TheInventoryIsWellFormed(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CarriedIsMeasuredNotDeclared(unittest.TestCase):
+    """`carried` decides whether a licence is an obligation at all.
+
+    Declaring it by hand makes the safety argument unfalsifiable: the row keeps
+    saying host-only until somebody edits a constant. deploy.sh printed
+    "deployed" while publishing zero files for weeks on exactly that mistake.
+    """
+
+    def test_the_packager_manifest_can_be_computed(self):
+        payload = inv.packaged()
+        self.assertGreater(len(payload), 500,
+                           "the .deb manifest computed empty; carried is meaningless")
+
+    def test_the_gpl_fork_cannot_be_in_the_package(self):
+        """It is untracked and the packager builds from git ls-files. This is a
+        structural guarantee, so it is checked rather than trusted."""
+        self.assertEqual([p for p in inv.packaged() if "symoneural-ui/" in p], [])
+
+    def test_the_comfy_plugins_do_ship_and_the_row_says_so(self):
+        """They are tracked and nothing excludes them, so they are payload. The
+        file said host-only until this was measured."""
+        payload = inv.packaged()
+        self.assertTrue([p for p in payload
+                         if p.startswith("backend/studio/custom_nodes/")])
+        with TSV.open() as fh:
+            rows = list(csv.DictReader(
+                (l for l in fh if not l.startswith("#")), delimiter="\t"))
+        plugins = [r for r in rows if "custom_nodes" in r["where"]]
+        self.assertEqual(len(plugins), 1)
+        self.assertEqual(plugins[0]["carried"], "shipped")
+
+    def test_every_row_names_who_could_enforce_it(self):
+        """The party column answers "who wrote it". This answers "who could sue"."""
+        with TSV.open() as fh:
+            rows = list(csv.DictReader(
+                (l for l in fh if not l.startswith("#")), delimiter="\t"))
+        for r in rows:
+            self.assertTrue(r.get("enforced_by", "").strip(), r["component"])

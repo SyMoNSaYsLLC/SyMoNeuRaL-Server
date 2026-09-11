@@ -73,29 +73,44 @@ generator.
 
 **What is true, measured, not inferred:**
 
-- The fork lives at `/home/google/Symoneural/symoneural-ui`. It is not in this
-  repository and nothing here builds it.
+- The fork lives at `/home/google/Symoneural/symoneural-ui`. It is **not
+  tracked by git**, and `scripts/build-deb.sh` builds its payload from
+  `git ls-files`, so the GPL-3.0 code *cannot* enter the package. That is a
+  structural guarantee, not a promise — and `carried` in the table is computed
+  by running the packager's own exclusion rules, so it fails rather than lies if
+  this ever changes.
 - `backend/studio/` talks to it **over HTTP**, on `127.0.0.1:8188`, through
   `SYMONEURAL_COMFY_URL`. A socket between two processes is an arm's-length
   boundary and is the weakest possible coupling.
 - **But** `backend/studio/custom_nodes/symoneural_cleanroom/` and
-  `symoneural_gguf/` are ours, are tracked in this repository, and both export
-  `NODE_CLASS_MAPPINGS` — which is ComfyUI's plugin ABI. They are *loaded into
-  the GPL-3.0 process*. Neither imports a `comfy` module (hence "cleanroom"),
-  but dynamic loading into a GPL process is exactly the linkage question that
-  has no settled answer.
+  `symoneural_gguf/` are ours, are tracked, and both export
+  `NODE_CLASS_MAPPINGS` — ComfyUI's plugin ABI. They are *loaded into the
+  GPL-3.0 process*. Neither imports a `comfy` module (hence "cleanroom"), but
+  dynamic loading into a GPL host is exactly the linkage question that has no
+  settled answer.
+- **And they ship.** Measured against the packager's manifest on 2026-09-11:
+  both files are in the 1,142-file `.deb` payload. An earlier version of this
+  page called them `host-only`; that was asserted rather than measured, and it
+  was wrong.
 
 **What this page will not do is decide that.** Whether a plugin loaded into a
 GPL-3.0 host forms a derivative work is genuinely contested, and per the naming
 doctrine — *"that is not your call to make — record what was borrowed and from
 where"* — it is recorded here and left to the owner and counsel.
 
-**What makes it safe today, and what would change that:** nothing is
-distributed. The fork is on the build host only, and the custom nodes only ever
-load on this box. The obligation attaches on *distribution*, so the day this
-stops being true is the day someone builds a package that contains both — a
-`.deb`, an image, a VM, a customer install. That is the trigger to answer the
-question above, and it must be answered before such a build ships, not after.
+**What makes it safe today:** the GPL-3.0 work is never distributed. The `.deb`
+carries our two plugins but not the host they plug into, and the GPL obligation
+attaches to distributing *the combination*. Shipping a plugin written against an
+ABI, with no copy of the program that defines it, is the weak end of this
+question rather than the sharp end.
+
+**What would change that**, and it is one specific event: any build that puts
+the fork and the plugins in the same artefact — a `.deb` that vendors ComfyUI,
+an image, a VM, a customer install. The table's `carried` column is computed
+from `scripts/build-deb.sh` every time this file is regenerated, so such a build
+turns the `symoneural-ui` row to `shipped` and fails
+`test_nothing_shipped_is_copyleft`. **That test is the tripwire.** It must be
+answered before the build ships, not after.
 
 The previous version of this file said ComfyUI was *"present on the build host;
 not built, not incorporated, not packaged, not deployed."* Three of those four
@@ -134,6 +149,14 @@ def render(data: list[dict]) -> str:
       f"are listed in full below rather than summarised away.\n")
 
     w("## By party\n")
+    w("**\"Party\" here means provenance — who wrote the code — which is the "
+      "sense `docs/DOCTRINE-NAMING-AND-CREDIT.md` already uses.** In contract "
+      "language \"second party\" usually means the counterparty you signed "
+      "with, which is a different question: *who could sue us, under what "
+      "instrument*. That question is answered by the **Who could enforce** "
+      "column rather than by the party label, so both readings come off the "
+      "same table. If the contract sense is the one wanted for the label, say "
+      "so and the generator can carry both.\n")
     for party in ("first", "second", "third"):
         if not by_party.get(party):
             continue
@@ -154,11 +177,12 @@ def render(data: list[dict]) -> str:
                 w(f"| {name} | {len(items)} | {classes} |")
             w("")
             continue
-        w("| Component | Licence | Class | Carried | Where |")
-        w("|---|---|---|---|---|")
+        w("| Component | Licence | Class | Carried | Who could enforce | Where |")
+        w("|---|---|---|---|---|---|")
         for r in sorted(rowset, key=lambda r: r["component"]):
             w(f"| `{r['component']}` | {r['licence']} | {r['klass']} | "
-              f"{r['carried']} | `{r['where']}` |")
+              f"**{r['carried']}** | {r.get('enforced_by', '-')} | "
+              f"`{r['where']}` |")
         w("")
 
     w(COMFYUI)
