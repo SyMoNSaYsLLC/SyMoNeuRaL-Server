@@ -31,7 +31,16 @@ from __future__ import annotations
 import json
 import pathlib
 
-SITE = pathlib.Path(__file__).resolve().parent.parent / "site"
+# Walked for, not counted. `parent.parent / "site"` was right while this module
+# sat in `tools/`, and resolved to the non-existent `tools/site` once the
+# restructure moved it to `tools/lib/`. Combined with `_sidecar` returning {} for
+# a missing file, that did not raise -- it silently rendered every gallery tile
+# with no prompt, no seed, no timing and the wrong dimensions, and build_rack.py
+# wrote that over the live page.
+ROOT = next(p for p in pathlib.Path(__file__).resolve().parents
+            if (p / "backend" / "server.py").is_file())
+# The sidecars live beside the art they describe, under assets/art/.
+SITE = ROOT / "frontend" / "site" / "assets" / "art"
 
 # Visible surfaces carry SyMoNeuRaL names only. The upstream attribution is consolidated on
 # /credits.html, which is what actually satisfies Apache-2.0 §4 -- the notice has to be
@@ -56,6 +65,18 @@ def model_name(raw: str) -> str:
 
 
 def _sidecar(slug: str) -> dict:
+    """The render's provenance, or {} when it genuinely has none.
+
+    An absent sidecar used to be indistinguishable from a wrong SITE path, and
+    the second one is a bug that writes an empty gallery over the live page. So
+    the directory itself must exist: if it does not, this is misconfigured
+    rather than merely missing a file, and it raises instead of returning {}.
+    """
+    if not SITE.is_dir():
+        raise FileNotFoundError(
+            f"{SITE} does not exist, so no render can have provenance. "
+            f"This is a path bug, not an absent sidecar -- fix it before "
+            f"generating, or the gallery is written out empty.")
     f = SITE / f"art-{slug}.json"
     return json.loads(f.read_text()) if f.is_file() else {}
 
@@ -96,7 +117,7 @@ def attrs(slug: str) -> str:
     """The href and data-* an <a class="art"> needs for the lightbox."""
     prompt, seed, secs = meta(slug)
     esc = prompt.replace('"', "&quot;")
-    return (f'href="/art-{slug}.png" title="{esc}" data-prompt="{esc}" '
+    return (f'href="/assets/art/art-{slug}.png" title="{esc}" data-prompt="{esc}" '
             f'data-seed="{seed}" data-secs="{secs}" '
             f'aria-label="Open the full render, watermark and all: {esc}"')
 
@@ -106,7 +127,7 @@ def gutter(slug: str, alt: str, question: str, rot: float = 0.0) -> str:
     w, h = dims(slug)
     return f"""<a class="gart" {attrs(slug)} style="--rot:{rot}deg">
       <span class="gwrap">
-        <img src="/art-{slug}.png" alt="{alt}, rendered by SyMoNeuRaL Image"
+        <img src="/assets/art/art-{slug}.png" alt="{alt}, rendered by SyMoNeuRaL Image"
              loading="lazy" width="{w}" height="{h}">
         <span class="gzoom">Click to read the watermark</span>
       </span>

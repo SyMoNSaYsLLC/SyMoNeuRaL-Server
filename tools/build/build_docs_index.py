@@ -52,7 +52,7 @@ import sys
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "frontend" / "site"
-PAGE = SITE / "documentation.html"
+PAGE = SITE / "pages" / "documentation.html"
 
 # `backend/` on the path, not `backend/`: the registry is `apps.appdocs`, and importing it
 # as a package member is what keeps `apps` a namespace package with no import side effects.

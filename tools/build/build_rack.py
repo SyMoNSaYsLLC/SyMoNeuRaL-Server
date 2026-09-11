@@ -19,7 +19,7 @@ what we distribute, not repeated on every surface -- but it only works while the
 there, so do not drop it. Note that the per-unit detail lines come from `/api/status`, not
 from this file.
 
-**The `<noscript>` fallback is generated from `backend/ROSTER.md`, not typed here.** It
+**The `<noscript>` fallback is generated from `backend/registry/ROSTER.md`, not typed here.** It
 used to carry exactly one row, `chat`, with a hardcoded `data-state="ready"` -- a claim about
 this machine made by a file that has taken no reading, which is the decorative-indicator rule
 above broken in the one place nobody looks. It now lists every row in the roster and asserts
@@ -42,10 +42,17 @@ import re
 ROOT = next(_p for _p in pathlib.Path(__file__).resolve().parents if (_p / "backend" / "server.py").is_file())
 assert (ROOT / "backend" / "server.py").is_file(), f"repo root not found at {ROOT}"
 SITE = ROOT / "frontend" / "site"
-INDEX = SITE / "index.html"
+# Every page moved under `pages/` in the site restructure. `SITE / "index.html"`
+# is the pre-restructure path and stopped resolving; the same move is why
+# deploy.sh published zero files while printing "deployed".
+INDEX = SITE / "pages" / "index.html"
 
 import sys as _sys
-_sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+# `tools/lib`, walked for rather than counted. The ROOT walk above says why, and
+# this line was the counter-example: it read `parent`, which was right while
+# _art.py sat beside this file and wrong once the restructure moved it to
+# tools/lib/. The generator then failed at import for every caller.
+_sys.path.insert(0, str(ROOT / "tools" / "lib"))
 import _art  # noqa: E402
 
 # One reader for the roster, shared with `backend/test_roster.py`. Safe to import from a
@@ -91,7 +98,7 @@ FALLBACK = "".join(
 RACK = f"""{BEGIN}
 <section id="rack">
   <div class="wrap">
-    <p class="shead"><img src="/terminal-64.png" alt="" width="22" height="22">Live Stack</p>
+    <p class="shead"><img src="/assets/icons/terminal-64.png" alt="" width="22" height="22">Live Stack</p>
     <h2>The rack, as it is right now</h2>
     <p class="sub">
       Every surface on one workstation, pushed live over one socket. If a unit says busy,
@@ -120,7 +127,7 @@ RACK = f"""{BEGIN}
 
       <div class="units" id="units">
         <!-- Units are rendered from /api/status. Below is the pre-JS fallback, generated
-             from backend/ROSTER.md: every row, identity only. No unit carries a
+             from backend/registry/ROSTER.md: every row, identity only. No unit carries a
              data-state or a state word here, because this markup has measured nothing --
              the em dash is the same "no reading yet" mark the gauges below use. An unlit
              .led is the honest LED for a row whose state is unknown. -->
@@ -161,7 +168,7 @@ RACK = f"""{BEGIN}
   </div>
 </section>
 
-<script src="/console.js" defer></script>
+<script src="/js/console.js" defer></script>
 {END}"""
 
 
