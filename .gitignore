@@ -1,6 +1,14 @@
-# Weights and datasets. Large, separately licensed, and git is the wrong tool.
+# Weight FILES are large and separately licensed; git is the wrong tool for them. The
+# RECORDS beside them are the opposite -- PROVENANCE.json is the only thing that says what
+# the bytes are, and `/models/*` was swallowing it along with NAMES.md, licenses/ and the
+# README. A manifest that is not in the repository cannot be the manifest.
 /models/*
 !/models/.gitkeep
+!/models/README.md
+!/models/PROVENANCE.json
+!/models/NAMES.md
+!/models/licenses/
+!/models/licenses/**
 *.gguf
 *.safetensors
 *.bin
