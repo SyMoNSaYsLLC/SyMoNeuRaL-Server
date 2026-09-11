@@ -99,7 +99,13 @@ def authorize(request: Request, route_class: str) -> dict | None:
     Reuses the router's existing guards rather than reimplementing them, so authentication
     and role behaviour are unchanged by construction.
     """
-    from .apps import _operator, _signed_in       # local: avoids an import cycle
+    # `..dispatchos`, not `.apps`. This module moved into `apps/` in the
+    # restructure and its relative import moved with it, so `.apps` now resolves
+    # to `dispatchos.apps.apps`, which does not exist. Anonymous callers are
+    # refused by the guard above before reaching this line, so the failure is
+    # invisible until somebody signs in -- and then every guarded route 500s.
+    # Still a local import, for the cycle reason it always was.
+    from ..dispatchos import _operator, _signed_in
 
     if route_class not in CLASSES:
         raise ValueError(f"unknown route class: {route_class!r}")

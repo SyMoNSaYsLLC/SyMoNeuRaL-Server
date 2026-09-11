@@ -92,7 +92,7 @@ test("the DispatchOS lifecycle map matches the store it mirrors", () => {
   // The UI transcribes store.NEXT. If the backend gains or loses a transition, this is the
   // check that notices, rather than an operator finding a button that 400s.
   const store = readFileSync(
-    join(REPO, "backend", "apps", "dispatchos", "store.py"),
+    join(REPO, "backend", "dispatchos", "lib", "store.py"),
     "utf8",
   );
   const panel = readFileSync(

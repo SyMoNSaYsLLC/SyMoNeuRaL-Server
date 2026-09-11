@@ -9,12 +9,29 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export const HERE = fileURLToPath(new URL(".", import.meta.url));
 export const FRONTEND = join(HERE, "..", "..");
-export const REPO = join(FRONTEND, "..");
+
+// The repository root, found by walking for a marker rather than by counting
+// parents. `join(FRONTEND, "..")` is `frontend/`, one level short, so every path
+// built from it came out as `frontend/backend/...` -- and because the only
+// consumer read a file that had *also* moved, the failure named two wrong things
+// at once and looked like a missing file rather than a wrong root. Counting
+// parents fails exactly this way: the wrong directory usually exists.
+function repoRoot(from) {
+  for (let dir = from; ; dir = dirname(dir)) {
+    if (existsSync(join(dir, "backend", "server.py"))) return dir;
+    if (dirname(dir) === dir) {
+      throw new Error(`no repository root above ${from}: no backend/server.py found`);
+    }
+  }
+}
+
+export const REPO = repoRoot(FRONTEND);
 
 export const FIXTURE_PASSWORD = "lantern-quartz-meridian-8811";
 

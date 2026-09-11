@@ -47,7 +47,12 @@ def main() -> int:
     ap.add_argument("--db", required=True)
     args = ap.parse_args()
 
-    root = pathlib.Path(__file__).resolve().parents[3]
+    # Walked for, not counted. parents[3] is `frontend/`, one short of the
+    # repository root, so this inserted `frontend/backend` -- a directory that
+    # does not exist -- and the fixture died on `No module named dispatchos`.
+    # Counting parents breaks silently whenever a file moves; the marker cannot.
+    root = next(d for d in pathlib.Path(__file__).resolve().parents
+                if (d / "backend" / "server.py").is_file())
     sys.path.insert(0, str(root / "backend"))
 
     os.environ["SYMONEURAL_DISPATCHOS_DB"] = args.db
