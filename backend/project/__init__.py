@@ -52,7 +52,7 @@ has to write.
 """
 from __future__ import annotations
 
-from .router import router, status
+from .project import router, status
 from .lib.store import (API_VERSION, bootstrap, enabled, set_ask_model, token_ok, unit_state)
 
 __all__ = ["router", "status", "unit_state", "set_ask_model", "enabled", "token_ok",

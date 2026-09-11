@@ -82,6 +82,6 @@ def enabled() -> bool:
 
 
 from .jobs import status          # noqa: E402  -- the rack unit
-from .router import router        # noqa: E402  -- imports fastapi; must come after enabled()
+from .reinforce import router        # noqa: E402  -- imports fastapi; must come after enabled()
 
 __all__ = ["router", "status", "enabled"]

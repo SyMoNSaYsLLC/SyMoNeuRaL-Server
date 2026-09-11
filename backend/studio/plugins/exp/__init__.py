@@ -92,7 +92,7 @@ def __getattr__(name: str):
     """
     if name == "router":
         import importlib
-        mod = importlib.import_module(".router", __name__)
+        mod = importlib.import_module(".exp", __name__)
         return getattr(mod, 'router')
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

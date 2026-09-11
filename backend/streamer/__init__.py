@@ -39,7 +39,7 @@ which is what keeps the SSRF control real and keeps the credentials out of `argv
 from __future__ import annotations
 
 from . import guide                                              # noqa: F401
-from .guide.router import router as guide_router
-from .router import router, status
+from .guide.guide import router as guide_router
+from .streamer import router, status
 
 __all__ = ["guide", "guide_router", "router", "status"]

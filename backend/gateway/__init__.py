@@ -233,7 +233,7 @@ from .lib import abi
 from .lib import address
 from .lib import chain
 from .lib.chain import NODES, OPERATOR_NETWORKS
-from .router import router
+from .gateway import router
 # The settlement half. `entitlement.verify` is reached through the module rather than
 # re-exported bare: `from .verify import ...` below binds the NAME `verify` to the
 # submodule as a side effect of importing it, so a bare `verify` here would silently

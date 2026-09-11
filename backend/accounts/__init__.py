@@ -958,7 +958,7 @@ def __getattr__(name):
     is resolved lazily, on first attribute access, via PEP 562.
     """
     if name == "build_router":
-        from .router import build_router  # noqa: PLC0415
+        from .accounts import build_router  # noqa: PLC0415
         return build_router
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

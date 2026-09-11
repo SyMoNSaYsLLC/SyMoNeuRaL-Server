@@ -18,7 +18,7 @@ from registry.lib import ports  # noqa: E402
 import streamer  # noqa: E402  -- the IPTV surface AND the Guide that filters
 import project  # noqa: E402  -- the shared workspace surface. Brings its
 from streamer import guide  # noqa: E402  -- the library half: matching, clustering,
-from streamer.guide import router as guide_routes  # noqa: E402  -- question ->
+from streamer.guide import guide as guide_routes  # noqa: E402  -- question ->
 import studio  # noqa: E402  -- the local agent and the
 import news  # noqa: E402  -- the ticker's collector. Bound to
 import live  # noqa: E402  -- his OBS stream, watchable while it runs and after it

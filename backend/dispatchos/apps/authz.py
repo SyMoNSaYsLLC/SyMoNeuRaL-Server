@@ -99,7 +99,7 @@ def authorize(request: Request, route_class: str) -> dict | None:
     Reuses the router's existing guards rather than reimplementing them, so authentication
     and role behaviour are unchanged by construction.
     """
-    from .router import _operator, _signed_in       # local: avoids an import cycle
+    from .apps import _operator, _signed_in       # local: avoids an import cycle
 
     if route_class not in CLASSES:
         raise ValueError(f"unknown route class: {route_class!r}")

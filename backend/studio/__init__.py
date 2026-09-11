@@ -66,7 +66,7 @@ def __getattr__(name: str):
     PEP 562, and not for elegance. `routes.py` imports FastAPI; the tools, the registry and
     the workspace do not. `mcp_server.py` runs from an isolated venv holding only `fastmcp`
     -- the house convention for extra dependencies here, and every other app venv in this
-    repo is `include-system-site-packages = false` -- so an eager `from .router import router`
+    repo is `include-system-site-packages = false` -- so an eager `from .studio import router`
     at the top of this file made `import studio` fail with
     `ModuleNotFoundError: fastapi` inside that venv, which is a real thing that happened
     rather than a hypothetical.
@@ -85,7 +85,7 @@ def __getattr__(name: str):
         # name collided with the `router` object inside it. import_module goes straight to
         # the import machinery and never consults this hook.
         import importlib
-        mod = importlib.import_module(".router", __name__)
+        mod = importlib.import_module(".studio", __name__)
         return getattr(mod, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

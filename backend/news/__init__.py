@@ -46,7 +46,7 @@ import time
 from .apps import collect
 from .apps import feeds
 from .apps import rank
-from . import router  # noqa: F401  -- imported for the side effect of existing: `api.py`
+from . import news as router  # noqa: F401  -- imported for the side effect of existing: `api.py`
 # reaches it as `news.router.router`, and without this line that attribute lookup fails at
 # import time rather than at request time, which is a startup crash instead of a 500.
 

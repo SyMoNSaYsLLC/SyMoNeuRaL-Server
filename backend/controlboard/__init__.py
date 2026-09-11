@@ -415,6 +415,6 @@ def status_rows() -> list[dict]:
     return rows
 
 
-from .router import router  # noqa: E402,F401 -- mounted by api.py; imported last so the
+from .controlboard import router  # noqa: E402,F401 -- mounted by api.py; imported last so the
 # gates above are defined before the routes that call them, matching the order
 # `apps/studio/plugins/reinforce/__init__.py` uses for the same reason.

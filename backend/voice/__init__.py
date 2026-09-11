@@ -78,7 +78,7 @@ import os
 
 from .lib import asr
 from .lib import tts
-from .router import router
+from .voice import router
 
 __all__ = ["router", "status", "enabled", "token_ok", "installed", "asr", "tts"]
 

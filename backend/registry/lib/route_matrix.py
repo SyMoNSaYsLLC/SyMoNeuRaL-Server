@@ -176,7 +176,7 @@ def classify(expected: str, table: list[Route]) -> tuple[str, str, str]:
 
 def main(argv: list[str]) -> int:
     sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[1]))
-    app = importlib.import_module("api").app
+    app = importlib.import_module("server").app
     table = collect(app)
 
     if "--json" in argv:

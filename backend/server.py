@@ -78,7 +78,7 @@ from pydantic import BaseModel, Field
 # meant the wiring was right.
 # Imported as a module, not `from hardware.lib.modelmetrics import record_timings`, so the
 # metrics buffer has one identity. `apps/gpu.md` records what the alternative cost.
-from hardware import router as metricsroutes  # noqa: E402
+from hardware import hardware as metricsroutes  # noqa: E402
 from runtime.lib import runtimeconfig  # noqa: E402
 runtimeconfig.load()
 
@@ -165,7 +165,7 @@ import sigils  # noqa: E402  -- the sticker surface. Bound to the package for
 # the same reason as guide: it exports `status`, `router` and `PACKS`, and a bare `status`
 # would shadow this module's own. It reaches the same sd-cli as /api/image but takes the
 # card under its own governor name, so the rack can say which of the two holds it.
-from accounts import router as accounts_routes  # noqa: E402  -- signup,
+from accounts import accounts as accounts_routes  # noqa: E402  -- signup,
 # login and sessions. Imported as `routes` rather than the package so the package's
 # many bare names (verify, enabled, status) cannot shadow anything in this module.
 import voice  # noqa: E402  -- speech to text on the CPU. Bound to the package so
@@ -1498,7 +1498,7 @@ def _coder_read(request: Request, fn, **kw) -> JSONResponse:
 # `/local/*` is NOT delegated by ops/Caddyfile -- zero matchers for it -- and `_require_local`
 # additionally refuses any request carrying x-forwarded-*, so a future `handle /local*` block
 # could not silently expose this.
-from coders.router import router as _coders_router  # noqa: E402
+from coders.coders import router as _coders_router  # noqa: E402
 
 
 
@@ -1528,21 +1528,21 @@ _require(*['API_REFERENCE_SCRIPT', 'API_REFERENCE_STYLE', 'CHAT_MODEL', 'ChatReq
 
 
 # Component routers. Paths in these are absolute, so no prefix.
-from asicminer.router import router as asicminer_router  # noqa: E402
-from chat.router import router as chat_router  # noqa: E402
-from coders.root import router as coders_root  # noqa: E402
-from cryptominer.router import router as cryptominer_router  # noqa: E402
-from dispatchos.root import router as dispatchos_root  # noqa: E402
-from docs.router import router as docs_router  # noqa: E402
-from exp.root import router as exp_root  # noqa: E402
-from home.router import router as home_router  # noqa: E402
-from image.router import router as image_router  # noqa: E402
-from live.root import router as live_root  # noqa: E402
-from local.router import router as local_router  # noqa: E402
-from remix.root import router as remix_root  # noqa: E402
-from retired.router import router as retired_router  # noqa: E402
-from status.router import router as status_router  # noqa: E402
-from studio.root import router as studio_root  # noqa: E402
+from asicminer.asicminer import router as asicminer_router  # noqa: E402
+from chat.chat import router as chat_router  # noqa: E402
+from coders.coders_pages import router as coders_root  # noqa: E402
+from cryptominer.cryptominer import router as cryptominer_router  # noqa: E402
+from dispatchos.dispatchos_pages import router as dispatchos_root  # noqa: E402
+from docs.docs import router as docs_router  # noqa: E402
+from exp.exp_pages import router as exp_root  # noqa: E402
+from home.home import router as home_router  # noqa: E402
+from image.image import router as image_router  # noqa: E402
+from live.live_pages import router as live_root  # noqa: E402
+from local.local import router as local_router  # noqa: E402
+from remix.remix_pages import router as remix_root  # noqa: E402
+from retired.retired import router as retired_router  # noqa: E402
+from status.status import router as status_router  # noqa: E402
+from studio.studio_pages import router as studio_root  # noqa: E402
 
 app.include_router(asicminer_router)
 app.include_router(chat_router)

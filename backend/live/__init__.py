@@ -30,7 +30,7 @@ from __future__ import annotations
 from .lib import hls          # noqa: F401  -- the video path; imported so a syntax error in it
 from .lib import obs          # fails the boot loudly rather than at the first request
 from .lib.obs import Bridge
-from .router import enabled, router, status  # noqa: F401
+from .live import enabled, router, status  # noqa: F401
 
 # The one bridge. Constructed at import so `routes.py` can read it without a global lookup
 # dance, but it opens no socket until `start()` is awaited from `api.py`'s lifespan --

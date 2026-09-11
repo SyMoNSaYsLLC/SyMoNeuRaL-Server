@@ -41,7 +41,7 @@ from .apps import page
 from .apps import quotes
 from .lib import store
 from .lib.ai import ModelUnusable, set_ask_model
-from .router import router, ui_router
+from .dispatchos import router, ui_router
 from .lib.store import DispatchError, enabled, init_db
 
 __all__ = [
